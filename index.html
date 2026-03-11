@@ -312,15 +312,24 @@
     .lib-panel{display:none}.lib-panel.active{display:block}
     .lib-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem}
     .lib-section-header h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300}
-    .books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem}
-    .book-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:border-color .3s,transform .3s;display:flex;flex-direction:column}
-    .book-card:hover{border-color:var(--gold);transform:translateY(-4px)}
-    .book-cover{height:140px;display:flex;align-items:flex-end;padding:1.4rem;position:relative;overflow:hidden}
-    .book-cover-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:rgba(255,255,255,.9);position:relative;z-index:2;text-shadow:0 1px 4px rgba(0,0,0,.5)}
-    .book-cover::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,.1));z-index:1}
-    .book-cover-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
-    .book-body{padding:1.5rem;flex:1;display:flex;flex-direction:column}
-    .book-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;color:var(--text);margin-bottom:.4rem}
+    .books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:2rem}
+    .book-card{display:flex;flex-direction:column;cursor:pointer;transition:transform .3s;gap:.9rem}
+    .book-card:hover{transform:translateY(-6px)}
+    .book-card:hover .book-spine{box-shadow:0 16px 40px rgba(0,0,0,.5),0 0 0 1px rgba(200,164,90,.35)}
+    .book-spine{position:relative;border-radius:4px 8px 8px 4px;overflow:hidden;aspect-ratio:2/3;width:100%;box-shadow:0 8px 24px rgba(0,0,0,.4),0 0 0 1px rgba(255,255,255,.06);transition:box-shadow .3s}
+    .book-spine::before{content:'';position:absolute;left:0;top:0;bottom:0;width:6px;background:rgba(0,0,0,.3);z-index:3}
+    .book-spine::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.06) 0%,transparent 50%,rgba(0,0,0,.2) 100%);z-index:3}
+    .book-spine-bg{position:absolute;inset:0;background-size:cover;background-position:center;z-index:0}
+    .book-spine-svg{position:absolute;inset:0;z-index:1;opacity:.55}
+    .book-spine-content{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:flex-end;padding:1.1rem 1rem 1.2rem 1.3rem}
+    .book-spine-title{font-family:'Cormorant Garamond',serif;font-size:1rem;font-style:italic;color:rgba(255,255,255,.95);line-height:1.3;text-shadow:0 1px 6px rgba(0,0,0,.7)}
+    .book-status-badge{position:absolute;top:.7rem;right:.7rem;z-index:4;font-family:'JetBrains Mono',monospace;font-size:.48rem;letter-spacing:.14em;text-transform:uppercase;padding:.2rem .45rem;border-radius:2px;border:1px solid}
+    .book-status-badge.in_progress{background:rgba(212,168,74,.12);border-color:rgba(212,168,74,.35);color:rgba(212,168,74,.9)}
+    .book-status-badge.complete{background:rgba(78,201,176,.1);border-color:rgba(78,201,176,.3);color:rgba(78,201,176,.9)}
+    .book-status-badge.draft{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.12);color:rgba(255,255,255,.4)}
+    .book-foot{padding:0 .2rem}
+    .book-foot-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:400;color:var(--text);margin-bottom:.15rem;line-height:1.3}
+    .book-foot-meta{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);display:flex;align-items:center;gap:.6rem}
     .book-desc{font-size:.86rem;color:var(--text-dim);line-height:1.6;flex:1;margin-bottom:1rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
     .book-meta{display:flex;align-items:center;justify-content:space-between}
     .book-ch-count{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
@@ -551,6 +560,7 @@
     <div class="mf"><label>Description</label><textarea id="bookDesc" style="min-height:80px" placeholder="A short description shown on the library card"></textarea></div>
     <div class="mf"><label>Cover Color</label><div class="color-swatches" id="colorSwatches"></div><input type="hidden" id="bookColor"/></div>
     <div class="mf"><label>Cover Image URL <span style="opacity:.5;font-size:.8em">(optional — overlays the color)</span></label><input type="text" id="bookCoverImage" placeholder="https://example.com/image.jpg"/></div>
+    <div class="mf"><label>Status</label><select id="bookStatus"><option value="in_progress">In Progress</option><option value="complete">Complete</option><option value="draft">Draft (hidden)</option></select></div>
     <div class="modal-actions"><button class="btn-primary" id="bookSaveBtn" onclick="saveBook()">Save Book</button><button class="btn-ghost" onclick="closeModal('bookModal')">Cancel</button></div>
   </div>
 </div>
@@ -1131,6 +1141,47 @@ function renderBody(content){return(content||'').split('\n\n').map(p=>p.trim().s
 function fmtDate(iso){if(!iso)return'';return new Date(iso).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}
 function refreshAdmin(el){if(adminMode)el.querySelectorAll('.admin-only').forEach(x=>x.style.removeProperty('display'))}
 
+// ── CELESTIAL BOOK COVER GENERATOR ──
+function seedRand(seed){
+  let s=seed;
+  return ()=>{s=(s*1664525+1013904223)&0xffffffff;return(s>>>0)/0xffffffff};
+}
+function makeCelestialSVG(bookId,w=200,h=300){
+  const seed=bookId.split('').reduce((a,c)=>a+c.charCodeAt(0),0);
+  const r=seedRand(seed);
+  let svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">`;
+  // Orbital rings
+  const cx=w*(.3+r()*.4),cy=h*(.25+r()*.3);
+  const orbitals=2+Math.floor(r()*2);
+  for(let i=0;i<orbitals;i++){
+    const rx=30+i*22+r()*20,ry=rx*(.5+r()*.4);
+    const rot=-20+r()*50;
+    svg+=`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="0.5" transform="rotate(${rot},${cx},${cy})"/>`;
+    // planet dot on orbit
+    const angle=r()*Math.PI*2;
+    const px=cx+rx*Math.cos(angle),py=cy+ry*Math.sin(angle);
+    svg+=`<circle cx="${px}" cy="${py}" r="${.8+r()*1.2}" fill="rgba(255,255,255,0.5)"/>`;
+  }
+  // Constellation lines + stars
+  const stars=[];const numStars=5+Math.floor(r()*5);
+  for(let i=0;i<numStars;i++) stars.push([r()*w,r()*h,r()]);
+  // connect nearby stars
+  for(let i=0;i<stars.length-1;i++){
+    const[x1,y1]=stars[i],[x2,y2]=stars[i+1];
+    const d=Math.hypot(x2-x1,y2-y1);
+    if(d<80) svg+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="rgba(255,255,255,0.12)" stroke-width="0.5"/>`;
+  }
+  stars.forEach(([sx,sy,sr])=>{
+    const size=1+sr*2.5;
+    svg+=`<circle cx="${sx}" cy="${sy}" r="${size}" fill="rgba(255,255,255,${0.3+sr*0.5})"/>`;
+    if(sr>.7) svg+=`<circle cx="${sx}" cy="${sy}" r="${size*2.5}" fill="rgba(255,255,255,0.05)"/>`;
+  });
+  // Decorative border arc
+  svg+=`<path d="M ${w*.1} ${h*.85} Q ${w*.5} ${h*.75} ${w*.9} ${h*.85}" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.6"/>`;
+  svg+='</svg>';
+  return svg;
+}
+
 const COVERS=['linear-gradient(135deg,#0D3B33,#1A6B5A)','linear-gradient(135deg,#3B2A0D,#7A5420)','linear-gradient(135deg,#0D1226,#1A2456)','linear-gradient(135deg,#2B0D0D,#6B1A1A)','linear-gradient(135deg,#0D2B10,#1A5E20)','linear-gradient(135deg,#1A1F2E,#2E3A50)','linear-gradient(135deg,#1E0D2B,#4A1A6B)','linear-gradient(135deg,#2B1A0D,#6B3A1A)'];
 let selectedCover=COVERS[0];
 
@@ -1156,8 +1207,24 @@ async function loadBooks(){
   books.forEach(b=>{
     const count=(chapters||[]).filter(c=>c.book_id===b.id).length;
     const card=document.createElement('div');card.className='book-card';
-    const coverStyle=b.cover_image?`background:${b.color||COVERS[0]};background-image:url(${b.cover_image});background-size:cover;background-position:center`:`background:${b.color||COVERS[0]}`;
-    card.innerHTML=`<div class="book-cover" style="${coverStyle}"><span class="book-cover-title">${b.title}</span></div><div class="book-body"><h3 class="book-title">${b.title}</h3><p class="book-desc">${b.description||'<em style="opacity:.4">No description.</em>'}</p><div class="book-meta"><span class="book-ch-count">${count} chapter${count!==1?'s':''}</span><div style="display:flex;gap:.5rem"><button class="btn-sm admin-only" onclick="event.stopPropagation();openBookModal('${b.id}')">Edit</button></div></div></div>`;
+    const bgStyle=b.cover_image?`background:${b.color||COVERS[0]};background-image:url(${b.cover_image});background-size:cover;background-position:center`:`background:${b.color||COVERS[0]}`;
+    const statusLabel={in_progress:'In Progress',complete:'Complete',draft:'Draft'}[b.status||'in_progress']||'In Progress';
+    card.innerHTML=`
+      <div class="book-spine">
+        <div class="book-spine-bg" style="${bgStyle}"></div>
+        <div class="book-spine-svg">${makeCelestialSVG(b.id)}</div>
+        <div class="book-spine-content">
+          <span class="book-spine-title">${b.title}</span>
+        </div>
+        <span class="book-status-badge ${b.status||'in_progress'}">${statusLabel}</span>
+      </div>
+      <div class="book-foot">
+        <div class="book-foot-title">${b.title}</div>
+        <div class="book-foot-meta">
+          <span style="color:var(--teal)">${count} ch</span>
+          <button class="btn-sm admin-only" onclick="event.stopPropagation();openBookModal('${b.id}')">Edit</button>
+        </div>
+      </div>`;
     card.onclick=()=>openBook(b.id,b.title,b.description);
     grid.appendChild(card);refreshAdmin(card);
   });
@@ -1166,16 +1233,16 @@ async function loadBooks(){
 function openBookModal(id=null){
   document.getElementById('bookModalTitle').textContent=id?'Edit Book':'New Book';
   document.getElementById('editBookId').value=id||'';
-  if(id){sb.from('books').select('*').eq('id',id).single().then(({data:b})=>{document.getElementById('bookTitle').value=b?.title||'';document.getElementById('bookDesc').value=b?.description||'';document.getElementById('bookCoverImage').value=b?.cover_image||'';selectedCover=b?.color||COVERS[0];buildSwatches(selectedCover)})}
-  else{document.getElementById('bookTitle').value='';document.getElementById('bookDesc').value='';document.getElementById('bookCoverImage').value='';selectedCover=COVERS[0];buildSwatches()}
+  if(id){sb.from('books').select('*').eq('id',id).single().then(({data:b})=>{document.getElementById('bookTitle').value=b?.title||'';document.getElementById('bookDesc').value=b?.description||'';document.getElementById('bookCoverImage').value=b?.cover_image||'';document.getElementById('bookStatus').value=b?.status||'in_progress';selectedCover=b?.color||COVERS[0];buildSwatches(selectedCover)})}
+  else{document.getElementById('bookTitle').value='';document.getElementById('bookDesc').value='';document.getElementById('bookCoverImage').value='';document.getElementById('bookStatus').value='in_progress';selectedCover=COVERS[0];buildSwatches()}
   openModal('bookModal');
 }
 
 async function saveBook(){
   const title=document.getElementById('bookTitle').value.trim();if(!title){alert('Please add a title.');return}
-  const description=document.getElementById('bookDesc').value.trim(),color=document.getElementById('bookColor').value||selectedCover,cover_image=document.getElementById('bookCoverImage').value.trim()||null,editId=document.getElementById('editBookId').value;
+  const description=document.getElementById('bookDesc').value.trim(),color=document.getElementById('bookColor').value||selectedCover,cover_image=document.getElementById('bookCoverImage').value.trim()||null,status=document.getElementById('bookStatus').value,editId=document.getElementById('editBookId').value;
   setLoading('bookSaveBtn',true);
-  const{error}=editId?await sb.from('books').update({title,description,color,cover_image}).eq('id',editId):await sb.from('books').insert({title,description,color,cover_image});
+  const{error}=editId?await sb.from('books').update({title,description,color,cover_image,status}).eq('id',editId):await sb.from('books').insert({title,description,color,cover_image,status});
   setLoading('bookSaveBtn',false,'Save Book');
   if(error){toast('Error saving book','error');return}
   toast(editId?'Book updated':'Book created');closeModal('bookModal');loadBooks();
