@@ -362,15 +362,17 @@
     .ch-body p{margin-bottom:1.4rem}
     .ch-body h3{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--gold);margin:2.5rem 0 1rem}
     .ch-action-bar{display:flex;gap:.8rem;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)}
-    .articles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem}
-    .article-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:2rem;cursor:pointer;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;display:flex;flex-direction:column}
-    .article-card:hover{border-color:var(--gold);transform:translateY(-4px)}
-    .article-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--teal));transform:scaleX(0);transform-origin:left;transition:transform .4s}
-    .article-card:hover::after{transform:scaleX(1)}
-    .article-tag-lbl{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem}
-    .article-title{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:400;color:var(--text);margin-bottom:.8rem;line-height:1.25}
-    .article-preview{font-size:.88rem;color:var(--text-dim);line-height:1.65;flex:1;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:1rem}
-    .article-footer{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--text-dim);display:flex;align-items:center;justify-content:space-between}
+    .articles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.8rem}
+    .article-card{background:var(--bg2);border-radius:8px;cursor:pointer;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+    .article-card:hover{transform:translateY(-5px);box-shadow:0 12px 32px rgba(0,0,0,.4)}
+    .article-card-banner{position:relative;height:110px;overflow:hidden;flex-shrink:0}
+    .article-card-banner svg{position:absolute;inset:0;width:100%;height:100%}
+    .article-card-tag{position:absolute;bottom:.7rem;left:1.1rem;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;padding:.2rem .55rem;border-radius:2px;border:1px solid;z-index:2}
+    .article-card-body{padding:1.3rem 1.4rem 1.4rem;flex:1;display:flex;flex-direction:column;border-top:none}
+    .article-card-body::before{content:'';display:block;width:32px;height:1px;background:var(--gold);opacity:.5;margin-bottom:1rem}
+    .article-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;color:var(--text);margin-bottom:.7rem;line-height:1.2}
+    .article-preview{font-size:.87rem;color:var(--text-dim);line-height:1.7;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:1rem}
+    .article-footer{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.1em;color:var(--text-dim);display:flex;align-items:center;justify-content:space-between;padding-top:.8rem;border-top:1px solid var(--border)}
     .article-card-actions{display:flex;gap:.5rem;margin-top:.8rem}
     .reader-header{padding:3rem 4rem;max-width:1200px;margin:0 auto;border-bottom:1px solid var(--border)}
     .reader-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:300;line-height:1.1;margin-bottom:1rem}
@@ -610,14 +612,37 @@
 </div>
 <!-- ARTICLE MODAL -->
 <div class="modal-overlay" id="articleModal">
-  <div class="modal">
+  <div class="modal ch-modal-wide">
     <button class="modal-close" onclick="closeModal('articleModal')">✕</button>
     <h2 class="modal-title" id="articleModalTitle">New Article</h2>
     <input type="hidden" id="editArticleId"/>
-    <div class="mf"><label>Title</label><input type="text" id="articleTitle" placeholder="Article title"/></div>
-    <div class="mf"><label>Tag / Category</label><input type="text" id="articleTag" placeholder="e.g. Psychology, Mythology, Essay"/></div>
-    <div class="mf"><label>Content</label><textarea id="articleContent" placeholder="Write your article here…"></textarea><p class="hint">Blank line = new paragraph · ### for subheadings</p></div>
-    <div class="modal-actions"><button class="btn-primary" id="articleSaveBtn" onclick="saveArticle()">Save</button><button class="btn-ghost" onclick="closeModal('articleModal')">Cancel</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1rem">
+      <div class="mf" style="margin:0"><label>Title</label><input type="text" id="articleTitle" placeholder="Article title"/></div>
+      <div class="mf" style="margin:0"><label>Tag / Category</label><input type="text" id="articleTag" placeholder="e.g. Psychology, Mythology, Essay"/></div>
+    </div>
+    <div class="mf"><label>Banner Image URL <span style="opacity:.5;font-size:.8em">(optional — replaces the generated header)</span></label><input type="text" id="articleBanner" placeholder="https://example.com/image.jpg"/></div>
+    <div class="ch-editor-wrap">
+      <div class="ch-editor-pane">
+        <div class="ch-editor-toolbar">
+          <span class="ch-toolbar-label">Editor</span>
+          <div style="display:flex;gap:.4rem;align-items:center">
+            <button class="ch-tb-btn" onclick="insertArticleFmt('###')" title="Subheading">H</button>
+            <button class="ch-tb-btn" onclick="insertArticleFmt('> ')" title="Blockquote">"</button>
+            <button class="ch-tb-paste ch-tb-btn" onclick="triggerArticlePasteClean()">⊕ Paste from Docs</button>
+          </div>
+        </div>
+        <textarea id="articleContent" class="ch-editor-area" placeholder="Paste from Google Docs, or write here…&#10;&#10;Blank line = new paragraph&#10;### Subheading&#10;&gt; Blockquote" oninput="updateArticlePreview()"></textarea>
+        <div class="ch-editor-footer">
+          <span id="articleWordCount">0 words</span>
+          <span id="articleReadTime">~0 min read</span>
+        </div>
+      </div>
+      <div class="ch-preview-pane">
+        <div class="ch-editor-toolbar"><span class="ch-toolbar-label">Preview</span></div>
+        <div class="ch-preview-body reader-body" id="articlePreviewBody" style="padding:1.5rem;margin:0;max-width:100%;min-height:200px"></div>
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn-primary" id="articleSaveBtn" onclick="saveArticle()">Save Article</button><button class="btn-ghost" onclick="closeModal('articleModal')">Cancel</button></div>
   </div>
 </div>
 <!-- LAB MODAL -->
@@ -972,11 +997,13 @@
     </div>
   </div>
   <div id="libArticleReader" style="display:none">
+    <div id="readerBanner" style="display:none;height:320px;background-size:cover;background-position:center;position:relative"><div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.1),rgba(13,15,20,.95))"></div></div>
     <div class="reader-header">
       <button class="back-btn" onclick="closeArticleReader()">← Back to Library</button>
       <p id="readerTag" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem"></p>
       <h1 class="reader-title" id="readerTitle"></h1>
       <p class="reader-meta" id="readerMeta"></p>
+      <p id="readerReadTime" style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);margin-top:.3rem"></p>
     </div>
     <div class="reader-body" id="readerBody"></div>
     <div class="reader-actions"><button class="btn-sm admin-only" id="readerEditBtn">Edit</button><button class="btn-sm danger admin-only" id="readerDeleteBtn">Delete</button></div>
@@ -1196,11 +1223,51 @@ let currentBookId=null,activeChId=null;
 
 async function loadLibrary(){showLibBrowse();await Promise.all([loadBooks(),loadArticles()])}
 
+
+function makeArticleSVG(articleId, tag){
+  const seed=articleId.split('').reduce((a,ch)=>a+ch.charCodeAt(0),0);
+  const r=seedRand(seed);
+  // Pick palette from tag
+  const palettes={
+    psychology:['#4EC9B0','#1A6B5A'],
+    mythology:['#C8A45A','#7A5420'],
+    essay:['#6B8FBF','#1A2456'],
+    design:['#B07FBF','#4A1A6B'],
+  };
+  const tagKey=Object.keys(palettes).find(k=>(tag||'').toLowerCase().includes(k));
+  const [c1,c2]=palettes[tagKey]||['#C8A45A','#3B2A0D'];
+  const w=400,h=110;
+  let svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice">`;
+  // Background gradient
+  svg+=`<defs><linearGradient id="ag${seed}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${c2}" stop-opacity="1"/><stop offset="100%" stop-color="${c2}" stop-opacity=".4"/></linearGradient></defs>`;
+  svg+=`<rect width="${w}" height="${h}" fill="url(#ag${seed})"/>`;
+  // Flowing bezier curves — ink/manuscript feel
+  for(let i=0;i<4;i++){
+    const y1=r()*h, y2=r()*h, y3=r()*h;
+    const cp1x=r()*w, cp2x=r()*w;
+    svg+=`<path d="M 0 ${y1} C ${cp1x} ${y2}, ${cp2x} ${y3}, ${w} ${r()*h}" fill="none" stroke="${c1}" stroke-width="${.4+r()*.8}" opacity="${.15+r()*.2}"/>`;
+  }
+  // Scattered particles
+  for(let i=0;i<22;i++){
+    const px=r()*w,py=r()*h,pr=.6+r()*2;
+    svg+=`<circle cx="${px}" cy="${py}" r="${pr}" fill="${c1}" opacity="${.15+r()*.35}"/>`;
+  }
+  // Central glyph — ornate circle with cross hairs
+  const gx=w*(.35+r()*.3),gy=h*(.3+r()*.4),gr=12+r()*8;
+  svg+=`<circle cx="${gx}" cy="${gy}" r="${gr}" fill="none" stroke="${c1}" stroke-width=".7" opacity=".35"/>`;
+  svg+=`<circle cx="${gx}" cy="${gy}" r="${gr*.55}" fill="none" stroke="${c1}" stroke-width=".4" opacity=".25"/>`;
+  svg+=`<line x1="${gx-gr*1.4}" y1="${gy}" x2="${gx+gr*1.4}" y2="${gy}" stroke="${c1}" stroke-width=".4" opacity=".2"/>`;
+  svg+=`<line x1="${gx}" y1="${gy-gr*1.4}" x2="${gx}" y2="${gy+gr*1.4}" stroke="${c1}" stroke-width=".4" opacity=".2"/>`;
+  // Overlay vignette
+  svg+=`<rect width="${w}" height="${h}" fill="url(#ag${seed})" opacity=".3"/>`;
+  svg+='</svg>';
+  return {svg, tagColor:c1};
+}
 async function loadBooks(){
   const container=document.getElementById('booksContainer'),empty=document.getElementById('booksEmpty');
   container.innerHTML='<div style="color:var(--text-dim);font-size:.9rem;padding:2rem 0"><span class="loading-spinner"></span> Loading…</div>';
   const{data:books}=await sb.from('books').select('*').order('created_at',{ascending:false});
-  const{data:chapters}=await sb.from('chapters').select('id,book_id');
+  const{data:chapters}=await sb.from('chapters').select('id,book_id,content');
   container.innerHTML='';
   if(!books||!books.length){empty.style.display='flex';return}
   empty.style.display='none';
@@ -1226,6 +1293,10 @@ async function loadBooks(){
       const count=(chapters||[]).filter(c=>c.book_id===b.id).length;
       const card=document.createElement('div');card.className='book-card';
       const bgStyle=b.cover_image?`background:${b.color||COVERS[0]};background-image:url(${b.cover_image});background-size:cover;background-position:center`:`background:${b.color||COVERS[0]}`;
+      const chs=(chapters||[]).filter(ch=>ch.book_id===b.id);
+      const totalWords=chs.reduce((sum,ch)=>sum+(ch.content||'').split(/\s+/).filter(Boolean).length,0);
+      const pageCount=Math.max(0,Math.ceil(totalWords/WORDS_PER_PAGE))||'—';
+      const readMins=totalWords>0?Math.max(1,Math.ceil(totalWords/200)):'—';
       card.innerHTML=`
         <div class="book-spine">
           <div class="book-spine-bg" style="${bgStyle}"></div>
@@ -1238,7 +1309,11 @@ async function loadBooks(){
           <div class="book-foot-title">${b.title}</div>
           <div class="book-foot-meta">
             <span style="color:var(--teal)">${count} ch</span>
-            <button class="btn-sm admin-only" onclick="event.stopPropagation();openBookModal('${b.id}')">Edit</button>
+            <span>${pageCount} pg</span>
+            <span>${readMins} min</span>
+          </div>
+          <div class="admin-only" style="margin-top:.5rem">
+            <button class="btn-sm" style="width:100%" onclick="event.stopPropagation();openBookModal('${b.id}')">Edit</button>
           </div>
         </div>`;
       card.onclick=()=>openBook(b.id,b.title,b.description);
@@ -1502,27 +1577,88 @@ async function loadArticles(){
   empty.style.display='none';
   articles.forEach(a=>{
     const preview=(a.content||'').replace(/^###\s*/gm,'').slice(0,220)+'…';
-    const mins=Math.max(1,Math.ceil((a.content||'').split(' ').length/200));
+    const words=(a.content||'').split(/\s+/).filter(Boolean).length;
+    const mins=Math.max(1,Math.ceil(words/200));
     const card=document.createElement('div');card.className='article-card';
-    card.innerHTML=`<p class="article-tag-lbl">${a.tag||'Article'}</p><h3 class="article-title">${a.title}</h3><p class="article-preview">${preview}</p><div class="article-footer"><span>${fmtDate(a.created_at)}</span><span>${mins} min read</span></div><div class="article-card-actions"><button class="btn-sm admin-only" onclick="event.stopPropagation();openArticleModal('${a.id}')">Edit</button><button class="btn-sm danger admin-only" onclick="event.stopPropagation();deleteArticle('${a.id}')">Delete</button></div>`;
+    const{svg:artSvg,tagColor}=makeArticleSVG(a.id,a.tag);
+    card.innerHTML=`
+      <div class="article-card-banner">
+        ${artSvg}
+        <span class="article-card-tag" style="color:${tagColor};border-color:${tagColor}33;background:rgba(0,0,0,.35)">${a.tag||'Article'}</span>
+      </div>
+      <div class="article-card-body">
+        <h3 class="article-title">${a.title}</h3>
+        <p class="article-preview">${preview}</p>
+        <div class="article-footer">
+          <span>${fmtDate(a.created_at)}</span>
+          <span>${mins} min read</span>
+        </div>
+        <div class="article-card-actions">
+          <button class="btn-sm admin-only" onclick="event.stopPropagation();openArticleModal('${a.id}')">Edit</button>
+          <button class="btn-sm danger admin-only" onclick="event.stopPropagation();deleteArticle('${a.id}')">Delete</button>
+        </div>
+      </div>`;
     card.onclick=()=>openArticle(a);grid.appendChild(card);refreshAdmin(card);
   });
 }
 
+// ── ARTICLE EDITOR ──
+function updateArticlePreview(){
+  const content=document.getElementById('articleContent').value||'';
+  document.getElementById('articlePreviewBody').innerHTML=renderBody(content);
+  const words=content.split(/\s+/).filter(Boolean).length;
+  const mins=Math.max(1,Math.ceil(words/200));
+  document.getElementById('articleWordCount').textContent=words.toLocaleString()+' words';
+  document.getElementById('articleReadTime').textContent=mins+' min read';
+}
+function triggerArticlePasteClean(){
+  navigator.clipboard.read().then(async items=>{
+    for(const item of items){
+      if(item.types.includes('text/html')){
+        const blob=await item.getType('text/html');
+        const cleaned=cleanGoogleDocs(await blob.text());
+        document.getElementById('articleContent').value=cleaned;
+        updateArticlePreview();toast('Cleaned and pasted from clipboard','success');return;
+      }
+      if(item.types.includes('text/plain')){
+        const blob=await item.getType('text/plain');
+        document.getElementById('articleContent').value=await blob.text();
+        updateArticlePreview();toast('Pasted as plain text','success');return;
+      }
+    }
+  }).catch(()=>{document.getElementById('articleContent').focus();toast('Paste with Ctrl+V — auto-clean will run','success');});
+}
+function insertArticleFmt(prefix){
+  const ta=document.getElementById('articleContent');
+  const start=ta.selectionStart,end=ta.selectionEnd;
+  ta.value=ta.value.substring(0,start)+'\n\n'+prefix+(ta.value.substring(start,end)||'…')+'\n\n'+ta.value.substring(end);
+  updateArticlePreview();ta.focus();
+}
+// Auto-clean paste into article editor
+document.addEventListener('paste',e=>{
+  if(document.activeElement.id!=='articleContent')return;
+  const html=e.clipboardData.getData('text/html');
+  if(html&&(html.includes('google')||html.includes('docs-'))){
+    e.preventDefault();
+    document.getElementById('articleContent').value=cleanGoogleDocs(html);
+    updateArticlePreview();toast('Google Docs formatting cleaned','success');
+  }
+  setTimeout(updateArticlePreview,50);
+});
 function openArticleModal(id=null){
   document.getElementById('articleModalTitle').textContent=id?'Edit Article':'New Article';
   document.getElementById('editArticleId').value=id||'';
-  if(id){sb.from('articles').select('*').eq('id',id).single().then(({data:a})=>{document.getElementById('articleTitle').value=a?.title||'';document.getElementById('articleTag').value=a?.tag||'';document.getElementById('articleContent').value=a?.content||''})}
-  else{document.getElementById('articleTitle').value='';document.getElementById('articleTag').value='';document.getElementById('articleContent').value=''}
+  if(id){sb.from('articles').select('*').eq('id',id).single().then(({data:a})=>{document.getElementById('articleTitle').value=a?.title||'';document.getElementById('articleTag').value=a?.tag||'';document.getElementById('articleContent').value=a?.content||'';document.getElementById('articleBanner').value=a?.banner_image||'';updateArticlePreview();})}
+  else{document.getElementById('articleTitle').value='';document.getElementById('articleTag').value='';document.getElementById('articleContent').value='';document.getElementById('articleBanner').value='';updateArticlePreview();}
   openModal('articleModal');
 }
 
 async function saveArticle(){
-  const title=document.getElementById('articleTitle').value.trim(),tag=document.getElementById('articleTag').value.trim(),content=document.getElementById('articleContent').value.trim();
+  const title=document.getElementById('articleTitle').value.trim(),tag=document.getElementById('articleTag').value.trim(),content=document.getElementById('articleContent').value.trim(),banner_image=document.getElementById('articleBanner').value.trim()||null;
   if(!title||!content){alert('Please add a title and content.');return}
   const editId=document.getElementById('editArticleId').value;
   setLoading('articleSaveBtn',true);
-  const{error}=editId?await sb.from('articles').update({title,tag,content}).eq('id',editId):await sb.from('articles').insert({title,tag,content});
+  const{error}=editId?await sb.from('articles').update({title,tag,content,banner_image}).eq('id',editId):await sb.from('articles').insert({title,tag,content,banner_image});
   setLoading('articleSaveBtn',false,'Save');
   if(error){toast('Error saving','error');return}
   toast(editId?'Article updated':'Article created');closeModal('articleModal');loadArticles();
@@ -1530,9 +1666,16 @@ async function saveArticle(){
 
 function openArticle(a,skipHistory){
   currentArticleId=a.id;
+  const artWords=(a.content||'').split(/\s+/).filter(Boolean).length;
+  const artMins=Math.max(1,Math.ceil(artWords/200));
+  // Banner image
+  const bannerEl=document.getElementById('readerBanner');
+  if(a.banner_image){bannerEl.style.backgroundImage=`url(${a.banner_image})`;bannerEl.style.display='block';}
+  else{bannerEl.style.display='none';}
   document.getElementById('readerTag').textContent=a.tag||'Article';
   document.getElementById('readerTitle').textContent=a.title;
   document.getElementById('readerMeta').textContent=fmtDate(a.created_at);
+  document.getElementById('readerReadTime').textContent=artWords.toLocaleString()+' words · '+artMins+' min read';
   document.getElementById('readerBody').innerHTML=renderBody(a.content);
   document.getElementById('readerEditBtn').onclick=()=>openArticleModal(a.id);
   document.getElementById('readerDeleteBtn').onclick=()=>deleteArticle(a.id,true);
