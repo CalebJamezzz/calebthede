@@ -106,6 +106,7 @@
     .footer-links a:hover,.footer-links span:hover{color:var(--gold)}
     .admin-only{display:none!important}.is-admin .admin-only{display:inline-flex!important}
     .admin-only.blk{display:none!important}.is-admin .admin-only.blk{display:block!important}
+    .non-admin-only{display:block}.is-admin .non-admin-only{display:none!important}
     .toast{position:fixed;bottom:2rem;right:2rem;padding:.8rem 1.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;color:var(--text);z-index:1000;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none}
     .toast.visible{opacity:1;transform:translateY(0)}.toast.success{border-color:var(--teal-dim);color:var(--teal)}.toast.error{border-color:var(--danger);color:var(--danger)}
     .loading-spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.4rem}
@@ -337,14 +338,14 @@
     .ch-num-lbl{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);display:block;margin-bottom:.15rem}
     .ch-item.active .ch-num-lbl{color:var(--gold-dim)}
     .ch-draft-pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;background:rgba(212,168,74,.12);border:1px solid rgba(212,168,74,.3);color:var(--gold);border-radius:3px;padding:.1rem .35rem;margin-left:.5rem;vertical-align:middle}
-    .ch-toggle-wrap{display:flex;align-items:center;gap:.75rem;cursor:pointer;user-select:none}
-    .ch-toggle-input{position:absolute;opacity:0;width:0;height:0}
-    .ch-toggle-track{position:relative;width:40px;height:22px;border-radius:11px;background:var(--bg3);border:1px solid var(--border);transition:all .25s;flex-shrink:0}
-    .ch-toggle-thumb{position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--text-dim);transition:all .25s}
-    .ch-toggle-input:checked+.ch-toggle-track{background:rgba(78,201,176,.15);border-color:var(--teal)}
-    .ch-toggle-input:checked+.ch-toggle-track .ch-toggle-thumb{left:21px;background:var(--teal)}
-    .ch-toggle-lbl{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);transition:color .2s}
-    .ch-toggle-input:checked~.ch-toggle-lbl{color:var(--teal)}
+    .ch-toggle-wrap{display:flex;align-items:center;gap:.75rem;user-select:none}
+    .ch-toggle-input{position:absolute;opacity:0;width:0;height:0;pointer-events:none}
+    .ch-toggle-track{position:relative;width:40px;height:22px;border-radius:11px;background:var(--bg3);border:1px solid var(--border);transition:all .25s;flex-shrink:0;cursor:pointer}
+    .ch-toggle-thumb{position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--text-dim);transition:all .25s;pointer-events:none}
+    .ch-toggle-track.on{background:rgba(78,201,176,.15);border-color:var(--teal)}
+    .ch-toggle-track.on .ch-toggle-thumb{left:21px;background:var(--teal)}
+    .ch-toggle-lbl{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);transition:color .2s;white-space:nowrap}
+    .ch-toggle-lbl.on{color:var(--teal)}
     .ch-display{display:none}.ch-display.active{display:block}
     .ch-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem}
     .ch-title-h{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.6rem);font-weight:300;line-height:1.15;margin-bottom:2rem}
@@ -563,12 +564,14 @@
       <div class="mf" style="margin:0"><label>Chapter Label</label><input type="text" id="chNum" placeholder="e.g. Chapter 1, Prologue"/></div>
       <div class="mf" style="margin:0"><label>Chapter Title</label><input type="text" id="chTitle" placeholder="The title of this chapter"/></div>
       <div class="mf" style="margin:0">
-        <label style="display:block;font-size:.78rem;letter-spacing:.06em;color:var(--text-dim);margin-bottom:.6rem">Visibility</label>
-        <label class="ch-toggle-wrap">
-          <input type="checkbox" id="chPublished" class="ch-toggle-input"/>
-          <span class="ch-toggle-track"><span class="ch-toggle-thumb"></span></span>
-          <span class="ch-toggle-lbl" id="chPublishedLbl">Draft</span>
-        </label>
+        <label style="display:block;font-size:.78rem;letter-spacing:.06em;color:var(--text-dim);margin-bottom:.75rem">Visibility</label>
+        <div class="ch-toggle-wrap">
+          <div class="ch-toggle-track" id="chToggleTrack" onclick="document.getElementById('chPublished').click()">
+            <span class="ch-toggle-thumb" id="chToggleThumb"></span>
+          </div>
+          <input type="checkbox" id="chPublished" class="ch-toggle-input" onchange="updateChPublishedLbl()"/>
+          <span class="ch-toggle-lbl" id="chPublishedLbl">Draft — hidden</span>
+        </div>
       </div>
     </div>
     <div class="ch-editor-wrap">
@@ -918,7 +921,13 @@
     <div class="book-detail-layout">
       <div class="ch-sidebar"><p class="ch-sidebar-title">Chapters</p><ul class="ch-list" id="chList"></ul><button class="btn-sm admin-only" style="width:100%;margin-top:.5rem" onclick="openChModal(null,currentBookId)">+ Add Chapter</button></div>
       <div id="chMain">
-        <div class="empty-state" id="chEmpty" style="display:none"><span class="empty-icon">✦</span><h3>No chapters yet</h3><p>Add your first chapter.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openChModal(null,currentBookId)">+ Add Chapter</button></div>
+        <div class="empty-state" id="chEmpty" style="display:none">
+          <span class="empty-icon">✦</span>
+          <h3>No chapters yet</h3>
+          <p class="admin-only">Add your first chapter to get started.</p>
+          <p class="non-admin-only" style="opacity:.5;font-size:.85rem">Coming soon.</p>
+          <button class="btn-primary admin-only" style="margin-top:1rem" onclick="openChModal(null,currentBookId)">+ Add Chapter</button>
+        </div>
         <div id="chReader" style="display:none">
           <div style="padding:2.5rem 4rem 0;max-width:680px;margin:0 auto">
             <p id="chEyebrow" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem"></p>
@@ -1655,7 +1664,11 @@ document.addEventListener('paste',e=>{
 
 function updateChPublishedLbl(){
   const checked=document.getElementById('chPublished').checked;
-  document.getElementById('chPublishedLbl').textContent=checked?'Published — visible to readers':'Draft — hidden from readers';
+  const lbl=document.getElementById('chPublishedLbl');
+  const track=document.getElementById('chToggleTrack');
+  lbl.textContent=checked?'Published — visible':'Draft — hidden';
+  lbl.classList.toggle('on',checked);
+  if(track)track.classList.toggle('on',checked);
 }
 document.addEventListener('DOMContentLoaded',()=>{
   document.getElementById('chPublished').addEventListener('change',updateChPublishedLbl);
