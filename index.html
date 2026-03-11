@@ -363,21 +363,21 @@
     .reader-body blockquote{border-left:2px solid var(--gold);padding:.8rem 1.5rem;margin:2rem 0;color:var(--text-dim);font-style:italic;font-family:'Cormorant Garamond',serif;font-size:1.15rem}
     .reader-loading{text-align:center;padding:4rem;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim)}
     /* CELESTIAL PROGRESS */
-    .celestial-tracker{position:sticky;top:72px;z-index:50;background:var(--nav-bg);border-bottom:1px solid var(--border);padding:.9rem 4rem;display:flex;align-items:center;gap:2rem}
-    .celestial-constellation{flex:1;position:relative;height:28px;display:flex;align-items:center}
-    .constellation-line{position:absolute;top:50%;left:0;right:0;height:1px;background:var(--border);transform:translateY(-50%)}
-    .constellation-fill{position:absolute;top:50%;left:0;height:1px;background:linear-gradient(to right,var(--teal),var(--gold));transform:translateY(-50%);transition:width .6s cubic-bezier(.4,0,.2,1)}
+    .celestial-tracker{position:sticky;top:72px;z-index:50;background:rgba(13,15,20,.97);border-bottom:1px solid rgba(200,164,90,.2);padding:.9rem 4rem;display:flex;align-items:center;gap:2rem}
+    .celestial-constellation{flex:1;position:relative;height:32px;display:flex;align-items:center}
+    .constellation-line{position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(200,164,90,.15);transform:translateY(-50%)}
+    .constellation-fill{position:absolute;top:50%;left:0;height:1px;background:linear-gradient(to right,#4EC9B0,#D4A84A);transform:translateY(-50%);transition:width .6s cubic-bezier(.4,0,.2,1)}
     .star-dots{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;width:100%}
-    .star-dot{width:8px;height:8px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);cursor:pointer;transition:all .3s;flex-shrink:0;position:relative}
-    .star-dot:hover{border-color:var(--gold);transform:scale(1.3)}
-    .star-dot.done{background:var(--gold-dim);border-color:var(--gold)}
-    .star-dot.current{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(212,168,74,.6),0 0 16px rgba(212,168,74,.2);transform:scale(1.4)}
-    .star-dot.current::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(212,168,74,.3);animation:starPulse 2s ease-in-out infinite}
-    @keyframes starPulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.5);opacity:0}}
-    .star-dot-tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:.3rem .6rem;font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.1em;white-space:nowrap;color:var(--text);opacity:0;pointer-events:none;transition:opacity .2s;z-index:10}
+    .star-dot{width:9px;height:9px;border-radius:50%;background:#1E2433;border:1px solid rgba(200,164,90,.3);cursor:pointer;transition:all .3s;flex-shrink:0;position:relative}
+    .star-dot:hover{border-color:#D4A84A;transform:scale(1.35)}
+    .star-dot.done{background:#8A6E37;border-color:#C8A45A}
+    .star-dot.current{background:#D4A84A;border-color:#D4A84A;box-shadow:0 0 10px rgba(212,168,74,.7),0 0 20px rgba(212,168,74,.25);transform:scale(1.5)}
+    .star-dot.current::after{content:'';position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(212,168,74,.35);animation:starPulse 2s ease-in-out infinite}
+    @keyframes starPulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.6);opacity:0}}
+    .star-dot-tooltip{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:#161B24;border:1px solid rgba(200,164,90,.25);border-radius:4px;padding:.35rem .7rem;font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.1em;white-space:nowrap;color:#E8E4DC;opacity:0;pointer-events:none;transition:opacity .2s;z-index:10}
     .star-dot:hover .star-dot-tooltip{opacity:1}
-    .celestial-meta{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;text-align:right;line-height:1.8;flex-shrink:0}
-    .celestial-meta strong{color:var(--gold);font-weight:400}
+    .celestial-meta{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:#908C86;white-space:nowrap;text-align:right;line-height:1.9;flex-shrink:0}
+    .celestial-meta strong{color:#D4A84A;font-weight:400}
     /* CH NAV */
     .ch-nav{display:flex;align-items:center;justify-content:space-between;max-width:680px;margin:0 auto;padding:2rem 4rem 4rem;gap:1rem;flex-wrap:wrap}
     .ch-nav-btn{display:inline-flex;align-items:center;gap:.6rem;padding:.75rem 1.6rem;border:1px solid var(--border);border-radius:3px;background:transparent;color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:all .2s}
@@ -446,6 +446,20 @@
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;display:grid;place-items:center;padding:2rem;opacity:0;visibility:hidden;transition:opacity .18s ease,visibility .18s ease;will-change:opacity}
     .modal-overlay.open{opacity:1;visibility:visible}
     .modal{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:2.5rem;width:100%;max-width:660px;max-height:90vh;overflow-y:auto;position:relative;contain:layout style;transform:translateZ(0)}
+    .ch-modal-wide{max-width:min(92vw,1100px);width:100%}
+    .ch-editor-wrap{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:1.5rem;min-height:480px}
+    .ch-editor-pane{display:flex;flex-direction:column;border-right:1px solid var(--border)}
+    .ch-preview-pane{display:flex;flex-direction:column;background:var(--bg);overflow-y:auto}
+    .ch-editor-toolbar{display:flex;align-items:center;justify-content:space-between;padding:.5rem .8rem;background:var(--bg3);border-bottom:1px solid var(--border);min-height:36px}
+    .ch-toolbar-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim)}
+    .ch-tb-btn{background:none;border:1px solid var(--border);border-radius:3px;color:var(--text-dim);font-size:.72rem;padding:.2rem .5rem;cursor:pointer;transition:all .15s;font-family:'JetBrains Mono',monospace;letter-spacing:.05em}
+    .ch-tb-btn:hover{border-color:var(--gold);color:var(--gold)}
+    .ch-tb-paste{padding:.2rem .7rem;border-color:rgba(78,201,176,.3);color:var(--teal);font-size:.6rem;letter-spacing:.1em}
+    .ch-tb-paste:hover{border-color:var(--teal);color:var(--teal)}
+    .ch-editor-area{flex:1;background:var(--bg2);border:none;resize:none;padding:1.2rem;color:var(--text);font-family:'Lato',sans-serif;font-size:.92rem;line-height:1.8;outline:none;min-height:420px}
+    .ch-editor-footer{display:flex;justify-content:space-between;padding:.4rem .8rem;background:var(--bg3);border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim)}
+    .ch-preview-body{font-size:.95rem!important}
+    @media(max-width:768px){.ch-editor-wrap{grid-template-columns:1fr}.ch-preview-pane{display:none}.ch-modal-wide{padding:1.5rem}}
     .modal-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;margin-bottom:1.5rem;color:var(--text)}
     .modal-close{position:absolute;top:1.2rem;right:1.5rem;background:none;border:none;color:var(--text-dim);font-size:1.1rem;cursor:pointer;transition:color .2s;padding:.3rem}
     .modal-close:hover{color:var(--gold)}
@@ -532,14 +546,36 @@
 </div>
 <!-- CHAPTER MODAL -->
 <div class="modal-overlay" id="chModal">
-  <div class="modal">
+  <div class="modal ch-modal-wide">
     <button class="modal-close" onclick="closeModal('chModal')">✕</button>
     <h2 class="modal-title" id="chModalTitle">Add Chapter</h2>
     <input type="hidden" id="editChId"/><input type="hidden" id="chBookId"/>
-    <div class="mf"><label>Chapter Label</label><input type="text" id="chNum" placeholder="e.g. Chapter 1, Prologue"/></div>
-    <div class="mf"><label>Chapter Title</label><input type="text" id="chTitle" placeholder="The title of this chapter"/></div>
-    <div class="mf"><label>Content</label><textarea id="chContent" placeholder="Write or paste your chapter here…"></textarea><p class="hint">Blank line = new paragraph · ### for subheadings</p></div>
-    <div class="modal-actions"><button class="btn-primary" id="chSaveBtn" onclick="saveChapter()">Save</button><button class="btn-ghost" onclick="closeModal('chModal')">Cancel</button></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1rem">
+      <div class="mf" style="margin:0"><label>Chapter Label</label><input type="text" id="chNum" placeholder="e.g. Chapter 1, Prologue"/></div>
+      <div class="mf" style="margin:0"><label>Chapter Title</label><input type="text" id="chTitle" placeholder="The title of this chapter"/></div>
+    </div>
+    <div class="ch-editor-wrap">
+      <div class="ch-editor-pane">
+        <div class="ch-editor-toolbar">
+          <span class="ch-toolbar-label">Editor</span>
+          <div style="display:flex;gap:.4rem;align-items:center">
+            <button class="ch-tb-btn" onclick="insertFmt('###')" title="Subheading">H</button>
+            <button class="ch-tb-btn" onclick="insertFmt('> ')" title="Blockquote">"</button>
+            <button class="ch-tb-btn ch-tb-paste" onclick="triggerPasteClean()" title="Paste &amp; clean from Google Docs">⊕ Paste from Docs</button>
+          </div>
+        </div>
+        <textarea id="chContent" class="ch-editor-area" placeholder="Paste from Google Docs, or write here…&#10;&#10;Blank line = new paragraph&#10;### Subheading&#10;&gt; Blockquote" oninput="updateChPreview()"></textarea>
+        <div class="ch-editor-footer">
+          <span id="chWordCount">0 words</span>
+          <span id="chPageEst">~0 pages</span>
+        </div>
+      </div>
+      <div class="ch-preview-pane">
+        <div class="ch-editor-toolbar"><span class="ch-toolbar-label">Preview</span></div>
+        <div class="ch-preview-body reader-body" id="chPreviewBody" style="padding:1.5rem;margin:0;max-width:100%;min-height:200px"></div>
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn-primary" id="chSaveBtn" onclick="saveChapter()">Save Chapter</button><button class="btn-ghost" onclick="closeModal('chModal')">Cancel</button></div>
   </div>
 </div>
 <!-- ARTICLE MODAL -->
@@ -978,7 +1014,30 @@ async function doLogin(){
 function grantAdmin(){adminMode=true;document.body.classList.add('is-admin');document.getElementById('adminBadge').classList.add('visible');document.getElementById('lockBtn').textContent='🔓';document.getElementById('lockBtn').title='Sign out';toast('Admin mode on')}
 function revokeAdmin(){adminMode=false;document.body.classList.remove('is-admin');document.getElementById('adminBadge').classList.remove('visible');document.getElementById('lockBtn').textContent='🔒';document.getElementById('lockBtn').title='Admin login'}
 
-function showPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-center a').forEach(a=>a.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');document.getElementById('nav-'+name).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});setTimeout(initReveal,60);if(name==='library')loadLibrary();if(name==='lab')loadLab()}
+function showPage(name,skipHistory){
+  const pages=['home','about','projects','library','lab','contact'];
+  if(!pages.includes(name))name='home';
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-center a').forEach(a=>a.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(initReveal,60);
+  if(name==='library')loadLibrary();
+  if(name==='lab')loadLab();
+  if(!skipHistory)history.pushState({page:name},'','#'+name);
+}
+// Handle browser back/forward
+window.addEventListener('popstate',e=>{
+  const name=e.state?.page||location.hash.replace('#','')||'home';
+  showPage(name,true);
+});
+// On load, restore from hash
+(function(){
+  const hash=location.hash.replace('#','');
+  if(hash)showPage(hash,true);
+  else showPage('home',true);
+})();
 
 let _revealObs=null;
 function initReveal(){
@@ -1193,8 +1252,8 @@ function stepChapter(dir){
 async function openChModal(id=null,bookId=null){
   document.getElementById('chModalTitle').textContent=id?'Edit Chapter':'Add Chapter';
   document.getElementById('editChId').value=id||'';document.getElementById('chBookId').value=bookId||currentBookId||'';
-  if(id){const{data:ch}=await sb.from('chapters').select('*').eq('id',id).single();document.getElementById('chNum').value=ch?.num||'';document.getElementById('chTitle').value=ch?.title||'';document.getElementById('chContent').value=ch?.content||'';}
-  else{document.getElementById('chNum').value='';document.getElementById('chTitle').value='';document.getElementById('chContent').value='';}
+  if(id){const{data:ch}=await sb.from('chapters').select('*').eq('id',id).single();document.getElementById('chNum').value=ch?.num||'';document.getElementById('chTitle').value=ch?.title||'';document.getElementById('chContent').value=ch?.content||'';updateChPreview();}
+  else{document.getElementById('chNum').value='';document.getElementById('chTitle').value='';document.getElementById('chContent').value='';updateChPreview();}
   openModal('chModal');
 }
 
@@ -1413,7 +1472,88 @@ function toggleTheme(){
   }
 })();
 
-// ══ MOBILE NAV ══
+// ══ CHAPTER EDITOR ══
+function cleanGoogleDocs(html){
+  const d=document.createElement('div');d.innerHTML=html;
+  // Remove script/style/comments
+  d.querySelectorAll('script,style,meta,link').forEach(el=>el.remove());
+  // Convert headings
+  d.querySelectorAll('h1,h2').forEach(el=>{el.outerHTML='\n\n### '+el.textContent.trim()+'\n\n'});
+  d.querySelectorAll('h3,h4,h5,h6').forEach(el=>{el.outerHTML='\n\n#### '+el.textContent.trim()+'\n\n'});
+  // Convert blockquotes
+  d.querySelectorAll('blockquote').forEach(el=>{el.outerHTML='\n\n> '+el.textContent.trim()+'\n\n'});
+  // Paragraphs and line breaks → double newline
+  d.querySelectorAll('p').forEach(el=>{el.outerHTML='\n\n'+el.textContent.trim()+'\n\n'});
+  d.querySelectorAll('br').forEach(el=>{el.outerHTML='\n'});
+  // List items
+  d.querySelectorAll('li').forEach(el=>{el.outerHTML='\n- '+el.textContent.trim()});
+  // Get text
+  let text=d.textContent||d.innerText||'';
+  // Collapse 3+ newlines to 2
+  text=text.replace(/\n{3,}/g,'\n\n').trim();
+  return text;
+}
+
+function triggerPasteClean(){
+  navigator.clipboard.read().then(async items=>{
+    for(const item of items){
+      if(item.types.includes('text/html')){
+        const blob=await item.getType('text/html');
+        const html=await blob.text();
+        const cleaned=cleanGoogleDocs(html);
+        document.getElementById('chContent').value=cleaned;
+        updateChPreview();
+        toast('Cleaned and pasted from clipboard','success');
+        return;
+      }
+      if(item.types.includes('text/plain')){
+        const blob=await item.getType('text/plain');
+        const text=await blob.text();
+        document.getElementById('chContent').value=text;
+        updateChPreview();
+        toast('Pasted as plain text','success');
+        return;
+      }
+    }
+  }).catch(()=>{
+    // Fallback: focus textarea and let browser paste natively, then clean
+    const ta=document.getElementById('chContent');ta.focus();
+    toast('Paste with Ctrl+V — auto-clean will run','success');
+  });
+}
+
+// Auto-clean on paste into the textarea
+document.addEventListener('paste',e=>{
+  if(document.activeElement.id!=='chContent')return;
+  const html=e.clipboardData.getData('text/html');
+  if(html&&html.includes('google')||html.includes('docs-')||html.includes('id="docs-')){
+    e.preventDefault();
+    const cleaned=cleanGoogleDocs(html);
+    document.getElementById('chContent').value=cleaned;
+    updateChPreview();
+    toast('Google Docs formatting cleaned','success');
+  }
+  // plain paste falls through normally, then update preview
+  setTimeout(updateChPreview,50);
+});
+
+function updateChPreview(){
+  const content=document.getElementById('chContent').value||'';
+  document.getElementById('chPreviewBody').innerHTML=renderBody(content);
+  const words=content.split(/\s+/).filter(Boolean).length;
+  const pages=Math.max(0,Math.round(words/WORDS_PER_PAGE*10)/10);
+  document.getElementById('chWordCount').textContent=words.toLocaleString()+' words';
+  document.getElementById('chPageEst').textContent='~'+pages+' page'+(pages===1?'':'s');
+}
+
+function insertFmt(prefix){
+  const ta=document.getElementById('chContent');
+  const start=ta.selectionStart,end=ta.selectionEnd;
+  const before=ta.value.substring(0,start),after=ta.value.substring(end);
+  const sel=ta.value.substring(start,end);
+  ta.value=before+'\n\n'+prefix+(sel||'…')+'\n\n'+after;
+  updateChPreview();ta.focus();
+}
 function toggleMobileNav(){
   const d=document.getElementById('mobileDrawer'),h=document.getElementById('hamburger');
   d.classList.toggle('open');h.classList.toggle('open');
@@ -1427,8 +1567,8 @@ function closeMobileNav(){
 
 // Update mobile nav active state
 const origShowPage = showPage;
-window.showPage = function(name){
-  origShowPage(name);
+window.showPage = function(name, skipHistory){
+  origShowPage(name, skipHistory);
   document.querySelectorAll('.mobile-nav-item').forEach(el=>el.classList.remove('active'));
   const mn=document.getElementById('mnav-'+name);
   if(mn)mn.classList.add('active');
