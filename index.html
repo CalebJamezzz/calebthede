@@ -1992,6 +1992,10 @@ async function loadProjects(){
   const grid = document.getElementById('projGrid');
   const featWrap = document.getElementById('projFeaturedWrap');
   const empty = document.getElementById('projEmpty');
+  projFilter = 'all';
+  document.querySelectorAll('#projFilterBar .fb').forEach(b=>b.classList.remove('active'));
+  const firstFb = document.querySelector('#projFilterBar .fb');
+  if(firstFb) firstFb.classList.add('active');
   grid.innerHTML = '<div style="color:var(--text-dim);font-size:.9rem;padding:2rem 0"><span class="loading-spinner"></span> Loading…</div>';
   featWrap.innerHTML = '';
 
@@ -2043,8 +2047,7 @@ function renderProjGrid(projects, appendZiggis=false){
   const grid = document.getElementById('projGrid');
   grid.innerHTML = '';
   const filtered = projFilter==='all' ? projects : projects.filter(p=>p.category===projFilter);
-  if(!filtered.length){
-    grid.innerHTML = '<p style="color:var(--text-dim);font-size:.9rem;padding:1rem 0">No projects in this category yet.</p>';
+  if(!filtered.length && !appendZiggis){
     return;
   }
   filtered.forEach(p=>{
