@@ -900,9 +900,9 @@
         <div class="lib-tab" onclick="switchLibTab('Articles',this)">Articles</div>
       </div>
       <div class="lib-panel active" id="libBooks">
-        <div class="lib-section-header"><h2>Books in Progress</h2><button class="btn-primary admin-only" onclick="openBookModal()">+ New Book</button></div>
-        <div class="books-grid" id="booksGrid"></div>
-        <div class="empty-state" id="booksEmpty" style="display:none"><span class="empty-icon">📖</span><h3>No books yet</h3><p>Add your first book to get started.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openBookModal()">+ New Book</button></div>
+        <div class="lib-section-header"><h2>Books</h2><button class="btn-primary admin-only" onclick="openBookModal()">+ New Book</button></div>
+        <div id="booksContainer"></div>
+        <div class="empty-state" id="booksEmpty" style="display:none;flex-direction:column;align-items:center"><span class="empty-icon">📖</span><h3>No books yet</h3><p>Add your first book to get started.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openBookModal()">+ New Book</button></div>
       </div>
       <div class="lib-panel" id="libArticles">
         <div class="lib-section-header"><h2>Articles &amp; Essays</h2><button class="btn-primary admin-only" onclick="openArticleModal()">+ New Article</button></div>
@@ -1197,36 +1197,56 @@ let currentBookId=null,activeChId=null;
 async function loadLibrary(){showLibBrowse();await Promise.all([loadBooks(),loadArticles()])}
 
 async function loadBooks(){
-  const grid=document.getElementById('booksGrid'),empty=document.getElementById('booksEmpty');
-  grid.innerHTML='<div style="color:var(--text-dim);font-size:.9rem;padding:2rem 0"><span class="loading-spinner"></span> Loading…</div>';
+  const container=document.getElementById('booksContainer'),empty=document.getElementById('booksEmpty');
+  container.innerHTML='<div style="color:var(--text-dim);font-size:.9rem;padding:2rem 0"><span class="loading-spinner"></span> Loading…</div>';
   const{data:books}=await sb.from('books').select('*').order('created_at',{ascending:false});
   const{data:chapters}=await sb.from('chapters').select('id,book_id');
-  grid.innerHTML='';
-  if(!books||!books.length){empty.style.display='block';return}
+  container.innerHTML='';
+  if(!books||!books.length){empty.style.display='flex';return}
   empty.style.display='none';
+  const groups=[
+    {key:'in_progress',label:'In Progress',books:[]},
+    {key:'complete',   label:'Complete',   books:[]},
+    {key:'draft',      label:'Drafts',     books:[],adminOnly:true},
+  ];
   books.forEach(b=>{
-    const count=(chapters||[]).filter(c=>c.book_id===b.id).length;
-    const card=document.createElement('div');card.className='book-card';
-    const bgStyle=b.cover_image?`background:${b.color||COVERS[0]};background-image:url(${b.cover_image});background-size:cover;background-position:center`:`background:${b.color||COVERS[0]}`;
-    const statusLabel={in_progress:'In Progress',complete:'Complete',draft:'Draft'}[b.status||'in_progress']||'In Progress';
-    card.innerHTML=`
-      <div class="book-spine">
-        <div class="book-spine-bg" style="${bgStyle}"></div>
-        <div class="book-spine-svg">${makeCelestialSVG(b.id)}</div>
-        <div class="book-spine-content">
-          <span class="book-spine-title">${b.title}</span>
+    const g=groups.find(g=>g.key===(b.status||'in_progress'))||groups[0];
+    g.books.push(b);
+  });
+  groups.forEach(group=>{
+    if(!group.books.length)return;
+    const section=document.createElement('div');
+    section.style.cssText='margin-bottom:3rem';
+    if(group.adminOnly)section.classList.add('admin-only','blk');
+    const hdr=document.createElement('div');hdr.className='lib-section-header';hdr.style.marginBottom='1.5rem';
+    hdr.innerHTML=`<h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300;color:var(--text-dim);letter-spacing:.05em">${group.label}</h3>`;
+    section.appendChild(hdr);
+    const grid=document.createElement('div');grid.className='books-grid';
+    group.books.forEach(b=>{
+      const count=(chapters||[]).filter(c=>c.book_id===b.id).length;
+      const card=document.createElement('div');card.className='book-card';
+      const bgStyle=b.cover_image?`background:${b.color||COVERS[0]};background-image:url(${b.cover_image});background-size:cover;background-position:center`:`background:${b.color||COVERS[0]}`;
+      card.innerHTML=`
+        <div class="book-spine">
+          <div class="book-spine-bg" style="${bgStyle}"></div>
+          <div class="book-spine-svg">${makeCelestialSVG(b.id)}</div>
+          <div class="book-spine-content">
+            <span class="book-spine-title">${b.title}</span>
+          </div>
         </div>
-        <span class="book-status-badge ${b.status||'in_progress'}">${statusLabel}</span>
-      </div>
-      <div class="book-foot">
-        <div class="book-foot-title">${b.title}</div>
-        <div class="book-foot-meta">
-          <span style="color:var(--teal)">${count} ch</span>
-          <button class="btn-sm admin-only" onclick="event.stopPropagation();openBookModal('${b.id}')">Edit</button>
-        </div>
-      </div>`;
-    card.onclick=()=>openBook(b.id,b.title,b.description);
-    grid.appendChild(card);refreshAdmin(card);
+        <div class="book-foot">
+          <div class="book-foot-title">${b.title}</div>
+          <div class="book-foot-meta">
+            <span style="color:var(--teal)">${count} ch</span>
+            <button class="btn-sm admin-only" onclick="event.stopPropagation();openBookModal('${b.id}')">Edit</button>
+          </div>
+        </div>`;
+      card.onclick=()=>openBook(b.id,b.title,b.description);
+      grid.appendChild(card);refreshAdmin(card);
+    });
+    section.appendChild(grid);
+    container.appendChild(section);
+    refreshAdmin(section);
   });
 }
 
