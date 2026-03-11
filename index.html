@@ -5,25 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Caleb Thede</title>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-    :root{
-      --bg:#0D0F14;--bg2:#12151C;--bg3:#181C26;
-      --gold:#C8A45A;--gold-dim:#8A6E37;
-      --teal:#4EC9B0;--teal-dim:#2C7A6A;
-      --text:#E8E4DC;--text-dim:#8A8680;
-      --border:rgba(200,164,90,0.18);
-      --danger:#C85A5A;--danger-dim:#7A3737;
-    }
+    :root{--bg:#0D0F14;--bg2:#12151C;--bg3:#181C26;--gold:#C8A45A;--gold-dim:#8A6E37;--teal:#4EC9B0;--teal-dim:#2C7A6A;--text:#E8E4DC;--text-dim:#8A8680;--border:rgba(200,164,90,0.18);--danger:#C85A5A}
     html{scroll-behavior:smooth}
     body{background:var(--bg);color:var(--text);font-family:'Lato',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}
     ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px}
-
-    /* CURSOR */
     .cursor{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;mix-blend-mode:difference}
     .cursor-ring{width:36px;height:36px;border:1px solid var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;opacity:.5}
-
-    /* NAV */
     nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.4rem 4rem;background:rgba(13,15,20,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
     .nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;letter-spacing:.1em;color:var(--gold);cursor:pointer}
     .nav-center{display:flex;gap:2rem;list-style:none}
@@ -36,11 +26,7 @@
     .admin-badge.visible{display:block}
     .lock-btn{background:none;border:1px solid var(--border);border-radius:4px;color:var(--text-dim);font-size:.85rem;cursor:pointer;padding:.35rem .6rem;transition:all .2s}
     .lock-btn:hover{border-color:var(--gold);color:var(--gold)}
-
-    /* PAGES */
     .page{display:none;padding-top:80px;min-height:100vh}.page.active{display:block}
-
-    /* SHARED */
     .section-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem;display:flex;align-items:center;gap:1rem}
     .section-label::after{content:'';display:block;height:1px;width:60px;background:var(--teal-dim)}
     .section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,4vw,3.5rem);font-weight:300;line-height:1.15;margin-bottom:2.5rem}
@@ -54,7 +40,6 @@
     .btn-sm{padding:.4rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;border-radius:3px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all .2s}
     .btn-sm:hover{border-color:var(--gold);color:var(--gold)}
     .btn-sm.danger:hover{border-color:var(--danger);color:var(--danger)}
-    .btn-sm.teal:hover{border-color:var(--teal);color:var(--teal)}
     .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}
     .reveal.visible{opacity:1;transform:translateY(0)}
     footer{padding:2rem 4rem;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.12em;color:var(--text-dim);margin-top:4rem}
@@ -62,11 +47,14 @@
     .footer-links a,.footer-links span{color:var(--text-dim);text-decoration:none;cursor:pointer;transition:color .2s}
     .footer-links a:hover,.footer-links span:hover{color:var(--gold)}
     .admin-only{display:none!important}.is-admin .admin-only{display:inline-flex!important}
-    .admin-only.block{display:none!important}.is-admin .admin-only.block{display:block!important}
-
-    /* ══════════ HOME ══════════ */
+    .admin-only.blk{display:none!important}.is-admin .admin-only.blk{display:block!important}
+    .toast{position:fixed;bottom:2rem;right:2rem;padding:.8rem 1.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;color:var(--text);z-index:1000;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none}
+    .toast.visible{opacity:1;transform:translateY(0)}.toast.success{border-color:var(--teal-dim);color:var(--teal)}.toast.error{border-color:var(--danger);color:var(--danger)}
+    .loading-spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:.4rem}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    /* HOME */
     #hero{min-height:100vh;display:grid;place-items:center;position:relative;overflow:hidden;padding:6rem 4rem 4rem}
-    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 80% 50%,rgba(78,201,176,.06) 0%,transparent 60%),radial-gradient(ellipse 50% 50% at 20% 60%,rgba(200,164,90,.07) 0%,transparent 55%)}
+    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 80% 50%,rgba(78,201,176,.06),transparent 60%),radial-gradient(ellipse 50% 50% at 20% 60%,rgba(200,164,90,.07),transparent 55%)}
     .hero-pattern{position:absolute;inset:0;opacity:.045;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,var(--teal) 39px,var(--teal) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,var(--teal) 39px,var(--teal) 40px)}
     .hero-content{position:relative;z-index:2;max-width:900px;text-align:center}
     .hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.25em;color:var(--teal);text-transform:uppercase;margin-bottom:1.5rem}
@@ -90,8 +78,7 @@
     .pc-desc{font-size:.88rem;color:var(--text-dim);line-height:1.6}
     .pc-link{display:inline-block;margin-top:1.2rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);transition:color .2s}
     .pc:hover .pc-link{color:var(--gold)}
-
-    /* ══════════ ABOUT ══════════ */
+    /* ABOUT */
     .about-section{max-width:1200px;margin:0 auto;padding:5rem 4rem;border-bottom:1px solid var(--border)}
     .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
     .about-text p{color:var(--text-dim);margin-bottom:1.2rem;font-size:1.02rem}
@@ -114,13 +101,13 @@
     .vc-icon{font-size:1.6rem;margin-bottom:1rem;display:block}
     .vc-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;color:var(--text);margin-bottom:.6rem}
     .vc-desc{font-size:.86rem;color:var(--text-dim);line-height:1.65}
-    .vision-note{margin-top:3rem;padding:1.5rem 2rem;background:rgba(200,164,90,.05);border-left:2px solid var(--gold);border:1px solid var(--border);border-left:2px solid var(--gold);border-radius:0 6px 6px 0;font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-style:italic;color:var(--text-dim);line-height:1.65}
+    .vision-note{margin-top:3rem;padding:1.5rem 2rem;background:rgba(200,164,90,.05);border:1px solid var(--border);border-left:2px solid var(--gold);border-radius:0 6px 6px 0;font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-style:italic;color:var(--text-dim);line-height:1.65}
     .vision-note strong{color:var(--gold);font-style:normal;font-weight:400}
     .skills-wrap{background:var(--bg2);padding:6rem 0}
     .skills-inner{max-width:1200px;margin:0 auto;padding:0 4rem}
     .skills-cols{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:3rem}
-    .scol-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
-    .scol-label.tech{color:var(--teal)}.scol-label.design{color:var(--gold)}
+    .scol-lbl{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
+    .scol-lbl.tech{color:var(--teal)}.scol-lbl.design{color:var(--gold)}
     .skill-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
     .skill-name{font-size:.9rem;color:var(--text)}
     .sbw{width:160px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
@@ -130,14 +117,13 @@
     .stag{padding:.3rem .9rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.1em;border-radius:3px;border:1px solid}
     .stag.tech{border-color:var(--teal-dim);color:var(--teal);background:rgba(78,201,176,.05)}
     .stag.design{border-color:var(--gold-dim);color:var(--gold);background:rgba(200,164,90,.05)}
-
-    /* ══════════ PROJECTS ══════════ */
+    /* PROJECTS */
     .feat-section{max-width:1200px;margin:0 auto;padding:5rem 4rem;border-bottom:1px solid var(--border)}
     .feat-card{background:var(--bg2);border:1px solid rgba(200,164,90,.35);border-radius:10px;padding:3rem;position:relative;overflow:hidden;display:grid;grid-template-columns:1.1fr 1fr;gap:3.5rem;align-items:start}
     .feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--teal))}
     .feat-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:.6rem}
     .feat-badge::before{content:'★'}
-    .feat-title{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;line-height:1.1;margin-bottom:1rem;color:var(--text)}
+    .feat-title{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;line-height:1.1;margin-bottom:1rem}
     .feat-title em{font-style:italic;color:var(--gold)}
     .feat-desc{font-size:.95rem;color:var(--text-dim);line-height:1.75;margin-bottom:2rem}
     .feat-tags{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:2rem}
@@ -167,38 +153,28 @@
     .pdesc{font-size:.88rem;color:var(--text-dim);line-height:1.65;margin-bottom:1.5rem;flex:1}
     .ptags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:auto}
     .ptag{padding:.25rem .7rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--text-dim)}
-
-    /* ══════════ LIBRARY ══════════ */
+    /* LIBRARY */
     .lib-outer{max-width:1200px;margin:0 auto;padding:3rem 4rem 6rem}
-    .lib-tabs{display:flex;gap:0;margin-bottom:3rem;border-bottom:1px solid var(--border)}
+    .lib-tabs{display:flex;margin-bottom:3rem;border-bottom:1px solid var(--border)}
     .lib-tab{padding:.8rem 2rem;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s}
-    .lib-tab:hover{color:var(--text)}
-    .lib-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+    .lib-tab:hover{color:var(--text)}.lib-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
     .lib-panel{display:none}.lib-panel.active{display:block}
     .lib-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem}
-    .lib-section-header h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--text)}
-
-    /* Book cards */
+    .lib-section-header h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300}
     .books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem}
     .book-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:border-color .3s,transform .3s;display:flex;flex-direction:column}
     .book-card:hover{border-color:var(--gold);transform:translateY(-4px)}
     .book-cover{height:120px;display:flex;align-items:flex-end;padding:1.2rem;position:relative;overflow:hidden}
-    .book-cover-text{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:rgba(255,255,255,.6);position:relative;z-index:1}
-    .book-cover::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.25)}
-    .book-cover-text{position:relative;z-index:2}
+    .book-cover-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:rgba(255,255,255,.75);position:relative;z-index:2}
+    .book-cover::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.2)}
     .book-body{padding:1.5rem;flex:1;display:flex;flex-direction:column}
     .book-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;color:var(--text);margin-bottom:.4rem}
     .book-desc{font-size:.86rem;color:var(--text-dim);line-height:1.6;flex:1;margin-bottom:1rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
     .book-meta{display:flex;align-items:center;justify-content:space-between}
-    .book-chapters{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
-    .book-actions{display:flex;gap:.5rem}
-
-    /* Book detail view */
-    .book-detail{display:none;padding:0}
-    .book-detail.active{display:block}
-    .book-detail-header{padding:3rem 4rem;max-width:1200px;margin:0 auto;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:2rem}
-    .book-detail-back{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;transition:color .2s;display:flex;align-items:center;gap:.5rem;margin-bottom:1.5rem}
-    .book-detail-back:hover{color:var(--gold)}
+    .book-ch-count{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+    .book-detail-header{padding:3rem 4rem;max-width:1200px;margin:0 auto;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+    .back-btn{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;transition:color .2s;display:flex;align-items:center;gap:.5rem;margin-bottom:1.5rem;background:none;border:none}
+    .back-btn:hover{color:var(--gold)}
     .book-detail-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:300;color:var(--text);margin-bottom:.5rem}
     .book-detail-desc{font-size:1rem;color:var(--text-dim);max-width:580px}
     .book-detail-layout{max-width:1200px;margin:0 auto;padding:3rem 4rem;display:grid;grid-template-columns:240px 1fr;gap:3rem;align-items:start}
@@ -206,49 +182,38 @@
     .ch-sidebar-title{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
     .ch-list{list-style:none;display:flex;flex-direction:column;gap:.3rem;margin-bottom:1.2rem}
     .ch-item{padding:.65rem .9rem;border-radius:4px;cursor:pointer;font-size:.85rem;color:var(--text-dim);transition:all .2s;border:1px solid transparent}
-    .ch-item:hover{background:var(--bg3);color:var(--text)}
-    .ch-item.active{background:var(--bg3);color:var(--gold);border-color:var(--border)}
+    .ch-item:hover{background:var(--bg3);color:var(--text)}.ch-item.active{background:var(--bg3);color:var(--gold);border-color:var(--border)}
     .ch-num-lbl{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);display:block;margin-bottom:.15rem}
     .ch-item.active .ch-num-lbl{color:var(--gold-dim)}
     .ch-display{display:none}.ch-display.active{display:block}
     .ch-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem}
-    .ch-title-h{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.6rem);font-weight:300;line-height:1.15;margin-bottom:2rem;color:var(--text)}
+    .ch-title-h{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.6rem);font-weight:300;line-height:1.15;margin-bottom:2rem}
     .ch-body{font-size:1.05rem;line-height:1.9;color:var(--text-dim);max-width:680px}
     .ch-body p{margin-bottom:1.4rem}
     .ch-body h3{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--gold);margin:2.5rem 0 1rem}
-    .ch-actions-bar{display:flex;gap:.8rem;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)}
-
-    /* Article cards */
+    .ch-action-bar{display:flex;gap:.8rem;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)}
     .articles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem}
     .article-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:2rem;cursor:pointer;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;display:flex;flex-direction:column}
     .article-card:hover{border-color:var(--gold);transform:translateY(-4px)}
     .article-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--teal));transform:scaleX(0);transform-origin:left;transition:transform .4s}
     .article-card:hover::after{transform:scaleX(1)}
-    .article-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem}
+    .article-tag-lbl{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem}
     .article-title{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:400;color:var(--text);margin-bottom:.8rem;line-height:1.25}
     .article-preview{font-size:.88rem;color:var(--text-dim);line-height:1.65;flex:1;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:1rem}
-    .article-meta{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--text-dim);display:flex;align-items:center;justify-content:space-between}
+    .article-footer{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--text-dim);display:flex;align-items:center;justify-content:space-between}
     .article-card-actions{display:flex;gap:.5rem;margin-top:.8rem}
-
-    /* Article reader */
-    .article-reader{display:none}.article-reader.active{display:block}
     .reader-header{padding:3rem 4rem;max-width:1200px;margin:0 auto;border-bottom:1px solid var(--border)}
-    .reader-back{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;transition:color .2s;display:flex;align-items:center;gap:.5rem;margin-bottom:1.5rem}
-    .reader-back:hover{color:var(--gold)}
-    .reader-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:300;line-height:1.1;margin-bottom:1rem;color:var(--text)}
+    .reader-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:300;line-height:1.1;margin-bottom:1rem}
     .reader-meta{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim)}
     .reader-body{max-width:720px;margin:3rem auto;padding:0 4rem;font-size:1.08rem;line-height:1.95;color:var(--text-dim)}
     .reader-body p{margin-bottom:1.5rem}
     .reader-body h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--gold);margin:3rem 0 1rem}
     .reader-actions{display:flex;gap:.8rem;max-width:720px;margin:0 auto;padding:1.5rem 4rem;border-top:1px solid var(--border)}
-
-    /* Empty states */
     .empty-state{text-align:center;padding:5rem 2rem;color:var(--text-dim)}
     .empty-icon{font-size:2.5rem;margin-bottom:1rem;display:block;opacity:.35}
     .empty-state h3{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--text);margin-bottom:.5rem}
     .empty-state p{font-size:.9rem;max-width:380px;margin:0 auto .5rem}
-
-    /* ══════════ LAB ══════════ */
+    /* LAB */
     .lab-outer{max-width:1200px;margin:0 auto;padding:3rem 4rem 6rem}
     .lab-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem}
     .lab-filters{display:flex;gap:.6rem;flex-wrap:wrap}
@@ -258,17 +223,18 @@
     .lab-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:2rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;display:flex;flex-direction:column}
     .lab-card:hover{border-color:var(--teal);transform:translateY(-4px)}
     .lab-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--teal),var(--gold))}
-    .lab-type-badge{display:inline-block;padding:.25rem .75rem;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;border-radius:3px;background:rgba(78,201,176,.08);border:1px solid var(--teal-dim);color:var(--teal);margin-bottom:1rem}
-    .lab-type-badge.idea{background:rgba(200,164,90,.08);border-color:var(--gold-dim);color:var(--gold)}
-    .lab-type-badge.research{background:rgba(180,120,200,.08);border-color:rgba(180,120,200,.4);color:#C87FD5}
-    .lab-type-badge.experiment{background:rgba(90,180,200,.08);border-color:rgba(90,180,200,.4);color:#5AB4C8}
+    .lab-badge{display:inline-block;padding:.25rem .75rem;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;border-radius:3px;margin-bottom:1rem;border:1px solid}
+    .lab-badge.design{border-color:var(--teal-dim);color:var(--teal);background:rgba(78,201,176,.08)}
+    .lab-badge.idea{border-color:var(--gold-dim);color:var(--gold);background:rgba(200,164,90,.08)}
+    .lab-badge.research{border-color:rgba(180,120,200,.4);color:#C87FD5;background:rgba(180,120,200,.08)}
+    .lab-badge.experiment{border-color:rgba(90,180,200,.4);color:#5AB4C8;background:rgba(90,180,200,.08)}
+    .lab-badge.other{border-color:var(--border);color:var(--text-dim);background:transparent}
     .lab-card-title{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:400;color:var(--text);margin-bottom:.7rem;line-height:1.2}
     .lab-card-desc{font-size:.88rem;color:var(--text-dim);line-height:1.65;flex:1;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:1.2rem}
     .lab-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:1rem;border-top:1px solid var(--border)}
     .lab-card-date{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--text-dim)}
     .lab-card-actions{display:flex;gap:.5rem}
-
-    /* ══════════ CONTACT ══════════ */
+    /* CONTACT */
     .contact-wrap{max-width:1100px;margin:0 auto;padding:6rem 4rem;display:grid;grid-template-columns:1fr 1.2fr;gap:6rem;align-items:start}
     .contact-info{position:sticky;top:110px}
     .contact-sub{color:var(--text-dim);font-size:.98rem;margin-bottom:3rem;line-height:1.75}
@@ -291,32 +257,26 @@
     .form-submit{width:100%;padding:1rem;background:var(--gold);color:var(--bg);border:none;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:opacity .2s,transform .2s;margin-top:.5rem}
     .form-submit:hover{opacity:.85;transform:translateY(-2px)}
     .form-success{display:none;text-align:center;padding:2.5rem;border:1px solid var(--teal-dim);border-radius:6px;background:rgba(78,201,176,.06);color:var(--teal);font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-style:italic}
-
-    /* ══════════ MODALS ══════════ */
+    /* MODALS */
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:none;place-items:center;padding:2rem;backdrop-filter:blur(8px)}
     .modal-overlay.open{display:grid}
     .modal{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:2.5rem;width:100%;max-width:660px;max-height:90vh;overflow-y:auto;position:relative}
     .modal-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;margin-bottom:1.5rem;color:var(--text)}
-    .modal-close{position:absolute;top:1.2rem;right:1.5rem;background:none;border:none;color:var(--text-dim);font-size:1.1rem;cursor:pointer;transition:color .2s;font-family:'JetBrains Mono',monospace;padding:.3rem}
+    .modal-close{position:absolute;top:1.2rem;right:1.5rem;background:none;border:none;color:var(--text-dim);font-size:1.1rem;cursor:pointer;transition:color .2s;padding:.3rem}
     .modal-close:hover{color:var(--gold)}
     .mf{margin-bottom:1.2rem}
     .mf label{display:block;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.5rem}
     .mf input,.mf textarea,.mf select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:.85rem 1rem;color:var(--text);font-family:'Lato',sans-serif;font-size:.9rem;outline:none;transition:border-color .25s;appearance:none;resize:vertical}
     .mf input:focus,.mf textarea:focus{border-color:var(--gold)}
     .mf textarea{min-height:200px;line-height:1.7}
+    .mf select option{background:var(--bg2)}
     .mf .hint{font-size:.76rem;color:var(--text-dim);margin-top:.4rem;line-height:1.5}
     .modal-actions{display:flex;gap:1rem;margin-top:1.5rem}
-    /* color swatches for book covers */
     .color-swatches{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.5rem}
     .swatch{width:32px;height:32px;border-radius:4px;cursor:pointer;border:2px solid transparent;transition:all .2s}
     .swatch.selected,.swatch:hover{border-color:var(--gold);transform:scale(1.1)}
-
-    /* Login modal specifics */
-    #loginModal .modal{max-width:420px}
-    .login-error{display:none;color:var(--danger);font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;margin-top:.5rem}
+    .login-error{display:none;color:var(--danger);font-family:'JetBrains Mono',monospace;font-size:.68rem;margin-top:.5rem}
     .login-error.visible{display:block}
-
-    /* ══════════ ANIMATIONS ══════════ */
     @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
     @keyframes scrollPulse{0%,100%{opacity:.5}50%{opacity:1}}
     .ha .hero-eyebrow{opacity:0;animation:fadeUp .8s .2s forwards}
@@ -325,69 +285,52 @@
     .ha .hero-pills{opacity:0;animation:fadeUp .9s .8s forwards}
     .ha .hero-cta{opacity:0;animation:fadeUp .9s 1s forwards}
     .ha .scroll-hint{opacity:0;animation:fadeUp .9s 1.4s forwards}
-
-    /* ══════════ RESPONSIVE ══════════ */
-    @media(max-width:960px){
-      .feat-card,.about-grid,.skills-cols,.contact-wrap,.preview-grid,.vision-grid{grid-template-columns:1fr}
-      .about-grid{gap:3rem}.contact-info{position:static}.form-row{grid-template-columns:1fr}
-      .book-detail-layout{grid-template-columns:1fr}.ch-sidebar{position:static}
-    }
-    @media(max-width:768px){
-      nav{padding:1.2rem 1.5rem}.nav-center{gap:.8rem}.nav-center a{font-size:.58rem;letter-spacing:.08em}
-      .page-hero,.about-section,.skills-inner,.feat-section,.proj-section,.preview-section,.contact-wrap,.vision-section,.lib-outer,.lab-outer,.book-detail-header,.book-detail-layout,.reader-header,.reader-body,.reader-actions{padding-left:1.5rem;padding-right:1.5rem}
-      #hero{padding-left:1.5rem;padding-right:1.5rem}
-      footer{flex-direction:column;gap:1rem;text-align:center;padding:2rem 1.5rem}
-    }
+    @media(max-width:960px){.feat-card,.about-grid,.skills-cols,.contact-wrap,.preview-grid,.vision-grid{grid-template-columns:1fr}.about-grid{gap:3rem}.contact-info{position:static}.form-row{grid-template-columns:1fr}.book-detail-layout{grid-template-columns:1fr}.ch-sidebar{position:static}}
+    @media(max-width:768px){nav{padding:1.2rem 1.5rem}.nav-center{gap:.8rem}.nav-center a{font-size:.58rem;letter-spacing:.08em}.page-hero,.about-section,.skills-inner,.feat-section,.proj-section,.preview-section,.contact-wrap,.vision-section,.lib-outer,.lab-outer,.book-detail-header,.book-detail-layout,.reader-header,.reader-body,.reader-actions{padding-left:1.5rem;padding-right:1.5rem}#hero{padding-left:1.5rem;padding-right:1.5rem}footer{flex-direction:column;gap:1rem;text-align:center;padding:2rem 1.5rem}}
   </style>
 </head>
 <body>
-
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
+<div class="toast" id="toast"></div>
 
-<!-- ══ LOGIN MODAL ══ -->
+<!-- LOGIN MODAL -->
 <div class="modal-overlay" id="loginModal">
-  <div class="modal">
+  <div class="modal" style="max-width:420px">
     <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
-    <h2 class="modal-title" id="loginModalTitle">Admin Login</h2>
-    <p style="font-size:.9rem;color:var(--text-dim);margin-bottom:1.5rem">Enter your password to unlock editing.</p>
+    <h2 class="modal-title">Admin Login</h2>
+    <p style="font-size:.9rem;color:var(--text-dim);margin-bottom:1.5rem">Sign in to unlock editing.</p>
+    <div class="mf"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"/></div>
     <div class="mf"><label>Password</label><input type="password" id="loginPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
-    <p class="login-error" id="loginError">Incorrect password. Try again.</p>
-    <div class="modal-actions"><button class="btn-primary" onclick="doLogin()">Unlock</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
+    <p class="login-error" id="loginError">Incorrect credentials. Try again.</p>
+    <div class="modal-actions"><button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
   </div>
 </div>
-
-<!-- ══ BOOK MODAL ══ -->
+<!-- BOOK MODAL -->
 <div class="modal-overlay" id="bookModal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('bookModal')">✕</button>
     <h2 class="modal-title" id="bookModalTitle">New Book</h2>
     <input type="hidden" id="editBookId"/>
     <div class="mf"><label>Title</label><input type="text" id="bookTitle" placeholder="The title of your book"/></div>
-    <div class="mf"><label>Description</label><textarea id="bookDesc" style="min-height:80px" placeholder="A short description — shown on the library card"></textarea></div>
-    <div class="mf">
-      <label>Cover Color</label>
-      <div class="color-swatches" id="colorSwatches"></div>
-      <input type="hidden" id="bookColor"/>
-    </div>
-    <div class="modal-actions"><button class="btn-primary" onclick="saveBook()">Save Book</button><button class="btn-ghost" onclick="closeModal('bookModal')">Cancel</button></div>
+    <div class="mf"><label>Description</label><textarea id="bookDesc" style="min-height:80px" placeholder="A short description shown on the library card"></textarea></div>
+    <div class="mf"><label>Cover Color</label><div class="color-swatches" id="colorSwatches"></div><input type="hidden" id="bookColor"/></div>
+    <div class="modal-actions"><button class="btn-primary" id="bookSaveBtn" onclick="saveBook()">Save Book</button><button class="btn-ghost" onclick="closeModal('bookModal')">Cancel</button></div>
   </div>
 </div>
-
-<!-- ══ CHAPTER MODAL ══ -->
+<!-- CHAPTER MODAL -->
 <div class="modal-overlay" id="chModal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('chModal')">✕</button>
     <h2 class="modal-title" id="chModalTitle">Add Chapter</h2>
     <input type="hidden" id="editChId"/><input type="hidden" id="chBookId"/>
-    <div class="mf"><label>Chapter Label</label><input type="text" id="chNum" placeholder="e.g. Chapter 1, Prologue, Part II"/></div>
+    <div class="mf"><label>Chapter Label</label><input type="text" id="chNum" placeholder="e.g. Chapter 1, Prologue"/></div>
     <div class="mf"><label>Chapter Title</label><input type="text" id="chTitle" placeholder="The title of this chapter"/></div>
-    <div class="mf"><label>Content</label><textarea id="chContent" placeholder="Write or paste your chapter here…"></textarea><p class="hint">Blank line = new paragraph. Start a line with ### for a subheading.</p></div>
-    <div class="modal-actions"><button class="btn-primary" onclick="saveChapter()">Save</button><button class="btn-ghost" onclick="closeModal('chModal')">Cancel</button></div>
+    <div class="mf"><label>Content</label><textarea id="chContent" placeholder="Write or paste your chapter here…"></textarea><p class="hint">Blank line = new paragraph · ### for subheadings</p></div>
+    <div class="modal-actions"><button class="btn-primary" id="chSaveBtn" onclick="saveChapter()">Save</button><button class="btn-ghost" onclick="closeModal('chModal')">Cancel</button></div>
   </div>
 </div>
-
-<!-- ══ ARTICLE MODAL ══ -->
+<!-- ARTICLE MODAL -->
 <div class="modal-overlay" id="articleModal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('articleModal')">✕</button>
@@ -395,27 +338,23 @@
     <input type="hidden" id="editArticleId"/>
     <div class="mf"><label>Title</label><input type="text" id="articleTitle" placeholder="Article title"/></div>
     <div class="mf"><label>Tag / Category</label><input type="text" id="articleTag" placeholder="e.g. Psychology, Mythology, Essay"/></div>
-    <div class="mf"><label>Content</label><textarea id="articleContent" placeholder="Write your article here…"></textarea><p class="hint">Blank line = new paragraph. ### for subheadings.</p></div>
-    <div class="modal-actions"><button class="btn-primary" onclick="saveArticle()">Save</button><button class="btn-ghost" onclick="closeModal('articleModal')">Cancel</button></div>
+    <div class="mf"><label>Content</label><textarea id="articleContent" placeholder="Write your article here…"></textarea><p class="hint">Blank line = new paragraph · ### for subheadings</p></div>
+    <div class="modal-actions"><button class="btn-primary" id="articleSaveBtn" onclick="saveArticle()">Save</button><button class="btn-ghost" onclick="closeModal('articleModal')">Cancel</button></div>
   </div>
 </div>
-
-<!-- ══ LAB MODAL ══ -->
+<!-- LAB MODAL -->
 <div class="modal-overlay" id="labModal">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('labModal')">✕</button>
     <h2 class="modal-title" id="labModalTitle">New Lab Entry</h2>
     <input type="hidden" id="editLabId"/>
-    <div class="mf"><label>Type</label>
-      <select id="labType"><option>Design Concept</option><option>Project Idea</option><option>Research Note</option><option>Experiment</option><option>Other</option></select>
-    </div>
+    <div class="mf"><label>Type</label><select id="labType"><option>Design Concept</option><option>Project Idea</option><option>Research Note</option><option>Experiment</option><option>Other</option></select></div>
     <div class="mf"><label>Title</label><input type="text" id="labTitle" placeholder="Give it a name"/></div>
-    <div class="mf"><label>Description / Notes</label><textarea id="labDesc" placeholder="What are you thinking? Doesn't need to be finished."></textarea></div>
-    <div class="modal-actions"><button class="btn-primary" onclick="saveLabEntry()">Save</button><button class="btn-ghost" onclick="closeModal('labModal')">Cancel</button></div>
+    <div class="mf"><label>Description / Notes</label><textarea id="labDesc" placeholder="What are you thinking?"></textarea></div>
+    <div class="modal-actions"><button class="btn-primary" id="labSaveBtn" onclick="saveLabEntry()">Save</button><button class="btn-ghost" onclick="closeModal('labModal')">Cancel</button></div>
   </div>
 </div>
 
-<!-- ══ NAV ══ -->
 <nav>
   <span class="nav-logo" onclick="showPage('home')">CT.</span>
   <ul class="nav-center">
@@ -432,7 +371,7 @@
   </div>
 </nav>
 
-<!-- ════════════════ HOME ════════════════ -->
+<!-- HOME -->
 <div class="page active" id="page-home">
   <section id="hero" class="ha">
     <div class="hero-bg"></div><div class="hero-pattern"></div>
@@ -455,33 +394,31 @@
     </div>
     <div class="preview-grid reveal">
       <div class="pc" onclick="showPage('lab')"><span class="pc-icon">◉</span><h3 class="pc-title">The Lab</h3><p class="pc-desc">Ideas, design concepts, and projects in progress. A place to think out loud.</p><span class="pc-link">Explore →</span></div>
-      <div class="pc" onclick="showPage('contact')"><span class="pc-icon">◎</span><h3 class="pc-title">Get In Touch</h3><p class="pc-desc">Open to developer roles, collaborations, and anything interesting in between.</p><span class="pc-link">Say Hello →</span></div>
+      <div class="pc" onclick="showPage('contact')"><span class="pc-icon">◎</span><h3 class="pc-title">Get In Touch</h3><p class="pc-desc">Open to developer roles, collaborations, and anything interesting.</p><span class="pc-link">Say Hello →</span></div>
       <div class="pc" onclick="window.open('https://github.com/CalebJamezzz','_blank')"><span class="pc-icon">⌥</span><h3 class="pc-title">GitHub</h3><p class="pc-desc">See what I'm building in the open.</p><span class="pc-link">View Profile →</span></div>
     </div>
   </div>
   <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
 </div>
 
-<!-- ════════════════ ABOUT ════════════════ -->
+<!-- ABOUT -->
 <div class="page" id="page-about">
   <div class="page-hero reveal"><p class="section-label">01 — About Me</p><h1 class="section-title">Code, Design,<br>and Deep <em>Psychology</em></h1><p class="page-hero-sub">Two passions, one direction — building software that understands people, and understanding people well enough to build better software.</p></div>
-  <div class="about-section">
-    <div class="about-grid reveal">
-      <div class="about-text">
-        <p>I started college studying <strong>Psychology</strong> — not because it seemed practical, but because I genuinely love understanding how the brain works and why people do the things they do. I earned my Associate of Science, then followed a second pull into <strong>Computer Science</strong>. The two never felt like separate paths. They've always been the same one.</p>
-        <p>My passion for coding is real — I build in <strong>Python, Java, C++, and Kotlin</strong>, I design in <strong>Figma</strong> before I write a single line, and I care about every layer of what I make. But psychology isn't something I left behind. It's the lens I bring to every project.</p>
-        <div class="pull-quote">"I want to build things that make people's lives genuinely easier — and understand them well enough to actually do it."</div>
-        <p>I'm planning to go back for my <strong>Master's in Psychology</strong> — not to leave tech, but to go deeper into the human side of it. Cognition, behavior, mental health. I want to understand these things well enough to build tools that truly help people.</p>
-        <p>My college capstone was a <strong>full-stack management app</strong> designed from real experience as a manager at Ziggi's Coffee — real pain points, real solution. I also bring <strong>QA Engineering</strong> experience, which means I think about reliability and edge cases in a way most developers don't.</p>
-      </div>
-      <div class="stats-grid">
-        <div class="stat t"><div class="stat-num">B.S.</div><div class="stat-lbl">Computer Science</div></div>
-        <div class="stat g"><div class="stat-num">A.S.</div><div class="stat-lbl">Psychology</div></div>
-        <div class="stat g"><div class="stat-num">UI</div><div class="stat-lbl">Figma Designer</div></div>
-        <div class="stat t"><div class="stat-num">4</div><div class="stat-lbl">Languages & Counting</div></div>
-      </div>
+  <div class="about-section"><div class="about-grid reveal">
+    <div class="about-text">
+      <p>I started college studying <strong>Psychology</strong> — not because it seemed practical, but because I genuinely love understanding how the brain works and why people do the things they do. I earned my Associate of Science, then followed a second pull into <strong>Computer Science</strong>. The two never felt like separate paths.</p>
+      <p>My passion for coding is real — I build in <strong>Python, Java, C++, and Kotlin</strong>, I design in <strong>Figma</strong> before I write a single line, and I care about every layer of what I make. But psychology isn't something I left behind. It's the lens I bring to every project.</p>
+      <div class="pull-quote">"I want to build things that make people's lives genuinely easier — and understand them well enough to actually do it."</div>
+      <p>I'm planning to go back for my <strong>Master's in Psychology</strong> — not to leave tech, but to go deeper into the human side of it. Cognition, behavior, mental health. I want to understand these things well enough to build tools that truly help people.</p>
+      <p>My college capstone was a <strong>full-stack management app</strong> designed from real experience as a manager at Ziggi's Coffee. I also bring <strong>QA Engineering</strong> experience, which means I think about reliability and edge cases in a way most developers don't.</p>
     </div>
-  </div>
+    <div class="stats-grid">
+      <div class="stat t"><div class="stat-num">B.S.</div><div class="stat-lbl">Computer Science</div></div>
+      <div class="stat g"><div class="stat-num">A.S.</div><div class="stat-lbl">Psychology</div></div>
+      <div class="stat g"><div class="stat-num">UI</div><div class="stat-lbl">Figma Designer</div></div>
+      <div class="stat t"><div class="stat-num">4</div><div class="stat-lbl">Languages & Counting</div></div>
+    </div>
+  </div></div>
   <div class="vision-section">
     <div class="reveal"><p class="section-label">Where I'm Headed</p><h2 class="section-title">The Bigger <em>Picture</em></h2></div>
     <div class="vision-grid reveal">
@@ -491,46 +428,43 @@
     </div>
     <div class="vision-note reveal">In my spare time I'm writing a book weaving together <strong>mythology and psychology</strong> — using ancient stories as a lens for understanding modern human behavior. Chapters live in the <span style="color:var(--gold);cursor:pointer" onclick="showPage('library')">Library →</span></div>
   </div>
-  <div class="skills-wrap">
-    <div class="skills-inner">
-      <div class="reveal"><p class="section-label">02 — Skills</p><h2 class="section-title">Built to <em>Build</em></h2></div>
-      <div class="skills-cols reveal">
-        <div>
-          <p class="scol-label tech">// Languages & Development</p>
-          <div class="skill-row"><span class="skill-name">Python</span><div class="sbw"><div class="sb tech" data-w="90"></div></div></div>
-          <div class="skill-row"><span class="skill-name">Java</span><div class="sbw"><div class="sb tech" data-w="82"></div></div></div>
-          <div class="skill-row"><span class="skill-name">C++</span><div class="sbw"><div class="sb tech" data-w="78"></div></div></div>
-          <div class="skill-row"><span class="skill-name">Kotlin</span><div class="sbw"><div class="sb tech" data-w="75"></div></div></div>
-          <div class="skill-row"><span class="skill-name">Full-Stack Development</span><div class="sbw"><div class="sb tech" data-w="83"></div></div></div>
-          <div class="skill-row"><span class="skill-name">QA & Test Engineering</span><div class="sbw"><div class="sb tech" data-w="88"></div></div></div>
-          <div class="skill-tags"><span class="stag tech">Python</span><span class="stag tech">Java</span><span class="stag tech">C++</span><span class="stag tech">Kotlin</span><span class="stag tech">SQL</span><span class="stag tech">Git</span><span class="stag tech">REST APIs</span></div>
-        </div>
-        <div>
-          <p class="scol-label design">// Design & Human Thinking</p>
-          <div class="skill-row"><span class="skill-name">Figma / UI Design</span><div class="sbw"><div class="sb design" data-w="85"></div></div></div>
-          <div class="skill-row"><span class="skill-name">UX Thinking</span><div class="sbw"><div class="sb design" data-w="80"></div></div></div>
-          <div class="skill-row"><span class="skill-name">Prototyping</span><div class="sbw"><div class="sb design" data-w="78"></div></div></div>
-          <div class="skill-row"><span class="skill-name">Psychology & Behavior</span><div class="sbw"><div class="sb design" data-w="75"></div></div></div>
-          <div class="skill-row"><span class="skill-name">Problem Decomposition</span><div class="sbw"><div class="sb design" data-w="92"></div></div></div>
-          <div class="skill-row"><span class="skill-name">Technical Communication</span><div class="sbw"><div class="sb design" data-w="85"></div></div></div>
-          <div class="skill-tags"><span class="stag design">Figma</span><span class="stag design">Prototyping</span><span class="stag design">User Research</span><span class="stag design">Systems Thinking</span></div>
-        </div>
+  <div class="skills-wrap"><div class="skills-inner">
+    <div class="reveal"><p class="section-label">02 — Skills</p><h2 class="section-title">Built to <em>Build</em></h2></div>
+    <div class="skills-cols reveal">
+      <div>
+        <p class="scol-lbl tech">// Languages & Development</p>
+        <div class="skill-row"><span class="skill-name">Python</span><div class="sbw"><div class="sb tech" data-w="90"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Java</span><div class="sbw"><div class="sb tech" data-w="82"></div></div></div>
+        <div class="skill-row"><span class="skill-name">C++</span><div class="sbw"><div class="sb tech" data-w="78"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Kotlin</span><div class="sbw"><div class="sb tech" data-w="75"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Full-Stack Development</span><div class="sbw"><div class="sb tech" data-w="83"></div></div></div>
+        <div class="skill-row"><span class="skill-name">QA & Test Engineering</span><div class="sbw"><div class="sb tech" data-w="88"></div></div></div>
+        <div class="skill-tags"><span class="stag tech">Python</span><span class="stag tech">Java</span><span class="stag tech">C++</span><span class="stag tech">Kotlin</span><span class="stag tech">SQL</span><span class="stag tech">Git</span><span class="stag tech">REST APIs</span></div>
+      </div>
+      <div>
+        <p class="scol-lbl design">// Design & Human Thinking</p>
+        <div class="skill-row"><span class="skill-name">Figma / UI Design</span><div class="sbw"><div class="sb design" data-w="85"></div></div></div>
+        <div class="skill-row"><span class="skill-name">UX Thinking</span><div class="sbw"><div class="sb design" data-w="80"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Prototyping</span><div class="sbw"><div class="sb design" data-w="78"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Psychology & Behavior</span><div class="sbw"><div class="sb design" data-w="75"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Problem Decomposition</span><div class="sbw"><div class="sb design" data-w="92"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Technical Communication</span><div class="sbw"><div class="sb design" data-w="85"></div></div></div>
+        <div class="skill-tags"><span class="stag design">Figma</span><span class="stag design">Prototyping</span><span class="stag design">User Research</span><span class="stag design">Systems Thinking</span></div>
       </div>
     </div>
-  </div>
+  </div></div>
   <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
 </div>
 
-<!-- ════════════════ PROJECTS ════════════════ -->
+<!-- PROJECTS -->
 <div class="page" id="page-projects">
-  <div class="page-hero reveal"><p class="section-label">03 — Projects</p><h1 class="section-title">Things I've<br><em>Built</em></h1><p class="page-hero-sub">Real problems, real solutions — from a full-stack coffee shop management app to QA tooling.</p></div>
-  <div class="feat-section reveal">
-    <p class="section-label">Capstone Project</p>
+  <div class="page-hero reveal"><p class="section-label">03 — Projects</p><h1 class="section-title">Things I've<br><em>Built</em></h1><p class="page-hero-sub">Real problems, real solutions.</p></div>
+  <div class="feat-section reveal"><p class="section-label">Capstone Project</p>
     <div class="feat-card">
       <div>
         <p class="feat-badge">Featured · Full-Stack App</p>
         <h2 class="feat-title">Ziggi's Coffee<br><em>Manager App</em></h2>
-        <p class="feat-desc">My college capstone — a full-stack management app designed from real operational pain points I experienced as a manager at Ziggi's Coffee. A unified platform for team messaging, shift scheduling, and smart inventory ordering.</p>
+        <p class="feat-desc">My college capstone — a full-stack management app designed from real pain points I experienced as a manager at Ziggi's Coffee. A unified platform for team messaging, shift scheduling, and smart inventory ordering.</p>
         <div class="feat-tags"><span class="ftag tech">Full-Stack</span><span class="ftag tech">Scheduling</span><span class="ftag tech">Messaging</span><span class="ftag gold">Figma Design</span><span class="ftag gold">Capstone</span></div>
         <a href="https://github.com/CalebJamezzz" target="_blank" class="btn-ghost" style="font-size:.68rem;padding:.6rem 1.5rem">View on GitHub ↗</a>
       </div>
@@ -555,95 +489,57 @@
   <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
 </div>
 
-<!-- ════════════════ LIBRARY ════════════════ -->
+<!-- LIBRARY -->
 <div class="page" id="page-library">
-  <div class="page-hero reveal">
-    <p class="section-label">Library</p>
-    <h1 class="section-title">Books, Articles<br>&amp; <em>Ideas Written Down</em></h1>
-    <p class="page-hero-sub">A growing collection of books in progress, standalone articles, and thoughts worth preserving.</p>
-  </div>
-
-  <!-- Main library browse view -->
+  <div class="page-hero reveal"><p class="section-label">Library</p><h1 class="section-title">Books, Articles<br>&amp; <em>Ideas Written Down</em></h1><p class="page-hero-sub">A growing collection of books in progress, standalone articles, and thoughts worth preserving.</p></div>
   <div id="libBrowse">
     <div class="lib-outer">
       <div class="lib-tabs">
-        <div class="lib-tab active" onclick="switchLibTab('books',this)">Books</div>
-        <div class="lib-tab" onclick="switchLibTab('articles',this)">Articles</div>
+        <div class="lib-tab active" onclick="switchLibTab('Books',this)">Books</div>
+        <div class="lib-tab" onclick="switchLibTab('Articles',this)">Articles</div>
       </div>
-
-      <!-- Books panel -->
       <div class="lib-panel active" id="libBooks">
-        <div class="lib-section-header">
-          <h2>Books in Progress</h2>
-          <button class="btn-primary admin-only" onclick="openBookModal()">+ New Book</button>
-        </div>
+        <div class="lib-section-header"><h2>Books in Progress</h2><button class="btn-primary admin-only" onclick="openBookModal()">+ New Book</button></div>
         <div class="books-grid" id="booksGrid"></div>
-        <div class="empty-state" id="booksEmpty"><span class="empty-icon">📖</span><h3>No books yet</h3><p>Add your first book to get started.</p><button class="btn-primary admin-only" onclick="openBookModal()">+ New Book</button></div>
+        <div class="empty-state" id="booksEmpty" style="display:none"><span class="empty-icon">📖</span><h3>No books yet</h3><p>Add your first book to get started.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openBookModal()">+ New Book</button></div>
       </div>
-
-      <!-- Articles panel -->
       <div class="lib-panel" id="libArticles">
-        <div class="lib-section-header">
-          <h2>Articles &amp; Essays</h2>
-          <button class="btn-primary admin-only" onclick="openArticleModal()">+ New Article</button>
-        </div>
+        <div class="lib-section-header"><h2>Articles &amp; Essays</h2><button class="btn-primary admin-only" onclick="openArticleModal()">+ New Article</button></div>
         <div class="articles-grid" id="articlesGrid"></div>
-        <div class="empty-state" id="articlesEmpty"><span class="empty-icon">✍️</span><h3>No articles yet</h3><p>Write your first article or essay.</p><button class="btn-primary admin-only" onclick="openArticleModal()">+ New Article</button></div>
+        <div class="empty-state" id="articlesEmpty" style="display:none"><span class="empty-icon">✍️</span><h3>No articles yet</h3><p>Write your first article or essay.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openArticleModal()">+ New Article</button></div>
       </div>
     </div>
   </div>
-
-  <!-- Book detail view -->
   <div id="libBookDetail" style="display:none">
     <div class="book-detail-header">
-      <div>
-        <div class="book-detail-back" onclick="closeBookDetail()">← Back to Library</div>
-        <h1 class="book-detail-title" id="bookDetailTitle"></h1>
-        <p class="book-detail-desc" id="bookDetailDesc"></p>
-      </div>
+      <div><button class="back-btn" onclick="closeBookDetail()">← Back to Library</button><h1 class="book-detail-title" id="bookDetailTitle"></h1><p class="book-detail-desc" id="bookDetailDesc"></p></div>
       <div style="display:flex;gap:.8rem;flex-shrink:0;margin-top:3.5rem">
         <button class="btn-sm admin-only" onclick="openChModal(null,currentBookId)">+ Add Chapter</button>
-        <button class="btn-sm admin-only" onclick="editCurrentBook()">Edit Book</button>
+        <button class="btn-sm admin-only" onclick="openBookModal(currentBookId)">Edit Book</button>
         <button class="btn-sm danger admin-only" onclick="deleteCurrentBook()">Delete Book</button>
       </div>
     </div>
     <div class="book-detail-layout">
-      <div class="ch-sidebar">
-        <p class="ch-sidebar-title">Chapters</p>
-        <ul class="ch-list" id="chList"></ul>
-        <div class="empty-state admin-only block" id="chListEmpty" style="padding:2rem 0;text-align:left"><p style="font-size:.85rem">No chapters yet.</p></div>
-      </div>
-      <div id="chMain">
-        <div class="empty-state" id="chEmpty"><span class="empty-icon">✦</span><h3>No chapters yet</h3><p>Add your first chapter to this book.</p><button class="btn-primary admin-only" onclick="openChModal(null,currentBookId)">+ Add Chapter</button></div>
-      </div>
+      <div class="ch-sidebar"><p class="ch-sidebar-title">Chapters</p><ul class="ch-list" id="chList"></ul><button class="btn-sm admin-only" style="width:100%;margin-top:.5rem" onclick="openChModal(null,currentBookId)">+ Add Chapter</button></div>
+      <div id="chMain"><div class="empty-state" id="chEmpty"><span class="empty-icon">✦</span><h3>No chapters yet</h3><p>Add your first chapter.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openChModal(null,currentBookId)">+ Add Chapter</button></div></div>
     </div>
   </div>
-
-  <!-- Article reader -->
   <div id="libArticleReader" style="display:none">
     <div class="reader-header">
-      <div class="reader-back" onclick="closeArticleReader()">← Back to Library</div>
+      <button class="back-btn" onclick="closeArticleReader()">← Back to Library</button>
       <p id="readerTag" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem"></p>
       <h1 class="reader-title" id="readerTitle"></h1>
       <p class="reader-meta" id="readerMeta"></p>
     </div>
     <div class="reader-body" id="readerBody"></div>
-    <div class="reader-actions">
-      <button class="btn-sm admin-only" id="readerEditBtn">Edit Article</button>
-      <button class="btn-sm danger admin-only" id="readerDeleteBtn">Delete Article</button>
-    </div>
+    <div class="reader-actions"><button class="btn-sm admin-only" id="readerEditBtn">Edit</button><button class="btn-sm danger admin-only" id="readerDeleteBtn">Delete</button></div>
   </div>
-
   <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
 </div>
 
-<!-- ════════════════ LAB ════════════════ -->
+<!-- LAB -->
 <div class="page" id="page-lab">
-  <div class="page-hero reveal">
-    <p class="section-label">The Lab</p>
-    <h1 class="section-title">Ideas in<br><em>Progress</em></h1>
-    <p class="page-hero-sub">Design concepts, project seeds, research notes — a place to capture what's brewing before it becomes something bigger.</p>
-  </div>
+  <div class="page-hero reveal"><p class="section-label">The Lab</p><h1 class="section-title">Ideas in<br><em>Progress</em></h1><p class="page-hero-sub">Design concepts, project seeds, research notes — a place to capture what's brewing.</p></div>
   <div class="lab-outer">
     <div class="lab-toolbar reveal">
       <div class="lab-filters">
@@ -656,18 +552,17 @@
       <button class="btn-primary admin-only" onclick="openLabModal()">+ New Entry</button>
     </div>
     <div class="lab-grid" id="labGrid"></div>
-    <div class="empty-state" id="labEmpty"><span class="empty-icon">◉</span><h3>The lab is empty</h3><p>Add your first idea — no matter how unformed.</p><button class="btn-primary admin-only" onclick="openLabModal()">+ New Entry</button></div>
+    <div class="empty-state" id="labEmpty" style="display:none"><span class="empty-icon">◉</span><h3>The lab is empty</h3><p>Add your first idea — no matter how unformed.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openLabModal()">+ New Entry</button></div>
   </div>
   <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
 </div>
 
-<!-- ════════════════ CONTACT ════════════════ -->
+<!-- CONTACT -->
 <div class="page" id="page-contact">
   <div class="contact-wrap">
     <div class="contact-info reveal">
-      <p class="section-label">Contact</p>
-      <h1 class="section-title">Let's <em>Connect</em></h1>
-      <p class="contact-sub">Open to developer roles, design opportunities, and anything interesting in between. If you're building something worth building — let's talk.</p>
+      <p class="section-label">Contact</p><h1 class="section-title">Let's <em>Connect</em></h1>
+      <p class="contact-sub">Open to developer roles, design opportunities, and anything interesting in between.</p>
       <div class="contact-links">
         <a class="cl" href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank"><div class="cl-icon li">in</div><div class="cl-text"><p class="cl-lbl">LinkedIn</p><p class="cl-val">caleb-thede-8a6a8221b</p></div><span>↗</span></a>
         <a class="cl" href="https://github.com/CalebJamezzz" target="_blank"><div class="cl-icon gh">⌥</div><div class="cl-text"><p class="cl-lbl">GitHub</p><p class="cl-val">CalebJamezzz</p></div><span>↗</span></a>
@@ -687,431 +582,251 @@
 </div>
 
 <script>
-// ══════════════════════════════════════
-//  ADMIN AUTH
-//  Password hash: SHA-256 of your password
-//  Default password: "caleb2025" — CHANGE THIS before hosting!
-//  To change: run  crypto.subtle.digest('SHA-256', ...) or use sha256 online tool
-// ══════════════════════════════════════
-const PASS_HASH = "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2"; // placeholder — see below
-let adminMode = false;
+const{createClient}=supabase;
+const sb=createClient('https://lbviiggrxzhyxrpivbbi.supabase.co','sb_publishable_eQRvx-J1Cp4nlq6Q6TOjIA__QYJmJq6');
 
-async function hashStr(str){
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
-}
+function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} visible`;setTimeout(()=>t.classList.remove('visible'),3000)}
 
-function toggleAdmin(){
-  if(adminMode){logoutAdmin()}else{openModal('loginModal');setTimeout(()=>document.getElementById('loginPw').focus(),100)}
-}
+(function(){const c=document.getElementById('cursor'),r=document.getElementById('cursorRing');let mx=0,my=0,rx=0,ry=0;document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});(function tick(){rx+=(mx-rx)*.18;ry+=(my-ry)*.18;c.style.transform=`translate(${mx-5}px,${my-5}px)`;r.style.transform=`translate(${rx-18}px,${ry-18}px)`;requestAnimationFrame(tick)})()})();
+
+let adminMode=false;
+sb.auth.onAuthStateChange((event,session)=>{if(session)grantAdmin();else revokeAdmin()});
+
+function toggleAdmin(){if(adminMode)sb.auth.signOut();else{openModal('loginModal');setTimeout(()=>document.getElementById('loginEmail').focus(),100)}}
 
 async function doLogin(){
-  const pw = document.getElementById('loginPw').value;
-  const hash = await hashStr(pw);
-  // We'll use a simple stored hash approach
-  const stored = localStorage.getItem('ct_admin_hash');
-  if(!stored){
-    // First-time setup: store whatever they type as the admin password
-    localStorage.setItem('ct_admin_hash', hash);
-    grantAdmin();
-    closeModal('loginModal');
-    document.getElementById('loginPw').value='';
-  } else if(hash === stored){
-    grantAdmin();
-    closeModal('loginModal');
-    document.getElementById('loginPw').value='';
-    document.getElementById('loginError').classList.remove('visible');
-  } else {
-    document.getElementById('loginError').classList.add('visible');
-  }
+  const email=document.getElementById('loginEmail').value.trim(),pw=document.getElementById('loginPw').value,btn=document.getElementById('loginBtn');
+  btn.innerHTML='<span class="loading-spinner"></span> Signing in…';btn.disabled=true;
+  const{error}=await sb.auth.signInWithPassword({email,password:pw});
+  btn.innerHTML='Sign In';btn.disabled=false;
+  if(error){document.getElementById('loginError').classList.add('visible')}
+  else{closeModal('loginModal');document.getElementById('loginPw').value='';document.getElementById('loginError').classList.remove('visible')}
 }
 
-function grantAdmin(){
-  adminMode=true;
-  document.body.classList.add('is-admin');
-  document.getElementById('adminBadge').classList.add('visible');
-  document.getElementById('lockBtn').textContent='🔓';
-  document.getElementById('lockBtn').title='Logout';
-}
+function grantAdmin(){adminMode=true;document.body.classList.add('is-admin');document.getElementById('adminBadge').classList.add('visible');document.getElementById('lockBtn').textContent='🔓';document.getElementById('lockBtn').title='Sign out';toast('Admin mode on')}
+function revokeAdmin(){adminMode=false;document.body.classList.remove('is-admin');document.getElementById('adminBadge').classList.remove('visible');document.getElementById('lockBtn').textContent='🔒';document.getElementById('lockBtn').title='Admin login'}
 
-function logoutAdmin(){
-  adminMode=false;
-  document.body.classList.remove('is-admin');
-  document.getElementById('adminBadge').classList.remove('visible');
-  document.getElementById('lockBtn').textContent='🔒';
-  document.getElementById('lockBtn').title='Admin login';
-}
+function showPage(name){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.querySelectorAll('.nav-center a').forEach(a=>a.classList.remove('active'));document.getElementById('page-'+name).classList.add('active');document.getElementById('nav-'+name).classList.add('active');window.scrollTo({top:0,behavior:'smooth'});setTimeout(initReveal,60);if(name==='library')loadLibrary();if(name==='lab')loadLab()}
 
-// ══════════════════════════════════════
-//  CURSOR
-// ══════════════════════════════════════
-(function(){
-  const c=document.getElementById('cursor'),r=document.getElementById('cursorRing');
-  let mx=0,my=0,rx=0,ry=0;
-  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
-  (function tick(){rx+=(mx-rx)*.18;ry+=(my-ry)*.18;c.style.transform=`translate(${mx-5}px,${my-5}px)`;r.style.transform=`translate(${rx-18}px,${ry-18}px)`;requestAnimationFrame(tick)})();
-})();
-
-// ══════════════════════════════════════
-//  ROUTER
-// ══════════════════════════════════════
-function showPage(name){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.nav-center a').forEach(a=>a.classList.remove('active'));
-  document.getElementById('page-'+name).classList.add('active');
-  document.getElementById('nav-'+name).classList.add('active');
-  window.scrollTo({top:0,behavior:'smooth'});
-  setTimeout(initReveal,60);
-  if(name==='library'){renderLibrary();showLibBrowse()}
-  if(name==='lab'){renderLab()}
-}
-
-// ══════════════════════════════════════
-//  REVEAL
-// ══════════════════════════════════════
-function initReveal(){
-  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');e.target.querySelectorAll('.sb').forEach(b=>b.style.width=b.dataset.w+'%')}})},{threshold:.1});
-  document.querySelectorAll('.reveal:not(.visible)').forEach(el=>obs.observe(el));
-}
+function initReveal(){const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');e.target.querySelectorAll('.sb').forEach(b=>b.style.width=b.dataset.w+'%')}})},{threshold:.1});document.querySelectorAll('.reveal:not(.visible)').forEach(el=>obs.observe(el))}
 initReveal();
 
-// ══════════════════════════════════════
-//  MISC
-// ══════════════════════════════════════
 function filterP(cat,btn){document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.pcard').forEach(c=>{c.style.display=(cat==='all'||(c.dataset.cat||'').split(' ').includes(cat))?'':'none'})}
 function handleSubmit(){const n=document.getElementById('f-name').value.trim(),e=document.getElementById('f-email').value.trim(),m=document.getElementById('f-message').value.trim();if(!n||!e||!m){alert('Please fill in name, email, and message.');return}document.getElementById('the-form').style.display='none';document.getElementById('form-success').style.display='block'}
 function openModal(id){document.getElementById(id).classList.add('open')}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+function setLoading(btnId,loading,label){const b=document.getElementById(btnId);if(!b)return;b.innerHTML=loading?'<span class="loading-spinner"></span> Saving…':label;b.disabled=loading}
+function renderBody(content){return(content||'').split('\n\n').map(p=>p.trim().startsWith('###')?`<h3>${p.replace(/^###\s*/,'')}</h3>`:`<p>${p}</p>`).join('')}
+function fmtDate(iso){if(!iso)return'';return new Date(iso).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}
+function refreshAdmin(el){if(adminMode)el.querySelectorAll('.admin-only').forEach(x=>x.style.removeProperty('display'))}
 
-// ══════════════════════════════════════
-//  STORAGE HELPERS
-// ══════════════════════════════════════
-function get(k){try{return JSON.parse(localStorage.getItem(k)||'[]')}catch{return[]}}
-function set(k,v){localStorage.setItem(k,JSON.stringify(v))}
-function getObj(k){try{return JSON.parse(localStorage.getItem(k)||'{}')}catch{return{}}}
-function setObj(k,v){localStorage.setItem(k,JSON.stringify(v))}
-function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+const COVERS=['linear-gradient(135deg,#0D3B33,#1A6B5A)','linear-gradient(135deg,#3B2A0D,#7A5420)','linear-gradient(135deg,#0D1226,#1A2456)','linear-gradient(135deg,#2B0D0D,#6B1A1A)','linear-gradient(135deg,#0D2B10,#1A5E20)','linear-gradient(135deg,#1A1F2E,#2E3A50)','linear-gradient(135deg,#1E0D2B,#4A1A6B)','linear-gradient(135deg,#2B1A0D,#6B3A1A)'];
+let selectedCover=COVERS[0];
 
-// ══════════════════════════════════════
-//  BOOK COVERS
-// ══════════════════════════════════════
-const COVER_COLORS=[
-  {name:'Deep Teal',   gradient:'linear-gradient(135deg,#0D3B33,#1A6B5A)'},
-  {name:'Dark Gold',   gradient:'linear-gradient(135deg,#3B2A0D,#7A5420)'},
-  {name:'Midnight',    gradient:'linear-gradient(135deg,#0D1226,#1A2456)'},
-  {name:'Burgundy',    gradient:'linear-gradient(135deg,#2B0D0D,#6B1A1A)'},
-  {name:'Forest',      gradient:'linear-gradient(135deg,#0D2B10,#1A5E20)'},
-  {name:'Slate',       gradient:'linear-gradient(135deg,#1A1F2E,#2E3A50)'},
-  {name:'Amethyst',    gradient:'linear-gradient(135deg,#1E0D2B,#4A1A6B)'},
-  {name:'Ember',       gradient:'linear-gradient(135deg,#2B1A0D,#6B3A1A)'},
-];
-let selectedColor = COVER_COLORS[0].gradient;
+function buildSwatches(current){const wrap=document.getElementById('colorSwatches');wrap.innerHTML='';COVERS.forEach(c=>{const s=document.createElement('div');s.className='swatch'+(c===(current||selectedCover)?' selected':'');s.style.background=c;s.onclick=()=>{selectedCover=c;document.getElementById('bookColor').value=c;wrap.querySelectorAll('.swatch').forEach(x=>x.classList.remove('selected'));s.classList.add('selected')};wrap.appendChild(s)});document.getElementById('bookColor').value=current||selectedCover}
 
-function buildColorSwatches(current){
-  const wrap = document.getElementById('colorSwatches');
-  wrap.innerHTML='';
-  COVER_COLORS.forEach(c=>{
-    const s=document.createElement('div');
-    s.className='swatch'+(c.gradient===(current||selectedColor)?' selected':'');
-    s.style.background=c.gradient;
-    s.title=c.name;
-    s.onclick=()=>{selectedColor=c.gradient;document.getElementById('bookColor').value=c.gradient;wrap.querySelectorAll('.swatch').forEach(x=>x.classList.remove('selected'));s.classList.add('selected')};
-    wrap.appendChild(s);
+function showLibBrowse(){document.getElementById('libBrowse').style.display='block';document.getElementById('libBookDetail').style.display='none';document.getElementById('libArticleReader').style.display='none'}
+function showLibBookDetail(){document.getElementById('libBrowse').style.display='none';document.getElementById('libBookDetail').style.display='block';document.getElementById('libArticleReader').style.display='none'}
+function showLibArticleReader(){document.getElementById('libBrowse').style.display='none';document.getElementById('libBookDetail').style.display='none';document.getElementById('libArticleReader').style.display='block'}
+function switchLibTab(tab,el){document.querySelectorAll('.lib-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.lib-panel').forEach(p=>p.classList.remove('active'));el.classList.add('active');document.getElementById('lib'+tab).classList.add('active')}
+
+let currentBookId=null,activeChId=null,allChapters=[];
+
+async function loadLibrary(){showLibBrowse();await Promise.all([loadBooks(),loadArticles()])}
+
+async function loadBooks(){
+  const grid=document.getElementById('booksGrid'),empty=document.getElementById('booksEmpty');
+  grid.innerHTML='<div style="color:var(--text-dim);font-size:.9rem;padding:2rem 0"><span class="loading-spinner"></span> Loading…</div>';
+  const{data:books}=await sb.from('books').select('*').order('created_at',{ascending:false});
+  const{data:chapters}=await sb.from('chapters').select('id,book_id');
+  grid.innerHTML='';
+  if(!books||!books.length){empty.style.display='block';return}
+  empty.style.display='none';
+  books.forEach(b=>{
+    const count=(chapters||[]).filter(c=>c.book_id===b.id).length;
+    const card=document.createElement('div');card.className='book-card';
+    card.innerHTML=`<div class="book-cover" style="background:${b.color||COVERS[0]}"><span class="book-cover-title">${b.title}</span></div><div class="book-body"><h3 class="book-title">${b.title}</h3><p class="book-desc">${b.description||'<em style="opacity:.4">No description.</em>'}</p><div class="book-meta"><span class="book-ch-count">${count} chapter${count!==1?'s':''}</span><div style="display:flex;gap:.5rem"><button class="btn-sm admin-only" onclick="event.stopPropagation();openBookModal('${b.id}')">Edit</button></div></div></div>`;
+    card.onclick=()=>openBook(b.id,b.title,b.description);
+    grid.appendChild(card);refreshAdmin(card);
   });
-  document.getElementById('bookColor').value=current||selectedColor;
 }
-
-// ══════════════════════════════════════
-//  LIBRARY VIEWS
-// ══════════════════════════════════════
-function showLibBrowse(){
-  document.getElementById('libBrowse').style.display='block';
-  document.getElementById('libBookDetail').style.display='none';
-  document.getElementById('libArticleReader').style.display='none';
-}
-function showLibBookDetail(){
-  document.getElementById('libBrowse').style.display='none';
-  document.getElementById('libBookDetail').style.display='block';
-  document.getElementById('libArticleReader').style.display='none';
-}
-function showLibArticleReader(){
-  document.getElementById('libBrowse').style.display='none';
-  document.getElementById('libBookDetail').style.display='none';
-  document.getElementById('libArticleReader').style.display='block';
-}
-
-function switchLibTab(tab,el){
-  document.querySelectorAll('.lib-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.lib-panel').forEach(p=>p.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('lib'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active');
-}
-
-// ══════════════════════════════════════
-//  BOOKS
-// ══════════════════════════════════════
-let currentBookId=null;
-let activeChId=null;
 
 function openBookModal(id=null){
   document.getElementById('bookModalTitle').textContent=id?'Edit Book':'New Book';
   document.getElementById('editBookId').value=id||'';
-  const books=get('ct_books'),b=id&&books.find(b=>b.id===id);
-  document.getElementById('bookTitle').value=b?b.title:'';
-  document.getElementById('bookDesc').value=b?b.desc:'';
-  selectedColor=b?b.color:COVER_COLORS[0].gradient;
-  buildColorSwatches(selectedColor);
+  if(id){sb.from('books').select('*').eq('id',id).single().then(({data:b})=>{document.getElementById('bookTitle').value=b?.title||'';document.getElementById('bookDesc').value=b?.description||'';selectedCover=b?.color||COVERS[0];buildSwatches(selectedCover)})}
+  else{document.getElementById('bookTitle').value='';document.getElementById('bookDesc').value='';selectedCover=COVERS[0];buildSwatches()}
   openModal('bookModal');
 }
 
-function saveBook(){
-  const title=document.getElementById('bookTitle').value.trim();
-  if(!title){alert('Please add a title.');return}
-  const desc=document.getElementById('bookDesc').value.trim();
-  const color=document.getElementById('bookColor').value||selectedColor;
-  const books=get('ct_books'),editId=document.getElementById('editBookId').value;
-  if(editId){const i=books.findIndex(b=>b.id===editId);if(i>-1)books[i]={...books[i],title,desc,color}}
-  else books.push({id:uid(),title,desc,color,date:new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'})});
-  set('ct_books',books);closeModal('bookModal');renderLibrary();
+async function saveBook(){
+  const title=document.getElementById('bookTitle').value.trim();if(!title){alert('Please add a title.');return}
+  const description=document.getElementById('bookDesc').value.trim(),color=document.getElementById('bookColor').value||selectedCover,editId=document.getElementById('editBookId').value;
+  setLoading('bookSaveBtn',true);
+  const{error}=editId?await sb.from('books').update({title,description,color}).eq('id',editId):await sb.from('books').insert({title,description,color});
+  setLoading('bookSaveBtn',false,'Save Book');
+  if(error){toast('Error saving book','error');return}
+  toast(editId?'Book updated':'Book created');closeModal('bookModal');loadBooks();
 }
 
-function openBook(id){
-  currentBookId=id;activeChId=null;
-  const books=get('ct_books'),b=books.find(b=>b.id===id);
-  if(!b)return;
-  document.getElementById('bookDetailTitle').textContent=b.title;
-  document.getElementById('bookDetailDesc').textContent=b.desc||'';
-  renderBookDetail();
-  showLibBookDetail();
+async function openBook(id,title,desc){currentBookId=id;activeChId=null;document.getElementById('bookDetailTitle').textContent=title;document.getElementById('bookDetailDesc').textContent=desc||'';await renderBookDetail();showLibBookDetail()}
+function closeBookDetail(){showLibBrowse();loadBooks()}
+
+async function deleteCurrentBook(){
+  if(!confirm('Delete this book and all its chapters?'))return;
+  await sb.from('books').delete().eq('id',currentBookId);
+  toast('Book deleted');closeBookDetail();
 }
 
-function closeBookDetail(){showLibBrowse();renderLibrary()}
-
-function editCurrentBook(){openBookModal(currentBookId)}
-function deleteCurrentBook(){
-  if(!confirm('Delete this entire book and all its chapters?'))return;
-  const books=get('ct_books').filter(b=>b.id!==currentBookId);
-  set('ct_books',books);
-  const chapters=get('ct_chapters').filter(c=>c.bookId!==currentBookId);
-  set('ct_chapters',chapters);
-  closeBookDetail();
-}
-
-function renderBookDetail(){
-  const chapters=get('ct_chapters').filter(c=>c.bookId===currentBookId);
-  const list=document.getElementById('chList'),main=document.getElementById('chMain'),empty=document.getElementById('chEmpty'),listEmpty=document.getElementById('chListEmpty');
-  list.innerHTML='';main.querySelectorAll('.ch-display').forEach(el=>el.remove());
-  const hasChapters=chapters.length>0;
-  empty.style.display=hasChapters?'none':'block';
-  if(listEmpty)listEmpty.style.display=hasChapters?'none':'block';
-  if(!hasChapters)return;
-  if(!activeChId||!chapters.find(c=>c.id===activeChId))activeChId=chapters[0].id;
-  chapters.forEach(ch=>{
+async function renderBookDetail(){
+  const list=document.getElementById('chList'),main=document.getElementById('chMain'),empty=document.getElementById('chEmpty');
+  list.innerHTML='<li style="color:var(--text-dim);font-size:.8rem;padding:.5rem 0"><span class="loading-spinner"></span></li>';
+  main.querySelectorAll('.ch-display').forEach(el=>el.remove());
+  const{data:chapters}=await sb.from('chapters').select('*').eq('book_id',currentBookId).order('created_at',{ascending:true});
+  allChapters=chapters||[];list.innerHTML='';
+  if(!allChapters.length){empty.style.display='block';refreshAdmin(main);return}
+  empty.style.display='none';
+  if(!activeChId)activeChId=allChapters[0].id;
+  allChapters.forEach(ch=>{
     const li=document.createElement('li');li.className='ch-item'+(ch.id===activeChId?' active':'');li.dataset.id=ch.id;
-    li.innerHTML=`<span class="ch-num-lbl">${ch.num}</span>${ch.title}`;li.onclick=()=>showChapter(ch.id);list.appendChild(li);
+    li.innerHTML=`<span class="ch-num-lbl">${ch.num||''}</span>${ch.title}`;li.onclick=()=>showChapter(ch.id);list.appendChild(li);
     const div=document.createElement('div');div.className='ch-display'+(ch.id===activeChId?' active':'');div.id='chd_'+ch.id;
-    const body=ch.content.split('\n\n').map(p=>p.trim().startsWith('###')?`<h3>${p.replace(/^###\s*/,'')}</h3>`:`<p>${p}</p>`).join('');
-    div.innerHTML=`<p class="ch-eyebrow">${ch.num}${ch.date?' · '+ch.date:''}</p><h2 class="ch-title-h">${ch.title}</h2><div class="ch-body">${body}</div><div class="ch-actions-bar"><button class="btn-sm admin-only" onclick="openChModal('${ch.id}','${currentBookId}')">Edit</button><button class="btn-sm danger admin-only" onclick="deleteChapter('${ch.id}')">Delete</button></div>`;
-    main.appendChild(div);
+    div.innerHTML=`<p class="ch-eyebrow">${ch.num||''}${ch.created_at?' · '+fmtDate(ch.created_at):''}</p><h2 class="ch-title-h">${ch.title}</h2><div class="ch-body">${renderBody(ch.content)}</div><div class="ch-action-bar"><button class="btn-sm admin-only" onclick="openChModal('${ch.id}','${currentBookId}')">Edit</button><button class="btn-sm danger admin-only" onclick="deleteChapter('${ch.id}')">Delete</button></div>`;
+    main.appendChild(div);refreshAdmin(div);
   });
+  refreshAdmin(list.closest('.ch-sidebar'));
 }
 
 function openChModal(id=null,bookId=null){
   document.getElementById('chModalTitle').textContent=id?'Edit Chapter':'Add Chapter';
-  document.getElementById('editChId').value=id||'';
-  document.getElementById('chBookId').value=bookId||currentBookId||'';
-  const ch=id&&get('ct_chapters').find(c=>c.id===id);
-  document.getElementById('chNum').value=ch?ch.num:'';
-  document.getElementById('chTitle').value=ch?ch.title:'';
-  document.getElementById('chContent').value=ch?ch.content:'';
+  document.getElementById('editChId').value=id||'';document.getElementById('chBookId').value=bookId||currentBookId||'';
+  const ch=id&&allChapters.find(c=>c.id===id)||{};
+  document.getElementById('chNum').value=ch.num||'';document.getElementById('chTitle').value=ch.title||'';document.getElementById('chContent').value=ch.content||'';
   openModal('chModal');
 }
 
-function saveChapter(){
-  const num=document.getElementById('chNum').value.trim(),title=document.getElementById('chTitle').value.trim(),content=document.getElementById('chContent').value.trim(),bookId=document.getElementById('chBookId').value;
+async function saveChapter(){
+  const num=document.getElementById('chNum').value.trim(),title=document.getElementById('chTitle').value.trim(),content=document.getElementById('chContent').value.trim(),book_id=document.getElementById('chBookId').value;
   if(!title||!content){alert('Please add a title and content.');return}
-  const chapters=get('ct_chapters'),editId=document.getElementById('editChId').value;
-  if(editId){const i=chapters.findIndex(c=>c.id===editId);if(i>-1)chapters[i]={...chapters[i],num,title,content}}
-  else{const newId=uid();chapters.push({id:newId,bookId,num:num||'Chapter '+(chapters.filter(c=>c.bookId===bookId).length+1),title,content,date:new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})});activeChId=newId}
-  set('ct_chapters',chapters);closeModal('chModal');renderBookDetail();
+  const editId=document.getElementById('editChId').value;
+  setLoading('chSaveBtn',true);
+  const{error}=editId?await sb.from('chapters').update({num,title,content}).eq('id',editId):await sb.from('chapters').insert({num,title,content,book_id});
+  setLoading('chSaveBtn',false,'Save');
+  if(error){toast('Error saving chapter','error');return}
+  toast(editId?'Chapter updated':'Chapter added');closeModal('chModal');await renderBookDetail();
 }
 
-function deleteChapter(id){
+async function deleteChapter(id){
   if(!confirm('Delete this chapter?'))return;
-  set('ct_chapters',get('ct_chapters').filter(c=>c.id!==id));
+  await sb.from('chapters').delete().eq('id',id);
   if(activeChId===id)activeChId=null;
-  renderBookDetail();
+  toast('Chapter deleted');await renderBookDetail();
 }
 
-function showChapter(id){
-  activeChId=id;
-  document.querySelectorAll('.ch-display').forEach(d=>d.classList.toggle('active',d.id==='chd_'+id));
-  document.querySelectorAll('.ch-item').forEach(li=>li.classList.toggle('active',li.dataset.id===id));
-}
+function showChapter(id){activeChId=id;document.querySelectorAll('.ch-display').forEach(d=>d.classList.toggle('active',d.id==='chd_'+id));document.querySelectorAll('.ch-item').forEach(li=>li.classList.toggle('active',li.dataset.id===id))}
 
-function renderLibrary(){
-  const books=get('ct_books'),chapters=get('ct_chapters');
-  const grid=document.getElementById('booksGrid'),empty=document.getElementById('booksEmpty');
-  grid.innerHTML='';
-  if(!books.length){empty.style.display='block';return}
-  empty.style.display='none';
-  books.forEach(b=>{
-    const chCount=chapters.filter(c=>c.bookId===b.id).length;
-    const card=document.createElement('div');card.className='book-card';
-    card.innerHTML=`
-      <div class="book-cover" style="background:${b.color}">
-        <span class="book-cover-text">${b.title}</span>
-      </div>
-      <div class="book-body">
-        <h3 class="book-title">${b.title}</h3>
-        <p class="book-desc">${b.desc||'<em style="opacity:.4">No description.</em>'}</p>
-        <div class="book-meta">
-          <span class="book-chapters">${chCount} chapter${chCount!==1?'s':''}</span>
-          <div class="book-actions">
-            <button class="btn-sm admin-only" onclick="event.stopPropagation();openBookModal('${b.id}')">Edit</button>
-          </div>
-        </div>
-      </div>`;
-    card.onclick=()=>openBook(b.id);
-    grid.appendChild(card);
-  });
-
-  // Articles
-  renderArticles();
-}
-
-// ══════════════════════════════════════
-//  ARTICLES
-// ══════════════════════════════════════
 let currentArticleId=null;
+
+async function loadArticles(){
+  const grid=document.getElementById('articlesGrid'),empty=document.getElementById('articlesEmpty');
+  grid.innerHTML='<div style="color:var(--text-dim);font-size:.9rem;padding:2rem 0"><span class="loading-spinner"></span> Loading…</div>';
+  const{data:articles}=await sb.from('articles').select('*').order('created_at',{ascending:false});
+  grid.innerHTML='';
+  if(!articles||!articles.length){empty.style.display='block';return}
+  empty.style.display='none';
+  articles.forEach(a=>{
+    const preview=(a.content||'').replace(/^###\s*/gm,'').slice(0,220)+'…';
+    const mins=Math.max(1,Math.ceil((a.content||'').split(' ').length/200));
+    const card=document.createElement('div');card.className='article-card';
+    card.innerHTML=`<p class="article-tag-lbl">${a.tag||'Article'}</p><h3 class="article-title">${a.title}</h3><p class="article-preview">${preview}</p><div class="article-footer"><span>${fmtDate(a.created_at)}</span><span>${mins} min read</span></div><div class="article-card-actions"><button class="btn-sm admin-only" onclick="event.stopPropagation();openArticleModal('${a.id}')">Edit</button><button class="btn-sm danger admin-only" onclick="event.stopPropagation();deleteArticle('${a.id}')">Delete</button></div>`;
+    card.onclick=()=>openArticle(a);grid.appendChild(card);refreshAdmin(card);
+  });
+}
 
 function openArticleModal(id=null){
   document.getElementById('articleModalTitle').textContent=id?'Edit Article':'New Article';
   document.getElementById('editArticleId').value=id||'';
-  const a=id&&get('ct_articles').find(a=>a.id===id);
-  document.getElementById('articleTitle').value=a?a.title:'';
-  document.getElementById('articleTag').value=a?a.tag:'';
-  document.getElementById('articleContent').value=a?a.content:'';
+  if(id){sb.from('articles').select('*').eq('id',id).single().then(({data:a})=>{document.getElementById('articleTitle').value=a?.title||'';document.getElementById('articleTag').value=a?.tag||'';document.getElementById('articleContent').value=a?.content||''})}
+  else{document.getElementById('articleTitle').value='';document.getElementById('articleTag').value='';document.getElementById('articleContent').value=''}
   openModal('articleModal');
 }
 
-function saveArticle(){
+async function saveArticle(){
   const title=document.getElementById('articleTitle').value.trim(),tag=document.getElementById('articleTag').value.trim(),content=document.getElementById('articleContent').value.trim();
   if(!title||!content){alert('Please add a title and content.');return}
-  const articles=get('ct_articles'),editId=document.getElementById('editArticleId').value;
-  if(editId){const i=articles.findIndex(a=>a.id===editId);if(i>-1)articles[i]={...articles[i],title,tag,content}}
-  else articles.unshift({id:uid(),title,tag,content,date:new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})});
-  set('ct_articles',articles);closeModal('articleModal');renderArticles();
+  const editId=document.getElementById('editArticleId').value;
+  setLoading('articleSaveBtn',true);
+  const{error}=editId?await sb.from('articles').update({title,tag,content}).eq('id',editId):await sb.from('articles').insert({title,tag,content});
+  setLoading('articleSaveBtn',false,'Save');
+  if(error){toast('Error saving','error');return}
+  toast(editId?'Article updated':'Article created');closeModal('articleModal');loadArticles();
 }
 
-function renderArticles(){
-  const articles=get('ct_articles'),grid=document.getElementById('articlesGrid'),empty=document.getElementById('articlesEmpty');
-  grid.innerHTML='';
-  if(!articles.length){empty.style.display='block';return}
-  empty.style.display='none';
-  articles.forEach(a=>{
-    const preview=a.content.split('\n\n')[0].replace(/^###\s*/,'').slice(0,220)+'…';
-    const readMins=Math.max(1,Math.ceil(a.content.split(' ').length/200));
-    const card=document.createElement('div');card.className='article-card';
-    card.innerHTML=`
-      <p class="article-tag">${a.tag||'Article'}</p>
-      <h3 class="article-title">${a.title}</h3>
-      <p class="article-preview">${preview}</p>
-      <div class="article-meta"><span>${a.date||''}</span><span>${readMins} min read</span></div>
-      <div class="article-card-actions">
-        <button class="btn-sm admin-only" onclick="event.stopPropagation();openArticleModal('${a.id}')">Edit</button>
-        <button class="btn-sm danger admin-only" onclick="event.stopPropagation();deleteArticle('${a.id}')">Delete</button>
-      </div>`;
-    card.onclick=()=>openArticle(a.id);
-    grid.appendChild(card);
-  });
-}
-
-function openArticle(id){
-  const a=get('ct_articles').find(a=>a.id===id);if(!a)return;
-  currentArticleId=id;
+function openArticle(a){
+  currentArticleId=a.id;
   document.getElementById('readerTag').textContent=a.tag||'Article';
   document.getElementById('readerTitle').textContent=a.title;
-  document.getElementById('readerMeta').textContent=a.date||'';
-  const body=a.content.split('\n\n').map(p=>p.trim().startsWith('###')?`<h3>${p.replace(/^###\s*/,'')}</h3>`:`<p>${p}</p>`).join('');
-  document.getElementById('readerBody').innerHTML=body;
-  document.getElementById('readerEditBtn').onclick=()=>openArticleModal(id);
-  document.getElementById('readerDeleteBtn').onclick=()=>deleteArticle(id,true);
+  document.getElementById('readerMeta').textContent=fmtDate(a.created_at);
+  document.getElementById('readerBody').innerHTML=renderBody(a.content);
+  document.getElementById('readerEditBtn').onclick=()=>openArticleModal(a.id);
+  document.getElementById('readerDeleteBtn').onclick=()=>deleteArticle(a.id,true);
   showLibArticleReader();
 }
 
-function closeArticleReader(){showLibBrowse();renderLibrary();switchLibTab('articles',document.querySelectorAll('.lib-tab')[1])}
-function deleteArticle(id,fromReader=false){
+function closeArticleReader(){showLibBrowse();loadArticles();switchLibTab('Articles',document.querySelectorAll('.lib-tab')[1])}
+
+async function deleteArticle(id,fromReader=false){
   if(!confirm('Delete this article?'))return;
-  set('ct_articles',get('ct_articles').filter(a=>a.id!==id));
-  if(fromReader)closeArticleReader(); else renderArticles();
+  await sb.from('articles').delete().eq('id',id);
+  toast('Article deleted');if(fromReader)closeArticleReader();else loadArticles();
 }
 
-// ══════════════════════════════════════
-//  LAB
-// ══════════════════════════════════════
-function openLabModal(id=null){
-  document.getElementById('labModalTitle').textContent=id?'Edit Entry':'New Lab Entry';
-  document.getElementById('editLabId').value=id||'';
-  const e=id&&get('ct_lab').find(e=>e.id===id);
-  document.getElementById('labType').value=e?e.type:'Design Concept';
-  document.getElementById('labTitle').value=e?e.title:'';
-  document.getElementById('labDesc').value=e?e.desc:'';
-  openModal('labModal');
-}
+let labFilter='all';
 
-function saveLabEntry(){
-  const type=document.getElementById('labType').value,title=document.getElementById('labTitle').value.trim(),desc=document.getElementById('labDesc').value.trim();
-  if(!title){alert('Please add a title.');return}
-  const entries=get('ct_lab'),editId=document.getElementById('editLabId').value;
-  if(editId){const i=entries.findIndex(e=>e.id===editId);if(i>-1)entries[i]={...entries[i],type,title,desc}}
-  else entries.unshift({id:uid(),type,title,desc,date:new Date().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})});
-  set('ct_lab',entries);closeModal('labModal');renderLab();
-}
-
-function deleteLabEntry(id){
-  if(!confirm('Delete this entry?'))return;
-  set('ct_lab',get('ct_lab').filter(e=>e.id!==id));renderLab();
-}
-
-const LAB_TYPE_CLASS={
-  'Design Concept':'',
-  'Project Idea':'idea',
-  'Research Note':'research',
-  'Experiment':'experiment',
-  'Other':''
-};
-
-function renderLab(filter='all'){
-  let entries=get('ct_lab');
+async function loadLab(){
   const grid=document.getElementById('labGrid'),empty=document.getElementById('labEmpty');
-  if(filter!=='all')entries=entries.filter(e=>e.type===filter);
+  grid.innerHTML='<div style="color:var(--text-dim);font-size:.9rem;padding:2rem 0"><span class="loading-spinner"></span> Loading…</div>';
+  let query=sb.from('lab_entries').select('*').order('created_at',{ascending:false});
+  if(labFilter!=='all')query=query.eq('type',labFilter);
+  const{data:entries}=await query;
   grid.innerHTML='';
-  if(!entries.length){empty.style.display='block';return}
+  if(!entries||!entries.length){empty.style.display='block';return}
   empty.style.display='none';
+  const tc={'Design Concept':'design','Project Idea':'idea','Research Note':'research','Experiment':'experiment','Other':'other'};
   entries.forEach(e=>{
-    const typeClass=LAB_TYPE_CLASS[e.type]||'';
-    const preview=e.desc?e.desc.slice(0,180)+(e.desc.length>180?'…':''):'';
+    const cls=tc[e.type]||'other',preview=(e.description||'').slice(0,220)+(e.description&&e.description.length>220?'…':'');
     const card=document.createElement('div');card.className='lab-card';
-    card.innerHTML=`
-      <span class="lab-type-badge ${typeClass}">${e.type}</span>
-      <h3 class="lab-card-title">${e.title}</h3>
-      <p class="lab-card-desc">${preview||'<em style="opacity:.4">No description yet.</em>'}</p>
-      <div class="lab-card-footer">
-        <span class="lab-card-date">${e.date||''}</span>
-        <div class="lab-card-actions">
-          <button class="btn-sm admin-only" onclick="openLabModal('${e.id}')">Edit</button>
-          <button class="btn-sm danger admin-only" onclick="deleteLabEntry('${e.id}')">Delete</button>
-        </div>
-      </div>`;
-    grid.appendChild(card);
+    card.innerHTML=`<span class="lab-badge ${cls}">${e.type}</span><h3 class="lab-card-title">${e.title}</h3><p class="lab-card-desc">${preview||'<em style="opacity:.4">No description yet.</em>'}</p><div class="lab-card-footer"><span class="lab-card-date">${fmtDate(e.created_at)}</span><div class="lab-card-actions"><button class="btn-sm admin-only" onclick="openLabModal('${e.id}')">Edit</button><button class="btn-sm danger admin-only" onclick="deleteLabEntry('${e.id}')">Delete</button></div></div>`;
+    grid.appendChild(card);refreshAdmin(card);
   });
 }
 
-function filterLab(type,btn){
-  document.querySelectorAll('.lab-fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
-  renderLab(type);
+function filterLab(type,btn){document.querySelectorAll('.lab-fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');labFilter=type;loadLab()}
+
+function openLabModal(id=null){
+  document.getElementById('labModalTitle').textContent=id?'Edit Entry':'New Lab Entry';
+  document.getElementById('editLabId').value=id||'';
+  if(id){sb.from('lab_entries').select('*').eq('id',id).single().then(({data:e})=>{document.getElementById('labType').value=e?.type||'Design Concept';document.getElementById('labTitle').value=e?.title||'';document.getElementById('labDesc').value=e?.description||''})}
+  else{document.getElementById('labType').value='Design Concept';document.getElementById('labTitle').value='';document.getElementById('labDesc').value=''}
+  openModal('labModal');
+}
+
+async function saveLabEntry(){
+  const type=document.getElementById('labType').value,title=document.getElementById('labTitle').value.trim(),description=document.getElementById('labDesc').value.trim();
+  if(!title){alert('Please add a title.');return}
+  const editId=document.getElementById('editLabId').value;
+  setLoading('labSaveBtn',true);
+  const{error}=editId?await sb.from('lab_entries').update({type,title,description}).eq('id',editId):await sb.from('lab_entries').insert({type,title,description});
+  setLoading('labSaveBtn',false,'Save');
+  if(error){toast('Error saving','error');return}
+  toast(editId?'Entry updated':'Entry added');closeModal('labModal');loadLab();
+}
+
+async function deleteLabEntry(id){
+  if(!confirm('Delete this entry?'))return;
+  await sb.from('lab_entries').delete().eq('id',id);
+  toast('Entry deleted');loadLab();
 }
 </script>
 </body>
