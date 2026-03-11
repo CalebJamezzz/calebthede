@@ -1958,7 +1958,7 @@ function renderZiggisFallback(featWrap){
   const SEED = 'ziggis-capstone';
   const {svg} = makeProjSVG(SEED, 'Development');
   featWrap.innerHTML = `
-    <div class="proj-featured reveal">
+    <div class="proj-featured">
       <div class="proj-featured-banner">${svg}
         <span class="proj-featured-badge">★ Featured · Capstone Project</span>
       </div>
@@ -2010,7 +2010,7 @@ async function loadProjects(){
   const fTags = (newest.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
   const fLinks = buildProjLinks(newest);
   featWrap.innerHTML = `
-    <div class="proj-featured reveal" data-proj="${newest.id}">
+    <div class="proj-featured" data-proj="${newest.id}">
       <div class="proj-featured-banner">${fSvg}
         <span class="proj-featured-badge">✦ Newest · ${newest.category}</span>
       </div>
@@ -2030,6 +2030,10 @@ async function loadProjects(){
       </div>
     </div>`;
   refreshAdmin(featWrap);
+  // Observe any newly injected reveal elements
+  featWrap.querySelectorAll('.reveal:not(.visible)').forEach(el=>{
+    if(_revealObs) _revealObs.observe(el); else el.classList.add('visible');
+  });
 
   // Rest go to grid — Ziggi's appended as last row
   renderProjGrid(rest, true);
