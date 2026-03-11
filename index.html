@@ -363,11 +363,11 @@
     .reader-body blockquote{border-left:2px solid var(--gold);padding:.8rem 1.5rem;margin:2rem 0;color:var(--text-dim);font-style:italic;font-family:'Cormorant Garamond',serif;font-size:1.15rem}
     .reader-loading{text-align:center;padding:4rem;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim)}
     /* CELESTIAL PROGRESS */
-    .celestial-tracker{position:sticky;top:72px;z-index:50;background:rgba(13,15,20,.97);border-bottom:1px solid rgba(200,164,90,.2);padding:.9rem 4rem;display:flex;align-items:center;gap:2rem}
+    .celestial-tracker{position:sticky;top:72px;z-index:50;background:rgba(13,15,20,.97);border-top:1px solid rgba(200,164,90,.1);border-bottom:1px solid rgba(200,164,90,.2);padding:1.1rem 4rem;display:flex;align-items:center;gap:2rem}
     .celestial-constellation{flex:1;position:relative;height:32px;display:flex;align-items:center}
     .constellation-line{position:absolute;top:50%;left:0;right:0;height:1px;background:rgba(200,164,90,.15);transform:translateY(-50%)}
     .constellation-fill{position:absolute;top:50%;left:0;height:1px;background:linear-gradient(to right,#4EC9B0,#D4A84A);transform:translateY(-50%);transition:width .6s cubic-bezier(.4,0,.2,1)}
-    .star-dots{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;width:100%}
+    .star-dots{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;width:100%;min-width:0}
     .star-dot{width:9px;height:9px;border-radius:50%;background:#1E2433;border:1px solid rgba(200,164,90,.3);cursor:pointer;transition:all .3s;flex-shrink:0;position:relative}
     .star-dot:hover{border-color:#D4A84A;transform:scale(1.35)}
     .star-dot.done{background:#8A6E37;border-color:#C8A45A}
@@ -1154,6 +1154,7 @@ async function renderBookDetail(){
 
 function buildStarDots(){
   const container=document.getElementById('starDots');container.innerHTML='';
+  if(chapterIndex.length===1){container.style.justifyContent='center';}else{container.style.justifyContent='space-between';}
   const total=chapterIndex.length,maxDots=Math.min(total,48),step=total/maxDots;
   for(let i=0;i<maxDots;i++){
     const chIdx=Math.min(Math.round(i*step),total-1),ch=chapterIndex[chIdx];
@@ -1206,12 +1207,22 @@ function updatePageNav(pageIdx){
     `<span style="opacity:.55">Chapter page ${pageIdx+1} of ${total}</span>`;
 }
 
+
+function scrollToChapterTop(){
+  const tracker=document.getElementById('celestialTracker');
+  const trackerH=tracker&&tracker.offsetParent?tracker.offsetHeight:0;
+  const navH=72;
+  const header=document.getElementById('chReader');
+  if(!header)return;
+  const top=header.getBoundingClientRect().top+window.scrollY-(navH+trackerH);
+  window.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+}
 function stepPage(dir){
   const next=currentPageIdx+dir;
   if(next<0){stepChapter(-1);return}
   if(next>=currentPages.length){stepChapter(1);return}
   currentPageIdx=next;renderPage(next);
-  document.getElementById('chBodyArea').scrollIntoView({behavior:'smooth',block:'start'});
+  scrollToChapterTop();
 }
 
 async function showChapter(id,idx){
@@ -1239,7 +1250,7 @@ async function showChapter(id,idx){
     `Pages\u00a0<strong>~${pageStart}\u2013${pageEnd}</strong> of ~${bookTotalPages}`;
   document.getElementById('chEditBtn').onclick=()=>openChModal(id,currentBookId);
   document.getElementById('chDeleteBtn').onclick=()=>deleteChapter(id);
-  document.getElementById('chReader').scrollIntoView({behavior:'smooth',block:'start'});
+  scrollToChapterTop();
 }
 
 function stepChapter(dir){
