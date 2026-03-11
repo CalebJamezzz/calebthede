@@ -1022,7 +1022,7 @@ let activeChIdx=-1;
 
 async function renderBookDetail(){
   const list=document.getElementById('chList'),empty=document.getElementById('chEmpty'),reader=document.getElementById('chReader');
-  list.innerHTML='<li style="font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--text-dim);padding:.5rem 0">Loading…</li>';
+  list.innerHTML='<li style="font-family:JetBrains Mono,monospace;font-size:.6rem;color:var(--text-dim);padding:.5rem 0">Loading…</li>';
   const{data:chs}=await sb.from('chapters').select('id,num,title').eq('book_id',currentBookId).order('num',{ascending:true});
   list.innerHTML='';chapterIndex=chs||[];
   if(!chapterIndex.length){empty.style.display='flex';reader.style.display='none';refreshAdmin(list.closest('.ch-sidebar'));return}
