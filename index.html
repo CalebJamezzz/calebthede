@@ -362,15 +362,32 @@
     .reader-body h4{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:400;color:var(--text);margin:2rem 0 .8rem;letter-spacing:.04em}
     .reader-body blockquote{border-left:2px solid var(--gold);padding:.8rem 1.5rem;margin:2rem 0;color:var(--text-dim);font-style:italic;font-family:'Cormorant Garamond',serif;font-size:1.15rem}
     .reader-loading{text-align:center;padding:4rem;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim)}
+    /* CELESTIAL PROGRESS */
+    .celestial-tracker{position:sticky;top:72px;z-index:50;background:var(--nav-bg);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:.9rem 4rem;display:flex;align-items:center;gap:2rem}
+    .celestial-constellation{flex:1;position:relative;height:28px;display:flex;align-items:center}
+    .constellation-line{position:absolute;top:50%;left:0;right:0;height:1px;background:var(--border);transform:translateY(-50%)}
+    .constellation-fill{position:absolute;top:50%;left:0;height:1px;background:linear-gradient(to right,var(--teal),var(--gold));transform:translateY(-50%);transition:width .6s cubic-bezier(.4,0,.2,1)}
+    .star-dots{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;width:100%}
+    .star-dot{width:8px;height:8px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);cursor:pointer;transition:all .3s;flex-shrink:0;position:relative}
+    .star-dot:hover{border-color:var(--gold);transform:scale(1.3)}
+    .star-dot.done{background:var(--gold-dim);border-color:var(--gold)}
+    .star-dot.current{background:var(--gold);border-color:var(--gold);box-shadow:0 0 8px rgba(212,168,74,.6),0 0 16px rgba(212,168,74,.2);transform:scale(1.4)}
+    .star-dot.current::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(212,168,74,.3);animation:starPulse 2s ease-in-out infinite}
+    @keyframes starPulse{0%,100%{transform:scale(1);opacity:.6}50%{transform:scale(1.5);opacity:0}}
+    .star-dot-tooltip{position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:.3rem .6rem;font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.1em;white-space:nowrap;color:var(--text);opacity:0;pointer-events:none;transition:opacity .2s;z-index:10}
+    .star-dot:hover .star-dot-tooltip{opacity:1}
+    .celestial-meta{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;text-align:right;line-height:1.8;flex-shrink:0}
+    .celestial-meta strong{color:var(--gold);font-weight:400}
+    /* CH NAV */
     .ch-nav{display:flex;align-items:center;justify-content:space-between;max-width:680px;margin:0 auto;padding:2rem 4rem 4rem;gap:1rem;flex-wrap:wrap}
     .ch-nav-btn{display:inline-flex;align-items:center;gap:.6rem;padding:.75rem 1.6rem;border:1px solid var(--border);border-radius:3px;background:transparent;color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:all .2s}
     .ch-nav-btn:hover:not(:disabled){border-color:var(--gold);color:var(--gold)}
     .ch-nav-btn:disabled{opacity:.25;cursor:default}
-    .ch-nav-progress{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim)}
-    .ch-progress-bar{height:2px;background:var(--border);position:sticky;top:72px;z-index:50}
-    .ch-progress-fill{height:100%;background:linear-gradient(to right,var(--teal),var(--gold));transition:width .4s}
+    .ch-nav-center{display:flex;flex-direction:column;align-items:center;gap:.3rem}
+    .ch-nav-glyph{font-size:1.2rem;color:var(--gold);opacity:.6}
+    .ch-nav-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim)}
     .reader-admin-bar{display:flex;gap:.8rem;max-width:680px;margin:0 auto;padding:.5rem 4rem 0;border-top:1px solid var(--border)}
-    @media(max-width:768px){.ch-nav,.reader-admin-bar{padding-left:1.5rem;padding-right:1.5rem}}
+    @media(max-width:768px){.ch-nav,.reader-admin-bar{padding-left:1.5rem;padding-right:1.5rem}.celestial-tracker{padding:.8rem 1.5rem;gap:1rem}.celestial-meta{display:none}}
     .empty-state{text-align:center;padding:5rem 2rem;color:var(--text-dim)}
     .empty-icon{font-size:2.5rem;margin-bottom:1rem;display:block;opacity:.35}
     .empty-state h3{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--text);margin-bottom:.5rem}
@@ -823,7 +840,14 @@
     </div>
   </div>
   <div id="libBookDetail" style="display:none">
-    <div class="ch-progress-bar"><div class="ch-progress-fill" id="chProgressFill" style="width:0%"></div></div>
+    <div class="celestial-tracker" id="celestialTracker" style="display:none">
+      <div class="celestial-constellation">
+        <div class="constellation-line"></div>
+        <div class="constellation-fill" id="constellationFill" style="width:0%"></div>
+        <div class="star-dots" id="starDots"></div>
+      </div>
+      <div class="celestial-meta" id="celestialMeta"></div>
+    </div>
     <div class="book-detail-header">
       <div><button class="back-btn" onclick="closeBookDetail()">← Back to Library</button><h1 class="book-detail-title" id="bookDetailTitle"></h1><p class="book-detail-desc" id="bookDetailDesc"></p></div>
       <div style="display:flex;gap:.8rem;flex-shrink:0;margin-top:3.5rem">
@@ -844,9 +868,9 @@
           <div class="reader-body" id="chBodyArea"></div>
           <div class="reader-admin-bar"><button class="btn-sm admin-only" id="chEditBtn">Edit</button><button class="btn-sm danger admin-only" id="chDeleteBtn">Delete</button></div>
           <div class="ch-nav">
-            <button class="ch-nav-btn" id="chPrevBtn" onclick="stepChapter(-1)">← Prev Chapter</button>
-            <span class="ch-nav-progress" id="chNavProgress"></span>
-            <button class="ch-nav-btn" id="chNextBtn" onclick="stepChapter(1)">Next Chapter →</button>
+            <button class="ch-nav-btn" id="chPrevBtn" onclick="stepChapter(-1)">← Previous</button>
+            <div class="ch-nav-center"><span class="ch-nav-glyph">✦</span><span class="ch-nav-label" id="chNavProgress"></span></div>
+            <button class="ch-nav-btn" id="chNextBtn" onclick="stepChapter(1)">Next →</button>
           </div>
         </div>
       </div>
@@ -1017,43 +1041,76 @@ async function deleteCurrentBook(){
   toast('Book deleted');closeBookDetail();
 }
 
-let chapterIndex=[];
-let activeChIdx=-1;
+let chapterIndex=[],activeChIdx=-1;
+const WORDS_PER_PAGE=250;
+let bookTotalPages=0,chapterPageOffsets=[];
 
 async function renderBookDetail(){
-  const list=document.getElementById('chList'),empty=document.getElementById('chEmpty'),reader=document.getElementById('chReader');
+  const list=document.getElementById('chList'),empty=document.getElementById('chEmpty'),reader=document.getElementById('chReader'),tracker=document.getElementById('celestialTracker');
   list.innerHTML='<li style="font-family:JetBrains Mono,monospace;font-size:.6rem;color:var(--text-dim);padding:.5rem 0">Loading…</li>';
-  const{data:chs}=await sb.from('chapters').select('id,num,title').eq('book_id',currentBookId).order('num',{ascending:true});
+  const{data:chs}=await sb.from('chapters').select('id,num,title,content').eq('book_id',currentBookId).order('num',{ascending:true});
   list.innerHTML='';chapterIndex=chs||[];
-  if(!chapterIndex.length){empty.style.display='flex';reader.style.display='none';refreshAdmin(list.closest('.ch-sidebar'));return}
+  if(!chapterIndex.length){empty.style.display='flex';reader.style.display='none';tracker.style.display='none';refreshAdmin(list.closest('.ch-sidebar'));return}
   empty.style.display='none';
+  let pageCount=1;chapterPageOffsets=[];
+  chapterIndex.forEach(ch=>{
+    chapterPageOffsets.push(pageCount);
+    pageCount+=Math.max(1,Math.round(((ch.content||'').split(/\s+/).filter(Boolean).length)/WORDS_PER_PAGE));
+  });
+  bookTotalPages=pageCount-1;
   chapterIndex.forEach((ch,i)=>{
     const li=document.createElement('li');li.className='ch-item';li.dataset.id=ch.id;li.dataset.idx=i;
     li.innerHTML=`<span class="ch-num-lbl">${ch.num||i+1}</span>${ch.title}`;
     li.onclick=()=>showChapter(ch.id,i);list.appendChild(li);
   });
   refreshAdmin(list.closest('.ch-sidebar'));
+  buildStarDots();tracker.style.display='flex';
   const startIdx=activeChId?chapterIndex.findIndex(c=>c.id===activeChId):0;
   showChapter(chapterIndex[Math.max(0,startIdx)].id,Math.max(0,startIdx));
 }
 
+function buildStarDots(){
+  const container=document.getElementById('starDots');container.innerHTML='';
+  const total=chapterIndex.length,maxDots=Math.min(total,48),step=total/maxDots;
+  for(let i=0;i<maxDots;i++){
+    const chIdx=Math.min(Math.round(i*step),total-1),ch=chapterIndex[chIdx];
+    const dot=document.createElement('div');dot.className='star-dot';dot.dataset.idx=chIdx;
+    dot.innerHTML=`<span class="star-dot-tooltip">Ch. ${ch.num||chIdx+1} · ${ch.title}</span>`;
+    dot.onclick=()=>showChapter(ch.id,chIdx);container.appendChild(dot);
+  }
+}
+
+function updateStarDots(idx){
+  const total=chapterIndex.length,dots=[...document.querySelectorAll('.star-dot')],maxDots=dots.length,step=total/maxDots;
+  dots.forEach((dot,i)=>{
+    const chIdx=Math.min(Math.round(i*step),total-1);
+    dot.classList.remove('done','current');
+    if(chIdx<idx)dot.classList.add('done');
+    else if(chIdx===idx)dot.classList.add('current');
+  });
+  document.getElementById('constellationFill').style.width=(total>1?(idx/(total-1))*100:100)+'%';
+}
+
 async function showChapter(id,idx){
   activeChId=id;activeChIdx=idx;
-  const reader=document.getElementById('chReader'),body=document.getElementById('chBodyArea');
+  const body=document.getElementById('chBodyArea'),reader=document.getElementById('chReader');
   reader.style.display='block';document.getElementById('chEmpty').style.display='none';
-  body.innerHTML='<div class="reader-loading">Loading chapter…</div>';
+  body.innerHTML='<div class="reader-loading">✦  Loading…</div>';
   document.getElementById('chEyebrow').textContent='';document.getElementById('chTitleH').textContent='';
   document.querySelectorAll('.ch-item').forEach((li,i)=>li.classList.toggle('active',i===idx));
+  updateStarDots(idx);
   const{data:ch}=await sb.from('chapters').select('*').eq('id',id).single();
   if(!ch){body.innerHTML='<p style="color:var(--danger)">Chapter not found.</p>';return}
+  const total=chapterIndex.length;
+  const chPages=Math.max(1,Math.round(((ch.content||'').split(/\s+/).filter(Boolean).length)/WORDS_PER_PAGE));
+  const pageStart=chapterPageOffsets[idx]||1,pageEnd=Math.min(pageStart+chPages-1,bookTotalPages);
   document.getElementById('chEyebrow').textContent=`Chapter ${ch.num||idx+1}`;
   document.getElementById('chTitleH').textContent=ch.title;
   body.innerHTML=renderBody(ch.content);
-  const total=chapterIndex.length;
   document.getElementById('chPrevBtn').disabled=idx===0;
   document.getElementById('chNextBtn').disabled=idx===total-1;
-  document.getElementById('chNavProgress').textContent=`${idx+1} / ${total}`;
-  document.getElementById('chProgressFill').style.width=`${((idx+1)/total)*100}%`;
+  document.getElementById('chNavProgress').textContent=`${idx+1} of ${total}`;
+  document.getElementById('celestialMeta').innerHTML=`<strong>Chapter ${idx+1}</strong> of ${total}<br>Pages <strong>~${pageStart}–${pageEnd}</strong> of ~${bookTotalPages}`;
   document.getElementById('chEditBtn').onclick=()=>openChModal(id,currentBookId);
   document.getElementById('chDeleteBtn').onclick=()=>deleteChapter(id);
   document.getElementById('chReader').scrollIntoView({behavior:'smooth',block:'start'});
