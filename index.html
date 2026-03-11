@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Caleb Thede</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0D0F14;--bg2:#12151C;--bg3:#181C26;
+      --gold:#C8A45A;--gold-dim:#8A6E37;
+      --teal:#4EC9B0;--teal-dim:#2C7A6A;
+      --text:#E8E4DC;--text-dim:#8A8680;
+      --border:rgba(200,164,90,0.18);
+      --danger:#C85A5A;--danger-dim:#7A3737;
+    }
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:'Lato',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px}
+
+    /* CURSOR */
+    .cursor{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;mix-blend-mode:difference}
+    .cursor-ring{width:36px;height:36px;border:1px solid var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;opacity:.5}
+
+    /* NAV */
+    nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.4rem 4rem;background:rgba(13,15,20,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+    .nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;letter-spacing:.1em;color:var(--gold);cursor:pointer}
+    .nav-center{display:flex;gap:2rem;list-style:none}
+    .nav-center a{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;position:relative;padding-bottom:4px;transition:color .25s}
+    .nav-center a::after{content:'';position:absolute;bottom:0;left:0;width:0;height:1px;background:var(--gold);transition:width .3s}
+    .nav-center a:hover,.nav-center a.active{color:var(--gold)}
+    .nav-center a:hover::after,.nav-center a.active::after{width:100%}
+    .nav-right{display:flex;align-items:center;gap:.8rem}
+    .admin-badge{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);background:rgba(78,201,176,.1);border:1px solid var(--teal-dim);padding:.25rem .7rem;border-radius:3px;display:none}
+    .admin-badge.visible{display:block}
+    .lock-btn{background:none;border:1px solid var(--border);border-radius:4px;color:var(--text-dim);font-size:.85rem;cursor:pointer;padding:.35rem .6rem;transition:all .2s}
+    .lock-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+    /* PAGES */
+    .page{display:none;padding-top:80px;min-height:100vh}.page.active{display:block}
+
+    /* SHARED */
+    .section-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem;display:flex;align-items:center;gap:1rem}
+    .section-label::after{content:'';display:block;height:1px;width:60px;background:var(--teal-dim)}
+    .section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,4vw,3.5rem);font-weight:300;line-height:1.15;margin-bottom:2.5rem}
+    .section-title em{font-style:italic;color:var(--gold)}
+    .page-hero{padding:6rem 4rem 5rem;max-width:1200px;margin:0 auto;border-bottom:1px solid var(--border)}
+    .page-hero-sub{font-size:1.05rem;color:var(--text-dim);max-width:580px;margin-top:-.5rem}
+    .btn-primary{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 2.2rem;background:var(--gold);color:var(--bg);font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;border-radius:3px;border:none;cursor:pointer;transition:opacity .2s,transform .2s;text-decoration:none}
+    .btn-primary:hover{opacity:.85;transform:translateY(-2px)}
+    .btn-ghost{display:inline-flex;align-items:center;gap:.5rem;padding:.8rem 2.2rem;border:1px solid var(--border);color:var(--text-dim);font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;border-radius:3px;background:transparent;cursor:pointer;transition:border-color .2s,color .2s,transform .2s;text-decoration:none}
+    .btn-ghost:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-2px)}
+    .btn-sm{padding:.4rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;border-radius:3px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all .2s}
+    .btn-sm:hover{border-color:var(--gold);color:var(--gold)}
+    .btn-sm.danger:hover{border-color:var(--danger);color:var(--danger)}
+    .btn-sm.teal:hover{border-color:var(--teal);color:var(--teal)}
+    .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+    footer{padding:2rem 4rem;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.12em;color:var(--text-dim);margin-top:4rem}
+    .footer-links{display:flex;gap:2rem}
+    .footer-links a,.footer-links span{color:var(--text-dim);text-decoration:none;cursor:pointer;transition:color .2s}
+    .footer-links a:hover,.footer-links span:hover{color:var(--gold)}
+    .admin-only{display:none!important}.is-admin .admin-only{display:inline-flex!important}
+    .admin-only.block{display:none!important}.is-admin .admin-only.block{display:block!important}
+
+    /* ══════════ HOME ══════════ */
+    #hero{min-height:100vh;display:grid;place-items:center;position:relative;overflow:hidden;padding:6rem 4rem 4rem}
+    .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 80% 50%,rgba(78,201,176,.06) 0%,transparent 60%),radial-gradient(ellipse 50% 50% at 20% 60%,rgba(200,164,90,.07) 0%,transparent 55%)}
+    .hero-pattern{position:absolute;inset:0;opacity:.045;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,var(--teal) 39px,var(--teal) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,var(--teal) 39px,var(--teal) 40px)}
+    .hero-content{position:relative;z-index:2;max-width:900px;text-align:center}
+    .hero-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.25em;color:var(--teal);text-transform:uppercase;margin-bottom:1.5rem}
+    .hero-name{font-family:'Cormorant Garamond',serif;font-size:clamp(3.5rem,8vw,7.5rem);font-weight:300;line-height:1;margin-bottom:1.2rem}
+    .hero-name em{font-style:italic;color:var(--gold)}
+    .hero-tagline{font-size:1.05rem;color:var(--text-dim);max-width:560px;margin:0 auto 2.5rem}
+    .hero-pills{display:inline-flex;gap:1px;margin-bottom:3rem}
+    .pill{padding:.45rem 1.4rem;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase}
+    .pill.tech{background:rgba(78,201,176,.1);border:1px solid var(--teal-dim);color:var(--teal);border-radius:4px 0 0 4px}
+    .pill.design{background:rgba(200,164,90,.1);border:1px solid var(--gold-dim);color:var(--gold);border-radius:0 4px 4px 0}
+    .hero-cta{display:inline-flex;gap:1rem}
+    .scroll-hint{position:absolute;bottom:2.5rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--text-dim)}
+    .scroll-line{width:1px;height:48px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrollPulse 2s infinite}
+    .preview-section{padding:6rem 4rem;max-width:1200px;margin:0 auto;border-top:1px solid var(--border)}
+    .preview-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:1.5rem}
+    .pc{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:2rem;cursor:pointer;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
+    .pc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--teal));transform:scaleX(0);transform-origin:left;transition:transform .4s}
+    .pc:hover{border-color:var(--gold);transform:translateY(-4px)}.pc:hover::after{transform:scaleX(1)}
+    .pc-icon{font-size:1.5rem;margin-bottom:1rem;display:block}
+    .pc-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;color:var(--text);margin-bottom:.5rem}
+    .pc-desc{font-size:.88rem;color:var(--text-dim);line-height:1.6}
+    .pc-link{display:inline-block;margin-top:1.2rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);transition:color .2s}
+    .pc:hover .pc-link{color:var(--gold)}
+
+    /* ══════════ ABOUT ══════════ */
+    .about-section{max-width:1200px;margin:0 auto;padding:5rem 4rem;border-bottom:1px solid var(--border)}
+    .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+    .about-text p{color:var(--text-dim);margin-bottom:1.2rem;font-size:1.02rem}
+    .about-text p strong{color:var(--text);font-weight:400}
+    .pull-quote{border-left:2px solid var(--gold);padding-left:1.5rem;margin:2rem 0;font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-style:italic;color:var(--gold);line-height:1.5}
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
+    .stat{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1.8rem 1.5rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
+    .stat:hover{border-color:var(--gold);transform:translateY(-3px)}
+    .stat::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%}
+    .stat.g::before{background:var(--gold)}.stat.t::before{background:var(--teal)}
+    .stat-num{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;line-height:1;color:var(--gold);margin-bottom:.3rem}
+    .stat.t .stat-num{color:var(--teal)}
+    .stat-lbl{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim)}
+    .vision-section{max-width:1200px;margin:0 auto;padding:5rem 4rem;border-bottom:1px solid var(--border)}
+    .vision-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem}
+    .vc{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:2rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
+    .vc:hover{border-color:var(--gold);transform:translateY(-4px)}
+    .vc::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:var(--gold)}
+    .vc.t::before{background:var(--teal)}
+    .vc-icon{font-size:1.6rem;margin-bottom:1rem;display:block}
+    .vc-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:400;color:var(--text);margin-bottom:.6rem}
+    .vc-desc{font-size:.86rem;color:var(--text-dim);line-height:1.65}
+    .vision-note{margin-top:3rem;padding:1.5rem 2rem;background:rgba(200,164,90,.05);border-left:2px solid var(--gold);border:1px solid var(--border);border-left:2px solid var(--gold);border-radius:0 6px 6px 0;font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-style:italic;color:var(--text-dim);line-height:1.65}
+    .vision-note strong{color:var(--gold);font-style:normal;font-weight:400}
+    .skills-wrap{background:var(--bg2);padding:6rem 0}
+    .skills-inner{max-width:1200px;margin:0 auto;padding:0 4rem}
+    .skills-cols{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:3rem}
+    .scol-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:2rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
+    .scol-label.tech{color:var(--teal)}.scol-label.design{color:var(--gold)}
+    .skill-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+    .skill-name{font-size:.9rem;color:var(--text)}
+    .sbw{width:160px;height:3px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+    .sb{height:100%;border-radius:2px;width:0;transition:width 1.2s cubic-bezier(.17,.67,.35,1)}
+    .sb.tech{background:linear-gradient(90deg,var(--teal-dim),var(--teal))}.sb.design{background:linear-gradient(90deg,var(--gold-dim),var(--gold))}
+    .skill-tags{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:2.5rem}
+    .stag{padding:.3rem .9rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.1em;border-radius:3px;border:1px solid}
+    .stag.tech{border-color:var(--teal-dim);color:var(--teal);background:rgba(78,201,176,.05)}
+    .stag.design{border-color:var(--gold-dim);color:var(--gold);background:rgba(200,164,90,.05)}
+
+    /* ══════════ PROJECTS ══════════ */
+    .feat-section{max-width:1200px;margin:0 auto;padding:5rem 4rem;border-bottom:1px solid var(--border)}
+    .feat-card{background:var(--bg2);border:1px solid rgba(200,164,90,.35);border-radius:10px;padding:3rem;position:relative;overflow:hidden;display:grid;grid-template-columns:1.1fr 1fr;gap:3.5rem;align-items:start}
+    .feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--teal))}
+    .feat-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:.6rem}
+    .feat-badge::before{content:'★'}
+    .feat-title{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;line-height:1.1;margin-bottom:1rem;color:var(--text)}
+    .feat-title em{font-style:italic;color:var(--gold)}
+    .feat-desc{font-size:.95rem;color:var(--text-dim);line-height:1.75;margin-bottom:2rem}
+    .feat-tags{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:2rem}
+    .ftag{padding:.3rem .9rem;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.1em;border-radius:3px}
+    .ftag.tech{border:1px solid var(--teal-dim);color:var(--teal);background:rgba(78,201,176,.05)}
+    .ftag.gold{border:1px solid var(--gold-dim);color:var(--gold);background:rgba(200,164,90,.05)}
+    .feat-list{list-style:none;display:flex;flex-direction:column;gap:1rem}
+    .feat-item{display:flex;gap:1rem;align-items:flex-start;padding:1.2rem;background:var(--bg3);border-radius:6px;border:1px solid var(--border)}
+    .fi{font-size:1.1rem;flex-shrink:0;margin-top:.1rem}
+    .fi-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:.25rem}
+    .fi-desc{font-size:.84rem;color:var(--text-dim);line-height:1.5}
+    .proj-section{max-width:1200px;margin:0 auto;padding:5rem 4rem 6rem}
+    .filter-bar{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:3rem}
+    .fb{padding:.4rem 1.1rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;border-radius:3px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all .2s}
+    .fb:hover,.fb.active{border-color:var(--gold);color:var(--gold);background:rgba(200,164,90,.08)}
+    .proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
+    .pcard{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:2rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;display:flex;flex-direction:column}
+    .pcard:hover{border-color:var(--gold);transform:translateY(-4px)}
+    .pcard::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--teal));transform:scaleX(0);transform-origin:left;transition:transform .4s}
+    .pcard:hover::after{transform:scaleX(1)}
+    .ptype{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem}
+    .ptype.d{color:var(--gold)}
+    .pheader{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;margin-bottom:.8rem}
+    .ptitle{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;color:var(--text)}
+    .pextlink{font-size:.72rem;color:var(--text-dim);text-decoration:none;padding:.2rem .6rem;border:1px solid var(--border);border-radius:3px;flex-shrink:0;transition:color .2s,border-color .2s}
+    .pextlink:hover{color:var(--teal);border-color:var(--teal-dim)}
+    .pdesc{font-size:.88rem;color:var(--text-dim);line-height:1.65;margin-bottom:1.5rem;flex:1}
+    .ptags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:auto}
+    .ptag{padding:.25rem .7rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--text-dim)}
+
+    /* ══════════ LIBRARY ══════════ */
+    .lib-outer{max-width:1200px;margin:0 auto;padding:3rem 4rem 6rem}
+    .lib-tabs{display:flex;gap:0;margin-bottom:3rem;border-bottom:1px solid var(--border)}
+    .lib-tab{padding:.8rem 2rem;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s}
+    .lib-tab:hover{color:var(--text)}
+    .lib-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
+    .lib-panel{display:none}.lib-panel.active{display:block}
+    .lib-section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2rem}
+    .lib-section-header h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--text)}
+
+    /* Book cards */
+    .books-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.5rem}
+    .book-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden;cursor:pointer;transition:border-color .3s,transform .3s;display:flex;flex-direction:column}
+    .book-card:hover{border-color:var(--gold);transform:translateY(-4px)}
+    .book-cover{height:120px;display:flex;align-items:flex-end;padding:1.2rem;position:relative;overflow:hidden}
+    .book-cover-text{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:rgba(255,255,255,.6);position:relative;z-index:1}
+    .book-cover::after{content:'';position:absolute;inset:0;background:rgba(0,0,0,.25)}
+    .book-cover-text{position:relative;z-index:2}
+    .book-body{padding:1.5rem;flex:1;display:flex;flex-direction:column}
+    .book-title{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:400;color:var(--text);margin-bottom:.4rem}
+    .book-desc{font-size:.86rem;color:var(--text-dim);line-height:1.6;flex:1;margin-bottom:1rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+    .book-meta{display:flex;align-items:center;justify-content:space-between}
+    .book-chapters{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal)}
+    .book-actions{display:flex;gap:.5rem}
+
+    /* Book detail view */
+    .book-detail{display:none;padding:0}
+    .book-detail.active{display:block}
+    .book-detail-header{padding:3rem 4rem;max-width:1200px;margin:0 auto;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:2rem}
+    .book-detail-back{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;transition:color .2s;display:flex;align-items:center;gap:.5rem;margin-bottom:1.5rem}
+    .book-detail-back:hover{color:var(--gold)}
+    .book-detail-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:300;color:var(--text);margin-bottom:.5rem}
+    .book-detail-desc{font-size:1rem;color:var(--text-dim);max-width:580px}
+    .book-detail-layout{max-width:1200px;margin:0 auto;padding:3rem 4rem;display:grid;grid-template-columns:240px 1fr;gap:3rem;align-items:start}
+    .ch-sidebar{position:sticky;top:100px}
+    .ch-sidebar-title{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
+    .ch-list{list-style:none;display:flex;flex-direction:column;gap:.3rem;margin-bottom:1.2rem}
+    .ch-item{padding:.65rem .9rem;border-radius:4px;cursor:pointer;font-size:.85rem;color:var(--text-dim);transition:all .2s;border:1px solid transparent}
+    .ch-item:hover{background:var(--bg3);color:var(--text)}
+    .ch-item.active{background:var(--bg3);color:var(--gold);border-color:var(--border)}
+    .ch-num-lbl{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);display:block;margin-bottom:.15rem}
+    .ch-item.active .ch-num-lbl{color:var(--gold-dim)}
+    .ch-display{display:none}.ch-display.active{display:block}
+    .ch-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem}
+    .ch-title-h{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.6rem);font-weight:300;line-height:1.15;margin-bottom:2rem;color:var(--text)}
+    .ch-body{font-size:1.05rem;line-height:1.9;color:var(--text-dim);max-width:680px}
+    .ch-body p{margin-bottom:1.4rem}
+    .ch-body h3{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--gold);margin:2.5rem 0 1rem}
+    .ch-actions-bar{display:flex;gap:.8rem;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+
+    /* Article cards */
+    .articles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.5rem}
+    .article-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:2rem;cursor:pointer;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;display:flex;flex-direction:column}
+    .article-card:hover{border-color:var(--gold);transform:translateY(-4px)}
+    .article-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--teal));transform:scaleX(0);transform-origin:left;transition:transform .4s}
+    .article-card:hover::after{transform:scaleX(1)}
+    .article-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem}
+    .article-title{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:400;color:var(--text);margin-bottom:.8rem;line-height:1.25}
+    .article-preview{font-size:.88rem;color:var(--text-dim);line-height:1.65;flex:1;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:1rem}
+    .article-meta{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--text-dim);display:flex;align-items:center;justify-content:space-between}
+    .article-card-actions{display:flex;gap:.5rem;margin-top:.8rem}
+
+    /* Article reader */
+    .article-reader{display:none}.article-reader.active{display:block}
+    .reader-header{padding:3rem 4rem;max-width:1200px;margin:0 auto;border-bottom:1px solid var(--border)}
+    .reader-back{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;transition:color .2s;display:flex;align-items:center;gap:.5rem;margin-bottom:1.5rem}
+    .reader-back:hover{color:var(--gold)}
+    .reader-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:300;line-height:1.1;margin-bottom:1rem;color:var(--text)}
+    .reader-meta{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim)}
+    .reader-body{max-width:720px;margin:3rem auto;padding:0 4rem;font-size:1.08rem;line-height:1.95;color:var(--text-dim)}
+    .reader-body p{margin-bottom:1.5rem}
+    .reader-body h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--gold);margin:3rem 0 1rem}
+    .reader-actions{display:flex;gap:.8rem;max-width:720px;margin:0 auto;padding:1.5rem 4rem;border-top:1px solid var(--border)}
+
+    /* Empty states */
+    .empty-state{text-align:center;padding:5rem 2rem;color:var(--text-dim)}
+    .empty-icon{font-size:2.5rem;margin-bottom:1rem;display:block;opacity:.35}
+    .empty-state h3{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--text);margin-bottom:.5rem}
+    .empty-state p{font-size:.9rem;max-width:380px;margin:0 auto .5rem}
+
+    /* ══════════ LAB ══════════ */
+    .lab-outer{max-width:1200px;margin:0 auto;padding:3rem 4rem 6rem}
+    .lab-toolbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem}
+    .lab-filters{display:flex;gap:.6rem;flex-wrap:wrap}
+    .lab-fb{padding:.35rem .9rem;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;border-radius:3px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all .2s}
+    .lab-fb:hover,.lab-fb.active{border-color:var(--teal);color:var(--teal);background:rgba(78,201,176,.06)}
+    .lab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
+    .lab-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:2rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;display:flex;flex-direction:column}
+    .lab-card:hover{border-color:var(--teal);transform:translateY(-4px)}
+    .lab-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--teal),var(--gold))}
+    .lab-type-badge{display:inline-block;padding:.25rem .75rem;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;border-radius:3px;background:rgba(78,201,176,.08);border:1px solid var(--teal-dim);color:var(--teal);margin-bottom:1rem}
+    .lab-type-badge.idea{background:rgba(200,164,90,.08);border-color:var(--gold-dim);color:var(--gold)}
+    .lab-type-badge.research{background:rgba(180,120,200,.08);border-color:rgba(180,120,200,.4);color:#C87FD5}
+    .lab-type-badge.experiment{background:rgba(90,180,200,.08);border-color:rgba(90,180,200,.4);color:#5AB4C8}
+    .lab-card-title{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:400;color:var(--text);margin-bottom:.7rem;line-height:1.2}
+    .lab-card-desc{font-size:.88rem;color:var(--text-dim);line-height:1.65;flex:1;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:1.2rem}
+    .lab-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:1rem;border-top:1px solid var(--border)}
+    .lab-card-date{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--text-dim)}
+    .lab-card-actions{display:flex;gap:.5rem}
+
+    /* ══════════ CONTACT ══════════ */
+    .contact-wrap{max-width:1100px;margin:0 auto;padding:6rem 4rem;display:grid;grid-template-columns:1fr 1.2fr;gap:6rem;align-items:start}
+    .contact-info{position:sticky;top:110px}
+    .contact-sub{color:var(--text-dim);font-size:.98rem;margin-bottom:3rem;line-height:1.75}
+    .contact-links{display:flex;flex-direction:column;gap:1rem}
+    .cl{display:flex;align-items:center;gap:1.2rem;padding:1.2rem 1.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;text-decoration:none;transition:border-color .3s,transform .3s}
+    .cl:hover{border-color:var(--gold);transform:translateX(4px)}
+    .cl-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:600;flex-shrink:0}
+    .cl-icon.li{background:rgba(10,102,194,.15);border:1px solid rgba(10,102,194,.3);color:#4A9FD5}
+    .cl-icon.gh{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--text)}
+    .cl-text{flex:1}
+    .cl-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.15rem}
+    .cl-val{font-size:.9rem;color:var(--text)}
+    .fg{margin-bottom:1.2rem}
+    .fg label{display:block;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.5rem}
+    .fg input,.fg textarea,.fg select{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:.85rem 1rem;color:var(--text);font-family:'Lato',sans-serif;font-size:.9rem;outline:none;transition:border-color .25s;appearance:none}
+    .fg input:focus,.fg textarea:focus{border-color:var(--gold)}
+    .fg textarea{resize:vertical;min-height:130px}
+    .fg select option{background:var(--bg2)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+    .form-submit{width:100%;padding:1rem;background:var(--gold);color:var(--bg);border:none;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:opacity .2s,transform .2s;margin-top:.5rem}
+    .form-submit:hover{opacity:.85;transform:translateY(-2px)}
+    .form-success{display:none;text-align:center;padding:2.5rem;border:1px solid var(--teal-dim);border-radius:6px;background:rgba(78,201,176,.06);color:var(--teal);font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-style:italic}
+
+    /* ══════════ MODALS ══════════ */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:200;display:none;place-items:center;padding:2rem;backdrop-filter:blur(8px)}
+    .modal-overlay.open{display:grid}
+    .modal{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:2.5rem;width:100%;max-width:660px;max-height:90vh;overflow-y:auto;position:relative}
+    .modal-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;margin-bottom:1.5rem;color:var(--text)}
+    .modal-close{position:absolute;top:1.2rem;right:1.5rem;background:none;border:none;color:var(--text-dim);font-size:1.1rem;cursor:pointer;transition:color .2s;font-family:'JetBrains Mono',monospace;padding:.3rem}
+    .modal-close:hover{color:var(--gold)}
+    .mf{margin-bottom:1.2rem}
+    .mf label{display:block;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.5rem}
+    .mf input,.mf textarea,.mf select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:.85rem 1rem;color:var(--text);font-family:'Lato',sans-serif;font-size:.9rem;outline:none;transition:border-color .25s;appearance:none;resize:vertical}
+    .mf input:focus,.mf textarea:focus{border-color:var(--gold)}
+    .mf textarea{min-height:200px;line-height:1.7}
+    .mf .hint{font-size:.76rem;color:var(--text-dim);margin-top:.4rem;line-height:1.5}
+    .modal-actions{display:flex;gap:1rem;margin-top:1.5rem}
+    /* color swatches for book covers */
+    .color-swatches{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.5rem}
+    .swatch{width:32px;height:32px;border-radius:4px;cursor:pointer;border:2px solid transparent;transition:all .2s}
+    .swatch.selected,.swatch:hover{border-color:var(--gold);transform:scale(1.1)}
+
+    /* Login modal specifics */
+    #loginModal .modal{max-width:420px}
+    .login-error{display:none;color:var(--danger);font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;margin-top:.5rem}
+    .login-error.visible{display:block}
+
+    /* ══════════ ANIMATIONS ══════════ */
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes scrollPulse{0%,100%{opacity:.5}50%{opacity:1}}
+    .ha .hero-eyebrow{opacity:0;animation:fadeUp .8s .2s forwards}
+    .ha .hero-name{opacity:0;animation:fadeUp .9s .4s forwards}
+    .ha .hero-tagline{opacity:0;animation:fadeUp .9s .6s forwards}
+    .ha .hero-pills{opacity:0;animation:fadeUp .9s .8s forwards}
+    .ha .hero-cta{opacity:0;animation:fadeUp .9s 1s forwards}
+    .ha .scroll-hint{opacity:0;animation:fadeUp .9s 1.4s forwards}
+
+    /* ══════════ RESPONSIVE ══════════ */
+    @media(max-width:960px){
+      .feat-card,.about-grid,.skills-cols,.contact-wrap,.preview-grid,.vision-grid{grid-template-columns:1fr}
+      .about-grid{gap:3rem}.contact-info{position:static}.form-row{grid-template-columns:1fr}
+      .book-detail-layout{grid-template-columns:1fr}.ch-sidebar{position:static}
+    }
+    @media(max-width:768px){
+      nav{padding:1.2rem 1.5rem}.nav-center{gap:.8rem}.nav-center a{font-size:.58rem;letter-spacing:.08em}
+      .page-hero,.about-section,.skills-inner,.feat-section,.proj-section,.preview-section,.contact-wrap,.vision-section,.lib-outer,.lab-outer,.book-detail-header,.book-detail-layout,.reader-header,.reader-body,.reader-actions{padding-left:1.5rem;padding-right:1.5rem}
+      #hero{padding-left:1.5rem;padding-right:1.5rem}
+      footer{flex-direction:column;gap:1rem;text-align:center;padding:2rem 1.5rem}
+    }
+  </style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- ══ LOGIN MODAL ══ -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <h2 class="modal-title" id="loginModalTitle">Admin Login</h2>
+    <p style="font-size:.9rem;color:var(--text-dim);margin-bottom:1.5rem">Enter your password to unlock editing.</p>
+    <div class="mf"><label>Password</label><input type="password" id="loginPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <p class="login-error" id="loginError">Incorrect password. Try again.</p>
+    <div class="modal-actions"><button class="btn-primary" onclick="doLogin()">Unlock</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
+  </div>
+</div>
+
+<!-- ══ BOOK MODAL ══ -->
+<div class="modal-overlay" id="bookModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('bookModal')">✕</button>
+    <h2 class="modal-title" id="bookModalTitle">New Book</h2>
+    <input type="hidden" id="editBookId"/>
+    <div class="mf"><label>Title</label><input type="text" id="bookTitle" placeholder="The title of your book"/></div>
+    <div class="mf"><label>Description</label><textarea id="bookDesc" style="min-height:80px" placeholder="A short description — shown on the library card"></textarea></div>
+    <div class="mf">
+      <label>Cover Color</label>
+      <div class="color-swatches" id="colorSwatches"></div>
+      <input type="hidden" id="bookColor"/>
+    </div>
+    <div class="modal-actions"><button class="btn-primary" onclick="saveBook()">Save Book</button><button class="btn-ghost" onclick="closeModal('bookModal')">Cancel</button></div>
+  </div>
+</div>
+
+<!-- ══ CHAPTER MODAL ══ -->
+<div class="modal-overlay" id="chModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('chModal')">✕</button>
+    <h2 class="modal-title" id="chModalTitle">Add Chapter</h2>
+    <input type="hidden" id="editChId"/><input type="hidden" id="chBookId"/>
+    <div class="mf"><label>Chapter Label</label><input type="text" id="chNum" placeholder="e.g. Chapter 1, Prologue, Part II"/></div>
+    <div class="mf"><label>Chapter Title</label><input type="text" id="chTitle" placeholder="The title of this chapter"/></div>
+    <div class="mf"><label>Content</label><textarea id="chContent" placeholder="Write or paste your chapter here…"></textarea><p class="hint">Blank line = new paragraph. Start a line with ### for a subheading.</p></div>
+    <div class="modal-actions"><button class="btn-primary" onclick="saveChapter()">Save</button><button class="btn-ghost" onclick="closeModal('chModal')">Cancel</button></div>
+  </div>
+</div>
+
+<!-- ══ ARTICLE MODAL ══ -->
+<div class="modal-overlay" id="articleModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('articleModal')">✕</button>
+    <h2 class="modal-title" id="articleModalTitle">New Article</h2>
+    <input type="hidden" id="editArticleId"/>
+    <div class="mf"><label>Title</label><input type="text" id="articleTitle" placeholder="Article title"/></div>
+    <div class="mf"><label>Tag / Category</label><input type="text" id="articleTag" placeholder="e.g. Psychology, Mythology, Essay"/></div>
+    <div class="mf"><label>Content</label><textarea id="articleContent" placeholder="Write your article here…"></textarea><p class="hint">Blank line = new paragraph. ### for subheadings.</p></div>
+    <div class="modal-actions"><button class="btn-primary" onclick="saveArticle()">Save</button><button class="btn-ghost" onclick="closeModal('articleModal')">Cancel</button></div>
+  </div>
+</div>
+
+<!-- ══ LAB MODAL ══ -->
+<div class="modal-overlay" id="labModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('labModal')">✕</button>
+    <h2 class="modal-title" id="labModalTitle">New Lab Entry</h2>
+    <input type="hidden" id="editLabId"/>
+    <div class="mf"><label>Type</label>
+      <select id="labType"><option>Design Concept</option><option>Project Idea</option><option>Research Note</option><option>Experiment</option><option>Other</option></select>
+    </div>
+    <div class="mf"><label>Title</label><input type="text" id="labTitle" placeholder="Give it a name"/></div>
+    <div class="mf"><label>Description / Notes</label><textarea id="labDesc" placeholder="What are you thinking? Doesn't need to be finished."></textarea></div>
+    <div class="modal-actions"><button class="btn-primary" onclick="saveLabEntry()">Save</button><button class="btn-ghost" onclick="closeModal('labModal')">Cancel</button></div>
+  </div>
+</div>
+
+<!-- ══ NAV ══ -->
+<nav>
+  <span class="nav-logo" onclick="showPage('home')">CT.</span>
+  <ul class="nav-center">
+    <li><a onclick="showPage('home')"     id="nav-home">Home</a></li>
+    <li><a onclick="showPage('about')"    id="nav-about">About</a></li>
+    <li><a onclick="showPage('projects')" id="nav-projects">Projects</a></li>
+    <li><a onclick="showPage('library')"  id="nav-library">Library</a></li>
+    <li><a onclick="showPage('lab')"      id="nav-lab">Lab</a></li>
+    <li><a onclick="showPage('contact')"  id="nav-contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="admin-badge" id="adminBadge">Admin</span>
+    <button class="lock-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login">🔒</button>
+  </div>
+</nav>
+
+<!-- ════════════════ HOME ════════════════ -->
+<div class="page active" id="page-home">
+  <section id="hero" class="ha">
+    <div class="hero-bg"></div><div class="hero-pattern"></div>
+    <div class="hero-content">
+      <p class="hero-eyebrow">// Developer · Designer · Builder</p>
+      <h1 class="hero-name">Caleb <em>Thede</em></h1>
+      <p class="hero-tagline">I build things people love to use — clean code, thoughtful interfaces, and a deep belief that technology should understand people.</p>
+      <div class="hero-pills"><span class="pill tech">B.S. Computer Science</span><span class="pill design">Figma · A.S. Psychology</span></div>
+      <br/><br/>
+      <div class="hero-cta"><button class="btn-primary" onclick="showPage('projects')">See My Work</button><button class="btn-ghost" onclick="showPage('about')">About Me</button></div>
+    </div>
+    <div class="scroll-hint"><span>Scroll</span><div class="scroll-line"></div></div>
+  </section>
+  <div class="preview-section">
+    <div class="reveal"><p class="section-label">Explore</p><h2 class="section-title">Everything<br>in One <em>Place</em></h2></div>
+    <div class="preview-grid reveal" style="margin-top:3rem">
+      <div class="pc" onclick="showPage('about')"><span class="pc-icon">⬡</span><h3 class="pc-title">About Me</h3><p class="pc-desc">My path from psychology to CS, what drives me to build, and where I'm headed.</p><span class="pc-link">Read More →</span></div>
+      <div class="pc" onclick="showPage('projects')"><span class="pc-icon">◈</span><h3 class="pc-title">Projects</h3><p class="pc-desc">Real apps and tools — including a full management app built from real experience.</p><span class="pc-link">View Projects →</span></div>
+      <div class="pc" onclick="showPage('library')"><span class="pc-icon">✦</span><h3 class="pc-title">Library</h3><p class="pc-desc">Books and articles in progress — mythology, psychology, and everything in between.</p><span class="pc-link">Read →</span></div>
+    </div>
+    <div class="preview-grid reveal">
+      <div class="pc" onclick="showPage('lab')"><span class="pc-icon">◉</span><h3 class="pc-title">The Lab</h3><p class="pc-desc">Ideas, design concepts, and projects in progress. A place to think out loud.</p><span class="pc-link">Explore →</span></div>
+      <div class="pc" onclick="showPage('contact')"><span class="pc-icon">◎</span><h3 class="pc-title">Get In Touch</h3><p class="pc-desc">Open to developer roles, collaborations, and anything interesting in between.</p><span class="pc-link">Say Hello →</span></div>
+      <div class="pc" onclick="window.open('https://github.com/CalebJamezzz','_blank')"><span class="pc-icon">⌥</span><h3 class="pc-title">GitHub</h3><p class="pc-desc">See what I'm building in the open.</p><span class="pc-link">View Profile →</span></div>
+    </div>
+  </div>
+  <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
+</div>
+
+<!-- ════════════════ ABOUT ════════════════ -->
+<div class="page" id="page-about">
+  <div class="page-hero reveal"><p class="section-label">01 — About Me</p><h1 class="section-title">Code, Design,<br>and Deep <em>Psychology</em></h1><p class="page-hero-sub">Two passions, one direction — building software that understands people, and understanding people well enough to build better software.</p></div>
+  <div class="about-section">
+    <div class="about-grid reveal">
+      <div class="about-text">
+        <p>I started college studying <strong>Psychology</strong> — not because it seemed practical, but because I genuinely love understanding how the brain works and why people do the things they do. I earned my Associate of Science, then followed a second pull into <strong>Computer Science</strong>. The two never felt like separate paths. They've always been the same one.</p>
+        <p>My passion for coding is real — I build in <strong>Python, Java, C++, and Kotlin</strong>, I design in <strong>Figma</strong> before I write a single line, and I care about every layer of what I make. But psychology isn't something I left behind. It's the lens I bring to every project.</p>
+        <div class="pull-quote">"I want to build things that make people's lives genuinely easier — and understand them well enough to actually do it."</div>
+        <p>I'm planning to go back for my <strong>Master's in Psychology</strong> — not to leave tech, but to go deeper into the human side of it. Cognition, behavior, mental health. I want to understand these things well enough to build tools that truly help people.</p>
+        <p>My college capstone was a <strong>full-stack management app</strong> designed from real experience as a manager at Ziggi's Coffee — real pain points, real solution. I also bring <strong>QA Engineering</strong> experience, which means I think about reliability and edge cases in a way most developers don't.</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat t"><div class="stat-num">B.S.</div><div class="stat-lbl">Computer Science</div></div>
+        <div class="stat g"><div class="stat-num">A.S.</div><div class="stat-lbl">Psychology</div></div>
+        <div class="stat g"><div class="stat-num">UI</div><div class="stat-lbl">Figma Designer</div></div>
+        <div class="stat t"><div class="stat-num">4</div><div class="stat-lbl">Languages & Counting</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="vision-section">
+    <div class="reveal"><p class="section-label">Where I'm Headed</p><h2 class="section-title">The Bigger <em>Picture</em></h2></div>
+    <div class="vision-grid reveal">
+      <div class="vc"><span class="vc-icon">🧠</span><h3 class="vc-title">Master's in Psychology</h3><p class="vc-desc">Going back for my M.S. — not to leave tech, but to understand people at a deeper level. Cognition, behavior, mental health. That knowledge makes everything I build better.</p></div>
+      <div class="vc t"><span class="vc-icon">🎮</span><h3 class="vc-title">Games as Therapy</h3><p class="vc-desc">Video games are one of the most underused tools in mental health. The right game — designed with real psychological intent — can reduce anxiety, build resilience, and create genuine connection.</p></div>
+      <div class="vc"><span class="vc-icon">⚕️</span><h3 class="vc-title">Mental Health Tech</h3><p class="vc-desc">There are apps for booking therapy. What I want to build goes further — tools grounded in real psychology that actively support mental wellbeing at every step.</p></div>
+    </div>
+    <div class="vision-note reveal">In my spare time I'm writing a book weaving together <strong>mythology and psychology</strong> — using ancient stories as a lens for understanding modern human behavior. Chapters live in the <span style="color:var(--gold);cursor:pointer" onclick="showPage('library')">Library →</span></div>
+  </div>
+  <div class="skills-wrap">
+    <div class="skills-inner">
+      <div class="reveal"><p class="section-label">02 — Skills</p><h2 class="section-title">Built to <em>Build</em></h2></div>
+      <div class="skills-cols reveal">
+        <div>
+          <p class="scol-label tech">// Languages & Development</p>
+          <div class="skill-row"><span class="skill-name">Python</span><div class="sbw"><div class="sb tech" data-w="90"></div></div></div>
+          <div class="skill-row"><span class="skill-name">Java</span><div class="sbw"><div class="sb tech" data-w="82"></div></div></div>
+          <div class="skill-row"><span class="skill-name">C++</span><div class="sbw"><div class="sb tech" data-w="78"></div></div></div>
+          <div class="skill-row"><span class="skill-name">Kotlin</span><div class="sbw"><div class="sb tech" data-w="75"></div></div></div>
+          <div class="skill-row"><span class="skill-name">Full-Stack Development</span><div class="sbw"><div class="sb tech" data-w="83"></div></div></div>
+          <div class="skill-row"><span class="skill-name">QA & Test Engineering</span><div class="sbw"><div class="sb tech" data-w="88"></div></div></div>
+          <div class="skill-tags"><span class="stag tech">Python</span><span class="stag tech">Java</span><span class="stag tech">C++</span><span class="stag tech">Kotlin</span><span class="stag tech">SQL</span><span class="stag tech">Git</span><span class="stag tech">REST APIs</span></div>
+        </div>
+        <div>
+          <p class="scol-label design">// Design & Human Thinking</p>
+          <div class="skill-row"><span class="skill-name">Figma / UI Design</span><div class="sbw"><div class="sb design" data-w="85"></div></div></div>
+          <div class="skill-row"><span class="skill-name">UX Thinking</span><div class="sbw"><div class="sb design" data-w="80"></div></div></div>
+          <div class="skill-row"><span class="skill-name">Prototyping</span><div class="sbw"><div class="sb design" data-w="78"></div></div></div>
+          <div class="skill-row"><span class="skill-name">Psychology & Behavior</span><div class="sbw"><div class="sb design" data-w="75"></div></div></div>
+          <div class="skill-row"><span class="skill-name">Problem Decomposition</span><div class="sbw"><div class="sb design" data-w="92"></div></div></div>
+          <div class="skill-row"><span class="skill-name">Technical Communication</span><div class="sbw"><div class="sb design" data-w="85"></div></div></div>
+          <div class="skill-tags"><span class="stag design">Figma</span><span class="stag design">Prototyping</span><span class="stag design">User Research</span><span class="stag design">Systems Thinking</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
+</div>
+
+<!-- ════════════════ PROJECTS ════════════════ -->
+<div class="page" id="page-projects">
+  <div class="page-hero reveal"><p class="section-label">03 — Projects</p><h1 class="section-title">Things I've<br><em>Built</em></h1><p class="page-hero-sub">Real problems, real solutions — from a full-stack coffee shop management app to QA tooling.</p></div>
+  <div class="feat-section reveal">
+    <p class="section-label">Capstone Project</p>
+    <div class="feat-card">
+      <div>
+        <p class="feat-badge">Featured · Full-Stack App</p>
+        <h2 class="feat-title">Ziggi's Coffee<br><em>Manager App</em></h2>
+        <p class="feat-desc">My college capstone — a full-stack management app designed from real operational pain points I experienced as a manager at Ziggi's Coffee. A unified platform for team messaging, shift scheduling, and smart inventory ordering.</p>
+        <div class="feat-tags"><span class="ftag tech">Full-Stack</span><span class="ftag tech">Scheduling</span><span class="ftag tech">Messaging</span><span class="ftag gold">Figma Design</span><span class="ftag gold">Capstone</span></div>
+        <a href="https://github.com/CalebJamezzz" target="_blank" class="btn-ghost" style="font-size:.68rem;padding:.6rem 1.5rem">View on GitHub ↗</a>
+      </div>
+      <ul class="feat-list">
+        <li class="feat-item"><span class="fi">💬</span><div><p class="fi-lbl">Team Messaging</p><p class="fi-desc">Internal messaging for staff and manager communication.</p></div></li>
+        <li class="feat-item"><span class="fi">📅</span><div><p class="fi-lbl">Shift Scheduler</p><p class="fi-desc">Build and publish schedules with full team visibility.</p></div></li>
+        <li class="feat-item"><span class="fi">📋</span><div><p class="fi-lbl">Smart Order Lists</p><p class="fi-desc">Enter current stock and pars — app calculates what to order.</p></div></li>
+        <li class="feat-item"><span class="fi">🔐</span><div><p class="fi-lbl">Manager Actions</p><p class="fi-desc">Role-based access separating manager tools from staff views.</p></div></li>
+      </ul>
+    </div>
+  </div>
+  <div class="proj-section">
+    <div class="reveal"><p class="section-label">More Work</p><h2 class="section-title">Other <em>Projects</em></h2></div>
+    <div class="filter-bar reveal"><button class="fb active" onclick="filterP('all',this)">All</button><button class="fb" onclick="filterP('dev',this)">Development</button><button class="fb" onclick="filterP('design',this)">Design</button><button class="fb" onclick="filterP('qa',this)">QA / Tools</button></div>
+    <div class="proj-grid reveal">
+      <div class="pcard" data-cat="qa dev"><p class="ptype">// QA Tooling</p><div class="pheader"><h3 class="ptitle">Flatfile Synthetic Generator</h3><a class="pextlink" href="https://github.com/CalebJamezzz/Flatfile-Synthetic-Generator" target="_blank">↗ GitHub</a></div><p class="pdesc">Generates synthetic flat file data for seeding test environments and validating data pipelines.</p><div class="ptags"><span class="ptag">Python</span><span class="ptag">Data Generation</span><span class="ptag">QA Tooling</span></div></div>
+      <div class="pcard" data-cat="dev"><p class="ptype">// College · Development</p><div class="pheader"><h3 class="ptitle">Project Title Here</h3></div><p class="pdesc">Replace with one of your college projects — describe the problem, what you built, and the outcome.</p><div class="ptags"><span class="ptag">Language</span><span class="ptag">Framework</span></div></div>
+      <div class="pcard" data-cat="dev"><p class="ptype">// College · Development</p><div class="pheader"><h3 class="ptitle">Project Title Here</h3></div><p class="pdesc">Another college project — a systems project, backend service, or algorithm showcase.</p><div class="ptags"><span class="ptag">Language</span><span class="ptag">Framework</span></div></div>
+      <div class="pcard" data-cat="design"><p class="ptype d">// Figma Design</p><div class="pheader"><h3 class="ptitle">Design Work</h3></div><p class="pdesc">Add a Figma project here — app concept, UI exploration, or redesign.</p><div class="ptags"><span class="ptag">Figma</span><span class="ptag">UI Design</span></div></div>
+    </div>
+  </div>
+  <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
+</div>
+
+<!-- ════════════════ LIBRARY ════════════════ -->
+<div class="page" id="page-library">
+  <div class="page-hero reveal">
+    <p class="section-label">Library</p>
+    <h1 class="section-title">Books, Articles<br>&amp; <em>Ideas Written Down</em></h1>
+    <p class="page-hero-sub">A growing collection of books in progress, standalone articles, and thoughts worth preserving.</p>
+  </div>
+
+  <!-- Main library browse view -->
+  <div id="libBrowse">
+    <div class="lib-outer">
+      <div class="lib-tabs">
+        <div class="lib-tab active" onclick="switchLibTab('books',this)">Books</div>
+        <div class="lib-tab" onclick="switchLibTab('articles',this)">Articles</div>
+      </div>
+
+      <!-- Books panel -->
+      <div class="lib-panel active" id="libBooks">
+        <div class="lib-section-header">
+          <h2>Books in Progress</h2>
+          <button class="btn-primary admin-only" onclick="openBookModal()">+ New Book</button>
+        </div>
+        <div class="books-grid" id="booksGrid"></div>
+        <div class="empty-state" id="booksEmpty"><span class="empty-icon">📖</span><h3>No books yet</h3><p>Add your first book to get started.</p><button class="btn-primary admin-only" onclick="openBookModal()">+ New Book</button></div>
+      </div>
+
+      <!-- Articles panel -->
+      <div class="lib-panel" id="libArticles">
+        <div class="lib-section-header">
+          <h2>Articles &amp; Essays</h2>
+          <button class="btn-primary admin-only" onclick="openArticleModal()">+ New Article</button>
+        </div>
+        <div class="articles-grid" id="articlesGrid"></div>
+        <div class="empty-state" id="articlesEmpty"><span class="empty-icon">✍️</span><h3>No articles yet</h3><p>Write your first article or essay.</p><button class="btn-primary admin-only" onclick="openArticleModal()">+ New Article</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Book detail view -->
+  <div id="libBookDetail" style="display:none">
+    <div class="book-detail-header">
+      <div>
+        <div class="book-detail-back" onclick="closeBookDetail()">← Back to Library</div>
+        <h1 class="book-detail-title" id="bookDetailTitle"></h1>
+        <p class="book-detail-desc" id="bookDetailDesc"></p>
+      </div>
+      <div style="display:flex;gap:.8rem;flex-shrink:0;margin-top:3.5rem">
+        <button class="btn-sm admin-only" onclick="openChModal(null,currentBookId)">+ Add Chapter</button>
+        <button class="btn-sm admin-only" onclick="editCurrentBook()">Edit Book</button>
+        <button class="btn-sm danger admin-only" onclick="deleteCurrentBook()">Delete Book</button>
+      </div>
+    </div>
+    <div class="book-detail-layout">
+      <div class="ch-sidebar">
+        <p class="ch-sidebar-title">Chapters</p>
+        <ul class="ch-list" id="chList"></ul>
+        <div class="empty-state admin-only block" id="chListEmpty" style="padding:2rem 0;text-align:left"><p style="font-size:.85rem">No chapters yet.</p></div>
+      </div>
+      <div id="chMain">
+        <div class="empty-state" id="chEmpty"><span class="empty-icon">✦</span><h3>No chapters yet</h3><p>Add your first chapter to this book.</p><button class="btn-primary admin-only" onclick="openChModal(null,currentBookId)">+ Add Chapter</button></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Article reader -->
+  <div id="libArticleReader" style="display:none">
+    <div class="reader-header">
+      <div class="reader-back" onclick="closeArticleReader()">← Back to Library</div>
+      <p id="readerTag" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem"></p>
+      <h1 class="reader-title" id="readerTitle"></h1>
+      <p class="reader-meta" id="readerMeta"></p>
+    </div>
+    <div class="reader-body" id="readerBody"></div>
+    <div class="reader-actions">
+      <button class="btn-sm admin-only" id="readerEditBtn">Edit Article</button>
+      <button class="btn-sm danger admin-only" id="readerDeleteBtn">Delete Article</button>
+    </div>
+  </div>
+
+  <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
+</div>
+
+<!-- ════════════════ LAB ════════════════ -->
+<div class="page" id="page-lab">
+  <div class="page-hero reveal">
+    <p class="section-label">The Lab</p>
+    <h1 class="section-title">Ideas in<br><em>Progress</em></h1>
+    <p class="page-hero-sub">Design concepts, project seeds, research notes — a place to capture what's brewing before it becomes something bigger.</p>
+  </div>
+  <div class="lab-outer">
+    <div class="lab-toolbar reveal">
+      <div class="lab-filters">
+        <button class="lab-fb active" onclick="filterLab('all',this)">All</button>
+        <button class="lab-fb" onclick="filterLab('Design Concept',this)">Design</button>
+        <button class="lab-fb" onclick="filterLab('Project Idea',this)">Ideas</button>
+        <button class="lab-fb" onclick="filterLab('Research Note',this)">Research</button>
+        <button class="lab-fb" onclick="filterLab('Experiment',this)">Experiments</button>
+      </div>
+      <button class="btn-primary admin-only" onclick="openLabModal()">+ New Entry</button>
+    </div>
+    <div class="lab-grid" id="labGrid"></div>
+    <div class="empty-state" id="labEmpty"><span class="empty-icon">◉</span><h3>The lab is empty</h3><p>Add your first idea — no matter how unformed.</p><button class="btn-primary admin-only" onclick="openLabModal()">+ New Entry</button></div>
+  </div>
+  <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
+</div>
+
+<!-- ════════════════ CONTACT ════════════════ -->
+<div class="page" id="page-contact">
+  <div class="contact-wrap">
+    <div class="contact-info reveal">
+      <p class="section-label">Contact</p>
+      <h1 class="section-title">Let's <em>Connect</em></h1>
+      <p class="contact-sub">Open to developer roles, design opportunities, and anything interesting in between. If you're building something worth building — let's talk.</p>
+      <div class="contact-links">
+        <a class="cl" href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank"><div class="cl-icon li">in</div><div class="cl-text"><p class="cl-lbl">LinkedIn</p><p class="cl-val">caleb-thede-8a6a8221b</p></div><span>↗</span></a>
+        <a class="cl" href="https://github.com/CalebJamezzz" target="_blank"><div class="cl-icon gh">⌥</div><div class="cl-text"><p class="cl-lbl">GitHub</p><p class="cl-val">CalebJamezzz</p></div><span>↗</span></a>
+      </div>
+    </div>
+    <div class="reveal">
+      <div id="the-form">
+        <div class="form-row"><div class="fg"><label>Your Name</label><input type="text" id="f-name" placeholder="Jane Smith"/></div><div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="jane@email.com"/></div></div>
+        <div class="fg"><label>What's this about?</label><select id="f-subject"><option value="">Select…</option><option>Developer Role</option><option>Design Collaboration</option><option>Project Idea</option><option>The Book</option><option>General Inquiry</option><option>Just saying hey 👋</option></select></div>
+        <div class="fg"><label>Message</label><textarea id="f-message" placeholder="Tell me what's on your mind…"></textarea></div>
+        <button class="form-submit" onclick="handleSubmit()">Send Message →</button>
+      </div>
+      <div class="form-success" id="form-success">✓ &nbsp; Message sent — Caleb will be in touch soon.</div>
+    </div>
+  </div>
+  <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a></div></footer>
+</div>
+
+<script>
+// ══════════════════════════════════════
+//  ADMIN AUTH
+//  Password hash: SHA-256 of your password
+//  Default password: "caleb2025" — CHANGE THIS before hosting!
+//  To change: run  crypto.subtle.digest('SHA-256', ...) or use sha256 online tool
+// ══════════════════════════════════════
+const PASS_HASH = "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2"; // placeholder — see below
+let adminMode = false;
+
+async function hashStr(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+function toggleAdmin(){
+  if(adminMode){logoutAdmin()}else{openModal('loginModal');setTimeout(()=>document.getElementById('loginPw').focus(),100)}
+}
+
+async function doLogin(){
+  const pw = document.getElementById('loginPw').value;
+  const hash = await hashStr(pw);
+  // We'll use a simple stored hash approach
+  const stored = localStorage.getItem('ct_admin_hash');
+  if(!stored){
+    // First-time setup: store whatever they type as the admin password
+    localStorage.setItem('ct_admin_hash', hash);
+    grantAdmin();
+    closeModal('loginModal');
+    document.getElementById('loginPw').value='';
+  } else if(hash === stored){
+    grantAdmin();
+    closeModal('loginModal');
+    document.getElementById('loginPw').value='';
+    document.getElementById('loginError').classList.remove('visible');
+  } else {
+    document.getElementById('loginError').classList.add('visible');
+  }
+}
+
+function grantAdmin(){
+  adminMode=true;
+  document.body.classList.add('is-admin');
+  document.getElementById('adminBadge').classList.add('visible');
+  document.getElementById('lockBtn').textContent='🔓';
+  document.getElementById('lockBtn').title='Logout';
+}
+
+function logoutAdmin(){
+  adminMode=false;
+  document.body.classList.remove('is-admin');
+  document.getElementById('adminBadge').classList.remove('visible');
+  document.getElementById('lockBtn').textContent='🔒';
+  document.getElementById('lockBtn').title='Admin login';
+}
+
+// ══════════════════════════════════════
+//  CURSOR
+// ══════════════════════════════════════
+(function(){
+  const c=document.getElementById('cursor'),r=document.getElementById('cursorRing');
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY});
+  (function tick(){rx+=(mx-rx)*.18;ry+=(my-ry)*.18;c.style.transform=`translate(${mx-5}px,${my-5}px)`;r.style.transform=`translate(${rx-18}px,${ry-18}px)`;requestAnimationFrame(tick)})();
+})();
+
+// ══════════════════════════════════════
+//  ROUTER
+// ══════════════════════════════════════
+function showPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-center a').forEach(a=>a.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  setTimeout(initReveal,60);
+  if(name==='library'){renderLibrary();showLibBrowse()}
+  if(name==='lab'){renderLab()}
+}
+
+// ══════════════════════════════════════
+//  REVEAL
+// ══════════════════════════════════════
+function initReveal(){
+  const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');e.target.querySelectorAll('.sb').forEach(b=>b.style.width=b.dataset.w+'%')}})},{threshold:.1});
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el=>obs.observe(el));
+}
+initReveal();
+
+// ══════════════════════════════════════
+//  MISC
+// ══════════════════════════════════════
+function filterP(cat,btn){document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.pcard').forEach(c=>{c.style.display=(cat==='all'||(c.dataset.cat||'').split(' ').includes(cat))?'':'none'})}
+function handleSubmit(){const n=document.getElementById('f-name').value.trim(),e=document.getElementById('f-email').value.trim(),m=document.getElementById('f-message').value.trim();if(!n||!e||!m){alert('Please fill in name, email, and message.');return}document.getElementById('the-form').style.display='none';document.getElementById('form-success').style.display='block'}
+function openModal(id){document.getElementById(id).classList.add('open')}
+function closeModal(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+
+// ══════════════════════════════════════
+//  STORAGE HELPERS
+// ══════════════════════════════════════
+function get(k){try{return JSON.parse(localStorage.getItem(k)||'[]')}catch{return[]}}
+function set(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function getObj(k){try{return JSON.parse(localStorage.getItem(k)||'{}')}catch{return{}}}
+function setObj(k,v){localStorage.setItem(k,JSON.stringify(v))}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+
+// ══════════════════════════════════════
+//  BOOK COVERS
+// ══════════════════════════════════════
+const COVER_COLORS=[
+  {name:'Deep Teal',   gradient:'linear-gradient(135deg,#0D3B33,#1A6B5A)'},
+  {name:'Dark Gold',   gradient:'linear-gradient(135deg,#3B2A0D,#7A5420)'},
+  {name:'Midnight',    gradient:'linear-gradient(135deg,#0D1226,#1A2456)'},
+  {name:'Burgundy',    gradient:'linear-gradient(135deg,#2B0D0D,#6B1A1A)'},
+  {name:'Forest',      gradient:'linear-gradient(135deg,#0D2B10,#1A5E20)'},
+  {name:'Slate',       gradient:'linear-gradient(135deg,#1A1F2E,#2E3A50)'},
+  {name:'Amethyst',    gradient:'linear-gradient(135deg,#1E0D2B,#4A1A6B)'},
+  {name:'Ember',       gradient:'linear-gradient(135deg,#2B1A0D,#6B3A1A)'},
+];
+let selectedColor = COVER_COLORS[0].gradient;
+
+function buildColorSwatches(current){
+  const wrap = document.getElementById('colorSwatches');
+  wrap.innerHTML='';
+  COVER_COLORS.forEach(c=>{
+    const s=document.createElement('div');
+    s.className='swatch'+(c.gradient===(current||selectedColor)?' selected':'');
+    s.style.background=c.gradient;
+    s.title=c.name;
+    s.onclick=()=>{selectedColor=c.gradient;document.getElementById('bookColor').value=c.gradient;wrap.querySelectorAll('.swatch').forEach(x=>x.classList.remove('selected'));s.classList.add('selected')};
+    wrap.appendChild(s);
+  });
+  document.getElementById('bookColor').value=current||selectedColor;
+}
+
+// ══════════════════════════════════════
+//  LIBRARY VIEWS
+// ══════════════════════════════════════
+function showLibBrowse(){
+  document.getElementById('libBrowse').style.display='block';
+  document.getElementById('libBookDetail').style.display='none';
+  document.getElementById('libArticleReader').style.display='none';
+}
+function showLibBookDetail(){
+  document.getElementById('libBrowse').style.display='none';
+  document.getElementById('libBookDetail').style.display='block';
+  document.getElementById('libArticleReader').style.display='none';
+}
+function showLibArticleReader(){
+  document.getElementById('libBrowse').style.display='none';
+  document.getElementById('libBookDetail').style.display='none';
+  document.getElementById('libArticleReader').style.display='block';
+}
+
+function switchLibTab(tab,el){
+  document.querySelectorAll('.lib-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.lib-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('lib'+tab.charAt(0).toUpperCase()+tab.slice(1)).classList.add('active');
+}
+
+// ══════════════════════════════════════
+//  BOOKS
+// ══════════════════════════════════════
+let currentBookId=null;
+let activeChId=null;
+
+function openBookModal(id=null){
+  document.getElementById('bookModalTitle').textContent=id?'Edit Book':'New Book';
+  document.getElementById('editBookId').value=id||'';
+  const books=get('ct_books'),b=id&&books.find(b=>b.id===id);
+  document.getElementById('bookTitle').value=b?b.title:'';
+  document.getElementById('bookDesc').value=b?b.desc:'';
+  selectedColor=b?b.color:COVER_COLORS[0].gradient;
+  buildColorSwatches(selectedColor);
+  openModal('bookModal');
+}
+
+function saveBook(){
+  const title=document.getElementById('bookTitle').value.trim();
+  if(!title){alert('Please add a title.');return}
+  const desc=document.getElementById('bookDesc').value.trim();
+  const color=document.getElementById('bookColor').value||selectedColor;
+  const books=get('ct_books'),editId=document.getElementById('editBookId').value;
+  if(editId){const i=books.findIndex(b=>b.id===editId);if(i>-1)books[i]={...books[i],title,desc,color}}
+  else books.push({id:uid(),title,desc,color,date:new Date().toLocaleDateString('en-US',{month:'short',year:'numeric'})});
+  set('ct_books',books);closeModal('bookModal');renderLibrary();
+}
+
+function openBook(id){
+  currentBookId=id;activeChId=null;
+  const books=get('ct_books'),b=books.find(b=>b.id===id);
+  if(!b)return;
+  document.getElementById('bookDetailTitle').textContent=b.title;
+  document.getElementById('bookDetailDesc').textContent=b.desc||'';
+  renderBookDetail();
+  showLibBookDetail();
+}
+
+function closeBookDetail(){showLibBrowse();renderLibrary()}
+
+function editCurrentBook(){openBookModal(currentBookId)}
+function deleteCurrentBook(){
+  if(!confirm('Delete this entire book and all its chapters?'))return;
+  const books=get('ct_books').filter(b=>b.id!==currentBookId);
+  set('ct_books',books);
+  const chapters=get('ct_chapters').filter(c=>c.bookId!==currentBookId);
+  set('ct_chapters',chapters);
+  closeBookDetail();
+}
+
+function renderBookDetail(){
+  const chapters=get('ct_chapters').filter(c=>c.bookId===currentBookId);
+  const list=document.getElementById('chList'),main=document.getElementById('chMain'),empty=document.getElementById('chEmpty'),listEmpty=document.getElementById('chListEmpty');
+  list.innerHTML='';main.querySelectorAll('.ch-display').forEach(el=>el.remove());
+  const hasChapters=chapters.length>0;
+  empty.style.display=hasChapters?'none':'block';
+  if(listEmpty)listEmpty.style.display=hasChapters?'none':'block';
+  if(!hasChapters)return;
+  if(!activeChId||!chapters.find(c=>c.id===activeChId))activeChId=chapters[0].id;
+  chapters.forEach(ch=>{
+    const li=document.createElement('li');li.className='ch-item'+(ch.id===activeChId?' active':'');li.dataset.id=ch.id;
+    li.innerHTML=`<span class="ch-num-lbl">${ch.num}</span>${ch.title}`;li.onclick=()=>showChapter(ch.id);list.appendChild(li);
+    const div=document.createElement('div');div.className='ch-display'+(ch.id===activeChId?' active':'');div.id='chd_'+ch.id;
+    const body=ch.content.split('\n\n').map(p=>p.trim().startsWith('###')?`<h3>${p.replace(/^###\s*/,'')}</h3>`:`<p>${p}</p>`).join('');
+    div.innerHTML=`<p class="ch-eyebrow">${ch.num}${ch.date?' · '+ch.date:''}</p><h2 class="ch-title-h">${ch.title}</h2><div class="ch-body">${body}</div><div class="ch-actions-bar"><button class="btn-sm admin-only" onclick="openChModal('${ch.id}','${currentBookId}')">Edit</button><button class="btn-sm danger admin-only" onclick="deleteChapter('${ch.id}')">Delete</button></div>`;
+    main.appendChild(div);
+  });
+}
+
+function openChModal(id=null,bookId=null){
+  document.getElementById('chModalTitle').textContent=id?'Edit Chapter':'Add Chapter';
+  document.getElementById('editChId').value=id||'';
+  document.getElementById('chBookId').value=bookId||currentBookId||'';
+  const ch=id&&get('ct_chapters').find(c=>c.id===id);
+  document.getElementById('chNum').value=ch?ch.num:'';
+  document.getElementById('chTitle').value=ch?ch.title:'';
+  document.getElementById('chContent').value=ch?ch.content:'';
+  openModal('chModal');
+}
+
+function saveChapter(){
+  const num=document.getElementById('chNum').value.trim(),title=document.getElementById('chTitle').value.trim(),content=document.getElementById('chContent').value.trim(),bookId=document.getElementById('chBookId').value;
+  if(!title||!content){alert('Please add a title and content.');return}
+  const chapters=get('ct_chapters'),editId=document.getElementById('editChId').value;
+  if(editId){const i=chapters.findIndex(c=>c.id===editId);if(i>-1)chapters[i]={...chapters[i],num,title,content}}
+  else{const newId=uid();chapters.push({id:newId,bookId,num:num||'Chapter '+(chapters.filter(c=>c.bookId===bookId).length+1),title,content,date:new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})});activeChId=newId}
+  set('ct_chapters',chapters);closeModal('chModal');renderBookDetail();
+}
+
+function deleteChapter(id){
+  if(!confirm('Delete this chapter?'))return;
+  set('ct_chapters',get('ct_chapters').filter(c=>c.id!==id));
+  if(activeChId===id)activeChId=null;
+  renderBookDetail();
+}
+
+function showChapter(id){
+  activeChId=id;
+  document.querySelectorAll('.ch-display').forEach(d=>d.classList.toggle('active',d.id==='chd_'+id));
+  document.querySelectorAll('.ch-item').forEach(li=>li.classList.toggle('active',li.dataset.id===id));
+}
+
+function renderLibrary(){
+  const books=get('ct_books'),chapters=get('ct_chapters');
+  const grid=document.getElementById('booksGrid'),empty=document.getElementById('booksEmpty');
+  grid.innerHTML='';
+  if(!books.length){empty.style.display='block';return}
+  empty.style.display='none';
+  books.forEach(b=>{
+    const chCount=chapters.filter(c=>c.bookId===b.id).length;
+    const card=document.createElement('div');card.className='book-card';
+    card.innerHTML=`
+      <div class="book-cover" style="background:${b.color}">
+        <span class="book-cover-text">${b.title}</span>
+      </div>
+      <div class="book-body">
+        <h3 class="book-title">${b.title}</h3>
+        <p class="book-desc">${b.desc||'<em style="opacity:.4">No description.</em>'}</p>
+        <div class="book-meta">
+          <span class="book-chapters">${chCount} chapter${chCount!==1?'s':''}</span>
+          <div class="book-actions">
+            <button class="btn-sm admin-only" onclick="event.stopPropagation();openBookModal('${b.id}')">Edit</button>
+          </div>
+        </div>
+      </div>`;
+    card.onclick=()=>openBook(b.id);
+    grid.appendChild(card);
+  });
+
+  // Articles
+  renderArticles();
+}
+
+// ══════════════════════════════════════
+//  ARTICLES
+// ══════════════════════════════════════
+let currentArticleId=null;
+
+function openArticleModal(id=null){
+  document.getElementById('articleModalTitle').textContent=id?'Edit Article':'New Article';
+  document.getElementById('editArticleId').value=id||'';
+  const a=id&&get('ct_articles').find(a=>a.id===id);
+  document.getElementById('articleTitle').value=a?a.title:'';
+  document.getElementById('articleTag').value=a?a.tag:'';
+  document.getElementById('articleContent').value=a?a.content:'';
+  openModal('articleModal');
+}
+
+function saveArticle(){
+  const title=document.getElementById('articleTitle').value.trim(),tag=document.getElementById('articleTag').value.trim(),content=document.getElementById('articleContent').value.trim();
+  if(!title||!content){alert('Please add a title and content.');return}
+  const articles=get('ct_articles'),editId=document.getElementById('editArticleId').value;
+  if(editId){const i=articles.findIndex(a=>a.id===editId);if(i>-1)articles[i]={...articles[i],title,tag,content}}
+  else articles.unshift({id:uid(),title,tag,content,date:new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})});
+  set('ct_articles',articles);closeModal('articleModal');renderArticles();
+}
+
+function renderArticles(){
+  const articles=get('ct_articles'),grid=document.getElementById('articlesGrid'),empty=document.getElementById('articlesEmpty');
+  grid.innerHTML='';
+  if(!articles.length){empty.style.display='block';return}
+  empty.style.display='none';
+  articles.forEach(a=>{
+    const preview=a.content.split('\n\n')[0].replace(/^###\s*/,'').slice(0,220)+'…';
+    const readMins=Math.max(1,Math.ceil(a.content.split(' ').length/200));
+    const card=document.createElement('div');card.className='article-card';
+    card.innerHTML=`
+      <p class="article-tag">${a.tag||'Article'}</p>
+      <h3 class="article-title">${a.title}</h3>
+      <p class="article-preview">${preview}</p>
+      <div class="article-meta"><span>${a.date||''}</span><span>${readMins} min read</span></div>
+      <div class="article-card-actions">
+        <button class="btn-sm admin-only" onclick="event.stopPropagation();openArticleModal('${a.id}')">Edit</button>
+        <button class="btn-sm danger admin-only" onclick="event.stopPropagation();deleteArticle('${a.id}')">Delete</button>
+      </div>`;
+    card.onclick=()=>openArticle(a.id);
+    grid.appendChild(card);
+  });
+}
+
+function openArticle(id){
+  const a=get('ct_articles').find(a=>a.id===id);if(!a)return;
+  currentArticleId=id;
+  document.getElementById('readerTag').textContent=a.tag||'Article';
+  document.getElementById('readerTitle').textContent=a.title;
+  document.getElementById('readerMeta').textContent=a.date||'';
+  const body=a.content.split('\n\n').map(p=>p.trim().startsWith('###')?`<h3>${p.replace(/^###\s*/,'')}</h3>`:`<p>${p}</p>`).join('');
+  document.getElementById('readerBody').innerHTML=body;
+  document.getElementById('readerEditBtn').onclick=()=>openArticleModal(id);
+  document.getElementById('readerDeleteBtn').onclick=()=>deleteArticle(id,true);
+  showLibArticleReader();
+}
+
+function closeArticleReader(){showLibBrowse();renderLibrary();switchLibTab('articles',document.querySelectorAll('.lib-tab')[1])}
+function deleteArticle(id,fromReader=false){
+  if(!confirm('Delete this article?'))return;
+  set('ct_articles',get('ct_articles').filter(a=>a.id!==id));
+  if(fromReader)closeArticleReader(); else renderArticles();
+}
+
+// ══════════════════════════════════════
+//  LAB
+// ══════════════════════════════════════
+function openLabModal(id=null){
+  document.getElementById('labModalTitle').textContent=id?'Edit Entry':'New Lab Entry';
+  document.getElementById('editLabId').value=id||'';
+  const e=id&&get('ct_lab').find(e=>e.id===id);
+  document.getElementById('labType').value=e?e.type:'Design Concept';
+  document.getElementById('labTitle').value=e?e.title:'';
+  document.getElementById('labDesc').value=e?e.desc:'';
+  openModal('labModal');
+}
+
+function saveLabEntry(){
+  const type=document.getElementById('labType').value,title=document.getElementById('labTitle').value.trim(),desc=document.getElementById('labDesc').value.trim();
+  if(!title){alert('Please add a title.');return}
+  const entries=get('ct_lab'),editId=document.getElementById('editLabId').value;
+  if(editId){const i=entries.findIndex(e=>e.id===editId);if(i>-1)entries[i]={...entries[i],type,title,desc}}
+  else entries.unshift({id:uid(),type,title,desc,date:new Date().toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'})});
+  set('ct_lab',entries);closeModal('labModal');renderLab();
+}
+
+function deleteLabEntry(id){
+  if(!confirm('Delete this entry?'))return;
+  set('ct_lab',get('ct_lab').filter(e=>e.id!==id));renderLab();
+}
+
+const LAB_TYPE_CLASS={
+  'Design Concept':'',
+  'Project Idea':'idea',
+  'Research Note':'research',
+  'Experiment':'experiment',
+  'Other':''
+};
+
+function renderLab(filter='all'){
+  let entries=get('ct_lab');
+  const grid=document.getElementById('labGrid'),empty=document.getElementById('labEmpty');
+  if(filter!=='all')entries=entries.filter(e=>e.type===filter);
+  grid.innerHTML='';
+  if(!entries.length){empty.style.display='block';return}
+  empty.style.display='none';
+  entries.forEach(e=>{
+    const typeClass=LAB_TYPE_CLASS[e.type]||'';
+    const preview=e.desc?e.desc.slice(0,180)+(e.desc.length>180?'…':''):'';
+    const card=document.createElement('div');card.className='lab-card';
+    card.innerHTML=`
+      <span class="lab-type-badge ${typeClass}">${e.type}</span>
+      <h3 class="lab-card-title">${e.title}</h3>
+      <p class="lab-card-desc">${preview||'<em style="opacity:.4">No description yet.</em>'}</p>
+      <div class="lab-card-footer">
+        <span class="lab-card-date">${e.date||''}</span>
+        <div class="lab-card-actions">
+          <button class="btn-sm admin-only" onclick="openLabModal('${e.id}')">Edit</button>
+          <button class="btn-sm danger admin-only" onclick="deleteLabEntry('${e.id}')">Delete</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+
+function filterLab(type,btn){
+  document.querySelectorAll('.lab-fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  renderLab(type);
+}
+</script>
+</body>
+</html>
