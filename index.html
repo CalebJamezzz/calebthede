@@ -404,8 +404,8 @@
     .page-nav-info{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);text-align:center;line-height:1.8}
     .page-nav-info strong{color:var(--gold);font-weight:400}
     @media(max-width:768px){.ch-nav,.reader-admin-bar,.page-nav{padding-left:1.5rem;padding-right:1.5rem}}
-    .empty-state{text-align:center;padding:5rem 2rem;color:var(--text-dim)}
-    .empty-icon{font-size:2.5rem;margin-bottom:1rem;display:block;opacity:.35}
+    .empty-state{text-align:center;padding:5rem 2rem;color:var(--text-dim);display:flex;flex-direction:column;align-items:center;gap:.5rem}
+    .empty-icon{font-size:2rem;margin-bottom:.5rem;opacity:.35}
     .empty-state h3{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--text);margin-bottom:.5rem}
     .empty-state p{font-size:.9rem;max-width:380px;margin:0 auto .5rem}
     /* LAB */
@@ -921,12 +921,12 @@
     <div class="book-detail-layout">
       <div class="ch-sidebar"><p class="ch-sidebar-title">Chapters</p><ul class="ch-list" id="chList"></ul><button class="btn-sm admin-only" style="width:100%;margin-top:.5rem" onclick="openChModal(null,currentBookId)">+ Add Chapter</button></div>
       <div id="chMain">
-        <div class="empty-state" id="chEmpty" style="display:none">
-          <span class="empty-icon">✦</span>
-          <h3>No chapters yet</h3>
-          <p class="admin-only">Add your first chapter to get started.</p>
-          <p class="non-admin-only" style="opacity:.5;font-size:.85rem">Coming soon.</p>
-          <button class="btn-primary admin-only" style="margin-top:1rem" onclick="openChModal(null,currentBookId)">+ Add Chapter</button>
+        <div id="chEmpty" style="display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem;color:var(--text-dim)">
+          <span style="font-size:2rem;opacity:.25;margin-bottom:1.2rem;display:block">✦</span>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--text);margin-bottom:.5rem">No chapters yet</h3>
+          <p class="admin-only" style="font-size:.9rem;opacity:.6;margin-bottom:1.2rem">Add your first chapter to get started.</p>
+          <p class="non-admin-only" style="font-size:.85rem;opacity:.4;font-family:'JetBrains Mono',monospace;letter-spacing:.1em">Coming soon.</p>
+          <button class="btn-primary admin-only" onclick="openChModal(null,currentBookId)">+ Add Chapter</button>
         </div>
         <div id="chReader" style="display:none">
           <div style="padding:2.5rem 4rem 0;max-width:680px;margin:0 auto">
@@ -1203,9 +1203,11 @@ let bookTotalPages=0,chapterPageOffsets=[];
 async function renderBookDetail(){
   const list=document.getElementById('chList'),empty=document.getElementById('chEmpty'),reader=document.getElementById('chReader'),tracker=document.getElementById('celestialTracker');
   list.innerHTML='<li style="font-family:JetBrains Mono,monospace;font-size:.6rem;color:var(--text-dim);padding:.5rem 0">Loading…</li>';
-  const{data:chs}=await sb.from('chapters').select('id,num,title,content,published').eq('book_id',currentBookId).order('num',{ascending:true});
+  // Admins see all chapters; public only sees published ones (RLS handles this server-side)
+  const{data:chs,error:chErr}=await sb.from('chapters').select('id,num,title,content,published').eq('book_id',currentBookId).order('num',{ascending:true});
+  if(chErr)console.warn('chapters fetch:',chErr);
   list.innerHTML='';chapterIndex=chs||[];
-  if(!chapterIndex.length){empty.style.display='flex';reader.style.display='none';tracker.style.display='none';refreshAdmin(list.closest('.ch-sidebar'));return}
+  if(!chapterIndex.length){empty.style.display='flex';empty.style.flexDirection='column';empty.style.alignItems='center';reader.style.display='none';tracker.style.display='none';refreshAdmin(list.closest('.ch-sidebar'));return}
   empty.style.display='none';
   let pageCount=1;chapterPageOffsets=[];
   chapterIndex.forEach(ch=>{
@@ -1226,6 +1228,7 @@ async function renderBookDetail(){
 
 function buildStarDots(){
   const container=document.getElementById('starDots');container.innerHTML='';
+  if(!chapterIndex.length)return;
   if(chapterIndex.length===1){container.style.justifyContent='center';}else{container.style.justifyContent='space-between';}
   const total=chapterIndex.length,maxDots=Math.min(total,48),step=total/maxDots;
   for(let i=0;i<maxDots;i++){
