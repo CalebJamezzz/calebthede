@@ -337,6 +337,14 @@
     .ch-num-lbl{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);display:block;margin-bottom:.15rem}
     .ch-item.active .ch-num-lbl{color:var(--gold-dim)}
     .ch-draft-pill{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;background:rgba(212,168,74,.12);border:1px solid rgba(212,168,74,.3);color:var(--gold);border-radius:3px;padding:.1rem .35rem;margin-left:.5rem;vertical-align:middle}
+    .ch-toggle-wrap{display:flex;align-items:center;gap:.75rem;cursor:pointer;user-select:none}
+    .ch-toggle-input{position:absolute;opacity:0;width:0;height:0}
+    .ch-toggle-track{position:relative;width:40px;height:22px;border-radius:11px;background:var(--bg3);border:1px solid var(--border);transition:all .25s;flex-shrink:0}
+    .ch-toggle-thumb{position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:var(--text-dim);transition:all .25s}
+    .ch-toggle-input:checked+.ch-toggle-track{background:rgba(78,201,176,.15);border-color:var(--teal)}
+    .ch-toggle-input:checked+.ch-toggle-track .ch-toggle-thumb{left:21px;background:var(--teal)}
+    .ch-toggle-lbl{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);transition:color .2s}
+    .ch-toggle-input:checked~.ch-toggle-lbl{color:var(--teal)}
     .ch-display{display:none}.ch-display.active{display:block}
     .ch-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem}
     .ch-title-h{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.6rem);font-weight:300;line-height:1.15;margin-bottom:2rem}
@@ -554,7 +562,14 @@
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;margin-bottom:1rem;align-items:end">
       <div class="mf" style="margin:0"><label>Chapter Label</label><input type="text" id="chNum" placeholder="e.g. Chapter 1, Prologue"/></div>
       <div class="mf" style="margin:0"><label>Chapter Title</label><input type="text" id="chTitle" placeholder="The title of this chapter"/></div>
-      <div class="mf" style="margin:0"><label style="display:flex;align-items:center;gap:.6rem;cursor:pointer"><input type="checkbox" id="chPublished" style="width:auto;accent-color:var(--gold);width:16px;height:16px"/> <span>Published</span> <span style="font-size:.7em;opacity:.5;font-family:'JetBrains Mono',monospace">(visible to readers)</span></label></div>
+      <div class="mf" style="margin:0">
+        <label style="display:block;font-size:.78rem;letter-spacing:.06em;color:var(--text-dim);margin-bottom:.6rem">Visibility</label>
+        <label class="ch-toggle-wrap">
+          <input type="checkbox" id="chPublished" class="ch-toggle-input"/>
+          <span class="ch-toggle-track"><span class="ch-toggle-thumb"></span></span>
+          <span class="ch-toggle-lbl" id="chPublishedLbl">Draft</span>
+        </label>
+      </div>
     </div>
     <div class="ch-editor-wrap">
       <div class="ch-editor-pane">
@@ -903,7 +918,7 @@
     <div class="book-detail-layout">
       <div class="ch-sidebar"><p class="ch-sidebar-title">Chapters</p><ul class="ch-list" id="chList"></ul><button class="btn-sm admin-only" style="width:100%;margin-top:.5rem" onclick="openChModal(null,currentBookId)">+ Add Chapter</button></div>
       <div id="chMain">
-        <div class="empty-state" id="chEmpty"><span class="empty-icon">✦</span><h3>No chapters yet</h3><p>Add your first chapter.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openChModal(null,currentBookId)">+ Add Chapter</button></div>
+        <div class="empty-state" id="chEmpty" style="display:none"><span class="empty-icon">✦</span><h3>No chapters yet</h3><p>Add your first chapter.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openChModal(null,currentBookId)">+ Add Chapter</button></div>
         <div id="chReader" style="display:none">
           <div style="padding:2.5rem 4rem 0;max-width:680px;margin:0 auto">
             <p id="chEyebrow" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem"></p>
@@ -1011,7 +1026,10 @@ function toast(msg,type='success'){const t=document.getElementById('toast');t.te
   }
 })();
 
-let adminMode=false;
+const canPush=(()=>{try{return window.self===window.top&&window.location.href!=='about:srcdoc';}catch(e){return false;}})();
+function safePush(state,title,url){if(canPush)try{history.pushState(state,title,url);}catch(e){}}
+
+
 sb.auth.onAuthStateChange((event,session)=>{if(session)grantAdmin();else revokeAdmin()});
 
 function toggleAdmin(){if(adminMode)sb.auth.signOut();else{openModal('loginModal');setTimeout(()=>document.getElementById('loginEmail').focus(),100)}}
@@ -1039,7 +1057,7 @@ function showPage(name,skipHistory){
   setTimeout(initReveal,60);
   if(name==='library')loadLibrary();
   if(name==='lab')loadLab();
-  if(!skipHistory)history.pushState({page:name},'','#'+name);
+  if(!skipHistory)safePush({page:name},'','#'+name);
 }
 // Handle browser back/forward
 window.addEventListener('popstate',e=>{
@@ -1159,9 +1177,9 @@ async function openBook(id,title,desc,skipHistory){
   document.getElementById('bookDetailTitle').textContent=title;
   document.getElementById('bookDetailDesc').textContent=desc||'';
   await renderBookDetail();showLibBookDetail();
-  if(!skipHistory)history.pushState({page:'library',sub:'book',id,title,desc},'','#library/book/'+id);
+  if(!skipHistory)safePush({page:'library',sub:'book',id,title,desc},'','#library/book/'+id);
 }
-function closeBookDetail(){showLibBrowse();loadBooks();history.pushState({page:'library'},'','#library');}
+function closeBookDetail(){showLibBrowse();loadBooks();safePush({page:'library'},'','#library');}
 
 async function deleteCurrentBook(){
   if(!confirm('Delete this book and all its chapters?'))return;
@@ -1349,8 +1367,8 @@ function stepChapter(dir){
 async function openChModal(id=null,bookId=null){
   document.getElementById('chModalTitle').textContent=id?'Edit Chapter':'Add Chapter';
   document.getElementById('editChId').value=id||'';document.getElementById('chBookId').value=bookId||currentBookId||'';
-  if(id){const{data:ch}=await sb.from('chapters').select('*').eq('id',id).single();document.getElementById('chNum').value=ch?.num||'';document.getElementById('chTitle').value=ch?.title||'';document.getElementById('chContent').value=ch?.content||'';document.getElementById('chPublished').checked=ch?.published||false;updateChPreview();}
-  else{document.getElementById('chNum').value='';document.getElementById('chTitle').value='';document.getElementById('chContent').value='';document.getElementById('chPublished').checked=false;updateChPreview();}
+  if(id){const{data:ch}=await sb.from('chapters').select('*').eq('id',id).single();document.getElementById('chNum').value=ch?.num||'';document.getElementById('chTitle').value=ch?.title||'';document.getElementById('chContent').value=ch?.content||'';document.getElementById('chPublished').checked=ch?.published||false;updateChPublishedLbl();updateChPreview();}
+  else{document.getElementById('chNum').value='';document.getElementById('chTitle').value='';document.getElementById('chContent').value='';document.getElementById('chPublished').checked=false;updateChPublishedLbl();updateChPreview();}
   openModal('chModal');
 }
 
@@ -1420,10 +1438,10 @@ function openArticle(a,skipHistory){
   document.getElementById('readerEditBtn').onclick=()=>openArticleModal(a.id);
   document.getElementById('readerDeleteBtn').onclick=()=>deleteArticle(a.id,true);
   showLibArticleReader();
-  if(!skipHistory)history.pushState({page:'library',sub:'article',id:a.id},'','#library/article/'+a.id);
+  if(!skipHistory)safePush({page:'library',sub:'article',id:a.id},'','#library/article/'+a.id);
 }
 
-function closeArticleReader(){showLibBrowse();loadArticles();switchLibTab('Articles',document.querySelectorAll('.lib-tab')[1]);history.pushState({page:'library'},'','#library');}
+function closeArticleReader(){showLibBrowse();loadArticles();switchLibTab('Articles',document.querySelectorAll('.lib-tab')[1]);safePush({page:'library'},'','#library');}
 
 async function deleteArticle(id,fromReader=false){
   if(!confirm('Delete this article?'))return;
@@ -1633,6 +1651,14 @@ document.addEventListener('paste',e=>{
   }
   // plain paste falls through normally, then update preview
   setTimeout(updateChPreview,50);
+});
+
+function updateChPublishedLbl(){
+  const checked=document.getElementById('chPublished').checked;
+  document.getElementById('chPublishedLbl').textContent=checked?'Published — visible to readers':'Draft — hidden from readers';
+}
+document.addEventListener('DOMContentLoaded',()=>{
+  document.getElementById('chPublished').addEventListener('change',updateChPublishedLbl);
 });
 
 function updateChPreview(){
