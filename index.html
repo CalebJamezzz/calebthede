@@ -427,21 +427,25 @@
     .lab-filters{display:flex;gap:.6rem;flex-wrap:wrap}
     .lab-fb{padding:.35rem .9rem;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;border-radius:3px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all .2s}
     .lab-fb:hover,.lab-fb.active{border-color:var(--teal);color:var(--teal);background:rgba(78,201,176,.06)}
-    .lab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
-    .lab-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:2rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;display:flex;flex-direction:column}
-    .lab-card:hover{border-color:var(--teal);transform:translateY(-4px)}
-    .lab-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--teal),var(--gold))}
-    .lab-badge{display:inline-block;padding:.25rem .75rem;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;border-radius:3px;margin-bottom:1rem;border:1px solid}
-    .lab-badge.design{border-color:var(--teal-dim);color:var(--teal);background:rgba(78,201,176,.08)}
-    .lab-badge.idea{border-color:var(--gold-dim);color:var(--gold);background:rgba(200,164,90,.08)}
-    .lab-badge.research{border-color:rgba(180,120,200,.4);color:#C87FD5;background:rgba(180,120,200,.08)}
-    .lab-badge.experiment{border-color:rgba(90,180,200,.4);color:#5AB4C8;background:rgba(90,180,200,.08)}
+    .lab-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.8rem}
+    .lab-card{background:var(--bg2);border-radius:8px;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(0,0,0,.25);cursor:default}
+    .lab-card:hover{transform:translateY(-5px);box-shadow:0 12px 32px rgba(0,0,0,.4)}
+    .lab-card-banner{position:relative;height:90px;overflow:hidden;flex-shrink:0}
+    .lab-card-banner svg{position:absolute;inset:0;width:100%;height:100%}
+    .lab-card-body{padding:1.2rem 1.4rem 1.4rem;flex:1;display:flex;flex-direction:column}
+    .lab-badge{display:inline-block;padding:.2rem .55rem;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.15em;text-transform:uppercase;border-radius:2px;margin-bottom:.8rem;border:1px solid;align-self:flex-start}
+    .lab-badge.design{border-color:rgba(78,201,176,.3);color:var(--teal);background:rgba(78,201,176,.08)}
+    .lab-badge.idea{border-color:rgba(200,164,90,.3);color:var(--gold);background:rgba(200,164,90,.08)}
+    .lab-badge.research{border-color:rgba(180,120,200,.3);color:#C87FD5;background:rgba(180,120,200,.08)}
+    .lab-badge.experiment{border-color:rgba(90,180,200,.3);color:#5AB4C8;background:rgba(90,180,200,.08)}
     .lab-badge.other{border-color:var(--border);color:var(--text-dim);background:transparent}
-    .lab-card-title{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:400;color:var(--text);margin-bottom:.7rem;line-height:1.2}
-    .lab-card-desc{font-size:.88rem;color:var(--text-dim);line-height:1.65;flex:1;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:1.2rem}
-    .lab-card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:1rem;border-top:1px solid var(--border)}
-    .lab-card-date{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--text-dim)}
+    .lab-card-title{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:400;color:var(--text);margin-bottom:.6rem;line-height:1.2}
+    .lab-card-desc{font-size:.87rem;color:var(--text-dim);line-height:1.7;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:1rem}
+    .lab-card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:.8rem;border-top:1px solid var(--border)}
+    .lab-card-date{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.1em;color:var(--text-dim)}
     .lab-card-actions{display:flex;gap:.5rem}
+    .lab-link-btn{display:inline-flex;align-items:center;gap:.4rem;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);text-decoration:none;padding:.3rem .6rem;border:1px solid rgba(78,201,176,.3);border-radius:3px;transition:all .2s;margin-bottom:.8rem;align-self:flex-start}
+    .lab-link-btn:hover{background:rgba(78,201,176,.08);border-color:var(--teal)}
     /* CONTACT */
     .contact-wrap{max-width:1100px;margin:0 auto;padding:6rem 4rem;display:grid;grid-template-columns:1fr 1.2fr;gap:6rem;align-items:start}
     .contact-info{position:sticky;top:110px}
@@ -656,6 +660,7 @@
     <div class="mf"><label>Type</label><select id="labType"><option>Design Concept</option><option>Project Idea</option><option>Research Note</option><option>Experiment</option><option>Other</option></select></div>
     <div class="mf"><label>Title</label><input type="text" id="labTitle" placeholder="Give it a name"/></div>
     <div class="mf"><label>Description / Notes</label><textarea id="labDesc" placeholder="What are you thinking?"></textarea></div>
+    <div class="mf"><label>Link <span style="opacity:.5;font-size:.8em">(optional — Figma, GitHub, demo, etc.)</span></label><input type="text" id="labLink" placeholder="https://…"/></div>
     <div class="modal-actions"><button class="btn-primary" id="labSaveBtn" onclick="saveLabEntry()">Save</button><button class="btn-ghost" onclick="closeModal('labModal')">Cancel</button></div>
   </div>
 </div>
@@ -1362,7 +1367,7 @@ async function deleteCurrentBook(){
 
 let chapterIndex=[],activeChIdx=-1;
 const WORDS_PER_PAGE=250;
-let bookTotalPages=0,chapterPageOffsets=[];
+let bookTotalPages=0,chapterPageOffsets=[],estimatedPagesPerChapter=[],actualPagesPerChapter=[];
 
 async function renderBookDetail(){
   const list=document.getElementById('chList'),empty=document.getElementById('chEmpty'),reader=document.getElementById('chReader'),tracker=document.getElementById('celestialTracker');
@@ -1373,10 +1378,13 @@ async function renderBookDetail(){
   list.innerHTML='';chapterIndex=chs||[];
   if(!chapterIndex.length){empty.style.display='flex';empty.style.flexDirection='column';empty.style.alignItems='center';reader.style.display='none';tracker.style.display='none';refreshAdmin(list.closest('.ch-sidebar'));return}
   empty.style.display='none';
-  let pageCount=1;chapterPageOffsets=[];
+  let pageCount=1;chapterPageOffsets=[];estimatedPagesPerChapter=[];actualPagesPerChapter=[];
   chapterIndex.forEach(ch=>{
     chapterPageOffsets.push(pageCount);
-    pageCount+=Math.max(1,Math.ceil(((ch.content||'').split(/\s+/).filter(Boolean).length)/WORDS_PER_PAGE));
+    const est=Math.max(1,Math.ceil(((ch.content||'').split(/\s+/).filter(Boolean).length)/WORDS_PER_PAGE));
+    estimatedPagesPerChapter.push(est);
+    actualPagesPerChapter.push(null);
+    pageCount+=est;
   });
   bookTotalPages=pageCount-1;
   chapterIndex.forEach((ch,i)=>{
@@ -1438,14 +1446,17 @@ function updatePageNav(pageIdx){
   const total=currentPages.length,nav=document.getElementById('pageNav');
   if(total<=1){nav.style.display='none';return}
   nav.style.display='flex';
-  const absPage=(chapterPageOffsets[activeChIdx]||1)+pageIdx;
+  // Recalculate absolute page using actual counts for all preceding chapters
+  let absPage=1;
+  for(let i=0;i<activeChIdx;i++) absPage+=(actualPagesPerChapter[i]||estimatedPagesPerChapter[i]||1);
+  absPage+=pageIdx;
   const atFirst=pageIdx===0,atLast=pageIdx===total-1;
   document.getElementById('pagePrevBtn').disabled=atFirst;
   document.getElementById('pageNextBtn').disabled=atLast;
   document.getElementById('pageFirstBtn').disabled=atFirst;
   document.getElementById('pageLastBtn').disabled=atLast;
   document.getElementById('pageNavInfo').innerHTML=
-    `Page\u00a0<strong>${absPage}</strong>\u00a0of ~${bookTotalPages}<br>`+
+    `Page\u00a0<strong>${absPage}</strong>\u00a0of ${bookTotalPages}<br>`+
     `<span style="opacity:.55">Chapter page ${pageIdx+1} of ${total}</span>`;
 }
 
@@ -1512,6 +1523,11 @@ async function showChapter(id,idx){
   document.getElementById('chEyebrow').textContent=`Chapter ${ch.num||idx+1}`;
   document.getElementById('chTitleH').textContent=ch.title;
   currentPages=paginateContent(ch.content,WORDS_PER_PAGE);
+  // Update bookTotalPages with actual page count for this chapter
+  if(actualPagesPerChapter[idx]!==currentPages.length){
+    actualPagesPerChapter[idx]=currentPages.length;
+    bookTotalPages=chapterPageOffsets.reduce((sum,_,i)=>sum+(actualPagesPerChapter[i]||estimatedPagesPerChapter[i]||1),0);
+  }
   currentPageIdx=0;renderPage(0);
   const atFirst=idx===0,atLast=idx===total-1;
   document.getElementById('chPrevBtn').disabled=atFirst;
@@ -1522,7 +1538,7 @@ async function showChapter(id,idx){
   const pageStart=chapterPageOffsets[idx]||1,pageEnd=Math.min(pageStart+currentPages.length-1,bookTotalPages);
   document.getElementById('celestialMeta').innerHTML=
     `<strong>Chapter\u00a0${idx+1}</strong> of ${total}<br>`+
-    `Pages\u00a0<strong>~${pageStart}\u2013${pageEnd}</strong> of ~${bookTotalPages}`;
+    `Pages\u00a0<strong>${pageStart}\u2013${pageEnd}</strong> of ${bookTotalPages}`;
   document.getElementById('chEditBtn').onclick=()=>openChModal(id,currentBookId);
   document.getElementById('chDeleteBtn').onclick=()=>deleteChapter(id);
   const publishBtn=document.getElementById('chPublishBtn');
@@ -1695,6 +1711,49 @@ async function deleteArticle(id,fromReader=false){
 
 let labFilter='all';
 
+
+function makeLabSVG(entryId, type){
+  const seed=entryId.split('').reduce((a,ch)=>a+ch.charCodeAt(0),0);
+  const r=seedRand(seed);
+  const palette={
+    'Design Concept':['#4EC9B0','#0D2B26'],
+    'Project Idea':  ['#D4A84A','#2B1E0A'],
+    'Research Note': ['#C87FD5','#1E0A2B'],
+    'Experiment':    ['#5AB4C8','#0A1E2B'],
+    'Other':         ['#908C86','#1A1A1A'],
+  };
+  const [accent, bg2]=palette[type]||palette['Other'];
+  const w=320,h=90;
+  let svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice">`;
+  svg+=`<defs><linearGradient id="lg${seed}" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="${bg2}"/><stop offset="100%" stop-color="#0D0F14"/></linearGradient></defs>`;
+  svg+=`<rect width="${w}" height="${h}" fill="url(#lg${seed})"/>`;
+  // Generate nodes
+  const nodes=[];
+  const count=6+Math.floor(r()*6);
+  for(let i=0;i<count;i++) nodes.push([r()*w, r()*h]);
+  // Connect nearby nodes with lines
+  for(let i=0;i<nodes.length;i++){
+    for(let j=i+1;j<nodes.length;j++){
+      const d=Math.hypot(nodes[j][0]-nodes[i][0],nodes[j][1]-nodes[i][1]);
+      if(d<90){
+        svg+=`<line x1="${nodes[i][0]}" y1="${nodes[i][1]}" x2="${nodes[j][0]}" y2="${nodes[j][1]}" stroke="${accent}" stroke-width="${.3+r()*.4}" opacity="${.12+r()*.15}"/>`;
+      }
+    }
+  }
+  // Draw nodes
+  nodes.forEach(([nx,ny])=>{
+    const nr=1.5+r()*3;
+    svg+=`<circle cx="${nx}" cy="${ny}" r="${nr}" fill="${accent}" opacity="${.25+r()*.45}"/>`;
+    if(r()>.7) svg+=`<circle cx="${nx}" cy="${ny}" r="${nr*2.2}" fill="none" stroke="${accent}" stroke-width=".4" opacity=".12"/>`;
+  });
+  // Subtle horizontal scan line
+  const sy=h*(.3+r()*.4);
+  svg+=`<line x1="0" y1="${sy}" x2="${w}" y2="${sy}" stroke="${accent}" stroke-width=".4" opacity=".08"/>`;
+  // Fade overlay on right
+  svg+=`<rect x="${w*.6}" width="${w*.4}" height="${h}" fill="url(#lg${seed})" opacity=".6"/>`;
+  svg+='</svg>';
+  return {svg, accent};
+}
 async function loadLab(){
   const grid=document.getElementById('labGrid'),empty=document.getElementById('labEmpty');
   grid.innerHTML='<div style="color:var(--text-dim);font-size:.9rem;padding:2rem 0"><span class="loading-spinner"></span> Loading…</div>';
@@ -1708,7 +1767,22 @@ async function loadLab(){
   entries.forEach(e=>{
     const cls=tc[e.type]||'other',preview=(e.description||'').slice(0,220)+(e.description&&e.description.length>220?'…':'');
     const card=document.createElement('div');card.className='lab-card';
-    card.innerHTML=`<span class="lab-badge ${cls}">${e.type}</span><h3 class="lab-card-title">${e.title}</h3><p class="lab-card-desc">${preview||'<em style="opacity:.4">No description yet.</em>'}</p><div class="lab-card-footer"><span class="lab-card-date">${fmtDate(e.created_at)}</span><div class="lab-card-actions"><button class="btn-sm admin-only" onclick="openLabModal('${e.id}')">Edit</button><button class="btn-sm danger admin-only" onclick="deleteLabEntry('${e.id}')">Delete</button></div></div>`;
+    const{svg:labSvg,accent}=makeLabSVG(e.id,e.type);
+    card.innerHTML=`
+      <div class="lab-card-banner">${labSvg}</div>
+      <div class="lab-card-body">
+        <span class="lab-badge ${cls}">${e.type}</span>
+        <h3 class="lab-card-title">${e.title}</h3>
+        <p class="lab-card-desc">${preview||'<em style="opacity:.4">No notes yet.</em>'}</p>
+        ${e.link?`<a class="lab-link-btn" href="${e.link}" target="_blank" onclick="event.stopPropagation()">↗ View</a>`:''}
+        <div class="lab-card-footer">
+          <span class="lab-card-date">${fmtDate(e.created_at)}</span>
+          <div class="lab-card-actions">
+            <button class="btn-sm admin-only" onclick="event.stopPropagation();openLabModal('${e.id}')">Edit</button>
+            <button class="btn-sm danger admin-only" onclick="event.stopPropagation();deleteLabEntry('${e.id}')">Delete</button>
+          </div>
+        </div>
+      </div>`;
     grid.appendChild(card);refreshAdmin(card);
   });
 }
@@ -1718,17 +1792,17 @@ function filterLab(type,btn){document.querySelectorAll('.lab-fb').forEach(b=>b.c
 function openLabModal(id=null){
   document.getElementById('labModalTitle').textContent=id?'Edit Entry':'New Lab Entry';
   document.getElementById('editLabId').value=id||'';
-  if(id){sb.from('lab_entries').select('*').eq('id',id).single().then(({data:e})=>{document.getElementById('labType').value=e?.type||'Design Concept';document.getElementById('labTitle').value=e?.title||'';document.getElementById('labDesc').value=e?.description||''})}
-  else{document.getElementById('labType').value='Design Concept';document.getElementById('labTitle').value='';document.getElementById('labDesc').value=''}
+  if(id){sb.from('lab_entries').select('*').eq('id',id).single().then(({data:e})=>{document.getElementById('labType').value=e?.type||'Design Concept';document.getElementById('labTitle').value=e?.title||'';document.getElementById('labDesc').value=e?.description||'';document.getElementById('labLink').value=e?.link||'';})}
+  else{document.getElementById('labType').value='Design Concept';document.getElementById('labTitle').value='';document.getElementById('labDesc').value='';document.getElementById('labLink').value='';}
   openModal('labModal');
 }
 
 async function saveLabEntry(){
-  const type=document.getElementById('labType').value,title=document.getElementById('labTitle').value.trim(),description=document.getElementById('labDesc').value.trim();
+  const type=document.getElementById('labType').value,title=document.getElementById('labTitle').value.trim(),description=document.getElementById('labDesc').value.trim(),link=document.getElementById('labLink').value.trim()||null;
   if(!title){alert('Please add a title.');return}
   const editId=document.getElementById('editLabId').value;
   setLoading('labSaveBtn',true);
-  const{error}=editId?await sb.from('lab_entries').update({type,title,description}).eq('id',editId):await sb.from('lab_entries').insert({type,title,description});
+  const{error}=editId?await sb.from('lab_entries').update({type,title,description,link}).eq('id',editId):await sb.from('lab_entries').insert({type,title,description,link});
   setLoading('labSaveBtn',false,'Save');
   if(error){toast('Error saving','error');return}
   toast(editId?'Entry updated':'Entry added');closeModal('labModal');loadLab();
