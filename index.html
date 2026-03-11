@@ -26,6 +26,34 @@
     .admin-badge.visible{display:block}
     .lock-btn{background:none;border:1px solid var(--border);border-radius:4px;color:var(--text-dim);font-size:.85rem;cursor:pointer;padding:.35rem .6rem;transition:all .2s}
     .lock-btn:hover{border-color:var(--gold);color:var(--gold)}
+    /* HAMBURGER */
+    .hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;padding:6px;background:none;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:border-color .2s;flex-shrink:0}
+    .hamburger:hover{border-color:var(--gold)}
+    .hamburger span{display:block;height:1px;background:var(--text-dim);border-radius:1px;transition:all .35s cubic-bezier(.4,0,.2,1);transform-origin:center}
+    .hamburger.open span:nth-child(1){transform:translateY(6px) rotate(45deg);background:var(--gold)}
+    .hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0)}
+    .hamburger.open span:nth-child(3){transform:translateY(-6px) rotate(-45deg);background:var(--gold)}
+    .mobile-drawer{position:fixed;top:0;left:0;right:0;bottom:0;z-index:99;background:rgba(13,15,20,.98);backdrop-filter:blur(24px);display:flex;flex-direction:column;justify-content:center;align-items:center;padding:6rem 2rem 3rem;transform:translateY(-100%);transition:transform .45s cubic-bezier(.4,0,.2,1);pointer-events:none;gap:0}
+    .mobile-drawer.open{transform:translateY(0);pointer-events:all}
+    .mobile-nav-item{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,7vw,3rem);font-weight:300;color:var(--text-dim);cursor:pointer;padding:.4rem 2rem;transition:color .2s;position:relative;letter-spacing:.02em;text-align:center}
+    .mobile-nav-item:hover,.mobile-nav-item.active{color:var(--gold)}
+    .mobile-nav-item::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:1px;background:var(--gold);transition:width .3s}
+    .mobile-nav-item:hover::after{width:60%}
+    .mobile-drawer-footer{margin-top:auto;padding-top:2rem;display:flex;flex-direction:column;align-items:center;gap:.8rem;width:100%}
+    .mobile-drawer-links{display:flex;gap:2rem}
+    .mobile-drawer-links a{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;transition:color .2s}
+    .mobile-drawer-links a:hover{color:var(--teal)}
+    /* EASTER EGGS */
+    .konami-overlay{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .5s}
+    .konami-overlay.visible{opacity:1;pointer-events:all}
+    .konami-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,4rem);font-style:italic;color:var(--gold);margin-bottom:1rem;text-align:center;padding:0 2rem}
+    .konami-sub{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:3rem;text-align:center}
+    .konami-close{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);background:none;border:1px solid var(--border);border-radius:3px;padding:.5rem 1.2rem;cursor:pointer;transition:all .2s}
+    .konami-close:hover{border-color:var(--gold);color:var(--gold)}
+    .konami-facts{display:flex;flex-direction:column;gap:.8rem;margin-bottom:2.5rem;max-width:500px;width:100%;padding:0 2rem}
+    .kf{padding:1rem 1.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;font-size:.9rem;color:var(--text-dim);line-height:1.6;opacity:0;transform:translateY(10px);transition:opacity .4s,transform .4s}
+    .kf.show{opacity:1;transform:translateY(0)}
+    .kf strong{color:var(--text);font-weight:400}
     .page{display:none;padding-top:80px;min-height:100vh}.page.active{display:block}
     .section-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem;display:flex;align-items:center;gap:1rem}
     .section-label::after{content:'';display:block;height:1px;width:60px;background:var(--teal-dim)}
@@ -165,14 +193,11 @@
     .recent-link{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);cursor:pointer;white-space:nowrap;transition:color .2s}
     .recent-link:hover{color:var(--gold)}
     .status-admin-bar{display:flex;justify-content:flex-end;margin-top:1.2rem;padding-top:1rem;border-top:1px solid rgba(200,164,90,.1)}
-    @media(max-width:768px){.book-teaser,.recent-strip{padding-left:1.5rem;padding-right:1.5rem}.book-teaser-inner{grid-template-columns:1fr}.bt-cta{flex-direction:row;align-items:center}}
     /* CONNECT STRIP */
     .connect-strip{max-width:1200px;margin:0 auto;padding:2rem 4rem 5rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap}
     .connect-text{font-size:1rem;color:var(--text-dim)}
     .connect-text strong{color:var(--text);font-weight:400}
     .connect-btns{display:flex;gap:1rem}
-    @media(max-width:1024px){.hub-hero{grid-template-columns:1fr;gap:3rem;padding:7rem 2rem 4rem}.hub-hero-right{max-width:500px}}
-    @media(max-width:768px){.worlds-grid{grid-template-columns:1fr}.world-card.span2{grid-column:span 1}.worlds-section,.note-section,.connect-strip{padding-left:1.5rem;padding-right:1.5rem}.hub-hero{padding-left:1.5rem;padding-right:1.5rem}}
     /* ABOUT */
     .about-section{max-width:1200px;margin:0 auto;padding:5rem 4rem;border-bottom:1px solid var(--border)}
     .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
@@ -380,8 +405,21 @@
     .ha .hero-pills{opacity:0;animation:fadeUp .9s .8s forwards}
     .ha .hero-cta{opacity:0;animation:fadeUp .9s 1s forwards}
     .ha .scroll-hint{opacity:0;animation:fadeUp .9s 1.4s forwards}
+    @media(max-width:1024px){.hub-hero{grid-template-columns:1fr;gap:3rem;padding:7rem 2rem 4rem}.hub-hero-right{max-width:500px}}
     @media(max-width:960px){.feat-card,.about-grid,.skills-cols,.contact-wrap,.preview-grid,.vision-grid{grid-template-columns:1fr}.about-grid{gap:3rem}.contact-info{position:static}.form-row{grid-template-columns:1fr}.book-detail-layout{grid-template-columns:1fr}.ch-sidebar{position:static}}
-    @media(max-width:768px){nav{padding:1.2rem 1.5rem}.nav-center{gap:.8rem}.nav-center a{font-size:.58rem;letter-spacing:.08em}.page-hero,.about-section,.skills-inner,.feat-section,.proj-section,.preview-section,.contact-wrap,.vision-section,.lib-outer,.lab-outer,.book-detail-header,.book-detail-layout,.reader-header,.reader-body,.reader-actions{padding-left:1.5rem;padding-right:1.5rem}#hero{padding-left:1.5rem;padding-right:1.5rem}footer{flex-direction:column;gap:1rem;text-align:center;padding:2rem 1.5rem}}
+    @media(max-width:768px){
+      nav{padding:1rem 1.5rem}
+      .nav-center{display:none}
+      .hamburger{display:flex}
+      .admin-badge{display:none!important}
+      .page-hero,.about-section,.skills-inner,.feat-section,.proj-section,.preview-section,.contact-wrap,.vision-section,.lib-outer,.lab-outer,.book-detail-header,.book-detail-layout,.reader-header,.reader-body,.reader-actions{padding-left:1.5rem;padding-right:1.5rem}
+      #hero,footer{padding-left:1.5rem;padding-right:1.5rem}
+      footer{flex-direction:column;gap:1rem;text-align:center;padding-top:2rem;padding-bottom:2rem}
+      .worlds-grid{grid-template-columns:1fr}.world-card.span2{grid-column:span 1}
+      .worlds-section,.note-section,.connect-strip,.book-teaser,.recent-strip{padding-left:1.5rem;padding-right:1.5rem}
+      .hub-hero{padding:6rem 1.5rem 3rem}
+      .book-teaser-inner{grid-template-columns:1fr}.bt-cta{flex-direction:row;align-items:center}
+    }
   </style>
 </head>
 <body>
@@ -464,7 +502,7 @@
 </div>
 
 <nav>
-  <span class="nav-logo" onclick="showPage('home')">CT.</span>
+  <span class="nav-logo" onclick="showPage('home');closeMobileNav()">CT.</span>
   <ul class="nav-center">
     <li><a onclick="showPage('home')"     id="nav-home">Home</a></li>
     <li><a onclick="showPage('about')"    id="nav-about">About</a></li>
@@ -476,8 +514,41 @@
   <div class="nav-right">
     <span class="admin-badge" id="adminBadge">Admin</span>
     <button class="lock-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login">🔒</button>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer" id="mobileDrawer">
+  <div class="mobile-nav-item" id="mnav-home"    onclick="showPage('home');closeMobileNav()">Home</div>
+  <div class="mobile-nav-item" id="mnav-about"   onclick="showPage('about');closeMobileNav()">About</div>
+  <div class="mobile-nav-item" id="mnav-projects" onclick="showPage('projects');closeMobileNav()">Projects</div>
+  <div class="mobile-nav-item" id="mnav-library" onclick="showPage('library');closeMobileNav()">Library</div>
+  <div class="mobile-nav-item" id="mnav-lab"     onclick="showPage('lab');closeMobileNav()">Lab</div>
+  <div class="mobile-nav-item" id="mnav-contact" onclick="showPage('contact');closeMobileNav()">Contact</div>
+  <div class="mobile-drawer-footer">
+    <div class="mobile-drawer-links">
+      <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
+    </div>
+    <button class="lock-btn" onclick="toggleAdmin();closeMobileNav()" style="font-size:.75rem">🔒 Admin</button>
+  </div>
+</div>
+
+<!-- KONAMI EASTER EGG -->
+<div class="konami-overlay" id="konamiOverlay">
+  <h2 class="konami-title">You found the secret.</h2>
+  <p class="konami-sub">// unlocked · hidden mode</p>
+  <div class="konami-facts">
+    <div class="kf"><strong>The logo</strong> — CT. is the initials. The period is intentional. It's a statement, not a typo.</div>
+    <div class="kf"><strong>This site</strong> was built entirely in a single HTML file. Every page, every animation, every feature — one file.</div>
+    <div class="kf"><strong>The book</strong> started as notes I was taking to make sense of my own psychology degree. It turned into something real.</div>
+    <div class="kf"><strong>The teal + gold palette</strong> — teal for logic and systems. Gold for depth and meaning. Both are needed.</div>
+  </div>
+  <button class="konami-close" onclick="closeKonami()">Close the secret ✕</button>
+</div>
 
 <!-- HOME -->
 <div class="page active" id="page-home">
@@ -1104,6 +1175,81 @@ async function saveStatusItems(){
   setLoading('statusSaveBtn',false,'Save All');
   toast('Status updated');closeModal('statusModal');loadStatus();
 }
+
+// ══ MOBILE NAV ══
+function toggleMobileNav(){
+  const d=document.getElementById('mobileDrawer'),h=document.getElementById('hamburger');
+  d.classList.toggle('open');h.classList.toggle('open');
+  document.body.style.overflow=d.classList.contains('open')?'hidden':'';
+}
+function closeMobileNav(){
+  document.getElementById('mobileDrawer').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+// Update mobile nav active state
+const origShowPage = showPage;
+window.showPage = function(name){
+  origShowPage(name);
+  document.querySelectorAll('.mobile-nav-item').forEach(el=>el.classList.remove('active'));
+  const mn=document.getElementById('mnav-'+name);
+  if(mn)mn.classList.add('active');
+}
+
+// ══ EASTER EGGS ══
+
+// 1. Konami code: ↑↑↓↓←→←→BA
+const KONAMI=[38,38,40,40,37,39,37,39,66,65];
+let konamiIdx=0;
+document.addEventListener('keydown',e=>{
+  if(e.keyCode===KONAMI[konamiIdx]){
+    konamiIdx++;
+    if(konamiIdx===KONAMI.length){konamiIdx=0;triggerKonami()}
+  } else {konamiIdx=0}
+});
+
+function triggerKonami(){
+  const o=document.getElementById('konamiOverlay');
+  o.classList.add('visible');
+  document.body.style.overflow='hidden';
+  document.querySelectorAll('.kf').forEach((el,i)=>setTimeout(()=>el.classList.add('show'),300+i*180));
+}
+function closeKonami(){
+  document.getElementById('konamiOverlay').classList.remove('visible');
+  document.body.style.overflow='';
+  document.querySelectorAll('.kf').forEach(el=>el.classList.remove('show'));
+}
+
+// 2. Triple-click the logo — secret toast
+let logoClicks=0,logoTimer=null;
+document.querySelector('.nav-logo').addEventListener('click',()=>{
+  logoClicks++;
+  clearTimeout(logoTimer);
+  if(logoClicks===3){
+    logoClicks=0;
+    toast('👀 You found one. There are more hidden around the site.','success');
+  } else {logoTimer=setTimeout(()=>logoClicks=0,600)}
+});
+
+// 3. Hover the footer copyright 5x fast
+let footerHovers=0,footerTimer=null;
+document.addEventListener('mouseover',e=>{
+  if(e.target.closest('footer span:first-child')){
+    footerHovers++;clearTimeout(footerTimer);
+    footerTimer=setTimeout(()=>footerHovers=0,1200);
+    if(footerHovers>=5){footerHovers=0;toast('🧠 Psychology + Code. Two paths, one direction.','success')}
+  }
+});
+
+// 4. Type "myth" anywhere (not in an input) to trigger a toast
+let typedBuffer='';
+document.addEventListener('keypress',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='TEXTAREA')return;
+  typedBuffer=(typedBuffer+e.key).slice(-6).toLowerCase();
+  if(typedBuffer.includes('myth')){typedBuffer='';toast('✦ The mythology book is in the Library. Give it a read.','success')}
+  if(typedBuffer.includes('caleb')){typedBuffer='';toast('👋 Hey, that\'s me.','success')}
+});
 
 // Load home data on start
 loadHomeData();
