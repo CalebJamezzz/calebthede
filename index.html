@@ -1191,6 +1191,7 @@ window.addEventListener('popstate',e=>{
 })();
 
 let _revealObs=null;
+var projFilter='all';
 function initReveal(){
   if(_revealObs)_revealObs.disconnect();
   _revealObs=new IntersectionObserver(entries=>{
@@ -1751,7 +1752,6 @@ async function deleteArticle(id,fromReader=false){
 }
 
 let labFilter='all';
-let projFilter='all';
 
 
 function makeLabSVG(entryId, type){
