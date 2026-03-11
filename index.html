@@ -78,6 +78,101 @@
     .pc-desc{font-size:.88rem;color:var(--text-dim);line-height:1.6}
     .pc-link{display:inline-block;margin-top:1.2rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);transition:color .2s}
     .pc:hover .pc-link{color:var(--gold)}
+    /* HOME — REDESIGNED HUB */
+    .hub-hero{min-height:100vh;display:grid;grid-template-columns:1.1fr 1fr;align-items:center;gap:5rem;padding:7rem 5rem 5rem;max-width:1400px;margin:0 auto;position:relative}
+    .hub-bg{position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(ellipse 65% 55% at 75% 45%,rgba(78,201,176,.055),transparent 60%),radial-gradient(ellipse 50% 50% at 18% 65%,rgba(200,164,90,.065),transparent 55%)}
+    .hub-pattern{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.038;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,var(--teal) 39px,var(--teal) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,var(--teal) 39px,var(--teal) 40px)}
+    .hub-hero-left{position:relative;z-index:2}
+    .hub-welcome{font-family:'Cormorant Garamond',serif;font-size:clamp(1rem,1.4vw,1.3rem);font-weight:300;font-style:italic;color:var(--text-dim);letter-spacing:.08em;margin-bottom:1.2rem;opacity:0;animation:fadeUp .8s .15s forwards}
+    .hub-headline{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,5.5vw,6rem);font-weight:300;line-height:1.05;margin-bottom:1.8rem;opacity:0;animation:fadeUp .9s .3s forwards}
+    .hub-headline em{font-style:italic;color:var(--gold)}
+    .hub-name{font-family:'JetBrains Mono',monospace;font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;color:var(--teal);margin-bottom:2rem;display:flex;align-items:center;gap:.8rem;opacity:0;animation:fadeUp .9s .5s forwards}
+    .hub-name::before{content:'';display:block;width:32px;height:1px;background:var(--teal-dim)}
+    .hub-bio{font-size:1.05rem;color:var(--text-dim);line-height:1.85;max-width:520px;margin-bottom:2.5rem;opacity:0;animation:fadeUp .9s .65s forwards}
+    .hub-bio strong{color:var(--text);font-weight:400}
+    .hub-cta{display:flex;gap:1rem;flex-wrap:wrap;opacity:0;animation:fadeUp .9s .8s forwards}
+    .hub-hero-right{position:relative;z-index:2;opacity:0;animation:fadeUp 1s .5s forwards}
+    .status-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:2rem;position:relative;overflow:hidden}
+    .status-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--teal),var(--gold))}
+    .status-header{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;color:var(--teal);margin-bottom:1.5rem;display:flex;align-items:center;gap:.6rem}
+    .status-dot{width:6px;height:6px;background:var(--teal);border-radius:50%;animation:pulse 2.5s infinite}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.8)}}
+    .status-items{display:flex;flex-direction:column;gap:0}
+    .status-item{display:flex;gap:1rem;align-items:flex-start;padding:1.1rem 0;border-bottom:1px solid rgba(200,164,90,.1)}
+    .status-item:last-child{border-bottom:none;padding-bottom:0}
+    .si-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);min-width:72px;margin-top:.2rem;flex-shrink:0}
+    .si-value{font-size:.9rem;color:var(--text);line-height:1.5}
+    .si-value em{font-style:italic;color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:1rem}
+    .si-pill{display:inline-block;padding:.15rem .6rem;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;border-radius:3px;border:1px solid var(--teal-dim);color:var(--teal);background:rgba(78,201,176,.08);margin-left:.3rem}
+    .si-pill.gold{border-color:var(--gold-dim);color:var(--gold);background:rgba(200,164,90,.08)}
+    /* WORLDS */
+    .worlds-section{max-width:1200px;margin:0 auto;padding:5rem 4rem 2rem;border-top:1px solid var(--border)}
+    .worlds-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:3.5rem;flex-wrap:wrap;gap:1rem}
+    .worlds-grid{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto;gap:1.5rem}
+    .world-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:2.5rem;cursor:pointer;position:relative;overflow:hidden;transition:border-color .35s,transform .35s}
+    .world-card:hover{border-color:var(--gold);transform:translateY(-5px)}
+    .world-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--teal));transform:scaleX(0);transform-origin:left;transition:transform .45s}
+    .world-card:hover::after{transform:scaleX(1)}
+    .world-card.span2{grid-column:span 2}
+    .world-num{font-family:'Cormorant Garamond',serif;font-size:5rem;font-weight:300;line-height:1;color:rgba(200,164,90,.08);position:absolute;top:1rem;right:1.5rem;pointer-events:none;transition:color .35s}
+    .world-card:hover .world-num{color:rgba(200,164,90,.15)}
+    .world-icon{font-size:1.4rem;margin-bottom:1rem;display:block}
+    .world-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--teal);margin-bottom:.6rem}
+    .world-tag.gold{color:var(--gold)}
+    .world-title{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;line-height:1.15;color:var(--text);margin-bottom:.8rem}
+    .world-title em{font-style:italic;color:var(--gold)}
+    .world-desc{font-size:.9rem;color:var(--text-dim);line-height:1.7;max-width:460px;margin-bottom:1.5rem}
+    .world-link{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);transition:color .2s;display:inline-flex;align-items:center;gap:.4rem}
+    .world-card:hover .world-link{color:var(--gold)}
+    /* NOTE */
+    .note-section{max-width:1200px;margin:0 auto;padding:4rem 4rem 5rem}
+    .note-inner{background:var(--bg2);border:1px solid var(--border);border-left:2px solid var(--gold);border-radius:0 10px 10px 0;padding:3rem 3.5rem;position:relative;overflow:hidden}
+    .note-inner::before{content:'';position:absolute;top:0;right:0;width:200px;height:200px;background:radial-gradient(circle,rgba(200,164,90,.04),transparent 70%);pointer-events:none}
+    .note-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1.2rem}
+    .note-text{font-family:'Cormorant Garamond',serif;font-size:clamp(1.25rem,2vw,1.55rem);font-weight:300;font-style:italic;line-height:1.75;color:var(--text-dim);max-width:780px}
+    .note-text strong{color:var(--text);font-style:normal;font-weight:400}
+    .note-sig{margin-top:1.5rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim)}
+    /* DUAL IDENTITY */
+    .dual-bar{display:flex;align-items:stretch;gap:0;margin:2rem 0 2.5rem;max-width:480px}
+    .dual-half{flex:1;padding:.7rem 1.2rem;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;display:flex;align-items:center;gap:.55rem}
+    .dual-half.left{background:rgba(78,201,176,.07);border:1px solid var(--teal-dim);border-right:none;border-radius:4px 0 0 4px;color:var(--teal)}
+    .dual-half.right{background:rgba(200,164,90,.07);border:1px solid var(--gold-dim);border-radius:0 4px 4px 0;color:var(--gold)}
+    .dual-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+    .dual-half.left .dual-dot{background:var(--teal)}
+    .dual-half.right .dual-dot{background:var(--gold)}
+    /* BOOK TEASER */
+    .book-teaser{max-width:1200px;margin:0 auto;padding:0 4rem 1rem}
+    .book-teaser-inner{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:2.5rem 3rem;display:grid;grid-template-columns:1fr auto;align-items:center;gap:3rem;position:relative;overflow:hidden;cursor:pointer;transition:border-color .3s,transform .3s}
+    .book-teaser-inner:hover{border-color:var(--gold);transform:translateY(-3px)}
+    .book-teaser-inner::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(to bottom,var(--gold),var(--gold-dim))}
+    .book-teaser-inner::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 80% at 90% 50%,rgba(200,164,90,.04),transparent 70%);pointer-events:none}
+    .bt-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:.7rem;display:flex;align-items:center;gap:.6rem}
+    .bt-eyebrow::before{content:'✦';font-size:.55rem}
+    .bt-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.4rem,2.5vw,2rem);font-weight:300;font-style:italic;color:var(--text);line-height:1.2;margin-bottom:.6rem}
+    .bt-desc{font-size:.88rem;color:var(--text-dim);line-height:1.65;max-width:560px}
+    .bt-cta{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);white-space:nowrap;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:.5rem}
+    .bt-cta-arrow{font-size:1.4rem;color:var(--gold-dim)}
+    /* RECENTLY ADDED */
+    .recent-strip{max-width:1200px;margin:0 auto;padding:1.5rem 4rem 2rem}
+    .recent-inner{display:flex;align-items:center;gap:1.5rem;padding:1.2rem 1.8rem;background:var(--bg2);border:1px solid var(--border);border-radius:8px;flex-wrap:wrap}
+    .recent-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--text-dim);white-space:nowrap;flex-shrink:0}
+    .recent-dot{width:4px;height:4px;border-radius:50%;background:var(--teal);flex-shrink:0}
+    .recent-source{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;padding:.2rem .65rem;border-radius:3px;flex-shrink:0}
+    .recent-source.lib{border:1px solid var(--gold-dim);color:var(--gold);background:rgba(200,164,90,.08)}
+    .recent-source.lab{border:1px solid var(--teal-dim);color:var(--teal);background:rgba(78,201,176,.08)}
+    .recent-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:var(--text);flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .recent-date{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--text-dim);white-space:nowrap;margin-left:auto}
+    .recent-link{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--teal);cursor:pointer;white-space:nowrap;transition:color .2s}
+    .recent-link:hover{color:var(--gold)}
+    .status-admin-bar{display:flex;justify-content:flex-end;margin-top:1.2rem;padding-top:1rem;border-top:1px solid rgba(200,164,90,.1)}
+    @media(max-width:768px){.book-teaser,.recent-strip{padding-left:1.5rem;padding-right:1.5rem}.book-teaser-inner{grid-template-columns:1fr}.bt-cta{flex-direction:row;align-items:center}}
+    /* CONNECT STRIP */
+    .connect-strip{max-width:1200px;margin:0 auto;padding:2rem 4rem 5rem;display:flex;align-items:center;justify-content:space-between;gap:2rem;flex-wrap:wrap}
+    .connect-text{font-size:1rem;color:var(--text-dim)}
+    .connect-text strong{color:var(--text);font-weight:400}
+    .connect-btns{display:flex;gap:1rem}
+    @media(max-width:1024px){.hub-hero{grid-template-columns:1fr;gap:3rem;padding:7rem 2rem 4rem}.hub-hero-right{max-width:500px}}
+    @media(max-width:768px){.worlds-grid{grid-template-columns:1fr}.world-card.span2{grid-column:span 1}.worlds-section,.note-section,.connect-strip{padding-left:1.5rem;padding-right:1.5rem}.hub-hero{padding-left:1.5rem;padding-right:1.5rem}}
     /* ABOUT */
     .about-section{max-width:1200px;margin:0 auto;padding:5rem 4rem;border-bottom:1px solid var(--border)}
     .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
@@ -294,6 +389,19 @@
 <div class="cursor-ring" id="cursorRing"></div>
 <div class="toast" id="toast"></div>
 
+<!-- STATUS MODAL -->
+<div class="modal-overlay" id="statusModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('statusModal')">✕</button>
+    <h2 class="modal-title">Edit Status Card</h2>
+    <div id="statusEditList" style="display:flex;flex-direction:column;gap:.8rem;margin-bottom:1.5rem"></div>
+    <button class="btn-sm" onclick="addStatusRow()" style="width:100%;justify-content:center;padding:.6rem">+ Add Row</button>
+    <div class="modal-actions" style="margin-top:1.5rem">
+      <button class="btn-primary" id="statusSaveBtn" onclick="saveStatusItems()">Save All</button>
+      <button class="btn-ghost" onclick="closeModal('statusModal')">Cancel</button>
+    </div>
+  </div>
+</div>
 <!-- LOGIN MODAL -->
 <div class="modal-overlay" id="loginModal">
   <div class="modal" style="max-width:420px">
@@ -373,31 +481,120 @@
 
 <!-- HOME -->
 <div class="page active" id="page-home">
-  <section id="hero" class="ha">
-    <div class="hero-bg"></div><div class="hero-pattern"></div>
-    <div class="hero-content">
-      <p class="hero-eyebrow">// Developer · Designer · Builder</p>
-      <h1 class="hero-name">Caleb <em>Thede</em></h1>
-      <p class="hero-tagline">I build things people love to use — clean code, thoughtful interfaces, and a deep belief that technology should understand people.</p>
-      <div class="hero-pills"><span class="pill tech">B.S. Computer Science</span><span class="pill design">Figma · A.S. Psychology</span></div>
-      <br/><br/>
-      <div class="hero-cta"><button class="btn-primary" onclick="showPage('projects')">See My Work</button><button class="btn-ghost" onclick="showPage('about')">About Me</button></div>
+  <div class="hub-bg"></div>
+  <div class="hub-pattern"></div>
+
+  <!-- HERO -->
+  <div class="hub-hero">
+    <div class="hub-hero-left">
+      <p class="hub-welcome">Welcome — you've found my corner of the internet.</p>
+      <h1 class="hub-headline">A place to<br>build, think,<br>and <em>write.</em></h1>
+      <p class="hub-name">Caleb Thede</p>
+      <div class="dual-bar">
+        <div class="dual-half left"><span class="dual-dot"></span>Computer Science</div>
+        <div class="dual-half right"><span class="dual-dot"></span>Psychology</div>
+      </div>
+      <p class="hub-bio">I'm a developer and designer with a deep interest in <strong>psychology</strong> and the way technology shapes human experience. This site is my personal hub — part portfolio, part library, part sketchpad. It's always growing, and it's genuinely mine.</p>
+      <div class="hub-cta">
+        <button class="btn-primary" onclick="showPage('projects')">See My Work</button>
+        <button class="btn-ghost" onclick="showPage('about')">Who I Am</button>
+      </div>
     </div>
-    <div class="scroll-hint"><span>Scroll</span><div class="scroll-line"></div></div>
-  </section>
-  <div class="preview-section">
-    <div class="reveal"><p class="section-label">Explore</p><h2 class="section-title">Everything<br>in One <em>Place</em></h2></div>
-    <div class="preview-grid reveal" style="margin-top:3rem">
-      <div class="pc" onclick="showPage('about')"><span class="pc-icon">⬡</span><h3 class="pc-title">About Me</h3><p class="pc-desc">My path from psychology to CS, what drives me to build, and where I'm headed.</p><span class="pc-link">Read More →</span></div>
-      <div class="pc" onclick="showPage('projects')"><span class="pc-icon">◈</span><h3 class="pc-title">Projects</h3><p class="pc-desc">Real apps and tools — including a full management app built from real experience.</p><span class="pc-link">View Projects →</span></div>
-      <div class="pc" onclick="showPage('library')"><span class="pc-icon">✦</span><h3 class="pc-title">Library</h3><p class="pc-desc">Books and articles in progress — mythology, psychology, and everything in between.</p><span class="pc-link">Read →</span></div>
-    </div>
-    <div class="preview-grid reveal">
-      <div class="pc" onclick="showPage('lab')"><span class="pc-icon">◉</span><h3 class="pc-title">The Lab</h3><p class="pc-desc">Ideas, design concepts, and projects in progress. A place to think out loud.</p><span class="pc-link">Explore →</span></div>
-      <div class="pc" onclick="showPage('contact')"><span class="pc-icon">◎</span><h3 class="pc-title">Get In Touch</h3><p class="pc-desc">Open to developer roles, collaborations, and anything interesting.</p><span class="pc-link">Say Hello →</span></div>
-      <div class="pc" onclick="window.open('https://github.com/CalebJamezzz','_blank')"><span class="pc-icon">⌥</span><h3 class="pc-title">GitHub</h3><p class="pc-desc">See what I'm building in the open.</p><span class="pc-link">View Profile →</span></div>
+    <div class="hub-hero-right">
+      <div class="status-card">
+        <div class="status-header"><span class="status-dot"></span>Current Status</div>
+        <div class="status-items" id="statusItems">
+          <div style="color:var(--text-dim);font-size:.85rem;padding:1rem 0"><span class="loading-spinner"></span> Loading…</div>
+        </div>
+        <div class="status-admin-bar admin-only">
+          <button class="btn-sm" onclick="openStatusModal()">Edit Status</button>
+        </div>
+      </div>
     </div>
   </div>
+
+  <!-- WORLDS -->
+  <div class="worlds-section">
+    <div class="worlds-header reveal">
+      <div><p class="section-label">What lives here</p><h2 class="section-title">The <em>Worlds</em></h2></div>
+      <p style="font-size:.9rem;color:var(--text-dim);max-width:320px;text-align:right;line-height:1.7">This isn't just a portfolio — it's a living space. Each section is something I actively tend to.</p>
+    </div>
+    <div class="worlds-grid reveal">
+      <!-- The Builder -->
+      <div class="world-card span2" onclick="showPage('projects')">
+        <span class="world-num">01</span>
+        <span class="world-icon">◈</span>
+        <p class="world-tag">Code · Design · QA</p>
+        <h3 class="world-title">The <em>Builder</em></h3>
+        <p class="world-desc">I build full-stack applications, design interfaces in Figma before touching code, and bring a QA engineer's eye for edge cases to everything I make. My capstone was a complete management system built from real operational pain points. This is where that work lives.</p>
+        <span class="world-link">Explore Projects →</span>
+      </div>
+      <!-- The Thinker -->
+      <div class="world-card" onclick="showPage('library')">
+        <span class="world-num">02</span>
+        <span class="world-icon">✦</span>
+        <p class="world-tag gold">Psychology · Mythology · Writing</p>
+        <h3 class="world-title">The <em>Library</em></h3>
+        <p class="world-desc">Where I write. A book on mythology and psychology, standalone essays, and ideas that needed more than a note app. Everything here is in progress — that's the point.</p>
+        <span class="world-link">Browse the Library →</span>
+      </div>
+      <!-- The Lab -->
+      <div class="world-card" onclick="showPage('lab')">
+        <span class="world-num">03</span>
+        <span class="world-icon">◉</span>
+        <p class="world-tag">Ideas · Concepts · Experiments</p>
+        <h3 class="world-title">The <em>Lab</em></h3>
+        <p class="world-desc">Half-formed ideas, design concepts, and things I'm thinking through out loud. Some of this becomes real projects. Some stays an idea. All of it is worth writing down.</p>
+        <span class="world-link">Step Inside →</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOOK TEASER -->
+  <div class="book-teaser reveal" id="bookTeaser" style="display:none" onclick="showPage('library')">
+    <div class="book-teaser-inner">
+      <div>
+        <p class="bt-eyebrow">Now Writing</p>
+        <h3 class="bt-title" id="btTitle"></h3>
+        <p class="bt-desc" id="btDesc"></p>
+      </div>
+      <div class="bt-cta">
+        <span>Read the first chapter</span>
+        <span class="bt-cta-arrow">→</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECENTLY ADDED -->
+  <div class="recent-strip reveal" id="recentStrip" style="display:none">
+    <div class="recent-inner">
+      <span class="recent-label">Recently Added</span>
+      <span class="recent-dot"></span>
+      <span class="recent-source" id="recentSource"></span>
+      <span class="recent-title" id="recentTitle"></span>
+      <span class="recent-date" id="recentDate"></span>
+      <span class="recent-link" id="recentLink">View →</span>
+    </div>
+  </div>
+
+  <!-- NOTE -->
+  <div class="note-section reveal">
+    <div class="note-inner">
+      <p class="note-eyebrow">// A note from me</p>
+      <p class="note-text">I believe the best technology is built by people who understand <strong>humans first</strong> — how we think, what we fear, what we hope for. That's why I study psychology alongside code. Not as a curiosity, but as a foundation. This site exists because I needed a place that reflected <strong>all of that</strong> — not just a resumé, but a real space.</p>
+      <p class="note-sig">— Caleb Thede, Developer · Designer · Perpetual Learner</p>
+    </div>
+  </div>
+
+  <!-- CONNECT -->
+  <div class="connect-strip reveal">
+    <p class="connect-text"><strong>Open to work</strong> — developer and design roles, collaborations, and anything worth building together.</p>
+    <div class="connect-btns">
+      <button class="btn-primary" onclick="showPage('contact')">Get In Touch</button>
+      <a class="btn-ghost" href="https://github.com/CalebJamezzz" target="_blank">GitHub ↗</a>
+    </div>
+  </div>
+
   <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
 </div>
 
@@ -823,11 +1020,93 @@ async function saveLabEntry(){
   toast(editId?'Entry updated':'Entry added');closeModal('labModal');loadLab();
 }
 
-async function deleteLabEntry(id){
-  if(!confirm('Delete this entry?'))return;
-  await sb.from('lab_entries').delete().eq('id',id);
-  toast('Entry deleted');loadLab();
+// ══ HOME DATA ══
+async function loadHomeData(){
+  await Promise.all([loadStatus(), loadBookTeaser(), loadRecentlyAdded()]);
 }
+
+async function loadStatus(){
+  const wrap=document.getElementById('statusItems');
+  const{data:items}=await sb.from('status_items').select('*').order('sort_order',{ascending:true});
+  if(!items||!items.length){wrap.innerHTML='';return}
+  wrap.innerHTML=items.map(s=>`
+    <div class="status-item">
+      <span class="si-label">${s.label}</span>
+      <span class="si-value">${s.value}${s.pill_text?`<span class="si-pill${s.pill_color==='gold'?' gold':''}">${s.pill_text}</span>`:''}</span>
+    </div>`).join('');
+  refreshAdmin(wrap.closest('.status-card'));
+}
+
+async function loadBookTeaser(){
+  const{data:books}=await sb.from('books').select('id,title,description').order('created_at',{ascending:true}).limit(1);
+  if(!books||!books.length)return;
+  const b=books[0];
+  document.getElementById('btTitle').textContent=b.title;
+  document.getElementById('btDesc').textContent=b.description||'A book weaving together mythology and psychology — ancient stories as a lens for modern human behavior.';
+  document.getElementById('bookTeaser').style.display='block';
+}
+
+async function loadRecentlyAdded(){
+  const[{data:articles},{data:labs}]=await Promise.all([
+    sb.from('articles').select('id,title,created_at').order('created_at',{ascending:false}).limit(1),
+    sb.from('lab_entries').select('id,title,created_at').order('created_at',{ascending:false}).limit(1)
+  ]);
+  const a=articles&&articles[0],l=labs&&labs[0];
+  if(!a&&!l)return;
+  let item,source,page;
+  if(a&&l){item=new Date(a.created_at)>new Date(l.created_at)?{...a,src:'lib'}:{...l,src:'lab'}}
+  else{item=a?{...a,src:'lib'}:{...l,src:'lab'}}
+  source=item.src;page=source==='lib'?'library':'lab';
+  document.getElementById('recentSource').textContent=source==='lib'?'Library':'Lab';
+  document.getElementById('recentSource').className='recent-source '+(source==='lib'?'lib':'lab');
+  document.getElementById('recentTitle').textContent=item.title;
+  document.getElementById('recentDate').textContent=fmtDate(item.created_at);
+  document.getElementById('recentLink').onclick=()=>showPage(page);
+  document.getElementById('recentStrip').style.display='block';
+}
+
+// ══ STATUS EDITING ══
+let statusEditRows=[];
+
+function openStatusModal(){
+  sb.from('status_items').select('*').order('sort_order',{ascending:true}).then(({data:items})=>{
+    statusEditRows=(items||[]).map(s=>({...s}));
+    renderStatusEditRows();
+    openModal('statusModal');
+  });
+}
+
+function renderStatusEditRows(){
+  const list=document.getElementById('statusEditList');
+  list.innerHTML=statusEditRows.map((s,i)=>`
+    <div style="display:grid;grid-template-columns:90px 1fr 80px 60px 28px;gap:.5rem;align-items:center">
+      <input value="${s.label||''}" placeholder="Label" oninput="statusEditRows[${i}].label=this.value" style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.5rem .7rem;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.72rem;outline:none"/>
+      <input value="${s.value||''}" placeholder="Value text" oninput="statusEditRows[${i}].value=this.value" style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.5rem .7rem;color:var(--text);font-size:.85rem;font-family:'Lato',sans-serif;outline:none"/>
+      <input value="${s.pill_text||''}" placeholder="Pill" oninput="statusEditRows[${i}].pill_text=this.value" style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.5rem .7rem;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.7rem;outline:none"/>
+      <select onchange="statusEditRows[${i}].pill_color=this.value" style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.5rem .4rem;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.68rem;outline:none">
+        <option value="teal"${(s.pill_color||'teal')==='teal'?' selected':''}>Teal</option>
+        <option value="gold"${s.pill_color==='gold'?' selected':''}>Gold</option>
+      </select>
+      <button onclick="statusEditRows.splice(${i},1);renderStatusEditRows()" style="background:none;border:1px solid var(--border);border-radius:3px;color:var(--danger);cursor:pointer;padding:.3rem .5rem;font-size:.8rem;transition:border-color .2s" onmouseover="this.style.borderColor='var(--danger)'" onmouseout="this.style.borderColor='var(--border)'">✕</button>
+    </div>`).join('');
+}
+
+function addStatusRow(){
+  statusEditRows.push({label:'',value:'',pill_text:'',pill_color:'teal',sort_order:statusEditRows.length});
+  renderStatusEditRows();
+}
+
+async function saveStatusItems(){
+  setLoading('statusSaveBtn',true);
+  await sb.from('status_items').delete().neq('id','00000000-0000-0000-0000-000000000000');
+  const rows=statusEditRows.filter(r=>r.label&&r.value).map((r,i)=>({label:r.label,value:r.value,pill_text:r.pill_text||null,pill_color:r.pill_color||'teal',sort_order:i}));
+  if(rows.length)await sb.from('status_items').insert(rows);
+  setLoading('statusSaveBtn',false,'Save All');
+  toast('Status updated');closeModal('statusModal');loadStatus();
+}
+
+// Load home data on start
+loadHomeData();
 </script>
 </body>
 </html>
