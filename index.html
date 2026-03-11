@@ -269,41 +269,60 @@
     .stag.tech{border-color:var(--teal-dim);color:var(--teal);background:rgba(78,201,176,.05)}
     .stag.design{border-color:var(--gold-dim);color:var(--gold);background:rgba(200,164,90,.05)}
     /* PROJECTS */
-    .feat-section{max-width:1200px;margin:0 auto;padding:5rem 4rem;border-bottom:1px solid var(--border)}
-    .feat-card{background:var(--bg2);border:1px solid rgba(200,164,90,.35);border-radius:10px;padding:3rem;position:relative;overflow:hidden;display:grid;grid-template-columns:1.1fr 1fr;gap:3.5rem;align-items:start}
-    .feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--teal))}
-    .feat-badge{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:.6rem}
-    .feat-badge::before{content:'★'}
-    .feat-title{font-family:'Cormorant Garamond',serif;font-size:2.5rem;font-weight:300;line-height:1.1;margin-bottom:1rem}
-    .feat-title em{font-style:italic;color:var(--gold)}
-    .feat-desc{font-size:.95rem;color:var(--text-dim);line-height:1.75;margin-bottom:2rem}
-    .feat-tags{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:2rem}
-    .ftag{padding:.3rem .9rem;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.1em;border-radius:3px}
-    .ftag.tech{border:1px solid var(--teal-dim);color:var(--teal);background:rgba(78,201,176,.05)}
-    .ftag.gold{border:1px solid var(--gold-dim);color:var(--gold);background:rgba(200,164,90,.05)}
-    .feat-list{list-style:none;display:flex;flex-direction:column;gap:1rem}
-    .feat-item{display:flex;gap:1rem;align-items:flex-start;padding:1.2rem;background:var(--bg3);border-radius:6px;border:1px solid var(--border)}
+    /* PROJECTS */
+    .proj-outer{max-width:1200px;margin:0 auto;padding:3rem 4rem 6rem}
+    .proj-featured{background:var(--bg2);border:1px solid rgba(200,164,90,.3);border-radius:12px;overflow:hidden;margin-bottom:4rem;position:relative}
+    .proj-featured::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--teal))}
+    .proj-featured-banner{height:160px;position:relative;overflow:hidden}
+    .proj-featured-banner svg{position:absolute;inset:0;width:100%;height:100%}
+    .proj-featured-badge{position:absolute;top:1rem;left:1.4rem;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);background:rgba(13,15,20,.8);border:1px solid rgba(200,164,90,.3);padding:.25rem .6rem;border-radius:2px}
+    .proj-featured-body{padding:2.5rem 3rem 3rem;display:grid;grid-template-columns:1.1fr 1fr;gap:3rem;align-items:start}
+    .proj-featured-title{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:300;line-height:1.1;margin-bottom:1rem}
+    .proj-featured-title em{font-style:italic;color:var(--gold)}
+    .proj-featured-desc{font-size:.95rem;color:var(--text-dim);line-height:1.75;margin-bottom:1.8rem}
+    .proj-links{display:flex;flex-wrap:wrap;gap:.6rem;margin-bottom:1.5rem}
+    .proj-link-btn{display:inline-flex;align-items:center;gap:.4rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.45rem 1rem;border-radius:3px;text-decoration:none;transition:all .2s;border:1px solid}
+    .proj-link-btn.github{color:var(--text-dim);border-color:var(--border)}.proj-link-btn.github:hover{color:var(--text);border-color:var(--text-dim)}
+    .proj-link-btn.figma{color:#A78BFA;border-color:rgba(167,139,250,.3)}.proj-link-btn.figma:hover{background:rgba(167,139,250,.08)}
+    .proj-link-btn.demo{color:var(--teal);border-color:rgba(78,201,176,.3)}.proj-link-btn.demo:hover{background:rgba(78,201,176,.08)}
+    .proj-tags{display:flex;flex-wrap:wrap;gap:.5rem}
+    .ptag{padding:.25rem .7rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--text-dim)}
+    .feat-list{list-style:none;display:flex;flex-direction:column;gap:.9rem}
+    .feat-item{display:flex;gap:1rem;align-items:flex-start;padding:1.1rem;background:var(--bg3);border-radius:6px;border:1px solid var(--border)}
     .fi{font-size:1.1rem;flex-shrink:0;margin-top:.1rem}
     .fi-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);margin-bottom:.25rem}
     .fi-desc{font-size:.84rem;color:var(--text-dim);line-height:1.5}
-    .proj-section{max-width:1200px;margin:0 auto;padding:5rem 4rem 6rem}
     .filter-bar{display:flex;gap:.8rem;flex-wrap:wrap;margin-bottom:3rem}
     .fb{padding:.4rem 1.1rem;font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.14em;text-transform:uppercase;border-radius:3px;border:1px solid var(--border);color:var(--text-dim);background:transparent;cursor:pointer;transition:all .2s}
     .fb:hover,.fb.active{border-color:var(--gold);color:var(--gold);background:rgba(200,164,90,.08)}
-    .proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.5rem}
-    .pcard{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:2rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s;display:flex;flex-direction:column}
-    .pcard:hover{border-color:var(--gold);transform:translateY(-4px)}
-    .pcard::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),var(--teal));transform:scaleX(0);transform-origin:left;transition:transform .4s}
-    .pcard:hover::after{transform:scaleX(1)}
-    .ptype{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem}
-    .ptype.d{color:var(--gold)}
-    .pheader{display:flex;align-items:flex-start;justify-content:space-between;gap:.5rem;margin-bottom:.8rem}
-    .ptitle{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;color:var(--text)}
-    .pextlink{font-size:.72rem;color:var(--text-dim);text-decoration:none;padding:.2rem .6rem;border:1px solid var(--border);border-radius:3px;flex-shrink:0;transition:color .2s,border-color .2s}
-    .pextlink:hover{color:var(--teal);border-color:var(--teal-dim)}
-    .pdesc{font-size:.88rem;color:var(--text-dim);line-height:1.65;margin-bottom:1.5rem;flex:1}
-    .ptags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:auto}
-    .ptag{padding:.25rem .7rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--text-dim)}
+    .proj-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.8rem}
+    .pcard{background:var(--bg2);border-radius:8px;overflow:hidden;transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(0,0,0,.25)}
+    .pcard:hover{transform:translateY(-5px);box-shadow:0 12px 32px rgba(0,0,0,.4)}
+    .pcard-banner{position:relative;height:100px;overflow:hidden;flex-shrink:0}
+    .pcard-banner svg{position:absolute;inset:0;width:100%;height:100%}
+    .pcard-cat{position:absolute;bottom:.7rem;left:1rem;font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.16em;text-transform:uppercase;padding:.18rem .45rem;border-radius:2px;border:1px solid;z-index:2}
+    .pcard-body{padding:1.2rem 1.4rem 1.4rem;flex:1;display:flex;flex-direction:column}
+    .pcard-title{font-family:'Cormorant Garamond',serif;font-size:1.45rem;font-weight:400;color:var(--text);margin-bottom:.5rem;line-height:1.2}
+    .pcard-subtitle{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.7rem}
+    .pcard-desc{font-size:.87rem;color:var(--text-dim);line-height:1.7;flex:1;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:1rem}
+    .pcard-footer{padding-top:.8rem;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:.7rem}
+    .pcard-tags{display:flex;flex-wrap:wrap;gap:.4rem}
+    .pcard-links{display:flex;gap:.5rem;flex-wrap:wrap}
+
+    .builder-card-inner{display:flex;gap:0;align-items:stretch;height:100%}
+    .builder-card-content{flex:1;display:flex;flex-direction:column}
+    .builder-highlight{width:240px;flex-shrink:0;margin:-2.5rem -2.5rem -2.5rem 2rem;border-left:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column;transition:opacity .3s}
+    .builder-highlight-banner{height:110px;position:relative;flex-shrink:0}
+    .builder-highlight-banner svg{position:absolute;inset:0;width:100%;height:100%}
+    .builder-highlight-body{padding:1.1rem 1.2rem;flex:1;display:flex;flex-direction:column}
+    .builder-highlight-label{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem}
+    .builder-highlight-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:400;color:var(--text);line-height:1.25;margin-bottom:.5rem}
+    .builder-highlight-tags{display:flex;flex-wrap:wrap;gap:.3rem;margin-bottom:.8rem}
+    .builder-highlight-links{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:auto}
+    .builder-highlight-link{font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;padding:.2rem .5rem;border:1px solid var(--border);border-radius:2px;transition:all .2s}
+    .builder-highlight-link:hover{color:var(--teal);border-color:rgba(78,201,176,.4)}
+    @media(max-width:768px){.builder-highlight{display:none}.builder-card-inner{display:block}}
+
     /* LIBRARY */
     .lib-outer{max-width:1200px;margin:0 auto;padding:3rem 4rem 6rem}
     .lib-tabs{display:flex;margin-bottom:3rem;border-bottom:1px solid var(--border)}
@@ -665,6 +684,28 @@
   </div>
 </div>
 
+<div class="modal-overlay" id="projectModal">
+  <div class="modal" style="max-width:640px">
+    <button class="modal-close" onclick="closeModal('projectModal')">✕</button>
+    <h2 class="modal-title" id="projectModalTitle">New Project</h2>
+    <input type="hidden" id="editProjectId"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <div class="mf" style="grid-column:1/-1"><label>Title</label><input type="text" id="projTitle" placeholder="Project name"/></div>
+      <div class="mf" style="grid-column:1/-1"><label>Subtitle <span style="opacity:.5;font-size:.8em">(optional — e.g. Capstone · Full-Stack App)</span></label><input type="text" id="projSubtitle" placeholder="Short descriptor"/></div>
+      <div class="mf"><label>Category</label><select id="projCategory"><option>Development</option><option>Design</option><option>QA / Tools</option></select></div>
+      <div class="mf"><label>Featured?</label><select id="projFeatured"><option value="false">No — regular card</option><option value="true">Yes — show at top</option></select></div>
+      <div class="mf"><label>Highlight on Home?</label><select id="projHighlight"><option value="false">No</option><option value="true">Yes — pin to Builder card</option></select></div>
+      <div class="mf" style="grid-column:1/-1"><label>Description</label><textarea id="projDesc" rows="3" placeholder="What did you build and why?"></textarea></div>
+      <div class="mf" style="grid-column:1/-1"><label>Tags <span style="opacity:.5;font-size:.8em">(comma-separated — Python, QA Tooling, Figma…)</span></label><input type="text" id="projTags" placeholder="Python, Data Generation, QA Tooling"/></div>
+      <div class="mf"><label>GitHub Link</label><input type="text" id="projGithub" placeholder="https://github.com/…"/></div>
+      <div class="mf"><label>Figma Link</label><input type="text" id="projFigma" placeholder="https://figma.com/…"/></div>
+      <div class="mf" style="grid-column:1/-1"><label>Demo / Live Link</label><input type="text" id="projDemo" placeholder="https://…"/></div>
+      <div class="mf" style="grid-column:1/-1"><label>Sort Order <span style="opacity:.5;font-size:.8em">(lower = first)</span></label><input type="number" id="projSort" value="0" min="0"/></div>
+    </div>
+    <div class="modal-actions"><button class="btn-primary" id="projSaveBtn" onclick="saveProject()">Save</button><button class="btn-ghost" onclick="closeModal('projectModal')">Cancel</button></div>
+  </div>
+</div>
+
 <nav>
   <span class="nav-logo" onclick="showPage('home');closeMobileNav()">CT.</span>
   <ul class="nav-center">
@@ -758,12 +799,17 @@
     <div class="worlds-grid reveal">
       <!-- The Builder -->
       <div class="world-card span2" onclick="showPage('projects')">
-        <span class="world-num">01</span>
-        <span class="world-icon">◈</span>
-        <p class="world-tag">Code · Design · QA</p>
-        <h3 class="world-title">The <em>Builder</em></h3>
-        <p class="world-desc">I build full-stack applications, design interfaces in Figma before touching code, and bring a QA engineer's eye for edge cases to everything I make. My capstone was a complete management system built from real operational pain points. This is where that work lives.</p>
-        <span class="world-link">Explore Projects →</span>
+        <div class="builder-card-inner">
+          <div class="builder-card-content">
+            <span class="world-num">01</span>
+            <span class="world-icon">◈</span>
+            <p class="world-tag">Code · Design · QA</p>
+            <h3 class="world-title">The <em>Builder</em></h3>
+            <p class="world-desc">I build full-stack applications, design interfaces in Figma before touching code, and bring a QA engineer's eye for edge cases to everything I make. My capstone was a complete management system built from real operational pain points. This is where that work lives.</p>
+            <span class="world-link">Explore Projects →</span>
+          </div>
+          <div class="builder-highlight" id="builderHighlight" style="display:none"></div>
+        </div>
       </div>
       <!-- The Thinker -->
       <div class="world-card" onclick="showPage('library')">
@@ -891,35 +937,28 @@
 
 <!-- PROJECTS -->
 <div class="page" id="page-projects">
-  <div class="page-hero reveal"><p class="section-label">03 — Projects</p><h1 class="section-title">Things I've<br><em>Built</em></h1><p class="page-hero-sub">Real problems, real solutions.</p></div>
-  <div class="feat-section reveal"><p class="section-label">Capstone Project</p>
-    <div class="feat-card">
-      <div>
-        <p class="feat-badge">Featured · Full-Stack App</p>
-        <h2 class="feat-title">Ziggi's Coffee<br><em>Manager App</em></h2>
-        <p class="feat-desc">My college capstone — a full-stack management app designed from real pain points I experienced as a manager at Ziggi's Coffee. A unified platform for team messaging, shift scheduling, and smart inventory ordering.</p>
-        <div class="feat-tags"><span class="ftag tech">Full-Stack</span><span class="ftag tech">Scheduling</span><span class="ftag tech">Messaging</span><span class="ftag gold">Figma Design</span><span class="ftag gold">Capstone</span></div>
-        <a href="https://github.com/CalebJamezzz" target="_blank" class="btn-ghost" style="font-size:.68rem;padding:.6rem 1.5rem">View on GitHub ↗</a>
-      </div>
-      <ul class="feat-list">
-        <li class="feat-item"><span class="fi">💬</span><div><p class="fi-lbl">Team Messaging</p><p class="fi-desc">Internal messaging for staff and manager communication.</p></div></li>
-        <li class="feat-item"><span class="fi">📅</span><div><p class="fi-lbl">Shift Scheduler</p><p class="fi-desc">Build and publish schedules with full team visibility.</p></div></li>
-        <li class="feat-item"><span class="fi">📋</span><div><p class="fi-lbl">Smart Order Lists</p><p class="fi-desc">Enter current stock and pars — app calculates what to order.</p></div></li>
-        <li class="feat-item"><span class="fi">🔐</span><div><p class="fi-lbl">Manager Actions</p><p class="fi-desc">Role-based access separating manager tools from staff views.</p></div></li>
-      </ul>
+  <div class="page-hero reveal"><p class="section-label">03 — Projects</p><h1 class="section-title">Things<br><em>I've Built</em></h1><p class="page-hero-sub">Real problems, real solutions.</p></div>
+  <div class="proj-outer">
+    <div id="projFeaturedWrap"></div>
+    <div class="reveal" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
+      <div><p class="section-label">All Projects</p><h2 class="section-title" style="font-size:2rem">The <em>Work</em></h2></div>
+      <button class="btn-primary admin-only" onclick="openProjectModal()">+ New Project</button>
+    </div>
+    <div class="filter-bar reveal" id="projFilterBar">
+      <button class="fb active" onclick="filterProjects('all',this)">All</button>
+      <button class="fb" onclick="filterProjects('Development',this)">Development</button>
+      <button class="fb" onclick="filterProjects('Design',this)">Design</button>
+      <button class="fb" onclick="filterProjects('QA / Tools',this)">QA / Tools</button>
+    </div>
+    <div class="proj-grid reveal" id="projGrid"></div>
+    <div class="empty-state" id="projEmpty" style="display:none">
+      <span class="empty-icon">◈</span>
+      <h3>No projects yet</h3>
+      <p>Add your first project to get started.</p>
+      <button class="btn-primary admin-only" style="margin-top:1rem" onclick="openProjectModal()">+ New Project</button>
     </div>
   </div>
-  <div class="proj-section">
-    <div class="reveal"><p class="section-label">More Work</p><h2 class="section-title">Other <em>Projects</em></h2></div>
-    <div class="filter-bar reveal"><button class="fb active" onclick="filterP('all',this)">All</button><button class="fb" onclick="filterP('dev',this)">Development</button><button class="fb" onclick="filterP('design',this)">Design</button><button class="fb" onclick="filterP('qa',this)">QA / Tools</button></div>
-    <div class="proj-grid reveal">
-      <div class="pcard" data-cat="qa dev"><p class="ptype">// QA Tooling</p><div class="pheader"><h3 class="ptitle">Flatfile Synthetic Generator</h3><a class="pextlink" href="https://github.com/CalebJamezzz/Flatfile-Synthetic-Generator" target="_blank">↗ GitHub</a></div><p class="pdesc">Generates synthetic flat file data for seeding test environments and validating data pipelines.</p><div class="ptags"><span class="ptag">Python</span><span class="ptag">Data Generation</span><span class="ptag">QA Tooling</span></div></div>
-      <div class="pcard" data-cat="dev"><p class="ptype">// College · Development</p><div class="pheader"><h3 class="ptitle">Project Title Here</h3></div><p class="pdesc">Replace with one of your college projects — describe the problem, what you built, and the outcome.</p><div class="ptags"><span class="ptag">Language</span><span class="ptag">Framework</span></div></div>
-      <div class="pcard" data-cat="dev"><p class="ptype">// College · Development</p><div class="pheader"><h3 class="ptitle">Project Title Here</h3></div><p class="pdesc">Another college project — a systems project, backend service, or algorithm showcase.</p><div class="ptags"><span class="ptag">Language</span><span class="ptag">Framework</span></div></div>
-      <div class="pcard" data-cat="design"><p class="ptype d">// Figma Design</p><div class="pheader"><h3 class="ptitle">Design Work</h3></div><p class="pdesc">Add a Figma project here — app concept, UI exploration, or redesign.</p><div class="ptags"><span class="ptag">Figma</span><span class="ptag">UI Design</span></div></div>
-    </div>
-  </div>
-  <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
+  <footer><span>© 2026 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
 </div>
 
 <!-- LIBRARY -->
@@ -1110,6 +1149,7 @@ function showPage(name,skipHistory){
   setTimeout(initReveal,60);
   if(name==='library')loadLibrary();
   if(name==='lab')loadLab();
+  if(name==='projects')loadProjects();
   if(!skipHistory)safePush({page:name},'','#'+name);
 }
 // Handle browser back/forward
@@ -1808,9 +1848,278 @@ async function saveLabEntry(){
   toast(editId?'Entry updated':'Entry added');closeModal('labModal');loadLab();
 }
 
+
+// ══ PROJECT SVG ══
+function makeProjSVG(projId, category){
+  const seed = (projId||'x').split('').reduce((a,ch)=>a+ch.charCodeAt(0),0);
+  const r = seedRand(seed);
+  const w=600, h=160;
+  const palettes = {
+    'Development': {bg:'#0A1520', accent:'#4EC9B0', accent2:'#2A7A68'},
+    'Design':      {bg:'#150A20', accent:'#A78BFA', accent2:'#6D4AC8'},
+    'QA / Tools':  {bg:'#1A1205', accent:'#D4A84A', accent2:'#8A6820'},
+  };
+  const p = palettes[category] || palettes['Development'];
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice">`;
+  svg += `<defs>
+    <linearGradient id="pbg${seed}" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="${p.bg}"/>
+      <stop offset="100%" stop-color="#0D0F14"/>
+    </linearGradient>
+    <linearGradient id="pfade${seed}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="40%" stop-color="transparent"/>
+      <stop offset="100%" stop-color="#0D0F14"/>
+    </linearGradient>
+  </defs>`;
+  svg += `<rect width="${w}" height="${h}" fill="url(#pbg${seed})"/>`;
+
+  if(category === 'Design'){
+    // Flowing bezier curves
+    for(let i=0;i<5;i++){
+      const y1=r()*h, y2=r()*h, y3=r()*h;
+      const op = 0.08 + r()*0.12;
+      svg += `<path d="M0,${y1} C${w*.3},${y2} ${w*.6},${y3} ${w},${r()*h}" fill="none" stroke="${p.accent}" stroke-width="${1+r()*1.5}" opacity="${op}"/>`;
+    }
+    // Scattered dots
+    for(let i=0;i<20;i++){
+      svg += `<circle cx="${r()*w}" cy="${r()*h}" r="${.8+r()*2}" fill="${p.accent}" opacity="${.15+r()*.25}"/>`;
+    }
+  } else if(category === 'QA / Tools'){
+    // Grid + data lines
+    for(let x=0;x<w;x+=40) svg += `<line x1="${x}" y1="0" x2="${x}" y2="${h}" stroke="${p.accent}" stroke-width=".3" opacity=".07"/>`;
+    for(let y=0;y<h;y+=30) svg += `<line x1="0" y1="${y}" x2="${w}" y2="${y}" stroke="${p.accent}" stroke-width=".3" opacity=".07"/>`;
+    // Highlight bars (like data rows)
+    for(let i=0;i<4;i++){
+      const bx=r()*(w*.6), by=r()*h*.8, bw=80+r()*120;
+      svg += `<rect x="${bx}" y="${by}" width="${bw}" height="${8+r()*6}" rx="2" fill="${p.accent}" opacity="${.06+r()*.08}"/>`;
+    }
+    // Accent line
+    svg += `<line x1="0" y1="${h*.5+r()*20}" x2="${w}" y2="${h*.5+r()*20}" stroke="${p.accent}" stroke-width="1" opacity=".15"/>`;
+  } else {
+    // Development: circuit nodes + connections
+    const nodes=[];
+    for(let i=0;i<10;i++) nodes.push([r()*w, r()*h]);
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const d=Math.hypot(nodes[j][0]-nodes[i][0],nodes[j][1]-nodes[i][1]);
+        if(d<120){
+          svg+=`<line x1="${nodes[i][0]}" y1="${nodes[i][1]}" x2="${nodes[j][0]}" y2="${nodes[j][1]}" stroke="${p.accent}" stroke-width="${.3+r()*.5}" opacity="${.08+r()*.1}"/>`;
+        }
+      }
+    }
+    nodes.forEach(([nx,ny])=>{
+      svg+=`<circle cx="${nx}" cy="${ny}" r="${1.5+r()*3}" fill="${p.accent}" opacity="${.2+r()*.3}"/>`;
+    });
+  }
+
+  // Right fade + bottom fade
+  svg += `<rect width="${w}" height="${h}" fill="url(#pfade${seed})"/>`;
+  svg += `<rect x="${w*.5}" width="${w*.5}" height="${h}" fill="url(#pbg${seed})" opacity=".5"/>`;
+  svg += `</svg>`;
+  return {svg, accent: p.accent};
+}
+
+// ══ PROJECTS CRUD ══
+let projFilter = 'all';
+
+async function loadProjects(){
+  const grid = document.getElementById('projGrid');
+  const featWrap = document.getElementById('projFeaturedWrap');
+  const empty = document.getElementById('projEmpty');
+  grid.innerHTML = '<div style="color:var(--text-dim);font-size:.9rem;padding:2rem 0"><span class="loading-spinner"></span> Loading…</div>';
+  featWrap.innerHTML = '';
+
+  const {data:projects} = await sb.from('projects').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false});
+  grid.innerHTML = '';
+
+  if(!projects||!projects.length){empty.style.display='block';return}
+  empty.style.display = 'none';
+
+  const featured = projects.filter(p=>p.featured);
+  const rest = projects.filter(p=>!p.featured);
+
+  // Render featured card(s)
+  featured.forEach(p=>{
+    const {svg} = makeProjSVG(p.id, p.category);
+    const tags = (p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
+    const links = buildProjLinks(p);
+    featWrap.innerHTML += `
+      <div class="proj-featured reveal" data-proj="${p.id}">
+        <div class="proj-featured-banner">${svg}
+          <span class="proj-featured-badge">★ Featured · ${p.category}</span>
+        </div>
+        <div class="proj-featured-body">
+          <div>
+            <h2 class="proj-featured-title">${formatProjTitle(p.title)}</h2>
+            ${p.subtitle?`<p style="font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem">${p.subtitle}</p>`:''}
+            <p class="proj-featured-desc">${p.description||''}</p>
+            <div class="proj-links">${links}</div>
+            <div class="proj-tags">${tags.map(t=>`<span class="ptag">${t}</span>`).join('')}</div>
+            <div style="display:flex;gap:.6rem;margin-top:1.5rem" class="admin-only">
+              <button class="btn-sm" onclick="openProjectModal('${p.id}')">Edit</button>
+              <button class="btn-sm danger" onclick="deleteProject('${p.id}')">Delete</button>
+            </div>
+          </div>
+          <div></div>
+        </div>
+      </div>`;
+  });
+  refreshAdmin(featWrap);
+
+  // Render grid cards
+  renderProjGrid(rest);
+}
+
+function renderProjGrid(projects){
+  const grid = document.getElementById('projGrid');
+  grid.innerHTML = '';
+  const filtered = projFilter==='all' ? projects : projects.filter(p=>p.category===projFilter);
+  if(!filtered.length){
+    grid.innerHTML = '<p style="color:var(--text-dim);font-size:.9rem;padding:1rem 0">No projects in this category yet.</p>';
+    return;
+  }
+  filtered.forEach(p=>{
+    const {svg, accent} = makeProjSVG(p.id, p.category);
+    const tags = (p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
+    const links = buildProjLinks(p);
+    const catColor = {Development:'rgba(78,201,176,.8)', Design:'rgba(167,139,250,.8)', 'QA / Tools':'rgba(212,168,74,.8)'}[p.category]||'rgba(255,255,255,.5)';
+    const catBorder = {Development:'rgba(78,201,176,.3)', Design:'rgba(167,139,250,.3)', 'QA / Tools':'rgba(212,168,74,.3)'}[p.category]||'rgba(255,255,255,.15)';
+    const card = document.createElement('div');
+    card.className = 'pcard';
+    card.dataset.cat = p.category;
+    card.innerHTML = `
+      <div class="pcard-banner">${svg}
+        <span class="pcard-cat" style="color:${catColor};border-color:${catBorder};background:rgba(13,15,20,.75)">${p.category}</span>
+      </div>
+      <div class="pcard-body">
+        <h3 class="pcard-title">${p.title}</h3>
+        ${p.subtitle?`<p class="pcard-subtitle">${p.subtitle}</p>`:''}
+        <p class="pcard-desc">${p.description||'<em style="opacity:.4">No description yet.</em>'}</p>
+        <div class="pcard-footer">
+          <div class="pcard-tags">${tags.map(t=>`<span class="ptag">${t}</span>`).join('')}</div>
+          ${links?`<div class="pcard-links">${links}</div>`:''}
+          <div style="display:flex;gap:.5rem" class="admin-only">
+            <button class="btn-sm" onclick="event.stopPropagation();openProjectModal('${p.id}')">Edit</button>
+            <button class="btn-sm danger" onclick="event.stopPropagation();deleteProject('${p.id}')">Delete</button>
+          </div>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+    refreshAdmin(card);
+  });
+}
+
+function buildProjLinks(p){
+  let html = '';
+  if(p.link_github) html += `<a class="proj-link-btn github" href="${p.link_github}" target="_blank" onclick="event.stopPropagation()">⌥ GitHub</a>`;
+  if(p.link_figma)  html += `<a class="proj-link-btn figma"  href="${p.link_figma}"  target="_blank" onclick="event.stopPropagation()">◈ Figma</a>`;
+  if(p.link_demo)   html += `<a class="proj-link-btn demo"   href="${p.link_demo}"   target="_blank" onclick="event.stopPropagation()">↗ Demo</a>`;
+  return html;
+}
+
+function formatProjTitle(title){
+  const words = title.trim().split(' ');
+  if(words.length < 3) return `${words.slice(0,-1).join(' ')}<br><em>${words[words.length-1]}</em>`;
+  const split = Math.ceil(words.length/2);
+  return `${words.slice(0,split).join(' ')}<br><em>${words.slice(split).join(' ')}</em>`;
+}
+
+function filterProjects(cat, btn){
+  document.querySelectorAll('#projFilterBar .fb').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  projFilter = cat;
+  // Re-render with current data
+  loadProjects();
+}
+
+function openProjectModal(id=null){
+  document.getElementById('projectModalTitle').textContent = id ? 'Edit Project' : 'New Project';
+  document.getElementById('editProjectId').value = id||'';
+  if(id){
+    sb.from('projects').select('*').eq('id',id).single().then(({data:p})=>{
+      document.getElementById('projTitle').value = p?.title||'';
+      document.getElementById('projSubtitle').value = p?.subtitle||'';
+      document.getElementById('projDesc').value = p?.description||'';
+      document.getElementById('projCategory').value = p?.category||'Development';
+      document.getElementById('projFeatured').value = p?.featured?'true':'false';
+      document.getElementById('projTags').value = p?.tags||'';
+      document.getElementById('projGithub').value = p?.link_github||'';
+      document.getElementById('projFigma').value = p?.link_figma||'';
+      document.getElementById('projDemo').value = p?.link_demo||'';
+      document.getElementById('projSort').value = p?.sort_order||0;
+      document.getElementById('projHighlight').value = p?.highlight?'true':'false';
+    });
+  } else {
+    ['projTitle','projSubtitle','projDesc','projTags','projGithub','projFigma','projDemo'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('projCategory').value='Development';
+    document.getElementById('projFeatured').value='false';
+    document.getElementById('projSort').value='0';
+    document.getElementById('projHighlight').value='false';
+  }
+  openModal('projectModal');
+}
+
+async function saveProject(){
+  const editId = document.getElementById('editProjectId').value;
+  const data = {
+    title:       document.getElementById('projTitle').value.trim(),
+    subtitle:    document.getElementById('projSubtitle').value.trim()||null,
+    description: document.getElementById('projDesc').value.trim(),
+    category:    document.getElementById('projCategory').value,
+    featured:    document.getElementById('projFeatured').value==='true',
+    tags:        document.getElementById('projTags').value.trim(),
+    link_github: document.getElementById('projGithub').value.trim()||null,
+    link_figma:  document.getElementById('projFigma').value.trim()||null,
+    link_demo:   document.getElementById('projDemo').value.trim()||null,
+    sort_order:  parseInt(document.getElementById('projSort').value)||0,
+    highlight:   document.getElementById('projHighlight').value==='true',
+  };
+  if(!data.title){alert('Please add a title.');return}
+  setLoading('projSaveBtn',true);
+  const {error} = editId
+    ? await sb.from('projects').update(data).eq('id',editId)
+    : await sb.from('projects').insert(data);
+  setLoading('projSaveBtn',false,'Save');
+  if(error){toast('Error saving','error');return}
+  toast(editId?'Project updated':'Project added');
+  closeModal('projectModal');
+  loadProjects();
+}
+
+async function deleteProject(id){
+  if(!confirm('Delete this project?')) return;
+  await sb.from('projects').delete().eq('id',id);
+  toast('Project deleted');
+  loadProjects();
+}
+
 // ══ HOME DATA ══
+
+async function loadHighlightedProject(){
+  const wrap = document.getElementById('builderHighlight');
+  if(!wrap) return;
+  const {data:projects} = await sb.from('projects').select('*').eq('highlight',true).limit(1);
+  if(!projects||!projects.length){wrap.style.display='none';return}
+  const p = projects[0];
+  const {svg} = makeProjSVG(p.id, p.category);
+  const tags = (p.tags||'').split(',').map(t=>t.trim()).filter(Boolean).slice(0,3);
+  let links = '';
+  if(p.link_github) links += `<a class="builder-highlight-link" href="${p.link_github}" target="_blank" onclick="event.stopPropagation()">GitHub</a>`;
+  if(p.link_figma)  links += `<a class="builder-highlight-link" href="${p.link_figma}"  target="_blank" onclick="event.stopPropagation()">Figma</a>`;
+  if(p.link_demo)   links += `<a class="builder-highlight-link" href="${p.link_demo}"   target="_blank" onclick="event.stopPropagation()">Demo</a>`;
+  wrap.innerHTML = `
+    <div class="builder-highlight-banner">${svg}</div>
+    <div class="builder-highlight-body">
+      <p class="builder-highlight-label">// Pinned Project</p>
+      <h4 class="builder-highlight-title">${p.title}</h4>
+      <div class="builder-highlight-tags">${tags.map(t=>`<span class="ptag" style="font-size:.5rem;padding:.15rem .5rem">${t}</span>`).join('')}</div>
+      ${links?`<div class="builder-highlight-links">${links}</div>`:''}
+    </div>`;
+  wrap.style.display = 'flex';
+  wrap.style.flexDirection = 'column';
+}
 async function loadHomeData(){
-  await Promise.all([loadStatus(), loadBookTeaser(), loadRecentlyAdded()]);
+  await Promise.all([loadStatus(), loadBookTeaser(), loadRecentlyAdded(), loadHighlightedProject()]);
 }
 
 async function loadStatus(){
