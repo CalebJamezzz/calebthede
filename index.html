@@ -338,7 +338,9 @@
     .back-btn:hover{color:var(--gold)}
     .book-detail-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);font-weight:300;color:var(--text);margin-bottom:.5rem}
     .book-detail-desc{font-size:1rem;color:var(--text-dim);max-width:580px}
-    .book-detail-layout{max-width:1200px;margin:0 auto;padding:3rem 4rem;display:grid;grid-template-columns:240px 1fr;gap:3rem;align-items:start}
+    .book-detail-layout{max-width:1200px;margin:0 auto;padding:3rem 4rem;display:grid;grid-template-columns:240px 1fr;gap:3rem;align-items:start;min-height:calc(100vh - 280px)}
+    #chMain{display:flex;flex-direction:column}
+    #chReader{flex:1;display:flex;flex-direction:column}
     .ch-sidebar{position:sticky;top:100px}
     .ch-sidebar-title{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem;padding-bottom:.8rem;border-bottom:1px solid var(--border)}
     .ch-list{list-style:none;display:flex;flex-direction:column;gap:.3rem;margin-bottom:1.2rem}
