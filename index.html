@@ -701,6 +701,7 @@
       <div class="mf"><label>GitHub Link</label><input type="text" id="projGithub" placeholder="https://github.com/…"/></div>
       <div class="mf"><label>Figma Link</label><input type="text" id="projFigma" placeholder="https://figma.com/…"/></div>
       <div class="mf" style="grid-column:1/-1"><label>Demo / Live Link</label><input type="text" id="projDemo" placeholder="https://…"/></div>
+      <div class="mf" style="grid-column:1/-1"><label>Banner Image URL <span style="opacity:.5;font-size:.8em">(optional — replaces the generated pattern)</span></label><input type="text" id="projBanner" placeholder="https://…"/></div>
       <div class="mf" style="grid-column:1/-1"><label>Sort Order <span style="opacity:.5;font-size:.8em">(lower = first)</span></label><input type="number" id="projSort" value="0" min="0"/></div>
     </div>
     <div class="modal-actions"><button class="btn-primary" id="projSaveBtn" onclick="saveProject()">Save</button><button class="btn-ghost" onclick="closeModal('projectModal')">Cancel</button></div>
@@ -1928,13 +1929,13 @@ function makeProjSVG(projId, category){
 
 function renderZiggisRow(grid){
   const SEED = 'ziggis-capstone';
-  const {svg} = makeProjSVG(SEED, 'Development');
+  const zRowSvg = makeProjSVG(SEED, 'Development').svg;
   const catColor = 'rgba(78,201,176,.8)', catBorder = 'rgba(78,201,176,.3)';
   const card = document.createElement('div');
   card.className = 'pcard';
   card.innerHTML = `
     <div class="pcard-banner">
-      ${svg}
+      ${zRowSvg}
       <span class="pcard-cat" style="color:${catColor};border-color:${catBorder};background:rgba(13,15,20,.8)">Development</span>
     </div>
     <div class="pcard-body">
@@ -1957,10 +1958,10 @@ function renderZiggisRow(grid){
 }
 function renderZiggisFallback(featWrap){
   const SEED = 'ziggis-capstone';
-  const {svg} = makeProjSVG(SEED, 'Development');
+  const zSvg = makeProjSVG(SEED, 'Development').svg;
   featWrap.innerHTML = `
     <div class="proj-featured">
-      <div class="proj-featured-banner">${svg}
+      <div class="proj-featured-banner">${zSvg}
         <span class="proj-featured-badge">★ Featured · Capstone Project</span>
       </div>
       <div class="proj-featured-body">
@@ -2011,12 +2012,12 @@ async function loadProjects(){
   const rest = projects.slice(1);
 
   // Render newest as featured banner
-  const {svg: fSvg} = makeProjSVG(newest.id, newest.category);
+  const fBanner = projBanner(newest);
   const fTags = (newest.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
   const fLinks = buildProjLinks(newest);
   featWrap.innerHTML = `
     <div class="proj-featured" data-proj="${newest.id}">
-      <div class="proj-featured-banner">${fSvg}
+      <div class="proj-featured-banner">${fBanner}
         <span class="proj-featured-badge">✦ Newest · ${newest.category}</span>
       </div>
       <div class="proj-featured-body">
@@ -2052,7 +2053,7 @@ function renderProjGrid(projects, appendZiggis=false){
     return;
   }
   filtered.forEach(p=>{
-    const {svg} = makeProjSVG(p.id, p.category);
+    const pBanner = projBanner(p);
     const tags = (p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
     const links = buildProjLinks(p);
     const catColor = {Development:'rgba(78,201,176,.8)', Design:'rgba(167,139,250,.8)', 'QA / Tools':'rgba(212,168,74,.8)'}[p.category]||'rgba(255,255,255,.5)';
@@ -2062,7 +2063,7 @@ function renderProjGrid(projects, appendZiggis=false){
     card.dataset.cat = p.category;
     card.innerHTML = `
       <div class="pcard-banner">
-        ${svg}
+        ${pBanner}
         <span class="pcard-cat" style="color:${catColor};border-color:${catBorder};background:rgba(13,15,20,.8)">${p.category}</span>
       </div>
       <div class="pcard-body">
@@ -2084,6 +2085,19 @@ function renderProjGrid(projects, appendZiggis=false){
   if(appendZiggis) renderZiggisRow(grid);
 }
 
+
+function projBanner(p){
+  if(p.banner_image){
+    return `<img src="${p.banner_image}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'"/>`;
+  }
+  return makeProjSVG(p.id, p.category).svg;
+}
+function projBannerFromSeed(seed, category, imageUrl){
+  if(imageUrl){
+    return `<img src="${imageUrl}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" onerror="this.style.display='none'"/>`;
+  }
+  return makeProjSVG(seed, category).svg;
+}
 function buildProjLinks(p){
   let html = '';
   if(p.link_github) html += `<a class="proj-link-btn github" href="${p.link_github}" target="_blank" onclick="event.stopPropagation()">⌥ GitHub</a>`;
@@ -2120,11 +2134,12 @@ function openProjectModal(id=null){
       document.getElementById('projGithub').value = p?.link_github||'';
       document.getElementById('projFigma').value = p?.link_figma||'';
       document.getElementById('projDemo').value = p?.link_demo||'';
+      document.getElementById('projBanner').value = p?.banner_image||'';
       document.getElementById('projSort').value = p?.sort_order||0;
       document.getElementById('projHighlight').value = p?.highlight?'true':'false';
     });
   } else {
-    ['projTitle','projSubtitle','projDesc','projTags','projGithub','projFigma','projDemo'].forEach(id=>document.getElementById(id).value='');
+    ['projTitle','projSubtitle','projDesc','projTags','projGithub','projFigma','projDemo','projBanner'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('projCategory').value='Development';
     document.getElementById('projSort').value='0';
     document.getElementById('projHighlight').value='false';
@@ -2143,6 +2158,7 @@ async function saveProject(){
     link_github: document.getElementById('projGithub').value.trim()||null,
     link_figma:  document.getElementById('projFigma').value.trim()||null,
     link_demo:   document.getElementById('projDemo').value.trim()||null,
+    banner_image: document.getElementById('projBanner').value.trim()||null,
     sort_order:  parseInt(document.getElementById('projSort').value)||0,
     highlight:   document.getElementById('projHighlight').value==='true',
   };
