@@ -21,7 +21,7 @@
     body.light-mode nav .hamburger span{background:#A8A49C}
     body.light-mode .btn-primary{background:#D4A84A;color:#0D0F14;box-shadow:0 2px 12px rgba(212,168,74,.3)}
     body.light-mode .hub-bg{background:radial-gradient(ellipse 70% 60% at 80% 50%,rgba(10,122,96,.1),transparent 60%),radial-gradient(ellipse 50% 50% at 20% 60%,rgba(154,92,10,.12),transparent 55%)}
-    body.light-mode .hub-pattern,body.light-mode .hero-pattern{display:block;opacity:.055;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(154,92,10,1) 39px,rgba(154,92,10,1) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(154,92,10,1) 39px,rgba(154,92,10,1) 40px)}
+    body.light-mode .hub-pattern{opacity:.04;}body.light-mode .hub-pattern,body.light-mode .hero-pattern{display:block;opacity:.055;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(154,92,10,1) 39px,rgba(154,92,10,1) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(154,92,10,1) 39px,rgba(154,92,10,1) 40px)}
     body.light-mode .skills-wrap{background:var(--skills-bg)}
     body.light-mode .modal{background:var(--modal-bg)}
     body.light-mode .mf input,body.light-mode .mf textarea,body.light-mode .mf select{background:var(--input-bg)}
@@ -100,7 +100,7 @@
     .btn-sm.danger:hover{border-color:var(--danger);color:var(--danger)}
     .reveal{opacity:0;transform:translateY(28px);transition:opacity .8s ease,transform .8s ease;will-change:opacity,transform}
     .reveal.visible{opacity:1;transform:translateY(0)}
-    footer{padding:2rem 4rem;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.12em;color:var(--text-dim);margin-top:4rem}
+    footer{padding:.7rem 4rem;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.12em;color:var(--text-dim);margin-top:2rem}
     .footer-links{display:flex;gap:2rem}
     .footer-links a,.footer-links span{color:var(--text-dim);text-decoration:none;cursor:pointer;transition:color .2s}
     .footer-links a:hover,.footer-links span:hover{color:var(--gold)}
@@ -231,14 +231,15 @@
     .connect-btns{display:flex;gap:1rem}
     /* ABOUT */
     .about-section{max-width:1200px;margin:0 auto;padding:5rem 4rem;border-bottom:1px solid var(--border)}
-    .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+    .about-grid{display:flex;flex-direction:column;gap:2.5rem}
+    .about-lower{display:grid;grid-template-columns:1fr 260px;gap:3.5rem;align-items:start}
     .about-text p{color:var(--text-dim);margin-bottom:1.2rem;font-size:1.02rem}
     .about-text p strong{color:var(--text);font-weight:400}
     .pull-quote{border-left:2px solid var(--gold);padding-left:1.5rem;margin:2rem 0;font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-style:italic;color:var(--gold);line-height:1.5}
-    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
-    .stat{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1.8rem 1.5rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
+    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;overflow:visible}
+    .stat{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1.8rem 1.5rem;position:relative;overflow:visible;transition:border-color .3s,transform .3s}
     .stat:hover{border-color:var(--gold);transform:translateY(-3px)}
-    .stat::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%}
+    .stat::before{content:'';position:absolute;top:0;left:0;width:3px;height:calc(100% - 0px);border-radius:3px 0 0 3px}
     .stat.g::before{background:var(--gold)}.stat.t::before{background:var(--teal)}
     .stat-num{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;line-height:1;color:var(--gold);margin-bottom:.3rem}
     .stat.t .stat-num{color:var(--teal)}
@@ -325,6 +326,54 @@
     .builder-highlight-link:hover{color:var(--teal);border-color:rgba(78,201,176,.4)}
     @media(max-width:768px){.builder-highlight{display:none}.builder-card-inner{display:block}}
 
+
+    /* ABOUT PHOTO */
+
+
+
+    /* STAT TOOLTIPS */
+    .stat{position:relative}
+    .stat-tooltip{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:.7rem 1rem;width:200px;font-size:.8rem;color:var(--text-dim);line-height:1.55;opacity:0;pointer-events:none;transition:opacity .2s;z-index:10;text-align:left}
+    .stat-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--border)}
+    .stat:hover .stat-tooltip{opacity:1}
+
+    /* MISSION CARD */
+    .mission-card{background:var(--bg2);border:1px solid rgba(200,164,90,.25);border-radius:10px;padding:2.5rem 3rem;position:relative;overflow:hidden;margin-top:1rem}
+    .mission-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),rgba(78,201,176,.6))}
+    .mission-card-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;display:flex;align-items:center;gap:.6rem}
+    .mission-card-eyebrow::before{content:'♡';font-size:.9rem}
+    .mission-card-title{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;line-height:1.2;margin-bottom:1.2rem}
+    .mission-card-title em{font-style:italic;color:var(--gold)}
+    .mission-card-text{font-size:.95rem;color:var(--text-dim);line-height:1.8;max-width:740px}
+    .mission-card-text + .mission-card-text{margin-top:.9rem}
+
+    /* ABOUT PHOTO */
+    .about-photo-wrap{position:relative;width:100%;min-height:540px;display:flex;align-items:center;justify-content:center;margin-bottom:2.5rem}
+    .about-void-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:0}
+    .about-photo-frame{position:relative;z-index:1;display:inline-block;padding:12px;overflow:visible}
+    .about-photo{display:block;width:500px;max-width:100%;height:500px;object-fit:cover;object-position:center 15%;border-radius:8px;border:1px solid var(--border)}
+    .about-photo-corner{position:absolute;width:18px;height:18px;border-color:var(--gold);border-style:solid;opacity:.75;z-index:2}
+    .about-photo-corner.tl{top:0;left:0;border-width:2px 0 0 2px;border-radius:3px 0 0 0}
+    .about-photo-corner.tr{top:0;right:0;border-width:2px 2px 0 0;border-radius:0 3px 0 0}
+    .about-photo-corner.bl{bottom:0;left:0;border-width:0 0 2px 2px;border-radius:0 0 0 3px}
+    .about-photo-corner.br{bottom:0;right:0;border-width:0 2px 2px 0;border-radius:0 0 3px 0}
+
+    .contact-pills{display:flex;flex-direction:column;gap:.6rem;margin-top:2rem}
+    .cpill{display:flex;align-items:center;gap:.8rem;padding:.65rem 1rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;text-decoration:none;transition:border-color .25s,transform .25s}
+    .cpill:hover{border-color:var(--gold);transform:translateX(3px)}
+    .cpill-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .cpill-icon.li{background:rgba(10,102,194,.15);border:1px solid rgba(10,102,194,.3);color:#4A9FD5}
+    .cpill-icon.gh{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--text)}
+    .cpill-icon.ig{background:rgba(225,48,108,.1);border:1px solid rgba(225,48,108,.25);color:#E1306C}
+    .cpill-icon.dc{background:rgba(88,101,242,.12);border:1px solid rgba(88,101,242,.3);color:#7289DA}
+    .cpill-icon.em{background:rgba(200,164,90,.1);border:1px solid rgba(200,164,90,.25);color:var(--gold)}
+    .cpill-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);width:64px;flex-shrink:0}
+    .cpill-val{font-size:.85rem;color:var(--text)}
+
+    .contact-socials{margin-top:2.5rem;display:flex;flex-direction:column;gap:.75rem;border-top:1px solid var(--border);padding-top:2rem}
+    .csocial-row{display:flex;gap:.75rem;justify-content:center}
+    .csocial-row-2 .cpill{flex:0 1 calc(50% - .375rem)}
+    .csocial-row-3 .cpill{flex:0 1 calc(33.333% - .5rem)}
     /* LIBRARY */
     .lib-outer{max-width:1200px;margin:0 auto;padding:3rem 4rem 6rem}
     .lib-tabs{display:flex;margin-bottom:3rem;border-bottom:1px solid var(--border)}
@@ -468,15 +517,21 @@
     .lab-link-btn{display:inline-flex;align-items:center;gap:.4rem;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);text-decoration:none;padding:.3rem .6rem;border:1px solid rgba(78,201,176,.3);border-radius:3px;transition:all .2s;margin-bottom:.8rem;align-self:flex-start}
     .lab-link-btn:hover{background:rgba(78,201,176,.08);border-color:var(--teal)}
     /* CONTACT */
-    .contact-wrap{max-width:1100px;margin:0 auto;padding:6rem 4rem;display:grid;grid-template-columns:1fr 1.2fr;gap:6rem;align-items:start}
-    .contact-info{position:sticky;top:110px}
-    .contact-sub{color:var(--text-dim);font-size:.98rem;margin-bottom:3rem;line-height:1.75}
+    .contact-center{max-width:680px;margin:0 auto;padding:4rem 4rem 2rem}
+
+    .contact-sub{color:var(--text-dim);font-size:.98rem;margin-bottom:2rem;line-height:1.75}
     .contact-links{display:flex;flex-direction:column;gap:1rem}
+    .contact-links-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;text-align:left}
     .cl{display:flex;align-items:center;gap:1.2rem;padding:1.2rem 1.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;text-decoration:none;transition:border-color .3s,transform .3s}
     .cl:hover{border-color:var(--gold);transform:translateX(4px)}
+    .cl-arrow{color:var(--border);transition:color .3s}
+    .cl:hover .cl-arrow{color:var(--gold)}
     .cl-icon{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem;font-weight:600;flex-shrink:0}
     .cl-icon.li{background:rgba(10,102,194,.15);border:1px solid rgba(10,102,194,.3);color:#4A9FD5}
     .cl-icon.gh{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--text)}
+    .cl-icon.ig{background:rgba(225,48,108,.1);border:1px solid rgba(225,48,108,.25);color:#E1306C}
+    .cl-icon.dc{background:rgba(88,101,242,.12);border:1px solid rgba(88,101,242,.3);color:#7289DA}
+    .cl-icon.em{background:rgba(200,164,90,.1);border:1px solid rgba(200,164,90,.25);color:var(--gold)}
     .cl-text{flex:1}
     .cl-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);margin-bottom:.15rem}
     .cl-val{font-size:.9rem;color:var(--text)}
@@ -489,7 +544,11 @@
     .form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
     .form-submit{width:100%;padding:1rem;background:var(--gold);color:var(--bg);border:none;border-radius:4px;font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;transition:opacity .2s,transform .2s;margin-top:.5rem}
     .form-submit:hover{opacity:.85;transform:translateY(-2px)}
-    .form-success{display:none;text-align:center;padding:2.5rem;border:1px solid var(--teal-dim);border-radius:6px;background:rgba(78,201,176,.06);color:var(--teal);font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-style:italic}
+    .form-success{display:none;text-align:center;padding:3.5rem 2.5rem;border:1px solid var(--teal-dim);border-radius:8px;background:rgba(78,201,176,.04);position:relative;overflow:hidden}
+    .form-success-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.6rem);font-style:italic;color:var(--text);margin-bottom:.6rem;position:relative;z-index:1}
+    .form-success-sub{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:2rem;position:relative;z-index:1}
+    .form-success-note{color:var(--text-dim);font-size:.92rem;line-height:1.7;position:relative;z-index:1;max-width:340px;margin:0 auto}
+    .form-success-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.35}
     /* MODALS */
     .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;display:grid;place-items:center;padding:2rem;opacity:0;visibility:hidden;transition:opacity .18s ease,visibility .18s ease;will-change:opacity}
     .modal-overlay.open{opacity:1;visibility:visible}
@@ -533,7 +592,7 @@
     .ha .hero-cta{opacity:0;animation:fadeUp .9s 1s forwards}
     .ha .scroll-hint{opacity:0;animation:fadeUp .9s 1.4s forwards}
     @media(max-width:1024px){.hub-hero{grid-template-columns:1fr;gap:3rem;padding:7rem 2rem 4rem}.hub-hero-right{max-width:500px}}
-    @media(max-width:960px){.feat-card,.about-grid,.skills-cols,.contact-wrap,.preview-grid,.vision-grid{grid-template-columns:1fr}.about-grid{gap:3rem}.contact-info{position:static}.form-row{grid-template-columns:1fr}.book-detail-layout{grid-template-columns:1fr}.ch-sidebar{position:static}}
+    @media(max-width:960px){.feat-card,.about-lower,.skills-cols,.contact-links-grid,.preview-grid,.vision-grid{grid-template-columns:1fr}.about-grid{gap:2rem}.contact-info{position:static}.form-row{grid-template-columns:1fr}.book-detail-layout{grid-template-columns:1fr}.ch-sidebar{position:static}}
     @media(max-width:768px){
       nav{padding:1rem 1.5rem}
       .nav-center{display:none}
@@ -550,6 +609,8 @@
   </style>
 </head>
 <body>
+<div class="hub-bg"></div>
+<div class="hub-pattern"></div>
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 <div class="toast" id="toast"></div>
@@ -747,21 +808,21 @@
 
 <!-- KONAMI EASTER EGG -->
 <div class="konami-overlay" id="konamiOverlay">
-  <h2 class="konami-title">You found the secret.</h2>
-  <p class="konami-sub">// unlocked · hidden mode</p>
+  <p class="konami-sub">// ↑ ↑ ↓ ↓ ← → ← → B A · sequence unlocked</p>
+  <h2 class="konami-title">You Know the Code.</h2>
+  <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text-dim);opacity:.5;margin-bottom:2rem;text-align:center">Most people don't get this far.</p>
   <div class="konami-facts">
-    <div class="kf"><strong>The logo</strong> — CT. is the initials. The period is intentional. It's a statement, not a typo.</div>
-    <div class="kf"><strong>This site</strong> was built entirely in a single HTML file. Every page, every animation, every feature — one file.</div>
-    <div class="kf"><strong>The book</strong> started as notes I was taking to make sense of my own psychology degree. It turned into something real.</div>
-    <div class="kf"><strong>The teal + gold palette</strong> — teal for logic and systems. Gold for depth and meaning. Both are needed.</div>
+    <div class="kf">⬡ &nbsp;<strong>CT.</strong> — the period isn't a typo. It's a full stop. An assertion. I wanted a name that felt like a completed thought.</div>
+    <div class="kf">⬡ &nbsp;<strong>The whole site</strong> is a single HTML file. One file. Every page, animation, reader, admin panel, SVG generator — all of it. No frameworks, no build step.</div>
+    <div class="kf">⬡ &nbsp;<strong>The book</strong> started as margin notes from my psychology degree. At some point the notes became chapters, and the chapters became something I couldn't stop writing.</div>
+    <div class="kf">⬡ &nbsp;<strong>Teal + gold</strong> — teal is the logic side. The systems thinker. Gold is the depth, the weight, the meaning behind things. You need both.</div>
+    <div class="kf">⬡ &nbsp;<strong>There are 6 secrets</strong> hidden across this site. You've found one of them. The others are quieter.</div>
   </div>
-  <button class="konami-close" onclick="closeKonami()">Close the secret ✕</button>
+  <button class="konami-close" onclick="closeKonami()">[ close · esc ]</button>
 </div>
 
 <!-- HOME -->
 <div class="page active" id="page-home">
-  <div class="hub-bg"></div>
-  <div class="hub-pattern"></div>
 
   <!-- HERO -->
   <div class="hub-hero">
@@ -879,26 +940,89 @@
     </div>
   </div>
 
-  <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
+  <footer><span>© 2026 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a><a href="mailto:calebthede@gmail.com">Email</a><span onclick="showPage('contact')">Contact</span></div></footer>
 </div>
 
 <!-- ABOUT -->
 <div class="page" id="page-about">
-  <div class="page-hero reveal"><p class="section-label">01 — About Me</p><h1 class="section-title">Code, Design,<br>and Deep <em>Psychology</em></h1><p class="page-hero-sub">Two passions, one direction — building software that understands people, and understanding people well enough to build better software.</p></div>
+  <div class="page-hero reveal"><p class="section-label">01 — About Me</p><h1 class="section-title">Code, Design,<br>and Deep <em>Psychology</em></h1><p class="page-hero-sub">B.S. Computer Science · A.S. Psychology · QA Engineer · Building software that understands people.</p></div>
   <div class="about-section"><div class="about-grid reveal">
+    <!-- Photo banner -->
+    <div class="about-photo-wrap" id="aboutPhotoWrap">
+      <!-- Celestial decoration in the void on either side -->
+      <svg class="about-void-svg" xmlns="http://www.w3.org/2000/svg">
+        <!-- Left void stars -->
+        <circle cx="4%" cy="18%" r="1.5" fill="#C8A45A" opacity=".5"/>
+        <circle cx="7%" cy="55%" r="1" fill="#4EC9B0" opacity=".45"/>
+        <circle cx="3%" cy="75%" r="1.2" fill="#C8A45A" opacity=".4"/>
+        <circle cx="9%" cy="35%" r=".8" fill="#4EC9B0" opacity=".4"/>
+        <circle cx="5%" cy="90%" r="1" fill="#C8A45A" opacity=".35"/>
+        <!-- Left reticle -->
+        <line x1="calc(11% - 5px)" y1="65%" x2="calc(11% + 5px)" y2="65%" stroke="#C8A45A" stroke-width=".8" opacity=".35"/>
+        <line x1="11%" y1="calc(65% - 5px)" x2="11%" y2="calc(65% + 5px)" stroke="#C8A45A" stroke-width=".8" opacity=".35"/>
+        <!-- Left constellation lines -->
+        <line x1="4%" y1="18%" x2="7%" y2="35%" stroke="#C8A45A" stroke-width=".4" opacity=".2"/>
+        <line x1="7%" y1="35%" x2="3%" y2="55%" stroke="#4EC9B0" stroke-width=".4" opacity=".2"/>
+        <!-- Left arc -->
+        <path d="M 0 30% Q 5% 50% 0 70%" fill="none" stroke="#C8A45A" stroke-width=".5" opacity=".12"/>
+
+        <!-- Right void stars -->
+        <circle cx="96%" cy="22%" r="1.5" fill="#4EC9B0" opacity=".5"/>
+        <circle cx="93%" cy="48%" r="1" fill="#C8A45A" opacity=".45"/>
+        <circle cx="97%" cy="70%" r="1.2" fill="#4EC9B0" opacity=".4"/>
+        <circle cx="91%" cy="32%" r=".8" fill="#C8A45A" opacity=".4"/>
+        <circle cx="95%" cy="85%" r="1" fill="#4EC9B0" opacity=".35"/>
+        <!-- Right reticle -->
+        <line x1="calc(89% - 5px)" y1="60%" x2="calc(89% + 5px)" y2="60%" stroke="#4EC9B0" stroke-width=".8" opacity=".35"/>
+        <line x1="89%" y1="calc(60% - 5px)" x2="89%" y2="calc(60% + 5px)" stroke="#4EC9B0" stroke-width=".8" opacity=".35"/>
+        <!-- Right constellation lines -->
+        <line x1="96%" y1="22%" x2="93%" y2="48%" stroke="#4EC9B0" stroke-width=".4" opacity=".2"/>
+        <line x1="93%" y1="48%" x2="97%" y2="70%" stroke="#C8A45A" stroke-width=".4" opacity=".2"/>
+        <!-- Right arc -->
+        <path d="M 100% 25% Q 95% 50% 100% 75%" fill="none" stroke="#4EC9B0" stroke-width=".5" opacity=".12"/>
+      </svg>
+      <!-- Photo with corner brackets -->
+      <div class="about-photo-frame">
+        <img src="https://raw.githubusercontent.com/CalebJamezzz/calebthede/main/photo.jpg" class="about-photo" alt="Caleb Thede"/>
+        <div class="about-photo-corner tl"></div>
+        <div class="about-photo-corner tr"></div>
+        <div class="about-photo-corner bl"></div>
+        <div class="about-photo-corner br"></div>
+      </div>
+    </div>
+    <!-- Text + Stats -->
+    <div class="about-lower">
     <div class="about-text">
       <p>I started college studying <strong>Psychology</strong> — not because it seemed practical, but because I genuinely love understanding how the brain works and why people do the things they do. I earned my Associate of Science, then followed a second pull into <strong>Computer Science</strong>. The two never felt like separate paths.</p>
       <p>My passion for coding is real — I build in <strong>Python, Java, C++, and Kotlin</strong>, I design in <strong>Figma</strong> before I write a single line, and I care about every layer of what I make. But psychology isn't something I left behind. It's the lens I bring to every project.</p>
       <div class="pull-quote">"I want to build things that make people's lives genuinely easier — and understand them well enough to actually do it."</div>
       <p>I'm planning to go back for my <strong>Master's in Psychology</strong> — not to leave tech, but to go deeper into the human side of it. Cognition, behavior, mental health. I want to understand these things well enough to build tools that truly help people.</p>
-      <p>My college capstone was a <strong>full-stack management app</strong> designed from real experience as a manager at Ziggi's Coffee. I also bring <strong>QA Engineering</strong> experience, which means I think about reliability and edge cases in a way most developers don't.</p>
+      <p>I currently work as a <strong>QA Engineer</strong> at TopNotch LTD — writing test plans, running regression and integration testing, and working directly with dev teams to root-cause defects. Before that I managed a team of 16 at Ziggi's Coffee, which is also where my capstone app was born. That combination of engineering discipline and real operational experience shapes how I build.</p>
     </div>
+    <!-- Stats -->
     <div class="stats-grid">
-      <div class="stat t"><div class="stat-num">B.S.</div><div class="stat-lbl">Computer Science</div></div>
-      <div class="stat g"><div class="stat-num">A.S.</div><div class="stat-lbl">Psychology</div></div>
-      <div class="stat g"><div class="stat-num">UI</div><div class="stat-lbl">Figma Designer</div></div>
-      <div class="stat t"><div class="stat-num">4</div><div class="stat-lbl">Languages & Counting</div></div>
+      <div class="stat t">
+        <div class="stat-num">B.S.</div>
+        <div class="stat-lbl">Computer Science</div>
+        <div class="stat-tooltip">B.S. Computer Science — Colorado State University Global, graduated March 2024. Courses in OS &amp; Architecture, Networks, Database Management, and Cybersecurity. GPA 3.33.</div>
+      </div>
+      <div class="stat g">
+        <div class="stat-num">A.S.</div>
+        <div class="stat-lbl">Psychology</div>
+        <div class="stat-tooltip">A.S. Psychology — Red Rocks Community College, graduated July 2021. GPA 3.8. Cognition, behavior, and developmental psychology — the lens I bring to every project.</div>
+      </div>
+      <div class="stat g">
+        <div class="stat-num">UI</div>
+        <div class="stat-lbl">Figma Designer</div>
+        <div class="stat-tooltip">Every project starts in Figma before a single line of code. Wireframes, component systems, prototypes — design is part of the process, not an afterthought.</div>
+      </div>
+      <div class="stat t">
+        <div class="stat-num">4</div>
+        <div class="stat-lbl">Languages & Counting</div>
+        <div class="stat-tooltip">Python · Java · C++ · Kotlin — and always adding more. Each language taught a different way of thinking about problems.</div>
+      </div>
     </div>
+    </div><!-- end about-lower -->
   </div></div>
   <div class="vision-section">
     <div class="reveal"><p class="section-label">Where I'm Headed</p><h2 class="section-title">The Bigger <em>Picture</em></h2></div>
@@ -906,6 +1030,14 @@
       <div class="vc"><span class="vc-icon">🧠</span><h3 class="vc-title">Master's in Psychology</h3><p class="vc-desc">Going back for my M.S. — not to leave tech, but to understand people at a deeper level. Cognition, behavior, mental health. That knowledge makes everything I build better.</p></div>
       <div class="vc t"><span class="vc-icon">🎮</span><h3 class="vc-title">Games as Therapy</h3><p class="vc-desc">Video games are one of the most underused tools in mental health. The right game — designed with real psychological intent — can reduce anxiety, build resilience, and create genuine connection.</p></div>
       <div class="vc"><span class="vc-icon">⚕️</span><h3 class="vc-title">Mental Health Tech</h3><p class="vc-desc">There are apps for booking therapy. What I want to build goes further — tools grounded in real psychology that actively support mental wellbeing at every step.</p></div>
+    </div>
+    <!-- Mission card -->
+    <div class="mission-card reveal">
+      <p class="mission-card-eyebrow">The Mission That Started It All</p>
+      <h3 class="mission-card-title">Therapy Shouldn't Be a<br><em>Privilege</em></h3>
+      <p class="mission-card-text">Growing up, school counselors weren't actual counselors — they scheduled classes and handled paperwork. I know I could have used someone to really talk to, and I never had that. A lot of kids don't. A lot of families can't afford to change that.</p>
+      <p class="mission-card-text">I want to build tools that change that equation — accessible mental health support for kids and lower-income families who deserve it just as much as anyone else. Real psychological grounding, not just an app that books appointments. Something that meets people where they are.</p>
+      <p class="mission-card-text">That's why the Master's matters. That's the thread that runs through everything here.</p>
     </div>
     <div class="vision-note reveal">In my spare time I'm writing a book weaving together <strong>mythology and psychology</strong> — using ancient stories as a lens for understanding modern human behavior. Chapters live in the <span style="color:var(--gold);cursor:pointer" onclick="showPage('library')">Library →</span></div>
   </div>
@@ -934,7 +1066,7 @@
       </div>
     </div>
   </div></div>
-  <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
+  <footer><span>© 2026 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a><a href="mailto:calebthede@gmail.com">Email</a><span onclick="showPage('contact')">Contact</span></div></footer>
 </div>
 
 <!-- PROJECTS -->
@@ -960,7 +1092,7 @@
       <button class="btn-primary admin-only" style="margin-top:1rem" onclick="openProjectModal()">+ New Project</button>
     </div>
   </div>
-  <footer><span>© 2026 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
+  <footer><span>© 2026 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a><a href="mailto:calebthede@gmail.com">Email</a><span onclick="showPage('contact')">Contact</span></div></footer>
 </div>
 
 <!-- LIBRARY -->
@@ -1056,7 +1188,7 @@
     <div class="reader-body" id="readerBody"></div>
     <div class="reader-actions"><button class="btn-sm admin-only" id="readerEditBtn">Edit</button><button class="btn-sm danger admin-only" id="readerDeleteBtn">Delete</button></div>
   </div>
-  <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
+  <footer><span>© 2026 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a><a href="mailto:calebthede@gmail.com">Email</a><span onclick="showPage('contact')">Contact</span></div></footer>
 </div>
 
 <!-- LAB -->
@@ -1076,31 +1208,84 @@
     <div class="lab-grid" id="labGrid"></div>
     <div class="empty-state" id="labEmpty" style="display:none"><span class="empty-icon">◉</span><h3>The lab is empty</h3><p>Add your first idea — no matter how unformed.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openLabModal()">+ New Entry</button></div>
   </div>
-  <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><span onclick="showPage('contact')">Contact</span></div></footer>
+  <footer><span>© 2026 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a><a href="mailto:calebthede@gmail.com">Email</a><span onclick="showPage('contact')">Contact</span></div></footer>
 </div>
 
 <!-- CONTACT -->
 <div class="page" id="page-contact">
-  <div class="contact-wrap">
-    <div class="contact-info reveal">
-      <p class="section-label">Contact</p><h1 class="section-title">Let's <em>Connect</em></h1>
-      <p class="contact-sub">Open to developer roles, design opportunities, and anything interesting in between.</p>
-      <div class="contact-links">
-        <a class="cl" href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank"><div class="cl-icon li">in</div><div class="cl-text"><p class="cl-lbl">LinkedIn</p><p class="cl-val">caleb-thede-8a6a8221b</p></div><span>↗</span></a>
-        <a class="cl" href="https://github.com/CalebJamezzz" target="_blank"><div class="cl-icon gh">⌥</div><div class="cl-text"><p class="cl-lbl">GitHub</p><p class="cl-val">CalebJamezzz</p></div><span>↗</span></a>
+  <div class="contact-center reveal">
+    <p class="section-label">05 — Contact</p>
+    <h1 class="section-title">Let's <em>Connect</em></h1>
+    <p class="contact-sub">Open to developer roles, design opportunities, and anything interesting in between.</p>
+
+    <form id="the-form" name="contact" netlify netlify-honeypot="bot-field" onsubmit="handleSubmit(event)">
+      <input type="hidden" name="form-name" value="contact"/>
+      <p style="display:none"><label>Don't fill this out: <input name="bot-field"/></label></p>
+      <div class="form-row">
+        <div class="fg"><label>Your Name</label><input type="text" id="f-name" name="name" placeholder="Jane Smith" required/></div>
+        <div class="fg"><label>Email</label><input type="email" id="f-email" name="email" placeholder="jane@email.com" required/></div>
       </div>
+      <div class="fg"><label>What's this about?</label><select id="f-subject" name="subject" required><option value="" disabled selected>Select…</option><option>Developer Role</option><option>Design Collaboration</option><option>Project Idea</option><option>The Book</option><option>General Inquiry</option><option>Just saying hey 👋</option></select></div>
+      <div class="fg"><label>Message</label><textarea id="f-message" name="message" placeholder="Tell me what's on your mind…" required></textarea></div>
+      <button type="submit" class="form-submit">Send Message →</button>
+    </form>
+
+    <div class="form-success" id="form-success" style="display:none">
+      <svg class="form-success-svg" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="50" r="1.5" fill="#4EC9B0"/><circle cx="120" cy="80" r="1" fill="#C8A45A"/>
+        <circle cx="200" cy="30" r="1.8" fill="#4EC9B0"/><circle cx="300" cy="60" r="1" fill="#C8A45A"/>
+        <circle cx="420" cy="40" r="1.5" fill="#4EC9B0"/><circle cx="460" cy="90" r="1.2" fill="#C8A45A"/>
+        <circle cx="40" cy="200" r="1.2" fill="#C8A45A"/><circle cx="100" cy="240" r="1" fill="#4EC9B0"/>
+        <circle cx="380" cy="220" r="1.5" fill="#C8A45A"/><circle cx="460" cy="250" r="1" fill="#4EC9B0"/>
+        <circle cx="250" cy="270" r="1.2" fill="#4EC9B0"/><circle cx="160" cy="260" r="1" fill="#C8A45A"/>
+        <line x1="60" y1="50" x2="120" y2="80" stroke="#4EC9B0" stroke-width=".5" opacity=".4"/>
+        <line x1="120" y1="80" x2="200" y2="30" stroke="#C8A45A" stroke-width=".5" opacity=".4"/>
+        <line x1="300" y1="60" x2="420" y2="40" stroke="#4EC9B0" stroke-width=".5" opacity=".4"/>
+        <line x1="380" y1="220" x2="460" y2="250" stroke="#4EC9B0" stroke-width=".5" opacity=".4"/>
+        <ellipse cx="250" cy="150" rx="180" ry="80" fill="none" stroke="#4EC9B0" stroke-width=".5" opacity=".15" stroke-dasharray="4 6"/>
+        <ellipse cx="250" cy="150" rx="120" ry="50" fill="none" stroke="#C8A45A" stroke-width=".5" opacity=".12" stroke-dasharray="3 8"/>
+        <circle cx="250" cy="150" r="3" fill="#C8A45A" opacity=".6"/>
+        <line x1="250" y1="138" x2="250" y2="162" stroke="#C8A45A" stroke-width=".8" opacity=".3"/>
+        <line x1="238" y1="150" x2="262" y2="150" stroke="#C8A45A" stroke-width=".8" opacity=".3"/>
+        <g stroke="#4EC9B0" stroke-width=".7" opacity=".4">
+          <line x1="25" y1="130" x2="35" y2="130"/><line x1="30" y1="125" x2="30" y2="135"/>
+          <line x1="465" y1="160" x2="475" y2="160"/><line x1="470" y1="155" x2="470" y2="165"/>
+        </g>
+      </svg>
+      <p class="form-success-title">Message received.</p>
+      <p class="form-success-sub">// transmission complete</p>
+      <p class="form-success-note">Thanks for reaching out — I read every message personally and I'll get back to you soon.</p>
     </div>
-    <div class="reveal">
-      <div id="the-form">
-        <div class="form-row"><div class="fg"><label>Your Name</label><input type="text" id="f-name" placeholder="Jane Smith"/></div><div class="fg"><label>Email</label><input type="email" id="f-email" placeholder="jane@email.com"/></div></div>
-        <div class="fg"><label>What's this about?</label><select id="f-subject"><option value="">Select…</option><option>Developer Role</option><option>Design Collaboration</option><option>Project Idea</option><option>The Book</option><option>General Inquiry</option><option>Just saying hey 👋</option></select></div>
-        <div class="fg"><label>Message</label><textarea id="f-message" placeholder="Tell me what's on your mind…"></textarea></div>
-        <button class="form-submit" onclick="handleSubmit()">Send Message →</button>
+
+    <!-- Socials below form: 2 centered on top row, 3 on bottom row -->
+    <div class="contact-socials">
+      <div class="csocial-row csocial-row-2">
+        <a class="cpill" href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">
+          <span class="cpill-icon li"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></span>
+          <span class="cpill-label">LinkedIn</span><span class="cpill-val">Caleb Thede</span>
+        </a>
+        <a class="cpill" href="mailto:calebthede@gmail.com">
+          <span class="cpill-icon em"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg></span>
+          <span class="cpill-label">Email</span><span class="cpill-val">calebthede@gmail.com</span>
+        </a>
       </div>
-      <div class="form-success" id="form-success">✓ &nbsp; Message sent — Caleb will be in touch soon.</div>
+      <div class="csocial-row csocial-row-3">
+        <a class="cpill" href="https://github.com/CalebJamezzz" target="_blank">
+          <span class="cpill-icon gh"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span>
+          <span class="cpill-label">GitHub</span><span class="cpill-val">CalebJamezzz</span>
+        </a>
+        <a class="cpill" href="https://instagram.com/c.aleb_jamezzz" target="_blank">
+          <span class="cpill-icon ig"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></span>
+          <span class="cpill-label">Instagram</span><span class="cpill-val">c.aleb_jamezzz</span>
+        </a>
+        <a class="cpill" href="https://discord.com/users/JuztCleb" target="_blank">
+          <span class="cpill-icon dc"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg></span>
+          <span class="cpill-label">Discord</span><span class="cpill-val">JuztCleb</span>
+        </a>
+      </div>
     </div>
   </div>
-  <footer><span>© 2025 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a></div></footer>
+  <footer><span>© 2026 Caleb Thede</span><div class="footer-links"><a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a><a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a><a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a><a href="mailto:calebthede@gmail.com">Email</a></div></footer>
 </div>
 
 <script>
@@ -1209,7 +1394,17 @@ function initReveal(){
 initReveal();
 
 function filterP(cat,btn){document.querySelectorAll('.fb').forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.pcard').forEach(c=>{c.style.display=(cat==='all'||(c.dataset.cat||'').split(' ').includes(cat))?'':'none'})}
-function handleSubmit(){const n=document.getElementById('f-name').value.trim(),e=document.getElementById('f-email').value.trim(),m=document.getElementById('f-message').value.trim();if(!n||!e||!m){alert('Please fill in name, email, and message.');return}document.getElementById('the-form').style.display='none';document.getElementById('form-success').style.display='block'}
+function handleSubmit(e){
+  e.preventDefault();
+  const form=document.getElementById('the-form');
+  const data=new FormData(form);
+  fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(data).toString()})
+    .then(()=>{
+      form.style.display='none';
+      document.getElementById('form-success').style.display='block';
+    })
+    .catch(()=>toast('Something went wrong. Try emailing calebthede@gmail.com directly.','error'));
+}
 function openModal(id){document.getElementById(id).classList.add('open')}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
@@ -2469,7 +2664,47 @@ document.addEventListener('keypress',e=>{
   typedBuffer=(typedBuffer+e.key).slice(-6).toLowerCase();
   if(typedBuffer.includes('myth')){typedBuffer='';toast('✦ The mythology book is in the Library. Give it a read.','success')}
   if(typedBuffer.includes('caleb')){typedBuffer='';toast('👋 Hey, that\'s me.','success')}
+  if(typedBuffer.includes('ziggi')){typedBuffer='';toast('☕ Ziggi\'s Coffee — where the capstone app was born. Good espresso too.','success')}
+  if(typedBuffer.slice(-2)==='qa'){typedBuffer='';toast('🧪 // test passed · no bugs found · probably.','success')}
 });
+
+// 5. Type "ziggi" → coffee easter egg
+// 6. Type "qa" → QA engineer joke
+// (typedBuffer already tracks keypress — just extend the checks)
+
+// 7. Click the teal/gold palette swatch on about stat cards 7 times
+let statClicks=0,statTimer=null;
+document.addEventListener('click',e=>{
+  if(e.target.closest('.stat')){
+    statClicks++;clearTimeout(statTimer);
+    statTimer=setTimeout(()=>statClicks=0,2000);
+    if(statClicks>=7){statClicks=0;toast('🎨 Teal for logic. Gold for meaning. You clicked seven times to find that out.','success')}
+  }
+});
+
+// 8. Idle on the Library page for 30s without clicking
+let libraryIdleTimer=null;
+function resetLibraryIdle(){
+  clearTimeout(libraryIdleTimer);
+  if(document.getElementById('page-library').classList.contains('active')){
+    libraryIdleTimer=setTimeout(()=>{
+      toast('📖 Still here? The book is waiting. Chapter one is a good place to start.','success');
+    },30000);
+  }
+}
+document.addEventListener('mousemove',resetLibraryIdle);
+document.addEventListener('keydown',resetLibraryIdle);
+
+// 9. Scroll to the very bottom of the contact page and back up 3 times
+let contactScrollDir=null,contactScrollCount=0;
+document.addEventListener('scroll',()=>{
+  if(!document.getElementById('page-contact').classList.contains('active'))return;
+  const atBottom=window.innerHeight+window.scrollY>=document.body.offsetHeight-20;
+  const atTop=window.scrollY<20;
+  if(atBottom&&contactScrollDir!=='bottom'){contactScrollDir='bottom';if(contactScrollCount<6)contactScrollCount++}
+  if(atTop&&contactScrollDir!=='top'){contactScrollDir='top';if(contactScrollCount<6)contactScrollCount++}
+  if(contactScrollCount>=6){contactScrollCount=0;toast('📬 You really want to reach out. Just hit send — I read everything.','success')}
+},{ passive:true });
 
 // Load home data on start
 loadHomeData();
