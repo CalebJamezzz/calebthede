@@ -39,7 +39,7 @@
     html{scroll-behavior:smooth}
     body{background:var(--bg);color:var(--text);font-family:'Lato',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}
     ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px}
-    .cursor{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;mix-blend-mode:difference;display:none}
+    .cursor{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;display:none}
     .cursor-ring{width:36px;height:36px;border:1px solid var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;opacity:.5;display:none}
     body.has-custom-cursor{cursor:none}
     body.has-custom-cursor a,body.has-custom-cursor button,body.has-custom-cursor [onclick],body.has-custom-cursor .pc,body.has-custom-cursor .world-card,body.has-custom-cursor .book-card,body.has-custom-cursor .article-card,body.has-custom-cursor .lab-card,body.has-custom-cursor .pcard,body.has-custom-cursor .lib-tab,body.has-custom-cursor .fb,body.has-custom-cursor .lab-fb,body.has-custom-cursor .swatch,body.has-custom-cursor .ch-item,body.has-custom-cursor .mobile-nav-item,body.has-custom-cursor .recent-link,body.has-custom-cursor .back-btn{cursor:none}
@@ -248,18 +248,18 @@
     /* ABOUT */
     .about-section{max-width:1200px;margin:0 auto;padding:5rem 4rem;border-bottom:1px solid var(--border)}
     .about-grid{display:flex;flex-direction:column;gap:2.5rem}
-    .about-lower{display:grid;grid-template-columns:1fr 260px;gap:3.5rem;align-items:start}
+    .about-lower{display:grid;grid-template-columns:1fr 320px;gap:3.5rem;align-items:start}
     .about-text p{color:var(--text-dim);margin-bottom:1.2rem;font-size:1.02rem}
     .about-text p strong{color:var(--text);font-weight:400}
     .pull-quote{border-left:2px solid var(--gold);padding-left:1.5rem;margin:2rem 0;font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-style:italic;color:var(--gold);line-height:1.5}
-    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;overflow:visible}
-    .stat{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1.8rem 1.5rem;position:relative;overflow:visible;transition:border-color .3s,transform .3s}
+    .stats-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.5rem;overflow:visible;position:relative;z-index:200}
+    .stat{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1.8rem 1.5rem;position:relative;overflow:visible;transition:border-color .3s,transform .3s;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center}
     .stat:hover{border-color:var(--gold);transform:translateY(-3px)}
     .stat::before{content:'';position:absolute;top:0;left:0;width:3px;height:calc(100% - 0px);border-radius:3px 0 0 3px}
     .stat.g::before{background:var(--gold)}.stat.t::before{background:var(--teal)}
-    .stat-num{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:300;line-height:1;color:var(--gold);margin-bottom:.3rem}
+    .stat-num{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:300;line-height:1;color:var(--gold)}
     .stat.t .stat-num{color:var(--teal)}
-    .stat-lbl{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim)}
+    .stat-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);line-height:1.4;margin-top:.35rem}
     .vision-section{max-width:1200px;margin:0 auto;padding:5rem 4rem;border-bottom:1px solid var(--border)}
     .vision-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;margin-top:3rem}
     .vc{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:2rem;position:relative;overflow:hidden;transition:border-color .3s,transform .3s}
@@ -349,7 +349,7 @@
 
     /* STAT TOOLTIPS */
     .stat{position:relative}
-    .stat-tooltip{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:.7rem 1rem;width:200px;font-size:.8rem;color:var(--text-dim);line-height:1.55;opacity:0;pointer-events:none;transition:opacity .2s;z-index:10;text-align:left}
+    .stat-tooltip{position:absolute;bottom:calc(100% + 10px);left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:.7rem 1rem;width:220px;font-size:.78rem;color:var(--text-dim);line-height:1.55;opacity:0;pointer-events:none;transition:opacity .2s;z-index:100;text-align:left}
     .stat-tooltip::after{content:'';position:absolute;top:100%;left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:var(--border)}
     .stat:hover .stat-tooltip{opacity:1}
 
@@ -996,7 +996,7 @@
     <!-- Photo banner -->
     <div class="about-photo-wrap" id="aboutPhotoWrap">
       <!-- Celestial decoration in the void on either side -->
-      <svg class="about-void-svg" xmlns="http://www.w3.org/2000/svg">
+      <svg class="about-void-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none">
         <!-- Left void stars -->
         <circle cx="4%" cy="18%" r="1.5" fill="#C8A45A" opacity=".5"/>
         <circle cx="7%" cy="55%" r="1" fill="#4EC9B0" opacity=".45"/>
@@ -1010,7 +1010,7 @@
         <line x1="4%" y1="18%" x2="7%" y2="35%" stroke="#C8A45A" stroke-width=".4" opacity=".2"/>
         <line x1="7%" y1="35%" x2="3%" y2="55%" stroke="#4EC9B0" stroke-width=".4" opacity=".2"/>
         <!-- Left arc -->
-        <path d="M 0 30% Q 5% 50% 0 70%" fill="none" stroke="#C8A45A" stroke-width=".5" opacity=".12"/>
+        <path d="M 0 30 Q 5 50 0 70" fill="none" stroke="#C8A45A" stroke-width=".5" opacity=".12"/>
 
         <!-- Right void stars -->
         <circle cx="96%" cy="22%" r="1.5" fill="#4EC9B0" opacity=".5"/>
@@ -1025,7 +1025,7 @@
         <line x1="96%" y1="22%" x2="93%" y2="48%" stroke="#4EC9B0" stroke-width=".4" opacity=".2"/>
         <line x1="93%" y1="48%" x2="97%" y2="70%" stroke="#C8A45A" stroke-width=".4" opacity=".2"/>
         <!-- Right arc -->
-        <path d="M 100% 25% Q 95% 50% 100% 75%" fill="none" stroke="#4EC9B0" stroke-width=".5" opacity=".12"/>
+        <path d="M 100 25 Q 95 50 100 75" fill="none" stroke="#4EC9B0" stroke-width=".5" opacity=".12"/>
       </svg>
       <!-- Photo with corner brackets -->
       <div class="about-photo-frame">
@@ -2976,9 +2976,15 @@ var rainbowOrig = ['#4EC9B0','#C8A45A','#2C7A6A','#8A6E37'];
 
 function startRainbow(){
   clearInterval(rainbowTimer);
-  var idx=0, cycles=0, total=rainbowColors.length*4; // 4 full loops
-  var root=document.documentElement;
+  console.log('startRainbow called, light-mode:', document.body.classList.contains('light-mode'));
+  if(document.body.classList.contains('light-mode')){
+    startLightGlow();
+    return;
+  }
+  var idx=0, total=rainbowColors.length*4;
+  var root=document.body;
   rainbowTimer=setInterval(()=>{
+    if(document.body.classList.contains('light-mode')){clearInterval(rainbowTimer);root.style.removeProperty('--teal');root.style.removeProperty('--gold');root.style.removeProperty('--teal-dim');root.style.removeProperty('--gold-dim');startLightGlow();return;}
     var col=rainbowColors[idx % rainbowColors.length];
     root.style.setProperty('--teal',col[0]);
     root.style.setProperty('--gold',col[1]);
@@ -2987,13 +2993,47 @@ function startRainbow(){
     idx++;
     if(idx>=total){
       clearInterval(rainbowTimer);
-      // Ease back to original over 1.5s
-      root.style.setProperty('--teal',rainbowOrig[0]);
-      root.style.setProperty('--gold',rainbowOrig[1]);
-      root.style.setProperty('--teal-dim',rainbowOrig[2]);
-      root.style.setProperty('--gold-dim',rainbowOrig[3]);
+      // Remove inline styles so CSS vars take over naturally
+      root.style.removeProperty('--teal');
+      root.style.removeProperty('--gold');
+      root.style.removeProperty('--teal-dim');
+      root.style.removeProperty('--gold-dim');
     }
-  }, 500); // each color shows for 500ms, full cycle = 4s, 4 loops = 16s
+  }, 500);
+}
+
+// Light mode: warm sunset color sweep
+function startLightGlow(){
+  var root=document.body;
+  var lightOrig=['#0A7A60','#9A5C0A','#0D9E7A','#C47820'];
+  // warm ember sweep — pure warm tones, no blues or purples
+  var sunsetColors=[
+    ['#E8920A','#E8A020','#C47010','#C47010'],
+    ['#E86A10','#E87010','#C04010','#B05010'],
+    ['#D84020','#D85020','#B02010','#A03010'],
+    ['#C82030','#C83020','#A01020','#901020'],
+    ['#D43050','#C82030','#A82040','#901020'],
+    ['#E06030','#D04020','#B04020','#902010'],
+    ['#E88020','#E89010','#C06010','#B07010'],
+    ['#C8A020','#C8A040','#9A7810','#9A6010'],
+    lightOrig,
+  ];
+  var idx=0, total=(sunsetColors.length-1)*4;
+  var glowTimer=setInterval(()=>{
+    var col=sunsetColors[idx % (sunsetColors.length-1)];
+    root.style.setProperty('--teal',col[0]);
+    root.style.setProperty('--gold',col[1]);
+    root.style.setProperty('--teal-dim',col[2]);
+    root.style.setProperty('--gold-dim',col[3]);
+    idx++;
+    if(idx>=total){
+      clearInterval(glowTimer);
+      root.style.removeProperty('--teal');
+      root.style.removeProperty('--gold');
+      root.style.removeProperty('--teal-dim');
+      root.style.removeProperty('--gold-dim');
+    }
+  }, 500);
 }
 
 // Load home data on start
