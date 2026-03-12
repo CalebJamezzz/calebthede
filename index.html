@@ -2094,6 +2094,12 @@ async function saveLabEntry(){
   toast(editId?'Entry updated':'Entry added');closeModal('labModal');loadLab();
 }
 
+async function deleteLabEntry(id){
+  if(!confirm('Delete this lab entry?'))return;
+  const{error}=await sb.from('lab_entries').delete().eq('id',id);
+  if(error){toast('Error deleting','error');return}
+  toast('Entry deleted');loadLab();
+}
 
 // ══ PROJECT SVG ══
 function makeProjSVG(projId, category){
