@@ -265,7 +265,6 @@ function paginateContent(content,wordsPerPage){
 function renderPage(pageIdx){
   document.getElementById('chBodyArea').innerHTML=renderBody(currentPages[pageIdx]||'');
   updatePageNav(pageIdx);
-  saveNormalBookmark(pageIdx);
 }
 
 function updatePageNav(pageIdx){
@@ -318,7 +317,7 @@ async function togglePublish(){
 
 function jumpToPage(target){
   const idx=target==='last'?currentPages.length-1:0;
-  currentPageIdx=idx;renderPage(idx);scrollToChapterTop();
+  currentPageIdx=idx;renderPage(idx);saveNormalBookmark(idx);scrollToChapterTop();
 }
 
 function jumpToChapter(target){
@@ -331,6 +330,7 @@ function stepPage(dir){
   if(next<0){stepChapter(-1);return}
   if(next>=currentPages.length){stepChapter(1);return}
   currentPageIdx=next;renderPage(next);
+  saveNormalBookmark(next);
   scrollToChapterTop();
 }
 
