@@ -124,3 +124,31 @@ function renderBody(content){return(content||'').split('\n\n').map(p=>p.trim().s
 function fmtDate(iso){if(!iso)return'';return new Date(iso).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}
 function refreshAdmin(el){if(adminMode)el.querySelectorAll('.admin-only').forEach(x=>x.style.removeProperty('display'))}
 
+
+// ── NEWSLETTER FORMS ──
+async function handleNewsletterSubmit(e){
+  e.preventDefault();
+  const form = e.target;
+  const data = new FormData(form);
+  try{
+    await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(data).toString()});
+    form.style.display='none';
+    document.getElementById('newsletter-success').style.display='block';
+  } catch(err){
+    alert('Something went wrong. Please try again.');
+  }
+}
+
+async function handleFooterNewsletterSubmit(e){
+  e.preventDefault();
+  const form = e.target;
+  const data = new FormData(form);
+  try{
+    await fetch('/',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(data).toString()});
+    form.style.display='none';
+    const success = document.getElementById('footer-nl-success');
+    if(success) success.style.display='block';
+  } catch(err){
+    // silent fail on footer
+  }
+}
