@@ -334,7 +334,7 @@ function stepPage(dir){
   scrollToChapterTop();
 }
 
-async function showChapter(id,idx){
+async function showChapter(id,idx,startPage=0){
   activeChId=id;activeChIdx=idx;
   const body=document.getElementById('chBodyArea'),reader=document.getElementById('chReader');
   reader.style.display='block';document.getElementById('chEmpty').style.display='none';
@@ -355,7 +355,7 @@ async function showChapter(id,idx){
     actualPagesPerChapter[idx]=currentPages.length;
     bookTotalPages=chapterPageOffsets.reduce((sum,_,i)=>sum+(actualPagesPerChapter[i]||estimatedPagesPerChapter[i]||1),0);
   }
-  currentPageIdx=0;renderPage(0);
+  currentPageIdx=startPage;renderPage(startPage);
   const atFirst=idx===0,atLast=idx===total-1;
   document.getElementById('chPrevBtn').disabled=atFirst;
   document.getElementById('chNextBtn').disabled=atLast;
@@ -841,10 +841,7 @@ async function resumeReading(){
   const bm = loadBookmark(currentBookId);
   if(!bm){ startFromBeginning(); return; }
   hideTOC();
-  // Load the bookmarked chapter
-  await showChapter(bm.chId, bm.chIdx);
-  // Restore page position
-  currentPageIdx = bm.pageInCh;
-  renderPage(bm.pageInCh);
+  // Pass the saved page directly so showChapter renders it immediately
+  await showChapter(bm.chId, bm.chIdx, bm.pageInCh);
   scrollToChapterTop();
 }
