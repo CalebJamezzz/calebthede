@@ -24,7 +24,7 @@ async function loadHighlightedProject(){
   wrap.style.flexDirection = 'column';
 }
 async function loadHomeData(){
-  await Promise.all([loadStatus(), loadBookTeaser(), loadRecentlyAdded(), loadHighlightedProject()]);
+  await Promise.all([loadStatus(), loadBookTeaser(), loadHighlightedProject()]);
 }
 
 async function loadStatus(){
@@ -40,32 +40,34 @@ async function loadStatus(){
 }
 
 async function loadBookTeaser(){
-  const{data:books}=await sb.from('books').select('id,title,description').order('created_at',{ascending:true}).limit(1);
+  const{data:books}=await sb.from('books').select('id,title,description').order('created_at',{ascending:true});
   if(!books||!books.length)return;
-  const b=books[0];
-  document.getElementById('btTitle').textContent=b.title;
-  document.getElementById('btDesc').textContent=b.description||'A book weaving together mythology and psychology — ancient stories as a lens for modern human behavior.';
-  document.getElementById('bookTeaser').style.display='block';
-}
 
-async function loadRecentlyAdded(){
-  const[{data:articles},{data:labs}]=await Promise.all([
-    sb.from('articles').select('id,title,created_at').order('created_at',{ascending:false}).limit(1),
-    sb.from('lab_entries').select('id,title,created_at').order('created_at',{ascending:false}).limit(1)
-  ]);
-  const a=articles&&articles[0],l=labs&&labs[0];
-  if(!a&&!l)return;
-  let item,source,page;
-  if(a&&l){item=new Date(a.created_at)>new Date(l.created_at)?{...a,src:'lib'}:{...l,src:'lab'}}
-  else{item=a?{...a,src:'lib'}:{...l,src:'lab'}}
-  source=item.src;page=source==='lib'?'library':'lab';
-  document.getElementById('recentSource').textContent=source==='lib'?'Library':'Lab';
-  document.getElementById('recentSource').className='recent-source '+(source==='lib'?'lib':'lab');
-  document.getElementById('recentTitle').textContent=item.title;
-  document.getElementById('recentDate').textContent=fmtDate(item.created_at);
-  const urls={library:'/library.html',lab:'/lab.html'};
-  document.getElementById('recentLink').onclick=()=>{window.location.href=urls[page];};
-  document.getElementById('recentStrip').style.display='block';
+  // Find the most recently saved bookmark across ALL books
+  let activeBm=null, activeBmBook=null;
+  try{
+    books.forEach(b=>{
+      const bm=JSON.parse(localStorage.getItem('bm_'+b.id));
+      if(bm&&(!activeBm||bm.savedAt>activeBm.savedAt)){
+        activeBm=bm; activeBmBook=b;
+      }
+    });
+  }catch(e){}
+
+  // If a bookmark exists, show that book as "Continue Reading"
+  // Otherwise fall back to the first/primary book as "Now Writing"
+  const display = activeBmBook || books[0];
+
+  document.getElementById('btTitle').textContent=display.title;
+  document.getElementById('btDesc').textContent=display.description||'A book weaving together mythology and psychology — ancient stories as a lens for modern human behavior.';
+
+  if(activeBm){
+    document.getElementById('btEyebrow').textContent='Continue Reading';
+    document.getElementById('btCta').textContent=`Ch.${activeBm.chNum} — ${activeBm.chTitle}, page ${activeBm.pageInCh+1}`;
+    document.getElementById('bookTeaser').href='/library#book/'+activeBmBook.id;
+  }
+
+  document.getElementById('bookTeaser').style.display='block';
 }
 
 // ══ STATUS EDITING ══
