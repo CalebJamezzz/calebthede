@@ -153,7 +153,7 @@ let adminMode=false;
               <button class="ch-nav-btn" id="chFirstBtn" onclick="jumpToChapter(0)" title="First chapter">⇤</button>
               <button class="ch-nav-btn" id="chPrevBtn" onclick="stepChapter(-1)">← Previous</button>
             </div>
-            <div class="ch-nav-center"><span class="ch-nav-glyph">✦</span><span class="ch-nav-label" id="chNavProgress"></span></div>
+            <div class="ch-nav-center"><span class="ch-nav-glyph">✦</span><span class="ch-nav-label" id="chNavProgress"></span><button class="rfb-btn" style="margin-top:.6rem;border:1px solid var(--border);border-radius:20px;padding:.3rem .9rem" onclick="enterReaderMode()" title="Distraction-free reading">focus</button></div>
             <div style="display:flex;gap:.5rem;align-items:center">
               <button class="ch-nav-btn" id="chNextBtn" onclick="stepChapter(1)">Next →</button>
               <button class="ch-nav-btn" id="chLastBtn" onclick="jumpToChapter('last')" title="Last chapter">⇥</button>
@@ -173,7 +173,21 @@ let adminMode=false;
       <p id="readerReadTime" style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);margin-top:.3rem"></p>
     </div>
     <div class="reader-body" id="readerBody"></div>
-    <div class="reader-actions"><button class="btn-sm admin-only" id="readerEditBtn">Edit</button><button class="btn-sm danger admin-only" id="readerDeleteBtn">Delete</button></div>
+    <div class="reader-actions" style="display:flex;align-items:center;gap:.8rem"><button class="rfb-btn" style="border:1px solid var(--border);border-radius:20px;padding:.35rem 1rem" onclick="enterReaderMode()">focus</button><button class="btn-sm admin-only" id="readerEditBtn">Edit</button><button class="btn-sm danger admin-only" id="readerDeleteBtn">Delete</button></div>
+  </div>
+
+  <!-- Reader Mode Progress Strip -->
+  <div class="reader-progress-strip"><div class="reader-progress-strip-fill" id="readerProgressFill"></div></div>
+
+  <!-- Reader Mode Floating Controls -->
+  <div class="reader-float" id="readerFloat">
+    <div class="reader-float-bar">
+      <button class="rfb-btn" onclick="readerFontStep(-1)" title="Smaller text">A−</button>
+      <button class="rfb-btn" id="rfbFontLabel" style="cursor:default;opacity:.5">Aa</button>
+      <button class="rfb-btn" onclick="readerFontStep(1)" title="Larger text">A+</button>
+      <div class="rfb-sep"></div>
+      <button class="rfb-btn rfb-exit" onclick="exitReaderMode()">✕ Exit focus</button>
+    </div>
   </div>
 </main>
 <footer>
@@ -279,5 +293,58 @@ let adminMode=false;
 <script src="js/library.js"></script>
 <script src="js/lab.js"></script>
 <script>document.addEventListener("DOMContentLoaded",()=>{loadLibrary();handleLibraryHash();});</script>
+
+<!-- ══ READER MODE OVERLAY ══ -->
+<div id="readerOverlay" role="dialog" aria-modal="true" aria-label="Focus reader">
+  <div class="ro-progress"><div class="ro-progress-fill" id="roProgressFill"></div></div>
+
+  <!-- Top bar -->
+  <div class="ro-topbar">
+    <div class="ro-font-btns">
+      <button class="ro-font-btn" onclick="roSetFont('sm')">A</button>
+      <button class="ro-font-btn" style="font-size:.8rem" onclick="roSetFont('md')">A</button>
+      <button class="ro-font-btn" style="font-size:.95rem" onclick="roSetFont('lg')">A</button>
+      <button class="ro-font-btn" style="font-size:1.1rem" onclick="roSetFont('xl')">A</button>
+    </div>
+    <div class="ro-topbar-title" id="roTitle"></div>
+    <button class="ro-exit-btn" onclick="exitReaderMode()">✕ exit focus</button>
+  </div>
+
+  <!-- Book spread -->
+  <div class="ro-spread">
+    <!-- Mobile tap zones -->
+    <div class="ro-tap-left" onclick="roStep(-1)"></div>
+    <div class="ro-tap-right" onclick="roStep(1)"></div>
+
+    <div class="ro-pages" id="roPages">
+      <div class="ro-page ro-page-left">
+        <div class="ro-page-content" id="roContentLeft"></div>
+        <div class="ro-page-num" id="roNumLeft"></div>
+      </div>
+      <div class="ro-spine"></div>
+      <div class="ro-page ro-page-right">
+        <div class="ro-page-content" id="roContentRight"></div>
+        <div class="ro-page-num" id="roNumRight"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom nav bar -->
+  <div class="ro-bottombar">
+    <div class="ro-nav-group">
+      <button class="ro-nav-btn" id="roChPrevBtn" onclick="roStepChapter(-1)">⇤ Chapter</button>
+      <button class="ro-nav-btn primary" id="roPrevBtn" onclick="roStep(-1)">← Prev</button>
+    </div>
+    <div class="ro-center-info">
+      <span id="roCenterLabel">Page <strong id="roPageNum">1</strong> of <strong id="roPageTotal">1</strong></span>
+      <span id="roChapterLabel" style="opacity:.5"></span>
+    </div>
+    <div class="ro-nav-group">
+      <button class="ro-nav-btn primary" id="roNextBtn" onclick="roStep(1)">Next →</button>
+      <button class="ro-nav-btn" id="roChNextBtn" onclick="roStepChapter(1)">Chapter ⇥</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

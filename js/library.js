@@ -443,3 +443,253 @@ async function loadArticles(){
   });
 }
 
+
+// ══════════════════════════════════════════════════════
+// READER MODE — two-page spread on desktop, single on mobile
+// ══════════════════════════════════════════════════════
+let roActive = false;
+let roPages = [];       // repaginated pages (250 words each)
+let roPageIdx = 0;      // current left-page index
+let roIsBook = true;    // true = book chapter, false = article
+let roFlipping = false;
+
+const RO_FONTS = ['sm','md','lg','xl'];
+let roCurFont = localStorage.getItem('roFont') || 'md';
+
+function roIsMobile(){ return window.innerWidth <= 768; }
+function roSpread(){ return roIsMobile() ? 1 : 2; } // pages shown at once
+
+function enterReaderMode(){
+  const overlay = document.getElementById('readerOverlay');
+  if(!overlay) return;
+
+  // Determine mode — book chapter or article?
+  const articleVisible = document.getElementById('libArticleReader').style.display !== 'none';
+  roIsBook = !articleVisible;
+
+  if(roIsBook){
+    // Re-use already-paginated chapter pages
+    roPages = currentPages.slice();
+    roPageIdx = currentPageIdx;
+    const bookTitle = document.getElementById('bookDetailTitle')?.textContent || '';
+    const chTitle = document.getElementById('chTitleH')?.textContent || '';
+    document.getElementById('roTitle').textContent =
+      bookTitle + (chTitle ? ' · ' + chTitle : '');
+  } else {
+    // Article: paginate the article body
+    const bodyEl = document.getElementById('readerBody');
+    const rawText = bodyEl ? bodyEl.innerText : '';
+    // Convert rendered HTML back to markdown-ish for paginateContent
+    const rawContent = document.getElementById('readerBody')?.innerHTML || '';
+    roPages = paginateContent(rawContent, 250);
+    roPageIdx = 0;
+    const artTitle = document.getElementById('readerTitle')?.textContent || '';
+    document.getElementById('roTitle').textContent = artTitle;
+  }
+
+  // Apply saved font
+  roSetFont(roCurFont, true);
+
+  roActive = true;
+  overlay.classList.add('active');
+  document.body.classList.add('reader-locked');
+
+  roRender(false);
+  roUpdateNav();
+  roUpdateProgress();
+
+  // Keyboard listener
+  document.addEventListener('keydown', roKeyHandler);
+
+  // Prevent scroll behind overlay
+  document.body.style.overflow = 'hidden';
+}
+
+function exitReaderMode(){
+  const overlay = document.getElementById('readerOverlay');
+  overlay.classList.remove('active');
+  document.body.classList.remove('reader-locked');
+  document.body.style.overflow = '';
+  roActive = false;
+  document.removeEventListener('keydown', roKeyHandler);
+
+  // Sync back to main reader page position (book only)
+  if(roIsBook && currentPages.length){
+    currentPageIdx = roPageIdx;
+    renderPage(roPageIdx);
+    scrollToChapterTop();
+  }
+}
+
+function roKeyHandler(e){
+  if(!roActive) return;
+  if(e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); roStep(1); }
+  if(e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   { e.preventDefault(); roStep(-1); }
+  if(e.key === 'Escape') exitReaderMode();
+}
+
+function roStep(dir){
+  if(roFlipping) return;
+  const spread = roSpread();
+  const next = roPageIdx + dir * spread;
+
+  if(next < 0){
+    // Go to previous chapter (book only)
+    if(roIsBook && activeChIdx > 0) roStepChapter(-1);
+    return;
+  }
+  if(next >= roPages.length){
+    // Go to next chapter (book only)
+    if(roIsBook) roStepChapter(1);
+    return;
+  }
+
+  roPageIdx = next;
+  roAnimate(dir > 0 ? 'forward' : 'back');
+}
+
+function roAnimate(dir){
+  roFlipping = true;
+  const pagesEl = document.getElementById('roPages');
+  const cls = dir === 'forward' ? 'flip-forward' : 'flip-back';
+  pagesEl.classList.add(cls);
+  setTimeout(()=>{
+    roRender(false);
+    roUpdateNav();
+    roUpdateProgress();
+  }, 120); // swap content at midpoint of 280ms anim
+  setTimeout(()=>{
+    pagesEl.classList.remove(cls);
+    roFlipping = false;
+  }, 300);
+}
+
+async function roStepChapter(dir){
+  if(!roIsBook) return;
+  const nextIdx = activeChIdx + dir;
+  if(nextIdx < 0 || nextIdx >= chapterIndex.length) return;
+
+  // Load new chapter into the main system first
+  await showChapter(chapterIndex[nextIdx].id, nextIdx);
+
+  // Then update overlay
+  roPages = currentPages.slice();
+  roPageIdx = dir > 0 ? 0 : Math.max(0, roPages.length - roSpread());
+
+  const bookTitle = document.getElementById('bookDetailTitle')?.textContent || '';
+  const chTitle = document.getElementById('chTitleH')?.textContent || '';
+  document.getElementById('roTitle').textContent =
+    bookTitle + (chTitle ? ' · ' + chTitle : '');
+
+  roAnimate(dir > 0 ? 'forward' : 'back');
+}
+
+function roRender(silent){
+  const spread = roSpread();
+  const leftContent  = document.getElementById('roContentLeft');
+  const rightContent = document.getElementById('roContentRight');
+  const leftNum      = document.getElementById('roNumLeft');
+  const rightNum     = document.getElementById('roNumRight');
+
+  // Left page
+  leftContent.innerHTML = renderBody(roPages[roPageIdx] || '');
+
+  // Absolute page number (accounting for previous chapters)
+  let absBase = 1;
+  if(roIsBook){
+    for(let i=0; i<activeChIdx; i++)
+      absBase += (actualPagesPerChapter[i] || estimatedPagesPerChapter[i] || 1);
+    absBase += roPageIdx;
+  } else {
+    absBase = roPageIdx + 1;
+  }
+
+  leftNum.textContent = absBase;
+
+  // Right page (desktop only)
+  if(spread > 1 && roPageIdx + 1 < roPages.length){
+    rightContent.innerHTML = renderBody(roPages[roPageIdx + 1] || '');
+    rightNum.textContent = absBase + 1;
+    document.querySelector('.ro-spine').style.visibility = 'visible';
+    document.querySelector('.ro-page-right').style.visibility = 'visible';
+  } else {
+    // Last page or mobile — blank right side on desktop
+    rightContent.innerHTML = '';
+    rightNum.textContent = '';
+    if(spread > 1){
+      document.querySelector('.ro-spine').style.visibility = 'hidden';
+      document.querySelector('.ro-page-right').style.visibility = 'hidden';
+    }
+  }
+}
+
+function roUpdateNav(){
+  const spread = roSpread();
+  const atStart = roPageIdx <= 0;
+  const atEnd   = roPageIdx + spread >= roPages.length;
+  const atFirstCh = !roIsBook || activeChIdx === 0;
+  const atLastCh  = !roIsBook || activeChIdx >= chapterIndex.length - 1;
+
+  document.getElementById('roPrevBtn').disabled    = atStart && atFirstCh;
+  document.getElementById('roNextBtn').disabled    = atEnd   && atLastCh;
+  document.getElementById('roChPrevBtn').disabled  = atFirstCh;
+  document.getElementById('roChNextBtn').disabled  = atLastCh;
+
+  // Page numbers
+  let absBase = 1, totalPages = roPages.length;
+  if(roIsBook){
+    for(let i=0;i<activeChIdx;i++)
+      absBase += (actualPagesPerChapter[i]||estimatedPagesPerChapter[i]||1);
+    absBase += roPageIdx;
+    totalPages = bookTotalPages;
+  } else {
+    absBase = roPageIdx + 1;
+  }
+
+  const showing = spread > 1 && roPageIdx+1 < roPages.length
+    ? `${absBase}–${absBase+1}` : `${absBase}`;
+
+  document.getElementById('roPageNum').textContent = showing;
+  document.getElementById('roPageTotal').textContent = totalPages;
+
+  // Chapter label (book)
+  const chLabel = document.getElementById('roChapterLabel');
+  if(roIsBook && chapterIndex.length > 1){
+    chLabel.textContent = `Chapter ${activeChIdx+1} of ${chapterIndex.length}`;
+  } else {
+    chLabel.textContent = '';
+  }
+}
+
+function roUpdateProgress(){
+  const fill = document.getElementById('roProgressFill');
+  if(!fill) return;
+  let pct = 0;
+  if(roIsBook && bookTotalPages > 1){
+    let absPage = 1;
+    for(let i=0;i<activeChIdx;i++)
+      absPage += (actualPagesPerChapter[i]||estimatedPagesPerChapter[i]||1);
+    absPage += roPageIdx;
+    pct = Math.min(100, ((absPage-1)/(bookTotalPages-1))*100);
+  } else if(roPages.length > 1){
+    pct = (roPageIdx/(roPages.length-1))*100;
+  }
+  fill.style.width = pct+'%';
+}
+
+function roSetFont(size, silent){
+  if(!RO_FONTS.includes(size)) size = 'md';
+  roCurFont = size;
+  document.body.dataset.rfont = size;
+  if(!silent) localStorage.setItem('roFont', size);
+  // Highlight active font button
+  document.querySelectorAll('.ro-font-btn').forEach((btn,i)=>{
+    btn.style.color = RO_FONTS[i]===size ? 'var(--gold)' : '';
+    btn.style.borderColor = RO_FONTS[i]===size ? 'rgba(200,164,90,.4)' : 'transparent';
+  });
+}
+
+// Re-render on resize (desktop ↔ mobile switch)
+window.addEventListener('resize', ()=>{
+  if(roActive){ roRender(false); roUpdateNav(); }
+});
