@@ -264,6 +264,7 @@ function paginateContent(content,wordsPerPage){
 function renderPage(pageIdx){
   document.getElementById('chBodyArea').innerHTML=renderBody(currentPages[pageIdx]||'');
   updatePageNav(pageIdx);
+  saveNormalBookmark(pageIdx);
 }
 
 function updatePageNav(pageIdx){
@@ -445,6 +446,24 @@ async function loadArticles(){
   });
 }
 
+
+// Save bookmark from normal chapter view (no reader mode needed)
+function saveNormalBookmark(pageIdx){
+  if(!currentBookId||!activeChId||!chapterIndex.length)return;
+  const ch=chapterIndex[activeChIdx];
+  if(!ch)return;
+  const bm={
+    bookId:currentBookId,
+    chId:activeChId,
+    chIdx:activeChIdx,
+    chNum:ch.num||activeChIdx+1,
+    chTitle:ch.title,
+    flatIdx:pageIdx,
+    pageInCh:pageIdx,
+    savedAt:Date.now()
+  };
+  try{localStorage.setItem('bm_'+currentBookId,JSON.stringify(bm));}catch(e){}
+}
 
 // ══════════════════════════════════════════════════════
 // READER MODE — flat book paging across all chapters
