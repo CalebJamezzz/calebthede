@@ -594,8 +594,8 @@ function roRender(){
   document.getElementById('roNumLeft').innerHTML = left
     ? roPageLabel(roFlatIdx, left) : '';
 
-  // Chapter break marker at the top of left if it starts a new chapter
-  if(left && left.pageInCh === 0 && left.chIdx > 0){
+  // Chapter label at top of first page of every chapter
+  if(left && left.pageInCh === 0){
     document.getElementById('roContentLeft').innerHTML =
       `<div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid rgba(78,201,176,.15)">Chapter ${left.chNum} — ${left.chTitle}</div>`
       + document.getElementById('roContentLeft').innerHTML;
@@ -605,8 +605,8 @@ function roRender(){
   if(right){
     document.getElementById('roContentRight').innerHTML = renderBody(right.content);
     document.getElementById('roNumRight').innerHTML = roPageLabel(roFlatIdx+1, right);
-    // Chapter break marker on right page
-    if(right.pageInCh === 0 && right.chIdx > 0){
+    // Chapter label on right page if it starts a chapter
+    if(right.pageInCh === 0){
       document.getElementById('roContentRight').innerHTML =
         `<div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid rgba(78,201,176,.15)">Chapter ${right.chNum} — ${right.chTitle}</div>`
         + document.getElementById('roContentRight').innerHTML;
