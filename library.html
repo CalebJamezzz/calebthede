@@ -121,7 +121,31 @@ let adminMode=false;
         <button class="btn-sm danger admin-only" onclick="deleteCurrentBook()">Delete Book</button>
       </div>
     </div>
-    <div class="book-detail-layout">
+
+    <!-- Table of Contents view -->
+    <div id="libBookTOC" style="display:none;max-width:1200px;margin:0 auto;padding:2rem 4rem 4rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem">
+        <div>
+          <p style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem">Table of Contents</p>
+          <h2 id="tocBookTitle" style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.4rem,2.5vw,2rem);font-weight:300;color:var(--text)"></h2>
+        </div>
+        <div style="display:flex;gap:.7rem;align-items:center;flex-wrap:wrap">
+          <div id="tocResumeWrap" style="display:none">
+            <button id="tocResumeBtn" onclick="resumeReading()" style="background:rgba(200,164,90,.08);border:1px solid rgba(200,164,90,.4);border-radius:3px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);padding:.55rem 1.2rem;transition:all .2s">✦ Resume Reading</button>
+          </div>
+          <button onclick="startFromBeginning()" style="background:none;border:1px solid var(--border);border-radius:3px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);padding:.55rem 1.2rem;transition:all .2s" onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--gold)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">Start from Beginning</button>
+          <button class="btn-sm admin-only" onclick="openChModal(null,currentBookId)">+ Add Chapter</button>
+        </div>
+      </div>
+      <div id="tocList" style="display:flex;flex-direction:column;gap:0"></div>
+      <div id="tocEmpty" style="display:none;text-align:center;padding:4rem 2rem;color:var(--text-dim)">
+        <p style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;margin-bottom:.5rem">No chapters yet.</p>
+        <p class="admin-only" style="font-size:.8rem;opacity:.5">Add your first chapter above.</p>
+        <p class="non-admin-only" style="font-size:.8rem;opacity:.5;font-family:'JetBrains Mono',monospace;letter-spacing:.1em">Coming soon.</p>
+      </div>
+    </div>
+
+    <div class="book-detail-layout" id="bookDetailLayout">
       <div class="ch-sidebar"><p class="ch-sidebar-title">Chapters</p><ul class="ch-list" id="chList"></ul><button class="btn-sm admin-only" style="width:100%;margin-top:.5rem" onclick="openChModal(null,currentBookId)">+ Add Chapter</button></div>
       <div id="chMain">
         <div id="chEmpty" style="display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem;color:var(--text-dim)">

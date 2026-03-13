@@ -178,6 +178,7 @@ async function openBook(id,title,desc,skipHistory){
   document.getElementById('bookDetailTitle').textContent=title;
   document.getElementById('bookDetailDesc').textContent=desc||'';
   await renderBookDetail();showLibBookDetail();
+  await renderTOC();
   if(!skipHistory)safePush({sub:'book',id,title,desc},'','#book/'+id);
 }
 function closeBookDetail(){showLibBrowse();loadBooks();safePush({sub:'browse'},'','#');}
@@ -577,7 +578,7 @@ function roAnimate(dir){
   const pagesEl = document.getElementById('roPages');
   const cls = dir==='forward' ? 'flip-forward' : 'flip-back';
   pagesEl.classList.add(cls);
-  setTimeout(()=>{ roRender(); roUpdateNav(); roUpdateProgress(); }, 120);
+  setTimeout(()=>{ roRender(); roUpdateNav(); roUpdateProgress(); saveBookmark(); }, 120);
   setTimeout(()=>{ pagesEl.classList.remove(cls); roFlipping=false; }, 300);
 }
 
@@ -699,3 +700,131 @@ function roSetFont(size, silent){
 window.addEventListener('resize',()=>{
   if(roActive){ roRender(); roUpdateNav(); }
 });
+
+// ══════════════════════════════════════════════════════
+// BOOKMARK + TABLE OF CONTENTS
+// ══════════════════════════════════════════════════════
+
+// ── Bookmark helpers ───────────────────────────────────
+function bmKey(bookId){ return 'bm_' + bookId; }
+
+function saveBookmark(){
+  if(!currentBookId || !roIsBook || !roFlat.length) return;
+  const cur = roFlat[roFlatIdx];
+  if(!cur) return;
+  const bm = {
+    bookId:    currentBookId,
+    chId:      cur.chId,
+    chIdx:     cur.chIdx,
+    chNum:     cur.chNum,
+    chTitle:   cur.chTitle,
+    flatIdx:   roFlatIdx,
+    pageInCh:  cur.pageInCh,
+    savedAt:   Date.now()
+  };
+  localStorage.setItem(bmKey(currentBookId), JSON.stringify(bm));
+}
+
+function loadBookmark(bookId){
+  try{ return JSON.parse(localStorage.getItem(bmKey(bookId))); }
+  catch(e){ return null; }
+}
+
+function clearBookmark(bookId){
+  localStorage.removeItem(bmKey(bookId));
+}
+
+// ── TOC ────────────────────────────────────────────────
+function showTOC(){ 
+  document.getElementById('libBookTOC').style.display = 'block';
+  document.getElementById('bookDetailLayout').style.display = 'none';
+}
+function hideTOC(){
+  document.getElementById('libBookTOC').style.display = 'none';
+  document.getElementById('bookDetailLayout').style.display = '';
+}
+
+async function renderTOC(){
+  const bm = loadBookmark(currentBookId);
+  const tocList   = document.getElementById('tocList');
+  const tocEmpty  = document.getElementById('tocEmpty');
+  const resumeWrap = document.getElementById('tocResumeWrap');
+  const resumeBtn  = document.getElementById('tocResumeBtn');
+  const bookTitle  = document.getElementById('bookDetailTitle')?.textContent || '';
+  document.getElementById('tocBookTitle').textContent = bookTitle;
+
+  // Show resume button if bookmark exists
+  if(bm){
+    resumeWrap.style.display = 'block';
+    resumeBtn.textContent = `✦ Resume — Ch.${bm.chNum}, p.${bm.pageInCh + 1}`;
+  } else {
+    resumeWrap.style.display = 'none';
+  }
+
+  // Fetch chapters for TOC
+  const{data:chs} = await sb.from('chapters')
+    .select('id,num,title,content,published')
+    .eq('book_id', currentBookId)
+    .order('num', {ascending:true});
+
+  if(!chs || !chs.length){
+    tocList.innerHTML = '';
+    tocEmpty.style.display = 'block';
+    return;
+  }
+  tocEmpty.style.display = 'none';
+
+  tocList.innerHTML = chs.map((ch,i) => {
+    const words = (ch.content||'').replace(/<[^>]*>/g,'').split(/\s+/).filter(Boolean).length;
+    const pages = Math.max(1, Math.ceil(words / WORDS_PER_PAGE));
+    const isBookmarked = bm && bm.chId === ch.id;
+    const isDraft = !ch.published;
+    return `
+    <div class="toc-row${isBookmarked?' has-bookmark':''}" onclick="tocOpenChapter('${ch.id}',${i})">
+      <span class="toc-num">${ch.num||i+1}</span>
+      <div class="toc-info">
+        <span class="toc-title">${ch.title}</span>
+        <span class="toc-meta">
+          ${pages} page${pages!==1?'s':''}
+          ${isDraft?'<span class="toc-draft-pill admin-only">draft</span>':''}
+          ${isBookmarked?`<span style="color:var(--gold);opacity:.8">✦ bookmark — page ${bm.pageInCh+1}</span>`:''}
+        </span>
+      </div>
+      <span class="toc-arrow">→</span>
+    </div>`;
+  }).join('');
+
+  showTOC();
+}
+
+async function tocOpenChapter(chId, chIdx){
+  hideTOC();
+  await showChapter(chId, chIdx);
+  // Scroll to chapter reader
+  const reader = document.getElementById('chReader');
+  if(reader) reader.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+async function startFromBeginning(){
+  hideTOC();
+  // Load and show first chapter
+  const{data:chs} = await sb.from('chapters')
+    .select('id,num,title')
+    .eq('book_id', currentBookId)
+    .eq('published', true)
+    .order('num', {ascending:true})
+    .limit(1);
+  if(chs && chs.length) await tocOpenChapter(chs[0].id, 0);
+}
+
+async function resumeReading(){
+  const bm = loadBookmark(currentBookId);
+  if(!bm){ startFromBeginning(); return; }
+  hideTOC();
+  // Load the bookmarked chapter
+  await showChapter(bm.chId, bm.chIdx);
+  // Restore page position
+  currentPageIdx = bm.pageInCh;
+  renderPage(bm.pageInCh);
+  scrollToChapterTop();
+}
