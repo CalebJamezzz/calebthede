@@ -735,10 +735,14 @@ body.in-reader .reader-progress-strip{display:block}
    ══════════════════════════════════════════ */
 
 #readerOverlay{
-  position:fixed;inset:0;z-index:1000;
+  position:fixed;inset:0;z-index:9998;
   background:var(--bg1);
   display:none;flex-direction:column;
   overflow:hidden;
+}
+body.reader-locked nav,
+body.reader-locked footer{
+  display:none!important;
 }
 #readerOverlay.active{display:flex}
 body.reader-locked{overflow:hidden}
@@ -746,7 +750,7 @@ body.reader-locked{overflow:hidden}
 /* Progress bar */
 .ro-progress{
   position:absolute;top:0;left:0;right:0;height:2px;
-  background:rgba(200,164,90,.12);z-index:2;
+  background:rgba(200,164,90,.12);z-index:2;pointer-events:none;
 }
 .ro-progress-fill{height:100%;background:var(--gold);transition:width .4s ease;width:0%}
 

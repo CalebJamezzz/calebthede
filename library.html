@@ -132,7 +132,10 @@ let adminMode=false;
         </div>
         <div id="chReader" style="display:none">
           <div style="padding:2.5rem 4rem 0;max-width:680px;margin:0 auto">
-            <p id="chEyebrow" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem"></p>
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:.8rem">
+              <p id="chEyebrow" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin:0"></p>
+              <button onclick="enterReaderMode()" id="focusReaderBtn" style="display:none;flex-shrink:0;background:none;border:1px solid rgba(200,164,90,.3);border-radius:20px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);padding:.32rem 1rem;transition:all .2s;white-space:nowrap" onmouseover="this.style.background='rgba(200,164,90,.08)'" onmouseout="this.style.background='none'">⊙ focus</button>
+            </div>
             <h2 id="chTitleH" style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.6rem);font-weight:300;color:var(--text);margin-bottom:2.5rem;line-height:1.2"></h2>
           </div>
           <div class="reader-body" id="chBodyArea"></div>
@@ -332,7 +335,7 @@ let adminMode=false;
   <!-- Bottom nav bar -->
   <div class="ro-bottombar">
     <div class="ro-nav-group">
-      <button class="ro-nav-btn" id="roChPrevBtn" onclick="roStepChapter(-1)">⇤ Chapter</button>
+      <button class="ro-nav-btn" id="roChPrevBtn" onclick="roJumpChapter(-1)">⇤ Chapter</button>
       <button class="ro-nav-btn primary" id="roPrevBtn" onclick="roStep(-1)">← Prev</button>
     </div>
     <div class="ro-center-info">
@@ -341,7 +344,7 @@ let adminMode=false;
     </div>
     <div class="ro-nav-group">
       <button class="ro-nav-btn primary" id="roNextBtn" onclick="roStep(1)">Next →</button>
-      <button class="ro-nav-btn" id="roChNextBtn" onclick="roStepChapter(1)">Chapter ⇥</button>
+      <button class="ro-nav-btn" id="roChNextBtn" onclick="roJumpChapter(1)">Chapter ⇥</button>
     </div>
   </div>
 </div>
