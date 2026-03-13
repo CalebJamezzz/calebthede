@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Caleb Thede — Back Soon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root{
+      --bg:#0D0F14;--bg2:#161B24;--bg3:#1E2433;
+      --gold:#C8A45A;--gold-dim:#8A6E37;
+      --teal:#4EC9B0;--teal-dim:#2C7A6A;
+      --text:#E8E4DC;--text-dim:#A8A49C;
+      --border:rgba(200,164,90,0.2);
+    }
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%;overflow:hidden}
+
+    body{
+      background:var(--bg);
+      color:var(--text);
+      font-family:'Lato',sans-serif;
+      display:flex;align-items:center;justify-content:center;
+    }
+
+    /* Background glow + grid */
+    .hub-bg{position:fixed;inset:0;pointer-events:none;z-index:0;
+      background:
+        radial-gradient(ellipse 65% 55% at 75% 45%,rgba(78,201,176,.055),transparent 60%),
+        radial-gradient(ellipse 50% 50% at 18% 65%,rgba(200,164,90,.065),transparent 55%)}
+    .hub-pattern{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.038;
+      background-image:
+        repeating-linear-gradient(0deg,transparent,transparent 39px,var(--teal) 39px,var(--teal) 40px),
+        repeating-linear-gradient(90deg,transparent,transparent 39px,var(--teal) 39px,var(--teal) 40px)}
+
+    /* Shooting star canvas */
+    #ssCanvas{position:fixed;inset:0;z-index:9998;pointer-events:none}
+
+    /* Center card */
+    .card{
+      position:relative;z-index:1;
+      text-align:center;
+      padding:4rem 3rem;
+      max-width:520px;
+      width:90%;
+    }
+
+    .logo{
+      font-family:'Cormorant Garamond',serif;
+      font-size:1.6rem;font-weight:600;letter-spacing:.15em;
+      color:var(--gold);
+      margin-bottom:3.5rem;
+      cursor:default;
+      text-shadow:0 0 30px rgba(200,164,90,.25);
+    }
+
+    .glyph{
+      font-family:'Cormorant Garamond',serif;
+      font-size:clamp(4rem,12vw,7rem);
+      font-weight:300;
+      font-style:italic;
+      line-height:1;
+      color:var(--text);
+      margin-bottom:1.5rem;
+    }
+    .glyph em{color:var(--gold)}
+
+    .sub{
+      font-family:'JetBrains Mono',monospace;
+      font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;
+      color:var(--text-dim);
+      margin-bottom:3rem;
+    }
+
+    .divider{
+      width:60px;height:1px;
+      background:linear-gradient(to right,transparent,var(--gold-dim),transparent);
+      margin:0 auto 2.5rem;
+    }
+
+    .note{
+      font-family:'Cormorant Garamond',serif;
+      font-size:1.05rem;font-style:italic;
+      color:var(--text-dim);
+      line-height:1.7;
+    }
+
+    .status-row{
+      display:flex;align-items:center;justify-content:center;gap:.6rem;
+      margin-top:3rem;
+      font-family:'JetBrains Mono',monospace;font-size:.62rem;
+      letter-spacing:.18em;text-transform:uppercase;color:var(--teal);
+    }
+    .status-dot{
+      width:6px;height:6px;border-radius:50%;
+      background:var(--teal);
+      animation:blink 1.8s ease-in-out infinite;
+    }
+    @keyframes blink{0%,100%{opacity:.3}50%{opacity:1}}
+
+    /* Corner brackets */
+    .brackets{
+      position:absolute;inset:-1px;pointer-events:none;
+    }
+    .bracket{position:absolute;width:16px;height:16px;opacity:.4}
+    .bracket.tl{top:0;left:0;border-top:1px solid var(--gold);border-left:1px solid var(--gold)}
+    .bracket.tr{top:0;right:0;border-top:1px solid var(--gold);border-right:1px solid var(--gold)}
+    .bracket.bl{bottom:0;left:0;border-bottom:1px solid var(--gold);border-left:1px solid var(--gold)}
+    .bracket.br{bottom:0;right:0;border-bottom:1px solid var(--gold);border-right:1px solid var(--gold)}
+
+    /* Constellation decoration */
+    .const-svg{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.18}
+
+    /* Toast */
+    .toast{
+      position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);
+      background:var(--bg3);border:1px solid var(--border);
+      font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;
+      text-transform:uppercase;color:var(--text-dim);
+      padding:.6rem 1.4rem;border-radius:3px;
+      opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;
+      white-space:nowrap;z-index:9999;
+    }
+    .toast.visible{opacity:1;transform:translateX(-50%) translateY(0)}
+  </style>
+</head>
+<body>
+
+<div class="hub-bg"></div>
+<div class="hub-pattern"></div>
+
+<!-- Constellation background stars -->
+<svg class="const-svg" viewBox="0 0 1440 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+  <!-- Stars -->
+  <circle cx="120" cy="80" r="1.5" fill="#C8A45A" opacity=".7"/>
+  <circle cx="340" cy="160" r="1" fill="#4EC9B0" opacity=".6"/>
+  <circle cx="80" cy="300" r="1.2" fill="#C8A45A" opacity=".5"/>
+  <circle cx="200" cy="450" r="1" fill="#4EC9B0" opacity=".4"/>
+  <circle cx="1320" cy="120" r="1.5" fill="#4EC9B0" opacity=".7"/>
+  <circle cx="1100" cy="200" r="1" fill="#C8A45A" opacity=".6"/>
+  <circle cx="1380" cy="400" r="1.2" fill="#4EC9B0" opacity=".5"/>
+  <circle cx="1250" cy="600" r="1" fill="#C8A45A" opacity=".4"/>
+  <circle cx="600" cy="60" r="1" fill="#C8A45A" opacity=".4"/>
+  <circle cx="900" cy="820" r="1.2" fill="#4EC9B0" opacity=".4"/>
+  <circle cx="150" cy="750" r="1" fill="#4EC9B0" opacity=".35"/>
+  <circle cx="1400" cy="750" r="1" fill="#C8A45A" opacity=".35"/>
+  <!-- Constellation lines -->
+  <line x1="120" y1="80" x2="340" y2="160" stroke="#C8A45A" stroke-width=".4" opacity=".3"/>
+  <line x1="340" y1="160" x2="200" y2="450" stroke="#4EC9B0" stroke-width=".4" opacity=".25"/>
+  <line x1="1320" y1="120" x2="1100" y2="200" stroke="#4EC9B0" stroke-width=".4" opacity=".3"/>
+  <line x1="1100" y1="200" x2="1250" y2="600" stroke="#C8A45A" stroke-width=".4" opacity=".25"/>
+  <!-- Reticle top-left -->
+  <line x1="75" y1="300" x2="85" y2="300" stroke="#C8A45A" stroke-width=".8" opacity=".4"/>
+  <line x1="80" y1="295" x2="80" y2="305" stroke="#C8A45A" stroke-width=".8" opacity=".4"/>
+  <!-- Reticle bottom-right -->
+  <line x1="1375" y1="400" x2="1385" y2="400" stroke="#4EC9B0" stroke-width=".8" opacity=".4"/>
+  <line x1="1380" y1="395" x2="1380" y2="405" stroke="#4EC9B0" stroke-width=".8" opacity=".4"/>
+</svg>
+
+<canvas id="ssCanvas"></canvas>
+
+<div class="card">
+  <div class="brackets">
+    <div class="bracket tl"></div>
+    <div class="bracket tr"></div>
+    <div class="bracket bl"></div>
+    <div class="bracket br"></div>
+  </div>
+
+  <div class="logo">CT.</div>
+
+  <div class="glyph">Back<br><em>Soon.</em></div>
+
+  <div class="sub">// under construction</div>
+
+  <div class="divider"></div>
+
+  <p class="note">Something better is being built.<br>Check back shortly.</p>
+
+  <div class="status-row">
+    <div class="status-dot"></div>
+    <span>Site is being updated</span>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── TOAST ────────────────────────────────────────────────────────────────────
+function toast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('visible');
+  setTimeout(()=>t.classList.remove('visible'),3000);
+}
+
+// ── SHOOTING STAR ─────────────────────────────────────────────────────────────
+const ssCanvas=document.getElementById('ssCanvas');
+const ssCtx=ssCanvas.getContext('2d');
+function resizeSS(){ssCanvas.width=window.innerWidth;ssCanvas.height=window.innerHeight}
+resizeSS();window.addEventListener('resize',resizeSS);
+
+function shootStar(fromX,fromY,toX,toY){
+  const startTime=performance.now();
+  const duration=900;
+  const trail=[];
+  function animate(now){
+    const progress=Math.min((now-startTime)/duration,1);
+    const ease=1-Math.pow(1-progress,3);
+    const x=fromX+(toX-fromX)*ease;
+    const y=fromY+(toY-fromY)*ease;
+    trail.push({x,y,alpha:1});
+    ssCtx.clearRect(0,0,ssCanvas.width,ssCanvas.height);
+    trail.forEach((pt,i)=>{
+      const a=(i/trail.length)*pt.alpha*0.6;
+      ssCtx.beginPath();
+      ssCtx.arc(pt.x,pt.y,1.5,0,Math.PI*2);
+      ssCtx.fillStyle=`rgba(200,164,90,${a})`;
+      ssCtx.fill();
+      pt.alpha*=0.93;
+    });
+    ssCtx.beginPath();ssCtx.arc(x,y,3.5,0,Math.PI*2);
+    ssCtx.fillStyle='#fff';
+    ssCtx.shadowColor='#C8A45A';ssCtx.shadowBlur=12;
+    ssCtx.fill();ssCtx.shadowBlur=0;
+    if(progress<1)requestAnimationFrame(animate);
+    else explodeStar(toX,toY);
+  }
+  requestAnimationFrame(animate);
+}
+
+function explodeStar(x,y){
+  const colors=['#ff6b6b','#ff9f43','#ffd32a','#0be881','#67e8f9','#a78bfa','#f472b6','#fff','#C8A45A','#4EC9B0'];
+  const particles=Array.from({length:55},(_,i)=>{
+    const angle=(i/55)*Math.PI*2+Math.random()*.3;
+    const speed=2+Math.random()*5;
+    return{x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,
+      color:colors[Math.floor(Math.random()*colors.length)],
+      alpha:1,size:1+Math.random()*2.5,decay:.012+Math.random()*.018,gravity:.08};
+  });
+  // Rainbow sweep on explosion
+  startRainbow();
+  function animateExplosion(){
+    ssCtx.clearRect(0,0,ssCanvas.width,ssCanvas.height);
+    let alive=false;
+    particles.forEach(p=>{
+      if(p.alpha<=0)return;
+      alive=true;p.x+=p.vx;p.y+=p.vy;p.vy+=p.gravity;
+      p.vx*=0.97;p.alpha-=p.decay;
+      ssCtx.beginPath();ssCtx.arc(p.x,p.y,p.size,0,Math.PI*2);
+      ssCtx.fillStyle=p.color;ssCtx.globalAlpha=Math.max(0,p.alpha);ssCtx.fill();
+    });
+    ssCtx.globalAlpha=1;
+    if(alive)requestAnimationFrame(animateExplosion);
+    else ssCtx.clearRect(0,0,ssCanvas.width,ssCanvas.height);
+  }
+  requestAnimationFrame(animateExplosion);
+}
+
+function triggerShootingStar(){
+  const W=window.innerWidth,H=window.innerHeight;
+  const edge=Math.floor(Math.random()*4);
+  let fx,fy;
+  if(edge===0){fx=Math.random()*W;fy=-20}
+  else if(edge===1){fx=W+20;fy=Math.random()*H}
+  else if(edge===2){fx=Math.random()*W;fy=H+20}
+  else{fx=-20;fy=Math.random()*H}
+  const tx=W*.2+Math.random()*W*.6;
+  const ty=H*.2+Math.random()*H*.6;
+  shootStar(fx,fy,tx,ty);
+  scheduleRandomStar();
+}
+function scheduleRandomStar(){
+  setTimeout(triggerShootingStar,120000+Math.random()*80000);
+}
+scheduleRandomStar();
+
+// ── RAINBOW ──────────────────────────────────────────────────────────────────
+var rainbowTimer=null;
+var rainbowColors=[
+  ['#ff6b6b','#ff6b6b','#cc4444','#cc4444'],
+  ['#ff9f43','#ff9f43','#cc7a28','#cc7a28'],
+  ['#ffd32a','#ffd32a','#ccaa00','#ccaa00'],
+  ['#0be881','#0be881','#09b864','#09b864'],
+  ['#67e8f9','#67e8f9','#3abcd4','#3abcd4'],
+  ['#a78bfa','#a78bfa','#7c5cd4','#7c5cd4'],
+  ['#f472b6','#f472b6','#c44d90','#c44d90'],
+  ['#fb923c','#fb923c','#c96a1a','#c96a1a'],
+];
+function startRainbow(){
+  clearInterval(rainbowTimer);
+  var idx=0,total=rainbowColors.length*4;
+  var root=document.body;
+  rainbowTimer=setInterval(()=>{
+    var col=rainbowColors[idx%rainbowColors.length];
+    root.style.setProperty('--teal',col[0]);
+    root.style.setProperty('--gold',col[1]);
+    root.style.setProperty('--teal-dim',col[2]);
+    root.style.setProperty('--gold-dim',col[3]);
+    idx++;
+    if(idx>=total){
+      clearInterval(rainbowTimer);
+      root.style.removeProperty('--teal');
+      root.style.removeProperty('--gold');
+      root.style.removeProperty('--teal-dim');
+      root.style.removeProperty('--gold-dim');
+    }
+  },500);
+}
+
+// ── EASTER EGGS ───────────────────────────────────────────────────────────────
+let typed='';
+document.addEventListener('keydown',e=>{
+  typed=(typed+e.key).slice(-6);
+  if(typed.endsWith('caleb')){triggerShootingStar();toast('Hey, that\'s me.');}
+});
+
+// Logo click → shooting star
+let logoClicks=0,logoTimer=null;
+document.querySelector('.logo').addEventListener('click',()=>{
+  logoClicks++;clearTimeout(logoTimer);
+  logoTimer=setTimeout(()=>logoClicks=0,1800);
+  if(logoClicks===3)toast('Still here. Just rebuilding.');
+  if(logoClicks>=7){logoClicks=0;triggerShootingStar();}
+});
+</script>
+</body>
+</html>
