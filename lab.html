@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Lab — Caleb Thede</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="css/main.css"/>
+
+</head>
+<body data-page="lab">
+<script>
+const SUPABASE_URL='https://lbviiggrxzhyxrpivbbi.supabase.co';
+const SUPABASE_KEY='sb_publishable_eQRvx-J1Cp4nlq6Q6TOjIA__QYJmJq6';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let adminMode=false;
+</script>
+<canvas id="shootingStarCanvas"></canvas>
+<div class="hub-bg"></div>
+<div class="hub-pattern"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div id="flameCursor"><svg width="28" height="40" viewBox="0 0 28 40" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="fg1" cx="50%" cy="80%" r="60%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="30%" stop-color="#60d0ff" stop-opacity="0.9"/><stop offset="70%" stop-color="#3b82f6" stop-opacity="0.7"/><stop offset="100%" stop-color="#1d4ed8" stop-opacity="0"/></radialGradient><radialGradient id="fg2" cx="50%" cy="70%" r="55%"><stop offset="0%" stop-color="#bfdbfe" stop-opacity="0.8"/><stop offset="50%" stop-color="#60a5fa" stop-opacity="0.5"/><stop offset="100%" stop-color="#2563eb" stop-opacity="0"/></radialGradient></defs><path d="M14 38 C6 32 2 24 4 16 C5 10 8 6 10 4 C10 8 11 10 13 11 C11 7 13 2 14 0 C15 4 17 8 20 10 C22 12 24 16 24 20 C24 28 20 34 14 38Z" fill="url(#fg1)" opacity="0.9"/><path d="M14 36 C9 30 7 24 8 18 C9 14 11 11 12 9 C12 12 13 14 14 15 C13 12 14 8 15 6 C16 9 18 12 20 14 C21 16 22 19 22 22 C22 28 18 33 14 36Z" fill="url(#fg2)" opacity="0.8"/><path d="M14 34 C11 29 10 25 11 21 C12 18 13 16 14 15 C15 17 15 20 14 22 C16 19 17 16 17 14 C18 17 19 20 19 23 C19 28 17 32 14 34Z" fill="#e0f2fe" opacity="0.7"/></svg></div>
+<div class="toast" id="toast"></div>
+<div class="konami-overlay" id="konamiOverlay">
+  <p class="konami-sub">// ↑ ↑ ↓ ↓ ← → ← → B A · sequence unlocked</p>
+  <h2 class="konami-title">You Know the Code.</h2>
+  <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text-dim);opacity:.5;margin-bottom:2rem;text-align:center">Most people don't get this far.</p>
+  <div class="konami-facts">
+    <div class="kf">⬡ &nbsp;<strong>CT.</strong> — the period isn't a typo. It's a full stop. An assertion. I wanted a name that felt like a completed thought.</div>
+    <div class="kf">⬡ &nbsp;<strong>The whole site</strong> was originally a single HTML file. One file. Every page, animation, reader, admin panel, SVG generator — all of it. No frameworks, no build step.</div>
+    <div class="kf">⬡ &nbsp;<strong>The book</strong> started as margin notes from my psychology degree. At some point the notes became chapters, and the chapters became something I couldn't stop writing.</div>
+    <div class="kf">⬡ &nbsp;<strong>Teal + gold</strong> — teal is the logic side. The systems thinker. Gold is the depth, the weight, the meaning behind things. You need both.</div>
+    <div class="kf">⬡ &nbsp;<strong>There are 6 secrets</strong> hidden across this site. You've found one of them. The others are quieter.</div>
+  </div>
+  <button class="konami-close" onclick="closeKonami()">[ close · esc ]</button>
+</div>
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <h2 class="modal-title">Admin Login</h2>
+    <p style="font-size:.9rem;color:var(--text-dim);margin-bottom:1.5rem">Sign in to unlock editing.</p>
+    <div class="mf"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"/></div>
+    <div class="mf"><label>Password</label><input type="password" id="loginPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <p class="login-error" id="loginError">Incorrect credentials. Try again.</p>
+    <div class="modal-actions"><button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
+  </div>
+</div>
+<nav>
+  <a class="nav-logo" href="/">CT.</a>
+  <ul class="nav-center">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about.html">About</a></li>
+    <li><a href="/projects.html">Projects</a></li>
+    <li><a href="/library.html">Library</a></li>
+    <li><a href="/lab.html" class="active">Lab</a></li>
+    <li><a href="/contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="admin-badge" id="adminBadge">Admin</span>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
+    <button class="lock-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login">🔒</button>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-drawer" id="mobileDrawer">
+  <a class="mobile-nav-item" href="/">Home</a>
+  <a class="mobile-nav-item" href="/about.html">About</a>
+  <a class="mobile-nav-item" href="/projects.html">Projects</a>
+  <a class="mobile-nav-item" href="/library.html">Library</a>
+  <a class="mobile-nav-item active" href="/lab.html">Lab</a>
+  <a class="mobile-nav-item" href="/contact.html">Contact</a>
+  <div class="mobile-drawer-footer">
+    <div class="mobile-drawer-links">
+      <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
+    </div>
+    <button class="lock-btn" onclick="toggleAdmin();closeMobileNav()" style="font-size:.75rem">🔒 Admin</button>
+  </div>
+</div>
+<main>
+  <div class="page-hero reveal"><p class="section-label">The Lab</p><h1 class="section-title">Ideas in<br><em>Progress</em></h1><p class="page-hero-sub">Design concepts, project seeds, research notes — a place to capture what's brewing.</p></div>
+  <div class="lab-outer">
+    <div class="lab-toolbar reveal">
+      <div class="lab-filters">
+        <button class="lab-fb active" onclick="filterLab('all',this)">All</button>
+        <button class="lab-fb" onclick="filterLab('Design Concept',this)">Design</button>
+        <button class="lab-fb" onclick="filterLab('Project Idea',this)">Ideas</button>
+        <button class="lab-fb" onclick="filterLab('Research Note',this)">Research</button>
+        <button class="lab-fb" onclick="filterLab('Experiment',this)">Experiments</button>
+      </div>
+      <button class="btn-primary admin-only" onclick="openLabModal()">+ New Entry</button>
+    </div>
+    <div class="lab-grid" id="labGrid"></div>
+    <div class="empty-state" id="labEmpty" style="display:none"><span class="empty-icon">◉</span><h3>The lab is empty</h3><p>Add your first idea — no matter how unformed.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openLabModal()">+ New Entry</button></div>
+  </div>
+</main>
+<footer>
+  <span>© 2026 Caleb Thede</span>
+  <div class="footer-links">
+    <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
+    <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
+    <a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a>
+    <a href="mailto:calebthede@gmail.com">Email</a>
+    <a href="/contact.html">Contact</a>
+  </div>
+</footer>
+<div class="modal-overlay" id="labModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('labModal')">✕</button>
+    <h2 class="modal-title" id="labModalTitle">New Lab Entry</h2>
+    <input type="hidden" id="editLabId"/>
+    <div class="mf"><label>Type</label><select id="labType"><option>Design Concept</option><option>Project Idea</option><option>Research Note</option><option>Experiment</option><option>Other</option></select></div>
+    <div class="mf"><label>Title</label><input type="text" id="labTitle" placeholder="Give it a name"/></div>
+    <div class="mf"><label>Description / Notes</label><textarea id="labDesc" placeholder="What are you thinking?"></textarea></div>
+    <div class="mf"><label>Link (optional)</label><input type="text" id="labLink" placeholder="https://…"/></div>
+    <div class="modal-actions"><button class="btn-primary" id="labSaveBtn" onclick="saveLabEntry()">Save</button><button class="btn-ghost" onclick="closeModal('labModal')">Cancel</button></div>
+  </div>
+</div>
+<script src="js/init.js"></script>
+<script src="js/theme_nav.js"></script>
+<script src="js/easter_eggs.js"></script>
+<script src="js/lab.js"></script>
+<script>document.addEventListener("DOMContentLoaded",()=>loadLab());</script>
+</body>
+</html>

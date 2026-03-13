@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Projects — Caleb Thede</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="css/main.css"/>
+
+</head>
+<body data-page="projects">
+<script>
+const SUPABASE_URL='https://lbviiggrxzhyxrpivbbi.supabase.co';
+const SUPABASE_KEY='sb_publishable_eQRvx-J1Cp4nlq6Q6TOjIA__QYJmJq6';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let adminMode=false;
+</script>
+<canvas id="shootingStarCanvas"></canvas>
+<div class="hub-bg"></div>
+<div class="hub-pattern"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div id="flameCursor"><svg width="28" height="40" viewBox="0 0 28 40" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="fg1" cx="50%" cy="80%" r="60%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="30%" stop-color="#60d0ff" stop-opacity="0.9"/><stop offset="70%" stop-color="#3b82f6" stop-opacity="0.7"/><stop offset="100%" stop-color="#1d4ed8" stop-opacity="0"/></radialGradient><radialGradient id="fg2" cx="50%" cy="70%" r="55%"><stop offset="0%" stop-color="#bfdbfe" stop-opacity="0.8"/><stop offset="50%" stop-color="#60a5fa" stop-opacity="0.5"/><stop offset="100%" stop-color="#2563eb" stop-opacity="0"/></radialGradient></defs><path d="M14 38 C6 32 2 24 4 16 C5 10 8 6 10 4 C10 8 11 10 13 11 C11 7 13 2 14 0 C15 4 17 8 20 10 C22 12 24 16 24 20 C24 28 20 34 14 38Z" fill="url(#fg1)" opacity="0.9"/><path d="M14 36 C9 30 7 24 8 18 C9 14 11 11 12 9 C12 12 13 14 14 15 C13 12 14 8 15 6 C16 9 18 12 20 14 C21 16 22 19 22 22 C22 28 18 33 14 36Z" fill="url(#fg2)" opacity="0.8"/><path d="M14 34 C11 29 10 25 11 21 C12 18 13 16 14 15 C15 17 15 20 14 22 C16 19 17 16 17 14 C18 17 19 20 19 23 C19 28 17 32 14 34Z" fill="#e0f2fe" opacity="0.7"/></svg></div>
+<div class="toast" id="toast"></div>
+<div class="konami-overlay" id="konamiOverlay">
+  <p class="konami-sub">// ↑ ↑ ↓ ↓ ← → ← → B A · sequence unlocked</p>
+  <h2 class="konami-title">You Know the Code.</h2>
+  <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text-dim);opacity:.5;margin-bottom:2rem;text-align:center">Most people don't get this far.</p>
+  <div class="konami-facts">
+    <div class="kf">⬡ &nbsp;<strong>CT.</strong> — the period isn't a typo. It's a full stop. An assertion. I wanted a name that felt like a completed thought.</div>
+    <div class="kf">⬡ &nbsp;<strong>The whole site</strong> was originally a single HTML file. One file. Every page, animation, reader, admin panel, SVG generator — all of it. No frameworks, no build step.</div>
+    <div class="kf">⬡ &nbsp;<strong>The book</strong> started as margin notes from my psychology degree. At some point the notes became chapters, and the chapters became something I couldn't stop writing.</div>
+    <div class="kf">⬡ &nbsp;<strong>Teal + gold</strong> — teal is the logic side. The systems thinker. Gold is the depth, the weight, the meaning behind things. You need both.</div>
+    <div class="kf">⬡ &nbsp;<strong>There are 6 secrets</strong> hidden across this site. You've found one of them. The others are quieter.</div>
+  </div>
+  <button class="konami-close" onclick="closeKonami()">[ close · esc ]</button>
+</div>
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <h2 class="modal-title">Admin Login</h2>
+    <p style="font-size:.9rem;color:var(--text-dim);margin-bottom:1.5rem">Sign in to unlock editing.</p>
+    <div class="mf"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"/></div>
+    <div class="mf"><label>Password</label><input type="password" id="loginPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <p class="login-error" id="loginError">Incorrect credentials. Try again.</p>
+    <div class="modal-actions"><button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
+  </div>
+</div>
+<nav>
+  <a class="nav-logo" href="/">CT.</a>
+  <ul class="nav-center">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about.html">About</a></li>
+    <li><a href="/projects.html" class="active">Projects</a></li>
+    <li><a href="/library.html">Library</a></li>
+    <li><a href="/lab.html">Lab</a></li>
+    <li><a href="/contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="admin-badge" id="adminBadge">Admin</span>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
+    <button class="lock-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login">🔒</button>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-drawer" id="mobileDrawer">
+  <a class="mobile-nav-item" href="/">Home</a>
+  <a class="mobile-nav-item" href="/about.html">About</a>
+  <a class="mobile-nav-item active" href="/projects.html">Projects</a>
+  <a class="mobile-nav-item" href="/library.html">Library</a>
+  <a class="mobile-nav-item" href="/lab.html">Lab</a>
+  <a class="mobile-nav-item" href="/contact.html">Contact</a>
+  <div class="mobile-drawer-footer">
+    <div class="mobile-drawer-links">
+      <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
+    </div>
+    <button class="lock-btn" onclick="toggleAdmin();closeMobileNav()" style="font-size:.75rem">🔒 Admin</button>
+  </div>
+</div>
+<main>
+  <div class="page-hero reveal"><p class="section-label">03 — Projects</p><h1 class="section-title">Things<br><em>I've Built</em></h1><p class="page-hero-sub">Real problems, real solutions.</p></div>
+  <div class="proj-outer">
+    <div id="projFeaturedWrap"></div>
+    <div class="reveal" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
+      <div><p class="section-label">All Projects</p><h2 class="section-title" style="font-size:2rem">The <em>Work</em></h2></div>
+      <button class="btn-primary admin-only" onclick="openProjectModal()">+ New Project</button>
+    </div>
+    <div class="filter-bar reveal" id="projFilterBar">
+      <button class="fb active" onclick="filterProjects('all',this)">All</button>
+      <button class="fb" onclick="filterProjects('Development',this)">Development</button>
+      <button class="fb" onclick="filterProjects('Design',this)">Design</button>
+      <button class="fb" onclick="filterProjects('QA / Tools',this)">QA / Tools</button>
+    </div>
+    <div class="proj-grid reveal" id="projGrid"></div>
+    <div class="empty-state" id="projEmpty" style="display:none">
+      <span class="empty-icon">◈</span><h3>No projects yet</h3><p>Add your first project to get started.</p>
+      <button class="btn-primary admin-only" style="margin-top:1rem" onclick="openProjectModal()">+ New Project</button>
+    </div>
+  </div>
+</main>
+<footer>
+  <span>© 2026 Caleb Thede</span>
+  <div class="footer-links">
+    <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
+    <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
+    <a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a>
+    <a href="mailto:calebthede@gmail.com">Email</a>
+    <a href="/contact.html">Contact</a>
+  </div>
+</footer>
+<div class="modal-overlay" id="projectModal">
+  <div class="modal" style="max-width:640px">
+    <button class="modal-close" onclick="closeModal('projectModal')">✕</button>
+    <h2 class="modal-title" id="projectModalTitle">New Project</h2>
+    <input type="hidden" id="editProjectId"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <div class="mf" style="grid-column:1/-1"><label>Title</label><input type="text" id="projTitle" placeholder="Project name"/></div>
+      <div class="mf" style="grid-column:1/-1"><label>Subtitle</label><input type="text" id="projSubtitle" placeholder="Short descriptor"/></div>
+      <div class="mf"><label>Category</label><select id="projCategory"><option>Development</option><option>Design</option><option>QA / Tools</option></select></div>
+      <div class="mf"><label>Highlight on Home?</label><select id="projHighlight"><option value="false">No</option><option value="true">Yes — pin to Builder card</option></select></div>
+      <div class="mf" style="grid-column:1/-1"><label>Description</label><textarea id="projDesc" rows="3" placeholder="What did you build and why?"></textarea></div>
+      <div class="mf" style="grid-column:1/-1"><label>Tags (comma-separated)</label><input type="text" id="projTags" placeholder="Python, Data Generation, QA Tooling"/></div>
+      <div class="mf"><label>GitHub Link</label><input type="text" id="projGithub" placeholder="https://github.com/…"/></div>
+      <div class="mf"><label>Figma Link</label><input type="text" id="projFigma" placeholder="https://figma.com/…"/></div>
+      <div class="mf" style="grid-column:1/-1"><label>Demo / Live Link</label><input type="text" id="projDemo" placeholder="https://…"/></div>
+      <div class="mf" style="grid-column:1/-1"><label>Banner Image URL</label><input type="text" id="projBanner" placeholder="https://…"/></div>
+      <div class="mf" style="grid-column:1/-1"><label>Sort Order</label><input type="number" id="projSort" value="0" min="0"/></div>
+    </div>
+    <div class="modal-actions"><button class="btn-primary" id="projSaveBtn" onclick="saveProject()">Save</button><button class="btn-ghost" onclick="closeModal('projectModal')">Cancel</button></div>
+  </div>
+</div>
+<script src="js/init.js"></script>
+<script src="js/theme_nav.js"></script>
+<script src="js/easter_eggs.js"></script>
+<script src="js/projects.js"></script>
+</body>
+</html>

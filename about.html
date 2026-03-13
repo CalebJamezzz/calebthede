@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>About — Caleb Thede</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="css/main.css"/>
+
+</head>
+<body data-page="about">
+<script>
+const SUPABASE_URL='https://lbviiggrxzhyxrpivbbi.supabase.co';
+const SUPABASE_KEY='sb_publishable_eQRvx-J1Cp4nlq6Q6TOjIA__QYJmJq6';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let adminMode=false;
+</script>
+<canvas id="shootingStarCanvas"></canvas>
+<div class="hub-bg"></div>
+<div class="hub-pattern"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div id="flameCursor"><svg width="28" height="40" viewBox="0 0 28 40" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="fg1" cx="50%" cy="80%" r="60%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="30%" stop-color="#60d0ff" stop-opacity="0.9"/><stop offset="70%" stop-color="#3b82f6" stop-opacity="0.7"/><stop offset="100%" stop-color="#1d4ed8" stop-opacity="0"/></radialGradient><radialGradient id="fg2" cx="50%" cy="70%" r="55%"><stop offset="0%" stop-color="#bfdbfe" stop-opacity="0.8"/><stop offset="50%" stop-color="#60a5fa" stop-opacity="0.5"/><stop offset="100%" stop-color="#2563eb" stop-opacity="0"/></radialGradient></defs><path d="M14 38 C6 32 2 24 4 16 C5 10 8 6 10 4 C10 8 11 10 13 11 C11 7 13 2 14 0 C15 4 17 8 20 10 C22 12 24 16 24 20 C24 28 20 34 14 38Z" fill="url(#fg1)" opacity="0.9"/><path d="M14 36 C9 30 7 24 8 18 C9 14 11 11 12 9 C12 12 13 14 14 15 C13 12 14 8 15 6 C16 9 18 12 20 14 C21 16 22 19 22 22 C22 28 18 33 14 36Z" fill="url(#fg2)" opacity="0.8"/><path d="M14 34 C11 29 10 25 11 21 C12 18 13 16 14 15 C15 17 15 20 14 22 C16 19 17 16 17 14 C18 17 19 20 19 23 C19 28 17 32 14 34Z" fill="#e0f2fe" opacity="0.7"/></svg></div>
+<div class="toast" id="toast"></div>
+<div class="konami-overlay" id="konamiOverlay">
+  <p class="konami-sub">// ↑ ↑ ↓ ↓ ← → ← → B A · sequence unlocked</p>
+  <h2 class="konami-title">You Know the Code.</h2>
+  <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text-dim);opacity:.5;margin-bottom:2rem;text-align:center">Most people don't get this far.</p>
+  <div class="konami-facts">
+    <div class="kf">⬡ &nbsp;<strong>CT.</strong> — the period isn't a typo. It's a full stop. An assertion. I wanted a name that felt like a completed thought.</div>
+    <div class="kf">⬡ &nbsp;<strong>The whole site</strong> was originally a single HTML file. One file. Every page, animation, reader, admin panel, SVG generator — all of it. No frameworks, no build step.</div>
+    <div class="kf">⬡ &nbsp;<strong>The book</strong> started as margin notes from my psychology degree. At some point the notes became chapters, and the chapters became something I couldn't stop writing.</div>
+    <div class="kf">⬡ &nbsp;<strong>Teal + gold</strong> — teal is the logic side. The systems thinker. Gold is the depth, the weight, the meaning behind things. You need both.</div>
+    <div class="kf">⬡ &nbsp;<strong>There are 6 secrets</strong> hidden across this site. You've found one of them. The others are quieter.</div>
+  </div>
+  <button class="konami-close" onclick="closeKonami()">[ close · esc ]</button>
+</div>
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <h2 class="modal-title">Admin Login</h2>
+    <p style="font-size:.9rem;color:var(--text-dim);margin-bottom:1.5rem">Sign in to unlock editing.</p>
+    <div class="mf"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"/></div>
+    <div class="mf"><label>Password</label><input type="password" id="loginPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <p class="login-error" id="loginError">Incorrect credentials. Try again.</p>
+    <div class="modal-actions"><button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
+  </div>
+</div>
+<nav>
+  <a class="nav-logo" href="/">CT.</a>
+  <ul class="nav-center">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about.html" class="active">About</a></li>
+    <li><a href="/projects.html">Projects</a></li>
+    <li><a href="/library.html">Library</a></li>
+    <li><a href="/lab.html">Lab</a></li>
+    <li><a href="/contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="admin-badge" id="adminBadge">Admin</span>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
+    <button class="lock-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login">🔒</button>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-drawer" id="mobileDrawer">
+  <a class="mobile-nav-item" href="/">Home</a>
+  <a class="mobile-nav-item active" href="/about.html">About</a>
+  <a class="mobile-nav-item" href="/projects.html">Projects</a>
+  <a class="mobile-nav-item" href="/library.html">Library</a>
+  <a class="mobile-nav-item" href="/lab.html">Lab</a>
+  <a class="mobile-nav-item" href="/contact.html">Contact</a>
+  <div class="mobile-drawer-footer">
+    <div class="mobile-drawer-links">
+      <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
+    </div>
+    <button class="lock-btn" onclick="toggleAdmin();closeMobileNav()" style="font-size:.75rem">🔒 Admin</button>
+  </div>
+</div>
+<main>
+  <div class="page-hero reveal"><p class="section-label">01 — About Me</p><h1 class="section-title">Code, Design,<br>and Deep <em>Psychology</em></h1><p class="page-hero-sub">B.S. Computer Science · A.S. Psychology · QA Engineer · Building software that understands people.</p></div>
+  <div class="about-section"><div class="about-grid reveal">
+    <div class="about-photo-wrap" id="aboutPhotoWrap">
+      <svg class="about-void-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none">
+        <circle cx="4%" cy="18%" r="1.5" fill="#C8A45A" opacity=".5"/>
+        <circle cx="7%" cy="55%" r="1" fill="#4EC9B0" opacity=".45"/>
+        <circle cx="3%" cy="75%" r="1.2" fill="#C8A45A" opacity=".4"/>
+        <circle cx="9%" cy="35%" r=".8" fill="#4EC9B0" opacity=".4"/>
+        <circle cx="5%" cy="90%" r="1" fill="#C8A45A" opacity=".35"/>
+        <line x1="4%" y1="18%" x2="7%" y2="35%" stroke="#C8A45A" stroke-width=".4" opacity=".2"/>
+        <line x1="7%" y1="35%" x2="3%" y2="55%" stroke="#4EC9B0" stroke-width=".4" opacity=".2"/>
+        <path d="M 0 30 Q 5 50 0 70" fill="none" stroke="#C8A45A" stroke-width=".5" opacity=".12"/>
+        <circle cx="96%" cy="22%" r="1.5" fill="#4EC9B0" opacity=".5"/>
+        <circle cx="93%" cy="48%" r="1" fill="#C8A45A" opacity=".45"/>
+        <circle cx="97%" cy="70%" r="1.2" fill="#4EC9B0" opacity=".4"/>
+        <circle cx="91%" cy="32%" r=".8" fill="#C8A45A" opacity=".4"/>
+        <circle cx="95%" cy="85%" r="1" fill="#4EC9B0" opacity=".35"/>
+        <line x1="96%" y1="22%" x2="93%" y2="48%" stroke="#4EC9B0" stroke-width=".4" opacity=".2"/>
+        <line x1="93%" y1="48%" x2="97%" y2="70%" stroke="#C8A45A" stroke-width=".4" opacity=".2"/>
+        <path d="M 100 25 Q 95 50 100 75" fill="none" stroke="#4EC9B0" stroke-width=".5" opacity=".12"/>
+      </svg>
+      <div class="about-photo-frame">
+        <img src="https://raw.githubusercontent.com/CalebJamezzz/calebthede/main/photo.jpg" class="about-photo" alt="Caleb Thede"/>
+        <div class="about-photo-corner tl"></div>
+        <div class="about-photo-corner tr"></div>
+        <div class="about-photo-corner bl"></div>
+        <div class="about-photo-corner br"></div>
+      </div>
+    </div>
+    <div class="about-lower">
+      <div class="about-text">
+        <p>I started college studying <strong>Psychology</strong> — not because it seemed practical, but because I genuinely love understanding how the brain works and why people do the things they do. I earned my Associate of Science, then followed a second pull into <strong>Computer Science</strong>. The two never felt like separate paths.</p>
+        <p>My passion for coding is real — I build in <strong>Python, Java, C++, and Kotlin</strong>, I design in <strong>Figma</strong> before I write a single line, and I care about every layer of what I make. But psychology isn't something I left behind. It's the lens I bring to every project.</p>
+        <div class="pull-quote">"I want to build things that make people's lives genuinely easier — and understand them well enough to actually do it."</div>
+        <p>I'm planning to go back for my <strong>Master's in Psychology</strong> — not to leave tech, but to go deeper into the human side of it. Cognition, behavior, mental health. I want to understand these things well enough to build tools that truly help people.</p>
+        <p>I currently work as a <strong>QA Engineer</strong> at TopNotch LTD — writing test plans, running regression and integration testing, and working directly with dev teams to root-cause defects. Before that I managed a team of 16 at Ziggi's Coffee, which is also where my capstone app was born.</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat t"><div class="stat-num">B.S.</div><div class="stat-lbl">Computer Science</div><div class="stat-tooltip">B.S. Computer Science — Colorado State University Global, graduated March 2024. GPA 3.33.</div></div>
+        <div class="stat g"><div class="stat-num">A.S.</div><div class="stat-lbl">Psychology</div><div class="stat-tooltip">A.S. Psychology — Red Rocks Community College, graduated July 2021. GPA 3.8.</div></div>
+        <div class="stat g"><div class="stat-num">UI</div><div class="stat-lbl">Figma Designer</div><div class="stat-tooltip">Every project starts in Figma before a single line of code. Wireframes, component systems, prototypes.</div></div>
+        <div class="stat t"><div class="stat-num">4</div><div class="stat-lbl">Languages &amp; Counting</div><div class="stat-tooltip">Python · Java · C++ · Kotlin — and always adding more.</div></div>
+      </div>
+    </div>
+  </div></div>
+  <div class="vision-section">
+    <div class="reveal"><p class="section-label">Where I'm Headed</p><h2 class="section-title">The Bigger <em>Picture</em></h2></div>
+    <div class="vision-grid reveal">
+      <div class="vc"><span class="vc-icon">🧠</span><h3 class="vc-title">Master's in Psychology</h3><p class="vc-desc">Going back for my M.S. — not to leave tech, but to understand people at a deeper level. Cognition, behavior, mental health. That knowledge makes everything I build better.</p></div>
+      <div class="vc t"><span class="vc-icon">🎮</span><h3 class="vc-title">Games as Therapy</h3><p class="vc-desc">Video games are one of the most underused tools in mental health. The right game — designed with real psychological intent — can reduce anxiety, build resilience, and create genuine connection.</p></div>
+      <div class="vc"><span class="vc-icon">⚕️</span><h3 class="vc-title">Mental Health Tech</h3><p class="vc-desc">There are apps for booking therapy. What I want to build goes further — tools grounded in real psychology that actively support mental wellbeing at every step.</p></div>
+    </div>
+    <div class="mission-card reveal">
+      <p class="mission-card-eyebrow">The Mission That Started It All</p>
+      <h3 class="mission-card-title">Therapy Shouldn't Be a<br><em>Privilege</em></h3>
+      <p class="mission-card-text">Growing up, school counselors weren't actual counselors — they scheduled classes and handled paperwork. I know I could have used someone to really talk to, and I never had that. A lot of kids don't. A lot of families can't afford to change that.</p>
+      <p class="mission-card-text">I want to build tools that change that equation — accessible mental health support for kids and lower-income families who deserve it just as much as anyone else. Real psychological grounding, not just an app that books appointments.</p>
+      <p class="mission-card-text">That's why the Master's matters. That's the thread that runs through everything here.</p>
+    </div>
+    <div class="vision-note reveal">In my spare time I'm writing a book weaving together <strong>mythology and psychology</strong> — using ancient stories as a lens for understanding modern human behavior. Chapters live in the <a href="/library.html" style="color:var(--gold)">Library →</a></div>
+  </div>
+  <div class="skills-wrap"><div class="skills-inner">
+    <div class="reveal"><p class="section-label">02 — Skills</p><h2 class="section-title">Built to <em>Build</em></h2></div>
+    <div class="skills-cols reveal">
+      <div>
+        <p class="scol-lbl tech">// Languages &amp; Development</p>
+        <div class="skill-row"><span class="skill-name">Python</span><div class="sbw"><div class="sb tech" data-w="90"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Java</span><div class="sbw"><div class="sb tech" data-w="82"></div></div></div>
+        <div class="skill-row"><span class="skill-name">C++</span><div class="sbw"><div class="sb tech" data-w="78"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Kotlin</span><div class="sbw"><div class="sb tech" data-w="75"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Full-Stack Development</span><div class="sbw"><div class="sb tech" data-w="83"></div></div></div>
+        <div class="skill-row"><span class="skill-name">QA &amp; Test Engineering</span><div class="sbw"><div class="sb tech" data-w="88"></div></div></div>
+        <div class="skill-tags"><span class="stag tech">Python</span><span class="stag tech">Java</span><span class="stag tech">C++</span><span class="stag tech">Kotlin</span><span class="stag tech">SQL</span><span class="stag tech">Git</span><span class="stag tech">REST APIs</span></div>
+      </div>
+      <div>
+        <p class="scol-lbl design">// Design &amp; Human Thinking</p>
+        <div class="skill-row"><span class="skill-name">Figma / UI Design</span><div class="sbw"><div class="sb design" data-w="85"></div></div></div>
+        <div class="skill-row"><span class="skill-name">UX Thinking</span><div class="sbw"><div class="sb design" data-w="80"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Prototyping</span><div class="sbw"><div class="sb design" data-w="78"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Psychology &amp; Behavior</span><div class="sbw"><div class="sb design" data-w="75"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Problem Decomposition</span><div class="sbw"><div class="sb design" data-w="92"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Technical Communication</span><div class="sbw"><div class="sb design" data-w="85"></div></div></div>
+        <div class="skill-tags"><span class="stag design">Figma</span><span class="stag design">Prototyping</span><span class="stag design">User Research</span><span class="stag design">Systems Thinking</span></div>
+      </div>
+    </div>
+  </div></div>
+</main>
+<footer>
+  <span>© 2026 Caleb Thede</span>
+  <div class="footer-links">
+    <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
+    <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
+    <a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a>
+    <a href="mailto:calebthede@gmail.com">Email</a>
+    <a href="/contact.html">Contact</a>
+  </div>
+</footer>
+<script src="js/init.js"></script>
+<script src="js/theme_nav.js"></script>
+<script src="js/easter_eggs.js"></script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Contact — Caleb Thede</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="css/main.css"/>
+
+</head>
+<body data-page="contact">
+<script>
+const SUPABASE_URL='https://lbviiggrxzhyxrpivbbi.supabase.co';
+const SUPABASE_KEY='sb_publishable_eQRvx-J1Cp4nlq6Q6TOjIA__QYJmJq6';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let adminMode=false;
+</script>
+<canvas id="shootingStarCanvas"></canvas>
+<div class="hub-bg"></div>
+<div class="hub-pattern"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div id="flameCursor"><svg width="28" height="40" viewBox="0 0 28 40" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="fg1" cx="50%" cy="80%" r="60%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="30%" stop-color="#60d0ff" stop-opacity="0.9"/><stop offset="70%" stop-color="#3b82f6" stop-opacity="0.7"/><stop offset="100%" stop-color="#1d4ed8" stop-opacity="0"/></radialGradient><radialGradient id="fg2" cx="50%" cy="70%" r="55%"><stop offset="0%" stop-color="#bfdbfe" stop-opacity="0.8"/><stop offset="50%" stop-color="#60a5fa" stop-opacity="0.5"/><stop offset="100%" stop-color="#2563eb" stop-opacity="0"/></radialGradient></defs><path d="M14 38 C6 32 2 24 4 16 C5 10 8 6 10 4 C10 8 11 10 13 11 C11 7 13 2 14 0 C15 4 17 8 20 10 C22 12 24 16 24 20 C24 28 20 34 14 38Z" fill="url(#fg1)" opacity="0.9"/><path d="M14 36 C9 30 7 24 8 18 C9 14 11 11 12 9 C12 12 13 14 14 15 C13 12 14 8 15 6 C16 9 18 12 20 14 C21 16 22 19 22 22 C22 28 18 33 14 36Z" fill="url(#fg2)" opacity="0.8"/><path d="M14 34 C11 29 10 25 11 21 C12 18 13 16 14 15 C15 17 15 20 14 22 C16 19 17 16 17 14 C18 17 19 20 19 23 C19 28 17 32 14 34Z" fill="#e0f2fe" opacity="0.7"/></svg></div>
+<div class="toast" id="toast"></div>
+<div class="konami-overlay" id="konamiOverlay">
+  <p class="konami-sub">// ↑ ↑ ↓ ↓ ← → ← → B A · sequence unlocked</p>
+  <h2 class="konami-title">You Know the Code.</h2>
+  <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text-dim);opacity:.5;margin-bottom:2rem;text-align:center">Most people don't get this far.</p>
+  <div class="konami-facts">
+    <div class="kf">⬡ &nbsp;<strong>CT.</strong> — the period isn't a typo. It's a full stop. An assertion. I wanted a name that felt like a completed thought.</div>
+    <div class="kf">⬡ &nbsp;<strong>The whole site</strong> was originally a single HTML file. One file. Every page, animation, reader, admin panel, SVG generator — all of it. No frameworks, no build step.</div>
+    <div class="kf">⬡ &nbsp;<strong>The book</strong> started as margin notes from my psychology degree. At some point the notes became chapters, and the chapters became something I couldn't stop writing.</div>
+    <div class="kf">⬡ &nbsp;<strong>Teal + gold</strong> — teal is the logic side. The systems thinker. Gold is the depth, the weight, the meaning behind things. You need both.</div>
+    <div class="kf">⬡ &nbsp;<strong>There are 6 secrets</strong> hidden across this site. You've found one of them. The others are quieter.</div>
+  </div>
+  <button class="konami-close" onclick="closeKonami()">[ close · esc ]</button>
+</div>
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <h2 class="modal-title">Admin Login</h2>
+    <p style="font-size:.9rem;color:var(--text-dim);margin-bottom:1.5rem">Sign in to unlock editing.</p>
+    <div class="mf"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"/></div>
+    <div class="mf"><label>Password</label><input type="password" id="loginPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <p class="login-error" id="loginError">Incorrect credentials. Try again.</p>
+    <div class="modal-actions"><button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
+  </div>
+</div>
+<nav>
+  <a class="nav-logo" href="/">CT.</a>
+  <ul class="nav-center">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about.html">About</a></li>
+    <li><a href="/projects.html">Projects</a></li>
+    <li><a href="/library.html">Library</a></li>
+    <li><a href="/lab.html">Lab</a></li>
+    <li><a href="/contact.html" class="active">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="admin-badge" id="adminBadge">Admin</span>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
+    <button class="lock-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login">🔒</button>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-drawer" id="mobileDrawer">
+  <a class="mobile-nav-item" href="/">Home</a>
+  <a class="mobile-nav-item" href="/about.html">About</a>
+  <a class="mobile-nav-item" href="/projects.html">Projects</a>
+  <a class="mobile-nav-item" href="/library.html">Library</a>
+  <a class="mobile-nav-item" href="/lab.html">Lab</a>
+  <a class="mobile-nav-item active" href="/contact.html">Contact</a>
+  <div class="mobile-drawer-footer">
+    <div class="mobile-drawer-links">
+      <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
+    </div>
+    <button class="lock-btn" onclick="toggleAdmin();closeMobileNav()" style="font-size:.75rem">🔒 Admin</button>
+  </div>
+</div>
+<main>
+  <div class="contact-center reveal">
+    <p class="section-label">05 — Contact</p>
+    <h1 class="section-title">Let's <em>Connect</em></h1>
+    <p class="contact-sub">Open to developer roles, design opportunities, and anything interesting in between.</p>
+    <form id="the-form" name="contact" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="handleSubmit(event)">
+      <input type="hidden" name="form-name" value="contact"/>
+      <p style="display:none"><label>Don't fill this out: <input name="bot-field"/></label></p>
+      <div class="form-row">
+        <div class="fg"><label>Your Name</label><input type="text" id="f-name" name="name" placeholder="Jane Smith" required/></div>
+        <div class="fg"><label>Email</label><input type="email" id="f-email" name="email" placeholder="jane@email.com" required/></div>
+      </div>
+      <div class="fg"><label>What's this about?</label><select id="f-subject" name="subject" required><option value="" disabled selected>Select…</option><option>Developer Role</option><option>Design Collaboration</option><option>Project Idea</option><option>The Book</option><option>General Inquiry</option><option>Just saying hey 👋</option></select></div>
+      <div class="fg"><label>Message</label><textarea id="f-message" name="message" placeholder="Tell me what's on your mind…" required></textarea></div>
+      <button type="submit" class="form-submit">Send Message →</button>
+    </form>
+    <div class="form-success" id="form-success" style="display:none">
+      <svg class="form-success-svg" viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="50" r="1.5" fill="#4EC9B0"/><circle cx="120" cy="80" r="1" fill="#C8A45A"/>
+        <circle cx="200" cy="30" r="1.8" fill="#4EC9B0"/><circle cx="300" cy="60" r="1" fill="#C8A45A"/>
+        <circle cx="420" cy="40" r="1.5" fill="#4EC9B0"/><circle cx="460" cy="90" r="1.2" fill="#C8A45A"/>
+        <circle cx="40" cy="200" r="1.2" fill="#C8A45A"/><circle cx="100" cy="240" r="1" fill="#4EC9B0"/>
+        <circle cx="380" cy="220" r="1.5" fill="#C8A45A"/><circle cx="460" cy="250" r="1" fill="#4EC9B0"/>
+        <line x1="60" y1="50" x2="120" y2="80" stroke="#4EC9B0" stroke-width=".5" opacity=".4"/>
+        <line x1="120" y1="80" x2="200" y2="30" stroke="#C8A45A" stroke-width=".5" opacity=".4"/>
+        <ellipse cx="250" cy="150" rx="180" ry="80" fill="none" stroke="#4EC9B0" stroke-width=".5" opacity=".15" stroke-dasharray="4 6"/>
+        <ellipse cx="250" cy="150" rx="120" ry="50" fill="none" stroke="#C8A45A" stroke-width=".5" opacity=".12" stroke-dasharray="3 8"/>
+        <circle cx="250" cy="150" r="3" fill="#C8A45A" opacity=".6"/>
+      </svg>
+      <p class="form-success-title">Message received.</p>
+      <p class="form-success-sub">// transmission complete</p>
+      <p class="form-success-note">Thanks for reaching out — I read every message personally and I'll get back to you soon.</p>
+    </div>
+    <div class="contact-socials">
+      <div class="csocial-row csocial-row-2">
+        <a class="cpill" href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">
+          <span class="cpill-icon li"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></span>
+          <span class="cpill-label">LinkedIn</span><span class="cpill-val">Caleb Thede</span>
+        </a>
+        <a class="cpill" href="mailto:calebthede@gmail.com">
+          <span class="cpill-icon em"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 7l10 7 10-7"/></svg></span>
+          <span class="cpill-label">Email</span><span class="cpill-val">calebthede@gmail.com</span>
+        </a>
+      </div>
+      <div class="csocial-row csocial-row-3">
+        <a class="cpill" href="https://github.com/CalebJamezzz" target="_blank">
+          <span class="cpill-icon gh"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span>
+          <span class="cpill-label">GitHub</span><span class="cpill-val">CalebJamezzz</span>
+        </a>
+        <a class="cpill" href="https://instagram.com/c.aleb_jamezzz" target="_blank">
+          <span class="cpill-icon ig"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></span>
+          <span class="cpill-label">Instagram</span><span class="cpill-val">c.aleb_jamezzz</span>
+        </a>
+        <a class="cpill" href="https://discord.com/users/JuztCleb" target="_blank">
+          <span class="cpill-icon dc"><svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 00-4.885-1.515.074.074 0 00-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 00-5.487 0 12.64 12.64 0 00-.617-1.25.077.077 0 00-.079-.037A19.736 19.736 0 003.677 4.37a.07.07 0 00-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 00.031.057 19.9 19.9 0 005.993 3.03.078.078 0 00.084-.028c.462-.63.874-1.295 1.226-1.994a.076.076 0 00-.041-.106 13.107 13.107 0 01-1.872-.892.077.077 0 01-.008-.128 10.2 10.2 0 00.372-.292.074.074 0 01.077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 01.078.01c.12.098.246.198.373.292a.077.077 0 01-.006.127 12.299 12.299 0 01-1.873.892.077.077 0 00-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 00.084.028 19.839 19.839 0 006.002-3.03.077.077 0 00.032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 00-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/></svg></span>
+          <span class="cpill-label">Discord</span><span class="cpill-val">JuztCleb</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</main>
+<footer>
+  <span>© 2026 Caleb Thede</span>
+  <div class="footer-links">
+    <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
+    <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
+    <a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a>
+    <a href="mailto:calebthede@gmail.com">Email</a>
+  </div>
+</footer>
+<script src="js/init.js"></script>
+<script src="js/theme_nav.js"></script>
+<script src="js/easter_eggs.js"></script>
+</body>
+</html>

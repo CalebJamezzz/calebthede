@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Library — Caleb Thede</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="css/main.css"/>
+
+</head>
+<body data-page="library">
+<script>
+const SUPABASE_URL='https://lbviiggrxzhyxrpivbbi.supabase.co';
+const SUPABASE_KEY='sb_publishable_eQRvx-J1Cp4nlq6Q6TOjIA__QYJmJq6';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let adminMode=false;
+</script>
+<canvas id="shootingStarCanvas"></canvas>
+<div class="hub-bg"></div>
+<div class="hub-pattern"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div id="flameCursor"><svg width="28" height="40" viewBox="0 0 28 40" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="fg1" cx="50%" cy="80%" r="60%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="30%" stop-color="#60d0ff" stop-opacity="0.9"/><stop offset="70%" stop-color="#3b82f6" stop-opacity="0.7"/><stop offset="100%" stop-color="#1d4ed8" stop-opacity="0"/></radialGradient><radialGradient id="fg2" cx="50%" cy="70%" r="55%"><stop offset="0%" stop-color="#bfdbfe" stop-opacity="0.8"/><stop offset="50%" stop-color="#60a5fa" stop-opacity="0.5"/><stop offset="100%" stop-color="#2563eb" stop-opacity="0"/></radialGradient></defs><path d="M14 38 C6 32 2 24 4 16 C5 10 8 6 10 4 C10 8 11 10 13 11 C11 7 13 2 14 0 C15 4 17 8 20 10 C22 12 24 16 24 20 C24 28 20 34 14 38Z" fill="url(#fg1)" opacity="0.9"/><path d="M14 36 C9 30 7 24 8 18 C9 14 11 11 12 9 C12 12 13 14 14 15 C13 12 14 8 15 6 C16 9 18 12 20 14 C21 16 22 19 22 22 C22 28 18 33 14 36Z" fill="url(#fg2)" opacity="0.8"/><path d="M14 34 C11 29 10 25 11 21 C12 18 13 16 14 15 C15 17 15 20 14 22 C16 19 17 16 17 14 C18 17 19 20 19 23 C19 28 17 32 14 34Z" fill="#e0f2fe" opacity="0.7"/></svg></div>
+<div class="toast" id="toast"></div>
+<div class="konami-overlay" id="konamiOverlay">
+  <p class="konami-sub">// ↑ ↑ ↓ ↓ ← → ← → B A · sequence unlocked</p>
+  <h2 class="konami-title">You Know the Code.</h2>
+  <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text-dim);opacity:.5;margin-bottom:2rem;text-align:center">Most people don't get this far.</p>
+  <div class="konami-facts">
+    <div class="kf">⬡ &nbsp;<strong>CT.</strong> — the period isn't a typo. It's a full stop. An assertion. I wanted a name that felt like a completed thought.</div>
+    <div class="kf">⬡ &nbsp;<strong>The whole site</strong> was originally a single HTML file. One file. Every page, animation, reader, admin panel, SVG generator — all of it. No frameworks, no build step.</div>
+    <div class="kf">⬡ &nbsp;<strong>The book</strong> started as margin notes from my psychology degree. At some point the notes became chapters, and the chapters became something I couldn't stop writing.</div>
+    <div class="kf">⬡ &nbsp;<strong>Teal + gold</strong> — teal is the logic side. The systems thinker. Gold is the depth, the weight, the meaning behind things. You need both.</div>
+    <div class="kf">⬡ &nbsp;<strong>There are 6 secrets</strong> hidden across this site. You've found one of them. The others are quieter.</div>
+  </div>
+  <button class="konami-close" onclick="closeKonami()">[ close · esc ]</button>
+</div>
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <h2 class="modal-title">Admin Login</h2>
+    <p style="font-size:.9rem;color:var(--text-dim);margin-bottom:1.5rem">Sign in to unlock editing.</p>
+    <div class="mf"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"/></div>
+    <div class="mf"><label>Password</label><input type="password" id="loginPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <p class="login-error" id="loginError">Incorrect credentials. Try again.</p>
+    <div class="modal-actions"><button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
+  </div>
+</div>
+<nav>
+  <a class="nav-logo" href="/">CT.</a>
+  <ul class="nav-center">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about.html">About</a></li>
+    <li><a href="/projects.html">Projects</a></li>
+    <li><a href="/library.html" class="active">Library</a></li>
+    <li><a href="/lab.html">Lab</a></li>
+    <li><a href="/contact.html">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="admin-badge" id="adminBadge">Admin</span>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
+    <button class="lock-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login">🔒</button>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-drawer" id="mobileDrawer">
+  <a class="mobile-nav-item" href="/">Home</a>
+  <a class="mobile-nav-item" href="/about.html">About</a>
+  <a class="mobile-nav-item" href="/projects.html">Projects</a>
+  <a class="mobile-nav-item active" href="/library.html">Library</a>
+  <a class="mobile-nav-item" href="/lab.html">Lab</a>
+  <a class="mobile-nav-item" href="/contact.html">Contact</a>
+  <div class="mobile-drawer-footer">
+    <div class="mobile-drawer-links">
+      <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
+    </div>
+    <button class="lock-btn" onclick="toggleAdmin();closeMobileNav()" style="font-size:.75rem">🔒 Admin</button>
+  </div>
+</div>
+<main>
+  <div id="libBrowse">
+    <div class="page-hero reveal"><p class="section-label">Library</p><h1 class="section-title">Books, Articles<br>&amp; <em>Ideas Written Down</em></h1><p class="page-hero-sub">A growing collection of books in progress, standalone articles, and thoughts worth preserving.</p></div>
+    <div class="lib-outer">
+      <div class="lib-tabs">
+        <div class="lib-tab active" onclick="switchLibTab('Books',this)">Books</div>
+        <div class="lib-tab" onclick="switchLibTab('Articles',this)">Articles</div>
+      </div>
+      <div class="lib-panel active" id="libBooks">
+        <div class="lib-section-header"><h2>Books</h2><button class="btn-primary admin-only" onclick="openBookModal()">+ New Book</button></div>
+        <div id="booksContainer"></div>
+        <div class="empty-state" id="booksEmpty" style="display:none;flex-direction:column;align-items:center"><span class="empty-icon">📖</span><h3>No books yet</h3><p>Add your first book to get started.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openBookModal()">+ New Book</button></div>
+      </div>
+      <div class="lib-panel" id="libArticles">
+        <div class="lib-section-header"><h2>Articles &amp; Essays</h2><button class="btn-primary admin-only" onclick="openArticleModal()">+ New Article</button></div>
+        <div class="articles-grid" id="articlesGrid"></div>
+        <div class="empty-state" id="articlesEmpty" style="display:none"><span class="empty-icon">✍️</span><h3>No articles yet</h3><p>Write your first article or essay.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openArticleModal()">+ New Article</button></div>
+      </div>
+    </div>
+  </div>
+  <div id="libBookDetail" style="display:none">
+    <div class="celestial-tracker" id="celestialTracker" style="display:none">
+      <div class="celestial-constellation">
+        <div class="constellation-line"></div>
+        <div class="constellation-fill" id="constellationFill" style="width:0%"></div>
+        <div class="star-dots" id="starDots"></div>
+      </div>
+      <div class="celestial-meta" id="celestialMeta"></div>
+    </div>
+    <div class="book-detail-header">
+      <div><button class="back-btn" onclick="closeBookDetail()">← Back to Library</button><h1 class="book-detail-title" id="bookDetailTitle"></h1><p class="book-detail-desc" id="bookDetailDesc"></p></div>
+      <div style="display:flex;gap:.8rem;flex-shrink:0;margin-top:3.5rem">
+        <button class="btn-sm admin-only" onclick="openChModal(null,currentBookId)">+ Add Chapter</button>
+        <button class="btn-sm admin-only" onclick="openBookModal(currentBookId)">Edit Book</button>
+        <button class="btn-sm danger admin-only" onclick="deleteCurrentBook()">Delete Book</button>
+      </div>
+    </div>
+    <div class="book-detail-layout">
+      <div class="ch-sidebar"><p class="ch-sidebar-title">Chapters</p><ul class="ch-list" id="chList"></ul><button class="btn-sm admin-only" style="width:100%;margin-top:.5rem" onclick="openChModal(null,currentBookId)">+ Add Chapter</button></div>
+      <div id="chMain">
+        <div id="chEmpty" style="display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem;color:var(--text-dim)">
+          <span style="font-size:2rem;opacity:.25;margin-bottom:1.2rem;display:block">✦</span>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--text);margin-bottom:.5rem">No chapters yet</h3>
+          <p class="non-admin-only" style="font-size:.85rem;opacity:.4;font-family:'JetBrains Mono',monospace;letter-spacing:.1em">Coming soon.</p>
+          <button class="btn-primary admin-only" onclick="openChModal(null,currentBookId)">+ Add Chapter</button>
+        </div>
+        <div id="chReader" style="display:none">
+          <div style="padding:2.5rem 4rem 0;max-width:680px;margin:0 auto">
+            <p id="chEyebrow" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem"></p>
+            <h2 id="chTitleH" style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.6rem);font-weight:300;color:var(--text);margin-bottom:2.5rem;line-height:1.2"></h2>
+          </div>
+          <div class="reader-body" id="chBodyArea"></div>
+          <div class="page-nav" id="pageNav" style="display:none">
+            <div style="display:flex;gap:.5rem;align-items:center">
+              <button class="page-nav-btn" id="pageFirstBtn" onclick="jumpToPage(0)" title="Start">⇤</button>
+              <button class="page-nav-btn" id="pagePrevBtn" onclick="stepPage(-1)">← Prev</button>
+            </div>
+            <div class="page-nav-info" id="pageNavInfo"></div>
+            <div style="display:flex;gap:.5rem;align-items:center">
+              <button class="page-nav-btn" id="pageNextBtn" onclick="stepPage(1)">Next →</button>
+              <button class="page-nav-btn" id="pageLastBtn" onclick="jumpToPage('last')" title="End">⇥</button>
+            </div>
+          </div>
+          <div class="reader-admin-bar admin-only"><button class="btn-sm" id="chEditBtn">Edit</button><button class="btn-sm" id="chPublishBtn" onclick="togglePublish()">Publish</button><button class="btn-sm danger" id="chDeleteBtn">Delete</button></div>
+          <div class="ch-nav">
+            <div style="display:flex;gap:.5rem;align-items:center">
+              <button class="ch-nav-btn" id="chFirstBtn" onclick="jumpToChapter(0)" title="First chapter">⇤</button>
+              <button class="ch-nav-btn" id="chPrevBtn" onclick="stepChapter(-1)">← Previous</button>
+            </div>
+            <div class="ch-nav-center"><span class="ch-nav-glyph">✦</span><span class="ch-nav-label" id="chNavProgress"></span></div>
+            <div style="display:flex;gap:.5rem;align-items:center">
+              <button class="ch-nav-btn" id="chNextBtn" onclick="stepChapter(1)">Next →</button>
+              <button class="ch-nav-btn" id="chLastBtn" onclick="jumpToChapter('last')" title="Last chapter">⇥</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="libArticleReader" style="display:none">
+    <div id="readerBanner" style="display:none;height:320px;background-size:cover;background-position:center;position:relative"><div style="position:absolute;inset:0;background:linear-gradient(to bottom,rgba(0,0,0,.1),rgba(13,15,20,.95))"></div></div>
+    <div class="reader-header">
+      <button class="back-btn" onclick="closeArticleReader()">← Back to Library</button>
+      <p id="readerTag" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem"></p>
+      <h1 class="reader-title" id="readerTitle"></h1>
+      <p class="reader-meta" id="readerMeta"></p>
+      <p id="readerReadTime" style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);margin-top:.3rem"></p>
+    </div>
+    <div class="reader-body" id="readerBody"></div>
+    <div class="reader-actions"><button class="btn-sm admin-only" id="readerEditBtn">Edit</button><button class="btn-sm danger admin-only" id="readerDeleteBtn">Delete</button></div>
+  </div>
+</main>
+<footer>
+  <span>© 2026 Caleb Thede</span>
+  <div class="footer-links">
+    <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
+    <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
+    <a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a>
+    <a href="mailto:calebthede@gmail.com">Email</a>
+    <a href="/contact.html">Contact</a>
+  </div>
+</footer>
+<!-- BOOK MODAL -->
+<div class="modal-overlay" id="bookModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('bookModal')">✕</button>
+    <h2 class="modal-title" id="bookModalTitle">New Book</h2>
+    <input type="hidden" id="editBookId"/>
+    <div class="mf"><label>Title</label><input type="text" id="bookTitle" placeholder="The title of your book"/></div>
+    <div class="mf"><label>Description</label><textarea id="bookDesc" style="min-height:80px" placeholder="A short description shown on the library card"></textarea></div>
+    <div class="mf"><label>Cover Color</label><div class="color-swatches" id="colorSwatches"></div><input type="hidden" id="bookColor"/></div>
+    <div class="mf"><label>Cover Image URL</label><input type="text" id="bookCoverImage" placeholder="https://example.com/image.jpg"/></div>
+    <div class="mf"><label>Status</label><select id="bookStatus"><option value="in_progress">In Progress</option><option value="complete">Complete</option><option value="draft">Draft (hidden)</option></select></div>
+    <div class="modal-actions"><button class="btn-primary" id="bookSaveBtn" onclick="saveBook()">Save Book</button><button class="btn-ghost" onclick="closeModal('bookModal')">Cancel</button></div>
+  </div>
+</div>
+<!-- CHAPTER MODAL -->
+<div class="modal-overlay" id="chModal">
+  <div class="modal ch-modal-wide">
+    <button class="modal-close" onclick="closeModal('chModal')">✕</button>
+    <h2 class="modal-title" id="chModalTitle">Add Chapter</h2>
+    <input type="hidden" id="editChId"/><input type="hidden" id="chBookId"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;margin-bottom:1rem;align-items:end">
+      <div class="mf" style="margin:0"><label>Chapter Label</label><input type="text" id="chNum" placeholder="e.g. Chapter 1, Prologue"/></div>
+      <div class="mf" style="margin:0"><label>Chapter Title</label><input type="text" id="chTitle" placeholder="The title of this chapter"/></div>
+      <div class="mf" style="margin:0">
+        <label style="display:block;font-size:.78rem;letter-spacing:.06em;color:var(--text-dim);margin-bottom:.75rem">Visibility</label>
+        <div class="ch-toggle-wrap">
+          <div class="ch-toggle-track" id="chToggleTrack" onclick="document.getElementById('chPublished').click()">
+            <span class="ch-toggle-thumb" id="chToggleThumb"></span>
+          </div>
+          <input type="checkbox" id="chPublished" class="ch-toggle-input" onchange="updateChPublishedLbl()"/>
+          <span class="ch-toggle-lbl" id="chPublishedLbl">Draft — hidden</span>
+        </div>
+      </div>
+    </div>
+    <div class="ch-editor-wrap">
+      <div class="ch-editor-pane">
+        <div class="ch-editor-toolbar">
+          <span class="ch-toolbar-label">Editor</span>
+          <div style="display:flex;gap:.4rem;align-items:center">
+            <button class="ch-tb-btn" onclick="insertFmt('###')" title="Subheading">H</button>
+            <button class="ch-tb-btn" onclick="insertFmt('> ')" title="Blockquote">"</button>
+            <button class="ch-tb-btn ch-tb-paste" onclick="triggerPasteClean()" title="Paste &amp; clean from Google Docs">⊕ Paste from Docs</button>
+          </div>
+        </div>
+        <textarea id="chContent" class="ch-editor-area" placeholder="Paste from Google Docs, or write here…" oninput="updateChPreview()"></textarea>
+        <div class="ch-editor-footer"><span id="chWordCount">0 words</span><span id="chPageEst">~0 pages</span></div>
+      </div>
+      <div class="ch-preview-pane">
+        <div class="ch-editor-toolbar"><span class="ch-toolbar-label">Preview</span></div>
+        <div class="ch-preview-body reader-body" id="chPreviewBody" style="padding:1.5rem;margin:0;max-width:100%;min-height:200px"></div>
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn-primary" id="chSaveBtn" onclick="saveChapter()">Save Chapter</button><button class="btn-ghost" onclick="closeModal('chModal')">Cancel</button></div>
+  </div>
+</div>
+<!-- ARTICLE MODAL -->
+<div class="modal-overlay" id="articleModal">
+  <div class="modal ch-modal-wide">
+    <button class="modal-close" onclick="closeModal('articleModal')">✕</button>
+    <h2 class="modal-title" id="articleModalTitle">New Article</h2>
+    <input type="hidden" id="editArticleId"/>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1rem">
+      <div class="mf" style="margin:0"><label>Title</label><input type="text" id="articleTitle" placeholder="Article title"/></div>
+      <div class="mf" style="margin:0"><label>Tag / Category</label><input type="text" id="articleTag" placeholder="e.g. Psychology, Mythology, Essay"/></div>
+    </div>
+    <div class="mf"><label>Banner Image URL</label><input type="text" id="articleBanner" placeholder="https://example.com/image.jpg"/></div>
+    <div class="ch-editor-wrap">
+      <div class="ch-editor-pane">
+        <div class="ch-editor-toolbar">
+          <span class="ch-toolbar-label">Editor</span>
+          <div style="display:flex;gap:.4rem;align-items:center">
+            <button class="ch-tb-btn" onclick="insertArticleFmt('###')" title="Subheading">H</button>
+            <button class="ch-tb-btn" onclick="insertArticleFmt('> ')" title="Blockquote">"</button>
+            <button class="ch-paste ch-tb-btn" onclick="triggerArticlePasteClean()">⊕ Paste from Docs</button>
+          </div>
+        </div>
+        <textarea id="articleContent" class="ch-editor-area" placeholder="Paste from Google Docs, or write here…" oninput="updateArticlePreview()"></textarea>
+        <div class="ch-editor-footer"><span id="articleWordCount">0 words</span><span id="articleReadTime">~0 min read</span></div>
+      </div>
+      <div class="ch-preview-pane">
+        <div class="ch-editor-toolbar"><span class="ch-toolbar-label">Preview</span></div>
+        <div class="ch-preview-body reader-body" id="articlePreviewBody" style="padding:1.5rem;margin:0;max-width:100%;min-height:200px"></div>
+      </div>
+    </div>
+    <div class="modal-actions"><button class="btn-primary" id="articleSaveBtn" onclick="saveArticle()">Save Article</button><button class="btn-ghost" onclick="closeModal('articleModal')">Cancel</button></div>
+  </div>
+</div>
+<script src="js/init.js"></script>
+<script src="js/theme_nav.js"></script>
+<script src="js/easter_eggs.js"></script>
+<script src="js/library.js"></script>
+<script src="js/lab.js"></script>
+<script>document.addEventListener("DOMContentLoaded",()=>{loadLibrary();handleLibraryHash();});</script>
+</body>
+</html>
