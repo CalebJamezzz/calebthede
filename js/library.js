@@ -180,6 +180,7 @@ async function openBook(id,title,desc,skipHistory){
   await renderBookDetail();showLibBookDetail();
   await renderTOC();
   if(!skipHistory)safePush({sub:'book',id,title,desc},'','#book/'+id);
+  return true;
 }
 function closeBookDetail(){showLibBrowse();loadBooks();safePush({sub:'browse'},'','#');}
 
