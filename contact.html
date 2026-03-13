@@ -144,14 +144,42 @@ let adminMode=false;
       </div>
     </div>
   </div>
+
+  <!-- Newsletter -->
+  <div class="contact-center reveal newsletter-section">
+    <p class="newsletter-label">Stay in the loop</p>
+    <h2 class="newsletter-title">Get new writing<br>in your inbox.</h2>
+    <p class="newsletter-sub">I write about code, psychology, and the overlap between them. New chapters, articles, and the occasional rabbit hole — straight to your inbox. No noise.</p>
+    <form id="newsletter-form" name="newsletter" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="handleNewsletterSubmit(event)">
+      <input type="hidden" name="form-name" value="newsletter"/>
+      <p style="display:none"><label>Don't fill this out: <input name="bot-field"/></label></p>
+      <div class="newsletter-form">
+        <input class="newsletter-input" type="email" name="email" placeholder="your@email.com" required/>
+        <button class="newsletter-submit" type="submit">Subscribe →</button>
+      </div>
+    </form>
+    <p class="newsletter-success" id="newsletter-success">✦ You're in. I'll make it worth your while.</p>
+  </div>
 </main>
 <footer>
+  <div class="footer-newsletter" id="footer-newsletter-wrap">
+    <span class="footer-newsletter-label">New writing →</span>
+    <form name="newsletter-footer" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="handleFooterNewsletterSubmit(event)" style="display:flex;align-items:center;gap:.5rem">
+      <input type="hidden" name="form-name" value="newsletter-footer"/>
+      <p style="display:none"><label><input name="bot-field"/></label></p>
+      <input class="footer-newsletter-input" type="email" name="email" placeholder="your@email.com" required/>
+      <button class="footer-newsletter-btn" type="submit">→</button>
+    </form>
+    <span class="footer-newsletter-success" id="footer-nl-success">✦ subscribed</span>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:.7rem 4rem;border-top:1px solid var(--border)">
   <span>© 2026 Caleb Thede</span>
   <div class="footer-links">
     <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
     <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
     <a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a>
     <a href="mailto:calebthede@gmail.com">Email</a>
+  </div>
   </div>
 </footer>
 <script src="js/init.js"></script>

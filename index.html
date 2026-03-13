@@ -199,6 +199,17 @@ let adminMode=false;
   </div>
 </main>
 <footer>
+  <div class="footer-newsletter">
+    <span class="footer-newsletter-label">New writing →</span>
+    <form name="newsletter-footer" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="handleFooterNewsletterSubmit(event)" style="display:flex;align-items:center;gap:.5rem">
+      <input type="hidden" name="form-name" value="newsletter-footer"/>
+      <p style="display:none"><label><input name="bot-field"/></label></p>
+      <input class="footer-newsletter-input" type="email" name="email" placeholder="your@email.com" required/>
+      <button class="footer-newsletter-btn" type="submit">→</button>
+    </form>
+    <span class="footer-newsletter-success" id="footer-nl-success">✦ subscribed</span>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:.7rem 4rem;border-top:1px solid var(--border)">
   <span>© 2026 Caleb Thede</span>
   <div class="footer-links">
     <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
@@ -206,6 +217,7 @@ let adminMode=false;
     <a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a>
     <a href="mailto:calebthede@gmail.com">Email</a>
     <a href="/contact">Contact</a>
+  </div>
   </div>
 </footer>
 <!-- STATUS MODAL -->
