@@ -96,78 +96,182 @@ function makeArticleSVG(articleId, tag){
 async function loadBooks(){
   const container=document.getElementById('booksContainer'),empty=document.getElementById('booksEmpty');
   container.innerHTML='<div style="padding:2rem 0">'+constellationLoader()+'</div>';
-  const{data:books}=await sb.from('books').select('*').order('created_at',{ascending:false});
-  const{data:chapters}=await sb.from('chapters').select('id,book_id,content');
+  const[{data:books},{data:chapters},{data:allSeries}]=await Promise.all([
+    sb.from('books').select('*').order('created_at',{ascending:true}),
+    sb.from('chapters').select('id,book_id,content'),
+    sb.from('series').select('*').order('created_at',{ascending:true})
+  ]);
   container.innerHTML='';
   if(!books||!books.length){empty.style.display='flex';return}
   empty.style.display='none';
-  const groups=[
-    {key:'in_progress',label:'In Progress',books:[]},
-    {key:'complete',   label:'Complete',   books:[]},
-    {key:'draft',      label:'Drafts',     books:[],adminOnly:true},
-  ];
-  books.forEach(b=>{
-    const g=groups.find(g=>g.key===(b.status||'in_progress'))||groups[0];
-    g.books.push(b);
-  });
-  groups.forEach(group=>{
-    if(!group.books.length)return;
-    const section=document.createElement('div');
-    section.style.cssText='margin-bottom:3rem';
-    if(group.adminOnly)section.classList.add('admin-only','blk');
-    const hdr=document.createElement('div');hdr.className='lib-section-header';hdr.style.marginBottom='1.5rem';
-    hdr.innerHTML=`<h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300;color:var(--text-dim);letter-spacing:.05em">${group.label}</h3>`;
-    section.appendChild(hdr);
-    const grid=document.createElement('div');grid.className='books-grid';
-    group.books.forEach(b=>{
-      const count=(chapters||[]).filter(c=>c.book_id===b.id).length;
-      const card=document.createElement('div');card.className='book-card';
-      const bgStyle=b.cover_image?`background:${b.color||COVERS[0]};background-image:url(${b.cover_image});background-size:cover;background-position:center`:`background:${b.color||COVERS[0]}`;
-      const chs=(chapters||[]).filter(ch=>ch.book_id===b.id);
-      const totalWords=chs.reduce((sum,ch)=>sum+(ch.content||'').split(/\s+/).filter(Boolean).length,0);
-      const pageCount=Math.max(0,Math.ceil(totalWords/WORDS_PER_PAGE))||'—';
-      const readMins=totalWords>0?Math.max(1,Math.ceil(totalWords/200)):'—';
-      card.innerHTML=`
-        <div class="book-spine">
-          <div class="book-spine-bg" style="${bgStyle}"></div>
-          <div class="book-spine-svg">${makeCelestialSVG(b.id)}</div>
-          <div class="book-spine-content">
-            <span class="book-spine-title">${b.title}</span>
-          </div>
+
+  function makeBookCard(b){
+    const chs=(chapters||[]).filter(c=>c.book_id===b.id);
+    const count=chs.length;
+    const pubCount=chs.filter(c=>c.published).length;
+    const totalChCount=b.total_chapters||count;
+    const card=document.createElement('div');card.className='book-card';
+    const bgStyle=b.cover_image?`background:${b.color||COVERS[0]};background-image:url(${b.cover_image});background-size:cover;background-position:center`:`background:${b.color||COVERS[0]}`;
+    const totalWords=chs.reduce((sum,ch)=>sum+(ch.content||'').split(/\s+/).filter(Boolean).length,0);
+    const pageCount=Math.max(0,Math.ceil(totalWords/WORDS_PER_PAGE))||'—';
+    const readMins=totalWords>0?Math.max(1,Math.ceil(totalWords/200)):'—';
+    const statusBadge=b.status==='complete'?'<span class="book-status-badge complete">Complete</span>':b.status==='draft'?'<span class="book-status-badge draft admin-only blk">Draft</span>':'';
+    card.innerHTML=`
+      <div class="book-spine">
+        <div class="book-spine-bg" style="${bgStyle}"></div>
+        <div class="book-spine-svg">${makeCelestialSVG(b.id)}</div>
+        <div class="book-spine-content">
+          <span class="book-spine-title">${b.title}</span>
         </div>
-        <div class="book-foot">
-          <div class="book-foot-title">${b.title}</div>
-          <div class="book-foot-meta">
-            <span style="color:var(--teal)">${count} ch</span>
-            <span>${pageCount} pg</span>
-            <span>${readMins} min</span>
-          </div>
-          <div class="admin-only" style="margin-top:.5rem">
-            <button class="btn-sm" style="width:100%" onclick="event.stopPropagation();openBookModal('${b.id}')">Edit</button>
-          </div>
-        </div>`;
-      card.onclick=()=>openBook(b.id,b.title,b.description);
-      grid.appendChild(card);refreshAdmin(card);
+      </div>
+      <div class="book-foot">
+        ${statusBadge}
+        <div class="book-foot-title">${b.title}</div>
+        <div class="book-foot-meta">
+          <span style="color:var(--teal)">${pubCount} of ${totalChCount} ch</span>
+          <span>${pageCount} pg</span>
+          <span>${readMins} min</span>
+        </div>
+        <div class="admin-only" style="margin-top:.5rem">
+          <button class="btn-sm" style="width:100%" onclick="event.stopPropagation();openBookModal('${b.id}')">Edit</button>
+        </div>
+      </div>`;
+    card.onclick=()=>openBook(b.id,b.title,b.description);
+    refreshAdmin(card);
+    return card;
+  }
+
+  // --- Series sections first ---
+  const usedBookIds=new Set();
+  (allSeries||[]).forEach(ser=>{
+    const serBooks=books
+      .filter(b=>b.series_id===ser.id && b.status!=='draft')
+      .sort((a,b)=>(a.series_order||99)-(b.series_order||99));
+    const serBooksDraft=books.filter(b=>b.series_id===ser.id && b.status==='draft');
+    const allSerBooks=[...serBooks,...serBooksDraft];
+    if(!allSerBooks.length)return;
+    allSerBooks.forEach(b=>usedBookIds.add(b.id));
+
+    const section=document.createElement('div');section.style.cssText='margin-bottom:3.5rem';
+    const totalPlanned=ser.total_books||serBooks.length;
+    section.innerHTML=`
+      <div class="series-header">
+        <div>
+          <p class="series-eyebrow">Series</p>
+          <h3 class="series-title">${ser.name}</h3>
+          <p class="series-meta">${serBooks.length} of ${totalPlanned} book${totalPlanned!==1?'s':''} published${ser.description?` · ${ser.description}`:''}</p>
+        </div>
+        <button class="btn-sm admin-only blk" onclick="openSeriesModal('${ser.id}')">Edit Series</button>
+      </div>`;
+    const grid=document.createElement('div');grid.className='books-grid';
+    allSerBooks.forEach(b=>{
+      const card=makeBookCard(b);
+      if(b.series_order){
+        const numBadge=document.createElement('div');
+        numBadge.className='book-series-num';
+        numBadge.textContent='#'+b.series_order;
+        card.querySelector('.book-spine').appendChild(numBadge);
+      }
+      grid.appendChild(card);
     });
+    // Placeholder cards for unwritten books
+    const written=allSerBooks.length;
+    for(let i=written;i<totalPlanned;i++){
+      const ph=document.createElement('div');ph.className='book-card book-card-placeholder';
+      ph.innerHTML=`<div class="book-spine book-spine-placeholder"><span style="font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.1em;color:rgba(255,255,255,.2)">Book ${i+1}</span></div><div class="book-foot"><div class="book-foot-title" style="opacity:.3">Coming soon</div></div>`;
+      grid.appendChild(ph);
+    }
     section.appendChild(grid);
     container.appendChild(section);
     refreshAdmin(section);
   });
+
+  // --- Standalone books ---
+  const standalones=books.filter(b=>!b.series_id && b.status!=='draft');
+  const standaloneDrafts=books.filter(b=>!b.series_id && b.status==='draft');
+  if(standalones.length||standaloneDrafts.length){
+    const section=document.createElement('div');section.style.cssText='margin-bottom:3rem';
+    if(standalones.length){
+      const hdr=document.createElement('div');hdr.className='lib-section-header';hdr.style.marginBottom='1.5rem';
+      hdr.innerHTML=`<h3 style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;color:var(--text-dim);letter-spacing:.05em">Standalone</h3>`;
+      section.appendChild(hdr);
+      const grid=document.createElement('div');grid.className='books-grid';
+      standalones.forEach(b=>grid.appendChild(makeBookCard(b)));
+      section.appendChild(grid);
+    }
+    if(standaloneDrafts.length){
+      const draftSection=document.createElement('div');draftSection.className='admin-only blk';draftSection.style.marginTop='1.5rem';
+      const hdr=document.createElement('div');hdr.className='lib-section-header';hdr.style.marginBottom='1rem';
+      hdr.innerHTML=`<h3 style="font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:300;color:var(--text-dim);letter-spacing:.05em">Drafts</h3>`;
+      draftSection.appendChild(hdr);
+      const grid=document.createElement('div');grid.className='books-grid';
+      standaloneDrafts.forEach(b=>grid.appendChild(makeBookCard(b)));
+      draftSection.appendChild(grid);
+      section.appendChild(draftSection);
+    }
+    container.appendChild(section);
+  }
 }
 
 function openBookModal(id=null){
   document.getElementById('bookModalTitle').textContent=id?'Edit Book':'New Book';
   document.getElementById('editBookId').value=id||'';
-  if(id){sb.from('books').select('*').eq('id',id).single().then(({data:b})=>{document.getElementById('bookTitle').value=b?.title||'';document.getElementById('bookDesc').value=b?.description||'';document.getElementById('bookCoverImage').value=b?.cover_image||'';document.getElementById('bookStatus').value=b?.status||'in_progress';selectedCover=b?.color||COVERS[0];buildSwatches(selectedCover)})}
-  else{document.getElementById('bookTitle').value='';document.getElementById('bookDesc').value='';document.getElementById('bookCoverImage').value='';document.getElementById('bookStatus').value='in_progress';selectedCover=COVERS[0];buildSwatches()}
+  // Load series options
+  sb.from('series').select('*').order('name',{ascending:true}).then(({data:seriesList})=>{
+    const sel=document.getElementById('bookSeriesId');
+    sel.innerHTML='<option value="">Standalone (no series)</option>';
+    (seriesList||[]).forEach(s=>{
+      const opt=document.createElement('option');opt.value=s.id;opt.textContent=s.name;
+      sel.appendChild(opt);
+    });
+    if(id){
+      sb.from('books').select('*').eq('id',id).single().then(({data:b})=>{
+        document.getElementById('bookTitle').value=b?.title||'';
+        document.getElementById('bookDesc').value=b?.description||'';
+        document.getElementById('bookCoverImage').value=b?.cover_image||'';
+        document.getElementById('bookTotalChapters').value=b?.total_chapters||'';
+        sel.value=b?.series_id||'';
+        document.getElementById('bookSeriesOrder').value=b?.series_order||'';
+        document.getElementById('seriesOrderWrap').style.display=b?.series_id?'block':'none';
+        selectedCover=b?.color||COVERS[0];buildSwatches(selectedCover);
+      });
+    } else {
+      document.getElementById('bookTitle').value='';
+      document.getElementById('bookDesc').value='';
+      document.getElementById('bookCoverImage').value='';
+      document.getElementById('bookTotalChapters').value='';
+      sel.value='';
+      document.getElementById('bookSeriesOrder').value='';
+      document.getElementById('seriesOrderWrap').style.display='none';
+      selectedCover=COVERS[0];buildSwatches();
+    }
+  });
   openModal('bookModal');
 }
 
 async function saveBook(){
   const title=document.getElementById('bookTitle').value.trim();if(!title){alert('Please add a title.');return}
-  const description=document.getElementById('bookDesc').value.trim(),color=document.getElementById('bookColor').value||selectedCover,cover_image=document.getElementById('bookCoverImage').value.trim()||null,status=document.getElementById('bookStatus').value,editId=document.getElementById('editBookId').value;
+  const editId=document.getElementById('editBookId').value;
+  const description=document.getElementById('bookDesc').value.trim();
+  const color=document.getElementById('bookColor').value||selectedCover;
+  const cover_image=document.getElementById('bookCoverImage').value.trim()||null;
+  const series_id=document.getElementById('bookSeriesId').value||null;
+  const series_order=document.getElementById('bookSeriesOrder').value?parseInt(document.getElementById('bookSeriesOrder').value):null;
+  const total_chapters=document.getElementById('bookTotalChapters').value?parseInt(document.getElementById('bookTotalChapters').value):null;
+
+  // Auto-compute status from published chapter count vs total
+  let status='in_progress';
+  if(editId && total_chapters){
+    const{count}=await sb.from('chapters')
+      .select('id',{count:'exact',head:true})
+      .eq('book_id',editId).eq('published',true);
+    if(count>=total_chapters) status='complete';
+  }
+
   setLoading('bookSaveBtn',true);
-  const{error}=editId?await sb.from('books').update({title,description,color,cover_image,status}).eq('id',editId):await sb.from('books').insert({title,description,color,cover_image,status});
+  const{error}=editId
+    ?await sb.from('books').update({title,description,color,cover_image,status,series_id,series_order,total_chapters}).eq('id',editId)
+    :await sb.from('books').insert({title,description,color,cover_image,status:'in_progress',series_id,series_order,total_chapters});
   setLoading('bookSaveBtn',false,'Save Book');
   if(error){toast('Error saving book','error');return}
   toast(editId?'Book updated':'Book created');closeModal('bookModal');loadBooks();
@@ -302,6 +406,8 @@ async function togglePublish(){
   if(error){toast('Error updating','error');return;}
   ch.published=newState;
   toast(newState?'Chapter published — now visible to readers':'Chapter unpublished — draft only');
+  // Auto-update book status based on published count vs total
+  autoUpdateBookStatus(currentBookId);
   document.getElementById('chPublishBtn').textContent=newState?'Unpublish':'Publish';
   document.getElementById('chPublishBtn').style.borderColor=newState?'rgba(78,201,176,.4)':'';
   document.getElementById('chPublishBtn').style.color=newState?'var(--teal)':'';
@@ -598,7 +704,7 @@ function roAnimate(dir){
   const pagesEl = document.getElementById('roPages');
   const cls = dir==='forward' ? 'flip-forward' : 'flip-back';
   pagesEl.classList.add(cls);
-  setTimeout(()=>{ roRender(); roUpdateNav(); roUpdateProgress(); saveBookmark(); }, 120);
+  setTimeout(()=>{ roRender(); roUpdateNav(); roUpdateProgress(); saveBookmark(); checkBookCompletion(); }, 120);
   setTimeout(()=>{ pagesEl.classList.remove(cls); roFlipping=false; }, 300);
 }
 
@@ -844,4 +950,131 @@ async function resumeReading(){
   // Pass the saved page directly so showChapter renders it immediately
   await showChapter(bm.chId, bm.chIdx, bm.pageInCh);
   scrollToChapterTop();
+}
+
+// ══════════════════════════════════════════════════════
+// SERIES MANAGEMENT
+// ══════════════════════════════════════════════════════
+
+function handleSeriesSelect(){
+  const val = document.getElementById('bookSeriesId').value;
+  document.getElementById('seriesOrderWrap').style.display = val ? 'block' : 'none';
+}
+
+function openNewSeriesInline(){
+  const wrap = document.getElementById('newSeriesInline');
+  wrap.style.display = wrap.style.display === 'none' ? 'flex' : 'none';
+}
+
+function cancelNewSeries(){
+  document.getElementById('newSeriesInline').style.display = 'none';
+  document.getElementById('newSeriesName').value = '';
+  document.getElementById('newSeriesTotalBooks').value = '';
+}
+
+async function createSeriesAndSelect(){
+  const name = document.getElementById('newSeriesName').value.trim();
+  if(!name){ toast('Please enter a series name','error'); return; }
+  const total_books = parseInt(document.getElementById('newSeriesTotalBooks').value) || 0;
+  const{data,error} = await sb.from('series').insert({name, total_books}).select().single();
+  if(error){ toast('Error creating series','error'); return; }
+  // Add to dropdown and select it
+  const sel = document.getElementById('bookSeriesId');
+  const opt = document.createElement('option');
+  opt.value = data.id; opt.textContent = data.name;
+  sel.appendChild(opt);
+  sel.value = data.id;
+  handleSeriesSelect();
+  cancelNewSeries();
+  toast('Series created — "' + data.name + '"');
+}
+
+async function openSeriesModal(seriesId){
+  const{data:s} = await sb.from('series').select('*').eq('id',seriesId).single();
+  if(!s) return;
+  const name = prompt('Series name:', s.name);
+  if(name === null) return;
+  const total = prompt('Total books planned:', s.total_books || '');
+  if(total === null) return;
+  const{error} = await sb.from('series').update({
+    name: name.trim(),
+    total_books: parseInt(total) || 0
+  }).eq('id', seriesId);
+  if(error){ toast('Error updating series','error'); return; }
+  toast('Series updated'); loadBooks();
+}
+
+// ══════════════════════════════════════════════════════
+// BOOK COMPLETION SCREEN
+// ══════════════════════════════════════════════════════
+
+async function checkBookCompletion(){
+  if(!currentBookId || !roFlat.length) return;
+  // Only trigger on very last page
+  if(roFlatIdx + roSpread() < roFlat.length) return;
+
+  // Check if already seen
+  if(localStorage.getItem('completed_' + currentBookId)) return;
+
+  // Fetch book + series info
+  const{data:book} = await sb.from('books')
+    .select('*, series:series_id(id,name,total_books)')
+    .eq('id', currentBookId).single();
+  if(!book) return;
+
+  const isComplete = book.status === 'complete';
+  const overlay = document.getElementById('bookCompleteOverlay');
+  const ser = book.series;
+
+  // Build constellation SVG
+  const svgEl = document.getElementById('completeSVG');
+  svgEl.innerHTML = makeCelestialSVG(currentBookId, 400, 200);
+
+  if(isComplete){
+    document.getElementById('completeEyebrow').textContent = 'You finished it.';
+    document.getElementById('completeTitle').textContent = book.title;
+    if(ser){
+      const seriesEl = document.getElementById('completeSeries');
+      seriesEl.textContent = `Book ${book.series_order || 1} of ${ser.total_books || '?'} · ${ser.name}`;
+      seriesEl.style.display = 'block';
+      document.getElementById('completeNote').textContent =
+        `You've read every page. Thank you for being here for this one. The story continues — Book ${(book.series_order||1)+1} is coming.`;
+    } else {
+      document.getElementById('completeNote').textContent =
+        'You\'ve read every page. Thank you for being here for this one.';
+    }
+    localStorage.setItem('completed_' + currentBookId, '1');
+  } else {
+    // Caught up — book still in progress
+    document.getElementById('completeEyebrow').textContent = 'You\'re all caught up.';
+    document.getElementById('completeTitle').textContent = book.title;
+    if(ser){
+      const seriesEl = document.getElementById('completeSeries');
+      seriesEl.textContent = ser.name;
+      seriesEl.style.display = 'block';
+    }
+    document.getElementById('completeNote').textContent =
+      'You\'ve reached the last published chapter. More is coming — check back soon.';
+  }
+
+  // Fade in
+  overlay.style.display = 'flex';
+  requestAnimationFrame(()=>{ overlay.style.opacity = '1'; });
+}
+
+function dismissCompletion(){
+  const overlay = document.getElementById('bookCompleteOverlay');
+  overlay.style.opacity = '0';
+  setTimeout(()=>{ overlay.style.display = 'none'; }, 800);
+  // Exit reader mode too if active
+  if(roActive) exitReaderMode();
+}
+
+// Auto-update book status when chapters are published/unpublished
+async function autoUpdateBookStatus(bookId){
+  const{data:book}=await sb.from('books').select('total_chapters').eq('id',bookId).single();
+  if(!book?.total_chapters)return; // no target set — don't auto-change
+  const{count}=await sb.from('chapters').select('id',{count:'exact',head:true}).eq('book_id',bookId).eq('published',true);
+  const newStatus=count>=book.total_chapters?'complete':'in_progress';
+  await sb.from('books').update({status:newStatus}).eq('id',bookId);
 }

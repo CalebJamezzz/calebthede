@@ -249,7 +249,24 @@ let adminMode=false;
     <div class="mf"><label>Description</label><textarea id="bookDesc" style="min-height:80px" placeholder="A short description shown on the library card"></textarea></div>
     <div class="mf"><label>Cover Color</label><div class="color-swatches" id="colorSwatches"></div><input type="hidden" id="bookColor"/></div>
     <div class="mf"><label>Cover Image URL</label><input type="text" id="bookCoverImage" placeholder="https://example.com/image.jpg"/></div>
-    <div class="mf"><label>Status</label><select id="bookStatus"><option value="in_progress">In Progress</option><option value="complete">Complete</option><option value="draft">Draft (hidden)</option></select></div>
+    <div class="mf"><label>Total Chapters Planned</label><input type="number" id="bookTotalChapters" min="1" placeholder="e.g. 12 — auto-marks complete when all are published"/></div>
+    <div class="mf"><label>Series</label>
+      <div style="display:flex;gap:.5rem;align-items:center">
+        <select id="bookSeriesId" onchange="handleSeriesSelect()" style="flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.6rem .8rem;color:var(--text);font-family:'Lato',sans-serif;font-size:.9rem;outline:none">
+          <option value="">Standalone (no series)</option>
+        </select>
+        <button class="btn-sm" onclick="openNewSeriesInline()" type="button" style="white-space:nowrap;flex-shrink:0">+ New Series</button>
+      </div>
+      <div id="newSeriesInline" style="display:none;margin-top:.6rem;display:none;gap:.5rem;flex-direction:column">
+        <input type="text" id="newSeriesName" placeholder="Series name (e.g. Blue Ember)" style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.6rem .8rem;color:var(--text);font-family:'Lato',sans-serif;font-size:.9rem;outline:none;width:100%"/>
+        <input type="number" id="newSeriesTotalBooks" placeholder="Total books planned (e.g. 8)" min="1" style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.6rem .8rem;color:var(--text);font-family:'Lato',sans-serif;font-size:.9rem;outline:none;width:100%"/>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn-sm" onclick="createSeriesAndSelect()" type="button">Create Series</button>
+          <button class="btn-ghost btn-sm" onclick="cancelNewSeries()" type="button">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div class="mf" id="seriesOrderWrap" style="display:none"><label>Book # in Series</label><input type="number" id="bookSeriesOrder" min="1" placeholder="e.g. 1" style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.6rem .8rem;color:var(--text);font-family:'Lato',sans-serif;font-size:.9rem;outline:none;width:100%"/></div>
     <div class="modal-actions"><button class="btn-primary" id="bookSaveBtn" onclick="saveBook()">Save Book</button><button class="btn-ghost" onclick="closeModal('bookModal')">Cancel</button></div>
   </div>
 </div>
@@ -383,6 +400,17 @@ let adminMode=false;
       <button class="ro-nav-btn" id="roChNextBtn" onclick="roJumpChapter(1)">Chapter ⇥</button>
     </div>
   </div>
+</div>
+
+
+<!-- ══ BOOK COMPLETION OVERLAY ══ -->
+<div id="bookCompleteOverlay" style="display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;opacity:0;transition:opacity .8s ease">
+  <svg id="completeSVG" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" style="width:min(400px,80vw);margin-bottom:2rem;opacity:.6"></svg>
+  <p id="completeEyebrow" style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.25em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem"></p>
+  <h2 id="completeTitle" style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,3.5rem);font-weight:300;color:var(--text);margin-bottom:1rem;line-height:1.1"></h2>
+  <p id="completeSeries" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.8rem;display:none"></p>
+  <p id="completeNote" style="font-family:'Lato',sans-serif;font-size:1rem;color:var(--text-dim);max-width:480px;line-height:1.7;margin-bottom:2.5rem"></p>
+  <button onclick="dismissCompletion()" style="background:none;border:1px solid rgba(200,164,90,.4);border-radius:3px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);padding:.6rem 1.6rem;transition:all .2s" onmouseover="this.style.background='rgba(200,164,90,.08)'" onmouseout="this.style.background='none'">Close</button>
 </div>
 
 </body>
