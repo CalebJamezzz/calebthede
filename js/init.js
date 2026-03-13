@@ -50,13 +50,13 @@ function showPage(name,skipHistory){
     window.scrollTo({top:0,behavior:'smooth'});
     return;
   }
-  const urls={home:'/',about:'/about.html',projects:'/projects.html',library:'/library.html',lab:'/lab.html',contact:'/contact.html'};
+  const urls={home:'/',about:'/about',projects:'/projects',library:'/library',lab:'/lab',contact:'/contact'};
   window.location.href=urls[name];
 }
 
 // Library deep-link handler (for book/article opens from other pages)
-function navigateToBook(bookId){window.location.href='/library.html#book/'+bookId;}
-function navigateToArticle(articleId){window.location.href='/library.html#article/'+articleId;}
+function navigateToBook(bookId){window.location.href='/library#book/'+bookId;}
+function navigateToArticle(articleId){window.location.href='/library#article/'+articleId;}
 
 // Handle library hash routing (called on library page load)
 function handleLibraryHash(){

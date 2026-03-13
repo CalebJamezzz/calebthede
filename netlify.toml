@@ -2,14 +2,38 @@
   publish = "."
 
 # -- Maintenance mode --
-# To enable: uncomment the [[redirects]] block below and comment out the 404 block
-# To disable: reverse it
-
+# To enable: uncomment the maintenance block and comment out the others
 # [[redirects]]
 #   from = "/*"
 #   to = "/maintenance.html"
 #   status = 302
 #   force = true
+
+# -- Clean URL rewrites (serve /about instead of /about.html) --
+[[redirects]]
+  from = "/about"
+  to = "/about.html"
+  status = 200
+
+[[redirects]]
+  from = "/projects"
+  to = "/projects.html"
+  status = 200
+
+[[redirects]]
+  from = "/library"
+  to = "/library.html"
+  status = 200
+
+[[redirects]]
+  from = "/lab"
+  to = "/lab.html"
+  status = 200
+
+[[redirects]]
+  from = "/contact"
+  to = "/contact.html"
+  status = 200
 
 # -- 404 fallback --
 [[redirects]]
