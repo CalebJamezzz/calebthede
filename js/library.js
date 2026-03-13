@@ -474,7 +474,7 @@ async function enterReaderMode(){
     document.body.classList.add('reader-locked');
     document.body.style.overflow = 'hidden';
     document.getElementById('roContentLeft').innerHTML =
-      '<div style="opacity:.3;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em">Loading…</div>';
+      `<div style="opacity:.3;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.1em">Loading…</div>`;
     document.getElementById('roContentRight').innerHTML = '';
 
     // Fetch ALL published chapters for this book
