@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="stylesheet" href="main.css"/>
 
 </head>
 <body data-page="projects">
@@ -136,9 +136,16 @@ let adminMode=false;
     <div class="modal-actions"><button class="btn-primary" id="projSaveBtn" onclick="saveProject()">Save</button><button class="btn-ghost" onclick="closeModal('projectModal')">Cancel</button></div>
   </div>
 </div>
-<script src="js/init.js"></script>
-<script src="js/theme_nav.js"></script>
-<script src="js/easter_eggs.js"></script>
-<script src="js/projects.js"></script>
+<script src="init.js"></script>
+<script src="theme_nav.js"></script>
+<script src="easter_eggs.js"></script>
+<script src="projects.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  initReveal();
+  upgradeSpinners();
+  loadProjects();
+});
+</script>
 </body>
 </html>
