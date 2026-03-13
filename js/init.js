@@ -1,3 +1,9 @@
+// Shared utility — used by both library.js and projects.js
+function seedRand(seed){
+  let s=seed;
+  return ()=>{s=(s*1664525+1013904223)&0xffffffff;return(s>>>0)/0xffffffff};
+}
+
 // sb, adminMode declared inline in each page's <script> block
 
 function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} visible`;setTimeout(()=>t.classList.remove('visible'),3000)}

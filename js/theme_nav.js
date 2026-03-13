@@ -85,7 +85,7 @@ function updateChPublishedLbl(){
   if(track)track.classList.toggle('on',checked);
 }
 document.addEventListener('DOMContentLoaded',()=>{
-  document.getElementById('chPublished').addEventListener('change',updateChPublishedLbl);
+  const chPub=document.getElementById('chPublished');if(chPub)chPub.addEventListener('change',updateChPublishedLbl);
 });
 
 function updateChPreview(){

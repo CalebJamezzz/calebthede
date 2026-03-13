@@ -72,7 +72,14 @@ document.addEventListener('click',e=>{
 let libraryIdleTimer=null;
 function resetLibraryIdle(){
   clearTimeout(libraryIdleTimer);
-  if(document.getElementById('page-library').classList.contains('active')){
+  const libPage=document.getElementById('page-library');
+  if(libPage&&libPage.classList.contains('active')){
+    libraryIdleTimer=setTimeout(()=>{
+      toast('📖 Still here? The book is waiting. Chapter one is a good place to start.','success');
+    },30000);
+  }
+  // On library.html (multi-page), always run the timer
+  if(!libPage&&document.body.dataset.page==='library'){
     libraryIdleTimer=setTimeout(()=>{
       toast('📖 Still here? The book is waiting. Chapter one is a good place to start.','success');
     },30000);
@@ -84,7 +91,7 @@ document.addEventListener('keydown',resetLibraryIdle);
 // 9. Scroll to the very bottom of the contact page and back up 3 times
 let contactScrollDir=null,contactScrollCount=0;
 document.addEventListener('scroll',()=>{
-  if(!document.getElementById('page-contact').classList.contains('active'))return;
+  const cp=document.getElementById('page-contact');if(cp&&!cp.classList.contains('active'))return;if(!cp&&document.body.dataset.page!=='contact')return;
   const atBottom=window.innerHeight+window.scrollY>=document.body.offsetHeight-20;
   const atTop=window.scrollY<20;
   if(atBottom&&contactScrollDir!=='bottom'){contactScrollDir='bottom';if(contactScrollCount<6)contactScrollCount++}
@@ -369,4 +376,4 @@ function startLightGlow(){
 }
 
 // Load home data on start
-loadHomeData();
+typeof loadHomeData==='function'&&loadHomeData();
