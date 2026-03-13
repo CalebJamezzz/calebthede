@@ -64,7 +64,7 @@ async function loadBookTeaser(){
   if(activeBm){
     document.getElementById('btEyebrow').textContent='Continue Reading';
     document.getElementById('btCta').textContent=`Ch.${activeBm.chNum} — ${activeBm.chTitle}, page ${activeBm.pageInCh+1}`;
-    document.getElementById('bookTeaser').href='/library#book/'+activeBmBook.id;
+    document.getElementById('bookTeaser').href='/library#book/'+activeBmBook.id+'/resume';
   }
 
   document.getElementById('bookTeaser').style.display='block';

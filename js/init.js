@@ -65,9 +65,12 @@ function handleLibraryHash(){
   const parts=hash.replace('#','').split('/');
   const sub=parts[0];const id=parts[1];
   if(sub==='book'&&id){
+    const autoResume = parts[2]==='resume';
     setTimeout(()=>{
       sb.from('books').select('*').eq('id',id).single().then(({data:b})=>{
-        if(b)openBook(b.id,b.title,b.description,true);
+        if(b)openBook(b.id,b.title,b.description,true).then(()=>{
+          if(autoResume&&typeof resumeReading==='function') resumeReading();
+        });
       });
     },600);
   } else if(sub==='article'&&id){
