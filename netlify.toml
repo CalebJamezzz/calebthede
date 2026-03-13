@@ -1,0 +1,18 @@
+[build]
+  publish = "."
+
+# -- Maintenance mode --
+# To enable: uncomment the [[redirects]] block below and comment out the 404 block
+# To disable: reverse it
+
+# [[redirects]]
+#   from = "/*"
+#   to = "/maintenance.html"
+#   status = 302
+#   force = true
+
+# -- 404 fallback --
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 404
