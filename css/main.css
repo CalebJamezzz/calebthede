@@ -1318,3 +1318,99 @@ body.has-custom-cursor #bookCompleteOverlay button{cursor:none}
 
 /* Prevent body scroll when open */
 body.ask-open{overflow:hidden}
+
+/* ══════════════════════════════════════════════════════
+   LAB REDESIGN — Showcase Tiles
+   ══════════════════════════════════════════════════════ */
+
+.lab-outer{ max-width:1200px;margin:0 auto;padding:0 4rem 6rem }
+
+.lab-tile{
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:2rem 2.5rem;margin-bottom:1.5rem;
+  transition:border-color .2s;
+}
+.lab-tile:hover{ border-color:rgba(200,164,90,.2) }
+.lab-tile-expanded{ border-color:rgba(200,164,90,.35) }
+
+.lab-tile-header{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:1rem;margin-bottom:1rem;flex-wrap:wrap;
+}
+.lab-tile-meta{ display:flex;align-items:center;gap:.6rem;flex-wrap:wrap }
+
+.lab-cat-badge{
+  font-family:'JetBrains Mono',monospace;font-size:.52rem;
+  letter-spacing:.14em;text-transform:uppercase;
+  border:1px solid;border-radius:3px;padding:.15rem .55rem;
+}
+.lab-status-badge{
+  font-family:'JetBrains Mono',monospace;font-size:.5rem;
+  letter-spacing:.12em;text-transform:uppercase;
+  border-radius:3px;padding:.15rem .5rem;
+}
+.lab-status-active{ color:var(--teal);background:rgba(78,201,176,.08);border:1px solid rgba(78,201,176,.2) }
+.lab-status-brewing{ color:var(--gold);background:rgba(200,164,90,.08);border:1px solid rgba(200,164,90,.2) }
+.lab-status-archived{ color:var(--text-dim);background:rgba(255,255,255,.04);border:1px solid var(--border) }
+
+.lab-tile-actions{ display:flex;align-items:center;gap:.6rem }
+
+.lab-launch-btn{
+  display:flex;align-items:center;gap:.4rem;
+  background:rgba(200,164,90,.08);border:1px solid rgba(200,164,90,.3);
+  border-radius:3px;cursor:pointer;
+  font-family:'JetBrains Mono',monospace;font-size:.6rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--gold);
+  padding:.4rem 1rem;transition:all .2s;
+}
+.lab-launch-btn:hover{ background:rgba(200,164,90,.15);border-color:var(--gold) }
+
+.lab-ext-link{
+  font-family:'JetBrains Mono',monospace;font-size:.7rem;
+  color:var(--text-dim);text-decoration:none;
+  border:1px solid var(--border);border-radius:3px;
+  padding:.35rem .6rem;transition:all .15s;
+}
+.lab-ext-link:hover{ color:var(--text);border-color:rgba(255,255,255,.2) }
+
+.lab-edit-btn,.lab-del-btn{
+  background:none;border:1px solid var(--border);border-radius:3px;
+  cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.55rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);
+  padding:.3rem .6rem;transition:all .15s;
+}
+.lab-edit-btn:hover{ border-color:var(--gold);color:var(--gold) }
+.lab-del-btn:hover{ border-color:var(--danger,#e06c75);color:var(--danger,#e06c75) }
+
+.lab-tile-title{
+  font-family:'Cormorant Garamond',serif;font-size:1.5rem;
+  font-weight:300;color:var(--text);margin-bottom:.6rem;line-height:1.2;
+}
+.lab-tile-desc{
+  font-size:.9rem;color:var(--text-dim);line-height:1.7;
+  max-width:680px;margin-bottom:.8rem;
+}
+.lab-tags{ display:flex;flex-wrap:wrap;gap:.4rem;margin-top:.6rem }
+.lab-tag{
+  font-family:'JetBrains Mono',monospace;font-size:.5rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);
+  background:rgba(255,255,255,.04);border:1px solid var(--border);
+  border-radius:2px;padding:.12rem .45rem;
+}
+
+/* Embed panel */
+.lab-embed-panel{
+  margin-top:1.5rem;
+  border-top:1px solid var(--border);
+  padding-top:1.5rem;
+}
+.lab-embed-inner iframe{
+  width:100%;border:none;border-radius:8px;
+  background:var(--bg3);display:block;
+}
+
+@media(max-width:768px){
+  .lab-outer{ padding:0 1.5rem 4rem }
+  .lab-tile{ padding:1.5rem }
+  .lab-tile-header{ gap:.6rem }
+}
