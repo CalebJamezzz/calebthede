@@ -1444,34 +1444,33 @@ body.ask-open{overflow:hidden}
 /* ── FEATURED PROJECT HIGHLIGHTS ── */
 .proj-featured-highlights{
   display:flex;flex-direction:column;gap:0;
-  background:rgba(255,255,255,.02);
   border:1px solid rgba(200,164,90,.2);border-radius:8px;
   overflow:hidden;height:100%;
+  background:linear-gradient(160deg,rgba(200,164,90,.05) 0%,rgba(255,255,255,.01) 100%);
 }
 .proj-featured-highlights::before{
   content:'AT A GLANCE';
   font-family:'JetBrains Mono',monospace;font-size:.48rem;
-  letter-spacing:.25em;color:var(--gold);opacity:.5;
-  padding:.9rem 1.6rem .6rem;
-  border-bottom:1px solid var(--border);
-  display:block;
+  letter-spacing:.25em;color:var(--gold);
+  padding:.7rem 1.4rem;
+  border-bottom:1px solid rgba(200,164,90,.15);
+  display:block;background:rgba(200,164,90,.06);
 }
 .proj-featured-highlight{
-  display:flex;flex-direction:column;justify-content:center;gap:.35rem;
-  padding:1rem 1.6rem;flex:1;
-  border-bottom:1px solid var(--border);
-  border-left:2px solid transparent;
-  transition:border-color .2s;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:1rem;padding:.9rem 1.4rem;flex:1;
+  border-bottom:1px solid rgba(255,255,255,.05);
+  transition:background .15s;
 }
 .proj-featured-highlight:last-child{border-bottom:none}
-.proj-featured-highlight:hover{border-left-color:rgba(200,164,90,.4)}
+.proj-featured-highlight:hover{background:rgba(200,164,90,.04)}
 .pfh-label{
-  font-family:'JetBrains Mono',monospace;font-size:.5rem;
-  letter-spacing:.18em;text-transform:uppercase;
-  color:var(--text-dim);opacity:.5;
+  font-family:'JetBrains Mono',monospace;font-size:.52rem;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--text-dim);opacity:.6;flex-shrink:0;
 }
 .pfh-value{
-  font-family:'Cormorant Garamond',serif;font-size:1.9rem;
-  font-weight:300;color:var(--text);line-height:1.1;
-  letter-spacing:-.01em;
+  font-family:'Cormorant Garamond',serif;font-size:1.4rem;
+  font-weight:300;color:var(--gold);line-height:1.1;
+  letter-spacing:-.01em;text-align:right;
 }
