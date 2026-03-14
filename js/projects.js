@@ -176,7 +176,7 @@ async function loadProjects(){
       <div class="proj-featured-banner">${fBanner}
         <span class="proj-featured-badge">✦ Newest · ${newest.category}</span>
       </div>
-      <div class="proj-featured-body">
+      <div class="proj-featured-body${fHighlights.length ? '' : ' proj-featured-body--full'}">
         <div>
           <h2 class="proj-featured-title">${formatProjTitle(newest.title)}</h2>
           ${newest.subtitle?`<p style="font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem">${newest.subtitle}</p>`:''}
@@ -188,16 +188,16 @@ async function loadProjects(){
             <button class="btn-sm danger" onclick="deleteProject('${newest.id}')">Delete</button>
           </div>
         </div>
-        <div>
-          ${fHighlights.length ? `
-            <div class="proj-featured-highlights">
-              ${fHighlights.map(h=>`
-                <div class="proj-featured-highlight">
-                  <span class="pfh-label">${h.label}</span>
-                  <span class="pfh-value">${h.value}</span>
-                </div>`).join('')}
-            </div>` : ''}
-        </div>
+        ${fHighlights.length ? `
+        <div class="proj-featured-right">
+          <div class="proj-featured-highlights">
+            ${fHighlights.map(h=>`
+              <div class="proj-featured-highlight">
+                <span class="pfh-label">${h.label}</span>
+                <span class="pfh-value">${h.value}</span>
+              </div>`).join('')}
+          </div>
+        </div>` : ''}
       </div>
     </div>`;
   refreshAdmin(featWrap);

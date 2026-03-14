@@ -286,6 +286,8 @@ footer{padding:.7rem 4rem;display:flex;align-items:center;justify-content:space-
 .proj-featured-banner svg{position:absolute;inset:0;width:100%;height:100%}
 .proj-featured-badge{position:absolute;top:1rem;left:1.4rem;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);background:rgba(13,15,20,.8);border:1px solid rgba(200,164,90,.3);padding:.25rem .6rem;border-radius:2px}
 .proj-featured-body{padding:2.5rem 3rem 3rem;display:grid;grid-template-columns:1.1fr 1fr;gap:3rem;align-items:start}
+.proj-featured-body--full{grid-template-columns:1fr}
+.proj-featured-right{display:flex;flex-direction:column;gap:1rem;align-self:stretch}
 .proj-featured-title{font-family:'Cormorant Garamond',serif;font-size:2.4rem;font-weight:300;line-height:1.1;margin-bottom:1rem}
 .proj-featured-title em{font-style:italic;color:var(--gold)}
 .proj-featured-desc{font-size:.95rem;color:var(--text-dim);line-height:1.75;margin-bottom:1.8rem}
@@ -1441,16 +1443,35 @@ body.ask-open{overflow:hidden}
 
 /* ── FEATURED PROJECT HIGHLIGHTS ── */
 .proj-featured-highlights{
-  display:flex;flex-direction:column;gap:1.2rem;
-  padding:1.8rem;background:rgba(255,255,255,.03);
-  border:1px solid var(--border);border-radius:8px;
+  display:flex;flex-direction:column;gap:0;
+  background:rgba(255,255,255,.02);
+  border:1px solid rgba(200,164,90,.2);border-radius:8px;
+  overflow:hidden;height:100%;
 }
-.proj-featured-highlight{display:flex;flex-direction:column;gap:.3rem}
+.proj-featured-highlights::before{
+  content:'AT A GLANCE';
+  font-family:'JetBrains Mono',monospace;font-size:.48rem;
+  letter-spacing:.25em;color:var(--gold);opacity:.5;
+  padding:.9rem 1.6rem .6rem;
+  border-bottom:1px solid var(--border);
+  display:block;
+}
+.proj-featured-highlight{
+  display:flex;flex-direction:column;justify-content:center;gap:.35rem;
+  padding:1rem 1.6rem;flex:1;
+  border-bottom:1px solid var(--border);
+  border-left:2px solid transparent;
+  transition:border-color .2s;
+}
+.proj-featured-highlight:last-child{border-bottom:none}
+.proj-featured-highlight:hover{border-left-color:rgba(200,164,90,.4)}
 .pfh-label{
-  font-family:'JetBrains Mono',monospace;font-size:.52rem;
-  letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);opacity:.6;
+  font-family:'JetBrains Mono',monospace;font-size:.5rem;
+  letter-spacing:.18em;text-transform:uppercase;
+  color:var(--text-dim);opacity:.5;
 }
 .pfh-value{
-  font-family:'Cormorant Garamond',serif;font-size:1.4rem;
-  font-weight:300;color:var(--text);line-height:1.2;
+  font-family:'Cormorant Garamond',serif;font-size:1.9rem;
+  font-weight:300;color:var(--text);line-height:1.1;
+  letter-spacing:-.01em;
 }
