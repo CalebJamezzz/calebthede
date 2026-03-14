@@ -322,7 +322,7 @@ footer{padding:.7rem 4rem;display:flex;align-items:center;justify-content:space-
 .pcard-admin{display:flex;gap:.4rem}
 @media(max-width:700px){.pcard{grid-template-columns:1fr}.pcard-banner{height:80px}.pcard-side{align-items:flex-start;padding:0 1.2rem 1.2rem}}
 
-.builder-card-inner{display:flex;gap:0;align-items:stretch;height:100%}
+.builder-card-inner{display:flex;gap:1.5rem;align-items:center;height:100%}
 .builder-card-content{flex:1;display:flex;flex-direction:column}
 .builder-highlight{width:220px;flex-shrink:0;margin:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;transition:opacity .3s;align-self:flex-start}
 .builder-highlight-banner{height:110px;position:relative;flex-shrink:0}
@@ -350,7 +350,7 @@ footer{padding:.7rem 4rem;display:flex;align-items:center;justify-content:space-
     align-items:center;flex-wrap:wrap;gap:.4rem;
   }
   .builder-highlight-label{margin-bottom:0;margin-right:.5rem}
-  .builder-highlight-tags{margin-bottom:0}
+  .builder-highlight-tags{margin-bottom:0;display:none}
   .builder-highlight-links{margin-top:0}
 }
 
