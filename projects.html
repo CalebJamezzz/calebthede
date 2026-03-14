@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.css" rel="stylesheet"/>
   <link rel="stylesheet" href="css/main.css"/>
 
 </head>
@@ -150,7 +151,7 @@ let adminMode=false;
       <div class="mf"><label>Highlight on Home?</label><select id="projHighlight"><option value="false">No</option><option value="true">Yes — pin to Builder card</option></select></div>
       <div class="mf" style="grid-column:1/-1">
         <label>Description <span style="opacity:.5;font-size:.75em">— supports paragraphs (press Enter for new paragraph)</span></label>
-        <textarea id="projDesc" rows="6" placeholder="What did you build and why?&#10;&#10;Press Enter twice for a new paragraph."></textarea>
+        <div id="projDescEditor" class="quill-editor-wrap"></div><input type="hidden" id="projDesc"/>
       </div>
       <div class="mf" style="grid-column:1/-1"><label>Tags <span style="opacity:.5;font-size:.75em">(comma-separated)</span></label><input type="text" id="projTags" placeholder="Python, Data Generation, QA Tooling"/></div>
       <div class="mf"><label>GitHub Link</label><input type="text" id="projGithub" placeholder="https://github.com/…"/></div>
@@ -171,6 +172,7 @@ let adminMode=false;
     <div class="modal-actions"><button class="btn-primary" id="projSaveBtn" onclick="saveProject()">Save</button><button class="btn-ghost" onclick="closeModal('projectModal')">Cancel</button></div>
   </div>
 </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
 <script src="js/init.js"></script>
 <script src="js/theme_nav.js"></script>
 <script src="js/easter_eggs.js"></script>

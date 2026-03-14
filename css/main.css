@@ -1475,3 +1475,55 @@ body.ask-open{overflow:hidden}
   letter-spacing:.14em;text-transform:uppercase;
   color:var(--text-dim);opacity:.5;
 }
+
+/* ══════════════════════════════════════════════════════
+   QUILL RTE — Dark theme override
+   ══════════════════════════════════════════════════════ */
+.quill-editor-wrap{
+  border-radius:4px;overflow:hidden;
+  border:1px solid var(--border);
+}
+.quill-editor-wrap .ql-toolbar{
+  background:var(--bg3);
+  border:none;border-bottom:1px solid var(--border);
+  padding:.4rem .6rem;
+}
+.quill-editor-wrap .ql-container{
+  background:var(--bg3);border:none;
+  font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text);
+  min-height:180px;
+}
+.quill-editor-wrap .ql-editor{
+  min-height:180px;padding:1rem;line-height:1.7;color:var(--text);
+}
+.quill-editor-wrap .ql-editor.ql-blank::before{
+  color:var(--text-dim);opacity:.4;font-style:normal;
+  font-family:'JetBrains Mono',monospace;font-size:.8rem;
+}
+/* Toolbar buttons */
+.ql-snow .ql-stroke{ stroke:var(--text-dim) }
+.ql-snow .ql-fill{ fill:var(--text-dim) }
+.ql-snow .ql-picker{ color:var(--text-dim) }
+.ql-snow.ql-toolbar button:hover .ql-stroke,
+.ql-snow .ql-toolbar button:hover .ql-stroke,
+.ql-snow.ql-toolbar button.ql-active .ql-stroke{stroke:var(--gold)}
+.ql-snow.ql-toolbar button:hover .ql-fill,
+.ql-snow .ql-toolbar button:hover .ql-fill,
+.ql-snow.ql-toolbar button.ql-active .ql-fill{fill:var(--gold)}
+.ql-snow .ql-picker-options{
+  background:var(--bg3);border:1px solid var(--border);border-radius:4px;
+}
+.ql-snow .ql-picker-item:hover,.ql-snow .ql-picker-item.ql-selected{color:var(--gold)}
+/* Rendered content inside editor */
+.ql-editor h1,.ql-editor h2,.ql-editor h3{
+  font-family:'Cormorant Garamond',serif;font-weight:300;color:var(--text);margin:.8rem 0 .4rem;
+}
+.ql-editor p{margin-bottom:.6rem}
+.ql-editor blockquote{
+  border-left:3px solid var(--gold);margin:.6rem 0;padding:.4rem 1rem;
+  color:var(--text-dim);font-style:italic;
+}
+.ql-editor code,.ql-editor pre{
+  background:rgba(255,255,255,.06);border-radius:3px;
+  font-family:'JetBrains Mono',monospace;font-size:.82rem;
+}

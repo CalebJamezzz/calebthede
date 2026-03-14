@@ -242,7 +242,17 @@ function openModal(id){document.getElementById(id).classList.add('open')}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 function setLoading(btnId,loading,label){const b=document.getElementById(btnId);if(!b)return;b.innerHTML=loading?constellationLoader(true)+' Saving…':label;b.disabled=loading}
-function renderBody(content){return(content||'').split('\n\n').map(p=>p.trim().startsWith('###')?`<h3>${p.replace(/^###\s*/,'')}</h3>`:`<p>${p}</p>`).join('')}
+function renderBody(content){
+  if(!content) return '';
+  // If already HTML (from Quill RTE), pass straight through
+  if(/<[a-z][\s\S]*>/i.test(content)) return content;
+  // Legacy plain text — convert 
+
+ to paragraphs, ### to headings
+  return content.split('\n\n').map(p=>
+    p.trim().startsWith('###') ? `<h3>${p.replace(/^###\s*/,'')}</h3>` : `<p>${p}</p>`
+  ).join('');
+}
 function fmtDate(iso){if(!iso)return'';return new Date(iso).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}
 function refreshAdmin(el){if(adminMode)el.querySelectorAll('.admin-only').forEach(x=>x.style.removeProperty('display'))}
 
@@ -508,4 +518,72 @@ document.addEventListener('DOMContentLoaded', ()=>{
       if(ring) ring.style.opacity = '1';
     }
   });
+});
+
+// ══════════════════════════════════════════════════════
+// QUILL RTE — initialised per modal, shared toolbar config
+// ══════════════════════════════════════════════════════
+const QUILL_TOOLBAR = [
+  [{ header: [1, 2, 3, false] }],
+  ['bold', 'italic', 'underline', 'strike'],
+  [{ list: 'ordered' }, { list: 'bullet' }],
+  ['blockquote', 'code-block'],
+  ['link'],
+  ['clean']
+];
+
+// Registry of active Quill instances keyed by editor div id
+const _quillInstances = {};
+
+function initQuill(editorId, options = {}) {
+  if (_quillInstances[editorId]) return _quillInstances[editorId];
+  const el = document.getElementById(editorId);
+  if (!el) return null;
+  const q = new Quill('#' + editorId, {
+    theme: 'snow',
+    placeholder: options.placeholder || 'Write here…',
+    modules: { toolbar: QUILL_TOOLBAR }
+  });
+  _quillInstances[editorId] = q;
+  return q;
+}
+
+function quillSet(editorId, html) {
+  const q = _quillInstances[editorId];
+  if (!q) return;
+  if (html && /<[a-z][\s\S]*>/i.test(html)) {
+    q.clipboard.dangerouslyPasteHTML(html);
+  } else if (html) {
+    // Convert legacy plain text to HTML first
+    const converted = renderBody(html);
+    q.clipboard.dangerouslyPasteHTML(converted);
+  } else {
+    q.setContents([]);
+  }
+}
+
+function quillGet(editorId) {
+  const q = _quillInstances[editorId];
+  if (!q) return document.getElementById(editorId.replace('Editor',''))?.value || '';
+  return q.root.innerHTML === '<p><br></p>' ? '' : q.root.innerHTML;
+}
+
+// ── Init all editors once DOM is ready ──
+document.addEventListener('DOMContentLoaded', () => {
+  // Chapter editor
+  if (document.getElementById('chContentEditor')) {
+    initQuill('chContentEditor', { placeholder: 'Write your chapter here…' });
+  }
+  // Article editor
+  if (document.getElementById('articleContentEditor')) {
+    initQuill('articleContentEditor', { placeholder: 'Write your article here…' });
+  }
+  // Lab description editor
+  if (document.getElementById('labDescEditor')) {
+    initQuill('labDescEditor', { placeholder: 'What does this explore? What will someone experience?' });
+  }
+  // Project description editor
+  if (document.getElementById('projDescEditor')) {
+    initQuill('projDescEditor', { placeholder: 'What did you build and why?' });
+  }
 });

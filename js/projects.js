@@ -317,7 +317,7 @@ function openProjectModal(id=null){
       sb.from('projects').select('*').eq('id',id).single().then(({data:p})=>{
         document.getElementById('projTitle').value = p?.title||'';
         document.getElementById('projSubtitle').value = p?.subtitle||'';
-        document.getElementById('projDesc').value = p?.description||'';
+        quillSet('projDescEditor', p?.description||'');
         document.getElementById('projCategory').value = p?.category||'Development';
         document.getElementById('projTags').value = p?.tags||'';
         document.getElementById('projGithub').value = p?.link_github||'';
@@ -335,7 +335,7 @@ function openProjectModal(id=null){
         document.getElementById('projH3Value').value = p?.highlight3_value||'';
       });
     } else {
-      ['projTitle','projSubtitle','projDesc','projTags','projGithub','projFigma','projDemo','projBanner','projH1Label','projH1Value','projH2Label','projH2Value','projH3Label','projH3Value'].forEach(id=>document.getElementById(id).value='');
+      ['projTitle','projSubtitle','projTags','projGithub','projFigma','projDemo','projBanner','projH1Label','projH1Value','projH2Label','projH2Value','projH3Label','projH3Value'].forEach(id=>document.getElementById(id).value='');quillSet('projDescEditor','');
       document.getElementById('projCategory').value='Development';
       document.getElementById('projSort').value='0';
       document.getElementById('projHighlight').value='false';
@@ -350,7 +350,7 @@ async function saveProject(){
   const data = {
     title:       document.getElementById('projTitle').value.trim(),
     subtitle:    document.getElementById('projSubtitle').value.trim()||null,
-    description: document.getElementById('projDesc').value.trim(),
+    description: quillGet('projDescEditor'),
     category:    document.getElementById('projCategory').value,
     tags:        document.getElementById('projTags').value.trim(),
     link_github: document.getElementById('projGithub').value.trim()||null,

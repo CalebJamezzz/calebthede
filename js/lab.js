@@ -150,7 +150,7 @@ function openLabModal(id=null){
       document.getElementById('labType').value = e?.category||e?.type||'experiment';
       document.getElementById('labStatus').value = e?.status||'active';
       document.getElementById('labTitle').value = e?.title||'';
-      document.getElementById('labDesc').value = e?.description||'';
+      quillSet('labDescEditor', e?.description||'');
       document.getElementById('labEmbedHtml').value = e?.embed_html||'';
       document.getElementById('labEmbedUrl').value = e?.embed_url||'';
       document.getElementById('labLink').value = e?.link||'';
@@ -160,7 +160,7 @@ function openLabModal(id=null){
     document.getElementById('labType').value = 'psychology';
     document.getElementById('labStatus').value = 'active';
     document.getElementById('labTitle').value = '';
-    document.getElementById('labDesc').value = '';
+    quillSet('labDescEditor', '');
     document.getElementById('labEmbedHtml').value = '';
     document.getElementById('labEmbedUrl').value = '';
     document.getElementById('labLink').value = '';
@@ -178,7 +178,7 @@ async function saveLabEntry(){
     type: document.getElementById('labType').value, // keep for backward compat
     status: document.getElementById('labStatus').value,
     title,
-    description: document.getElementById('labDesc').value.trim(),
+    description: quillGet('labDescEditor'),
     embed_html: document.getElementById('labEmbedHtml').value.trim() || null,
     embed_url: document.getElementById('labEmbedUrl').value.trim() || null,
     link: document.getElementById('labLink').value.trim() || null,
