@@ -171,12 +171,24 @@ async function loadProjects(){
   const fDescHtml = (newest.description||'').split(/\n\n+/).filter(Boolean)
     .map(p=>`<p class="proj-featured-desc" style="margin-bottom:.8rem">${p.replace(/\n/g,'<br>')}</p>`).join('');
 
+  const highlightsBar = fHighlights.length ? `
+    <div class="proj-featured-statbar">
+      <span class="proj-featured-statbar-label">AT A GLANCE</span>
+      ${fHighlights.map(h=>{
+        const val = h.value.replace(/([\d]+)/g,'<em>$1</em>');
+        return `<div class="pfh-stat">
+          <span class="pfh-stat-value">${val}</span>
+          <span class="pfh-stat-label">${h.label}</span>
+        </div>`;
+      }).join('')}
+    </div>` : '';
+
   featWrap.innerHTML = `
     <div class="proj-featured" data-proj="${newest.id}">
       <div class="proj-featured-banner">${fBanner}
         <span class="proj-featured-badge">✦ Newest · ${newest.category}</span>
       </div>
-      <div class="proj-featured-body${fHighlights.length ? '' : ' proj-featured-body--full'}">
+      <div class="proj-featured-body proj-featured-body--full">
         <div>
           <h2 class="proj-featured-title">${formatProjTitle(newest.title)}</h2>
           ${newest.subtitle?`<p style="font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem">${newest.subtitle}</p>`:''}
@@ -188,20 +200,8 @@ async function loadProjects(){
             <button class="btn-sm danger" onclick="deleteProject('${newest.id}')">Delete</button>
           </div>
         </div>
-        ${fHighlights.length ? `
-        <div class="proj-featured-right">
-          <div class="proj-featured-highlights">
-            ${fHighlights.map(h=>{
-              // Wrap numbers in em for gold color
-              const val = h.value.replace(/([\d]+)/g,'<em>$1</em>');
-              return `<div class="proj-featured-highlight">
-                <span class="pfh-label">${h.label}</span>
-                <span class="pfh-value">${val}</span>
-              </div>`;
-            }).join('')}
-          </div>
-        </div>` : ''}
       </div>
+      ${highlightsBar}
     </div>`;
   refreshAdmin(featWrap);
   // Observe any newly injected reveal elements

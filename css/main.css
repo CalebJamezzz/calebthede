@@ -1442,46 +1442,35 @@ body.ask-open{overflow:hidden}
 }
 
 /* ── FEATURED PROJECT HIGHLIGHTS ── */
-.proj-featured-right{align-self:start!important}
-.proj-featured-highlights{
-  display:flex;flex-direction:column;gap:0;
-  border:1px solid rgba(200,164,90,.2);border-radius:10px;
-  overflow:hidden;position:relative;
-  background:var(--bg2);
+/* ── PROJECT STAT BAR ── */
+.proj-featured-statbar{
+  display:flex;align-items:center;gap:0;
+  border-top:1px solid rgba(200,164,90,.15);
+  background:rgba(200,164,90,.04);
+  padding:0 2.5rem;
 }
-.proj-featured-highlights::before{
-  content:'AT A GLANCE';
-  font-family:'JetBrains Mono',monospace;font-size:.48rem;
-  letter-spacing:.25em;color:var(--gold);
-  padding:.65rem 1.4rem;
-  border-bottom:1px solid rgba(200,164,90,.15);
-  display:block;background:rgba(200,164,90,.07);
+.proj-featured-statbar-label{
+  font-family:'JetBrains Mono',monospace;font-size:.52rem;
+  letter-spacing:.22em;text-transform:uppercase;
+  color:var(--gold);opacity:.5;
+  padding:1.2rem 2rem 1.2rem 0;
+  border-right:1px solid rgba(200,164,90,.15);
+  margin-right:2rem;white-space:nowrap;flex-shrink:0;
 }
-.proj-featured-highlight{
-  display:flex;flex-direction:column;gap:.25rem;
-  padding:1.1rem 1.4rem;
-  border-bottom:1px solid rgba(255,255,255,.05);
-  position:relative;overflow:hidden;
-  transition:background .15s;
+.pfh-stat{
+  display:flex;flex-direction:column;gap:.2rem;
+  padding:1rem 2rem;flex:1;text-align:center;
+  border-right:1px solid rgba(255,255,255,.05);
 }
-.proj-featured-highlight::after{
-  content:'';position:absolute;left:0;top:0;bottom:0;
-  width:2px;background:var(--gold);opacity:0;
-  transition:opacity .2s;
-}
-.proj-featured-highlight:hover::after{opacity:.6}
-.proj-featured-highlight:hover{background:rgba(200,164,90,.04)}
-.proj-featured-highlight:last-child{border-bottom:none}
-.pfh-label{
-  font-family:'JetBrains Mono',monospace;font-size:.5rem;
-  letter-spacing:.16em;text-transform:uppercase;
-  color:var(--text-dim);opacity:.5;
-}
-.pfh-value{
-  font-family:'Cormorant Garamond',serif;font-size:2.2rem;
+.pfh-stat:last-child{border-right:none}
+.pfh-stat-value{
+  font-family:'Cormorant Garamond',serif;font-size:1.8rem;
   font-weight:300;color:var(--text);line-height:1;
   letter-spacing:-.02em;
 }
-.pfh-value em{
-  font-style:normal;color:var(--gold);
+.pfh-stat-value em{font-style:normal;color:var(--gold)}
+.pfh-stat-label{
+  font-family:'JetBrains Mono',monospace;font-size:.5rem;
+  letter-spacing:.14em;text-transform:uppercase;
+  color:var(--text-dim);opacity:.5;
 }
