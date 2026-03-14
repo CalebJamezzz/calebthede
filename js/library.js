@@ -104,6 +104,7 @@ async function loadBooks(){
   container.innerHTML='';
   if(!books||!books.length){empty.style.display='flex';return}
   empty.style.display='none';
+  window._allBooks=books;window._allChapters=chapters;window._allSeries=allSeries;
 
   function makeBookCard(b){
     const chs=(chapters||[]).filter(c=>c.book_id===b.id);
@@ -758,8 +759,8 @@ function roRender(){
   document.getElementById('roNumLeft').innerHTML = left
     ? roPageLabel(roFlatIdx, left) : '';
 
-  // Chapter label at top of first page of every chapter
-  if(left && left.pageInCh === 0){
+  // Chapter label at top of first page — only for books with a real title
+  if(left && left.pageInCh === 0 && left.chTitle && roIsBook){
     document.getElementById('roContentLeft').innerHTML =
       `<div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid rgba(78,201,176,.15)">Chapter ${left.chNum} — ${left.chTitle}</div>`
       + document.getElementById('roContentLeft').innerHTML;
@@ -769,8 +770,8 @@ function roRender(){
   if(right){
     document.getElementById('roContentRight').innerHTML = renderBody(right.content);
     document.getElementById('roNumRight').innerHTML = roPageLabel(roFlatIdx+1, right);
-    // Chapter label on right page if it starts a chapter
-    if(right.pageInCh === 0){
+    // Chapter label on right page — only for books with a real title
+    if(right.pageInCh === 0 && right.chTitle && roIsBook){
       document.getElementById('roContentRight').innerHTML =
         `<div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid rgba(78,201,176,.15)">Chapter ${right.chNum} — ${right.chTitle}</div>`
         + document.getElementById('roContentRight').innerHTML;

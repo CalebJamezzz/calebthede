@@ -132,12 +132,23 @@ function makeLabSVG(entryId, type){
   svg+='</svg>';
   return {svg, accent};
 }
+let allLabEntries = [];
+
 async function loadLab(){
   const grid=document.getElementById('labGrid'),empty=document.getElementById('labEmpty');
   grid.innerHTML='<div style="padding:2rem 0">'+constellationLoader()+'</div>';
   let query=sb.from('lab_entries').select('*').order('created_at',{ascending:false});
   if(labFilter!=='all')query=query.eq('type',labFilter);
   const{data:entries}=await query;
+  grid.innerHTML='';
+  if(!entries||!entries.length){empty.style.display='block';return}
+  empty.style.display='none';
+  allLabEntries = entries;
+  renderLabCards(entries);
+}
+
+function renderLabCards(entries){
+  const grid=document.getElementById('labGrid'),empty=document.getElementById('labEmpty');
   grid.innerHTML='';
   if(!entries||!entries.length){empty.style.display='block';return}
   empty.style.display='none';
