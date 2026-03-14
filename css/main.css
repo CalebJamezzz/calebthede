@@ -30,8 +30,8 @@ body.light-mode ::-webkit-scrollbar-thumb{background:var(--gold-dim)}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Lato',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px}
-.cursor{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;display:none}
-.cursor-ring{width:36px;height:36px;border:1px solid var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;opacity:.5;display:none}
+.cursor{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:10001;display:none}
+.cursor-ring{width:36px;height:36px;border:1px solid var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:10000;opacity:.5;display:none}
 body.has-custom-cursor{cursor:none}
 body.has-custom-cursor a,body.has-custom-cursor button,body.has-custom-cursor [onclick],body.has-custom-cursor .pc,body.has-custom-cursor .world-card,body.has-custom-cursor .book-card,body.has-custom-cursor .article-card,body.has-custom-cursor .lab-card,body.has-custom-cursor .pcard,body.has-custom-cursor .lib-tab,body.has-custom-cursor .fb,body.has-custom-cursor .lab-fb,body.has-custom-cursor .swatch,body.has-custom-cursor .ch-item,body.has-custom-cursor .mobile-nav-item,body.has-custom-cursor .recent-link,body.has-custom-cursor .back-btn{cursor:none}
 body.has-custom-cursor .cursor,body.has-custom-cursor .cursor-ring{display:block}
@@ -1026,6 +1026,10 @@ body[data-rfont="xl"] {--ro-font:1.32rem}
 .toc-arrow{color:var(--text-dim);opacity:.3;font-size:.9rem}
 .toc-row:hover .toc-arrow{opacity:.7;color:var(--gold)}
 
+/* Custom cursor on completion overlay */
+body.has-custom-cursor #bookCompleteOverlay{cursor:none}
+body.has-custom-cursor #bookCompleteOverlay button{cursor:none}
+
 /* ── SERIES ── */
 .series-header{
   display:flex;align-items:flex-start;justify-content:space-between;
@@ -1044,10 +1048,9 @@ body[data-rfont="xl"] {--ro-font:1.32rem}
   letter-spacing:.1em;color:var(--text-dim);
 }
 .book-series-num{
-  position:absolute;top:.6rem;right:.6rem;
   font-family:'JetBrains Mono',monospace;font-size:.5rem;
-  letter-spacing:.1em;color:rgba(255,255,255,.4);
-  background:rgba(0,0,0,.3);border-radius:2px;padding:.15rem .35rem;
+  letter-spacing:.1em;color:rgba(255,255,255,.55);
+  margin-top:.3rem;display:block;
 }
 .book-status-badge{
   display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.5rem;
@@ -1066,4 +1069,19 @@ body[data-rfont="xl"] {--ro-font:1.32rem}
 .book-spine-placeholder{
   display:flex;align-items:center;justify-content:center;
   background:var(--bg3);border:1px dashed var(--border);
+}
+
+/* Status badge overlay on book spine */
+.book-spine-status{
+  position:absolute;top:.5rem;left:.5rem;z-index:2;
+  font-family:'JetBrains Mono',monospace;font-size:.45rem;
+  letter-spacing:.1em;text-transform:uppercase;
+  border-radius:2px;padding:.15rem .45rem;
+  backdrop-filter:blur(4px);
+}
+.book-spine-status.complete{
+  background:rgba(78,201,176,.2);border:1px solid rgba(78,201,176,.4);color:var(--teal);
+}
+.book-spine-status.in_progress{
+  background:rgba(200,164,90,.12);border:1px solid rgba(200,164,90,.3);color:var(--gold);
 }

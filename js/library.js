@@ -98,7 +98,7 @@ async function loadBooks(){
   container.innerHTML='<div style="padding:2rem 0">'+constellationLoader()+'</div>';
   const[{data:books},{data:chapters},{data:allSeries}]=await Promise.all([
     sb.from('books').select('*').order('created_at',{ascending:true}),
-    sb.from('chapters').select('id,book_id,content'),
+    sb.from('chapters').select('id,book_id,content,published'),
     sb.from('series').select('*').order('created_at',{ascending:true})
   ]);
   container.innerHTML='';
@@ -115,17 +115,21 @@ async function loadBooks(){
     const totalWords=chs.reduce((sum,ch)=>sum+(ch.content||'').split(/\s+/).filter(Boolean).length,0);
     const pageCount=Math.max(0,Math.ceil(totalWords/WORDS_PER_PAGE))||'—';
     const readMins=totalWords>0?Math.max(1,Math.ceil(totalWords/200)):'—';
-    const statusBadge=b.status==='complete'?'<span class="book-status-badge complete">Complete</span>':b.status==='draft'?'<span class="book-status-badge draft admin-only blk">Draft</span>':'';
+    const statusLabel=b.status==='complete'?'Complete':b.status==='in_progress'?'In Progress':'Draft';
+    const statusClass=b.status||'in_progress';
+    const spineStatus=b.status!=='draft'
+      ?`<div class="book-spine-status ${statusClass}">${statusLabel}</div>`
+      :`<div class="book-spine-status in_progress admin-only blk">Draft</div>`;
     card.innerHTML=`
       <div class="book-spine">
         <div class="book-spine-bg" style="${bgStyle}"></div>
         <div class="book-spine-svg">${makeCelestialSVG(b.id)}</div>
+        ${spineStatus}
         <div class="book-spine-content">
           <span class="book-spine-title">${b.title}</span>
         </div>
       </div>
       <div class="book-foot">
-        ${statusBadge}
         <div class="book-foot-title">${b.title}</div>
         <div class="book-foot-meta">
           <span style="color:var(--teal)">${pubCount} of ${totalChCount} ch</span>
@@ -170,7 +174,7 @@ async function loadBooks(){
         const numBadge=document.createElement('div');
         numBadge.className='book-series-num';
         numBadge.textContent='#'+b.series_order;
-        card.querySelector('.book-spine').appendChild(numBadge);
+        card.querySelector('.book-spine-content').appendChild(numBadge);
       }
       grid.appendChild(card);
     });
@@ -505,14 +509,14 @@ async function saveChapter(){
   const{error}=editId?await sb.from('chapters').update({num,title,content,published}).eq('id',editId):await sb.from('chapters').insert({num,title,content,published,book_id});
   setLoading('chSaveBtn',false,'Save');
   if(error){toast('Error saving chapter','error');return}
-  toast(editId?'Chapter updated':'Chapter added');closeModal('chModal');await renderBookDetail();
+  toast(editId?'Chapter updated':'Chapter added');closeModal('chModal');await renderBookDetail();await renderTOC();autoUpdateBookStatus(currentBookId);
 }
 
 async function deleteChapter(id){
   if(!confirm('Delete this chapter?'))return;
   await sb.from('chapters').delete().eq('id',id);
   if(activeChId===id)activeChId=null;
-  toast('Chapter deleted');await renderBookDetail();
+  toast('Chapter deleted');await renderBookDetail();await renderTOC();autoUpdateBookStatus(currentBookId);
 }
 
 
@@ -877,6 +881,20 @@ async function renderTOC(){
   const resumeWrap = document.getElementById('tocResumeWrap');
   const resumeBtn  = document.getElementById('tocResumeBtn');
   const bookTitle  = document.getElementById('bookDetailTitle')?.textContent || '';
+  // Fetch book for status badge
+  const{data:tocBook} = await sb.from('books').select('status,total_chapters').eq('id',currentBookId).single();
+  const tocStatus = tocBook?.status||'in_progress';
+  const tocStatusLabel = tocStatus==='complete'?'Complete':'In Progress';
+  const tocStatusEl = document.getElementById('tocStatusBadge');
+  if(tocStatusEl){
+    tocStatusEl.textContent = tocStatusLabel;
+    tocStatusEl.className = 'book-spine-status ' + tocStatus;
+    tocStatusEl.style.display = 'inline-block';
+    tocStatusEl.style.position = 'static';
+    tocStatusEl.style.marginLeft = '.8rem';
+    tocStatusEl.style.verticalAlign = 'middle';
+    tocStatusEl.style.fontSize = '.55rem';
+  }
   document.getElementById('tocBookTitle').textContent = bookTitle;
 
   // Show resume button if bookmark exists
