@@ -33,6 +33,7 @@ body{background:var(--bg);color:var(--text);font-family:'Lato',sans-serif;font-w
 .cursor{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:10001;display:none}
 .cursor-ring{width:36px;height:36px;border:1px solid var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:10000;opacity:.5;display:none}
 body.has-custom-cursor{cursor:none}
+body.has-custom-cursor iframe{cursor:auto}
 body.has-custom-cursor a,body.has-custom-cursor button,body.has-custom-cursor [onclick],body.has-custom-cursor .pc,body.has-custom-cursor .world-card,body.has-custom-cursor .book-card,body.has-custom-cursor .article-card,body.has-custom-cursor .lab-card,body.has-custom-cursor .pcard,body.has-custom-cursor .lib-tab,body.has-custom-cursor .fb,body.has-custom-cursor .lab-fb,body.has-custom-cursor .swatch,body.has-custom-cursor .ch-item,body.has-custom-cursor .mobile-nav-item,body.has-custom-cursor .recent-link,body.has-custom-cursor .back-btn{cursor:none}
 body.has-custom-cursor .cursor,body.has-custom-cursor .cursor-ring{display:block}
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.4rem 4rem;background:rgba(13,15,20,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
@@ -1407,6 +1408,7 @@ body.ask-open{overflow:hidden}
 .lab-embed-inner iframe{
   width:100%;border:none;border-radius:8px;
   background:var(--bg3);display:block;
+  height:520px;
 }
 
 @media(max-width:768px){

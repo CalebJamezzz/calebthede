@@ -419,3 +419,23 @@ function filterBooksInline(q){
     section.style.display = visibleCards.length ? '' : 'none';
   });
 }
+
+// ── Hide custom cursor over iframes (can't track mouse inside) ──
+document.addEventListener('DOMContentLoaded', ()=>{
+  document.addEventListener('mouseover', e=>{
+    if(e.target.tagName === 'IFRAME'){
+      const cursor = document.getElementById('cursor');
+      const ring = document.getElementById('cursorRing');
+      if(cursor) cursor.style.opacity = '0';
+      if(ring) ring.style.opacity = '0';
+    }
+  });
+  document.addEventListener('mouseout', e=>{
+    if(e.target.tagName === 'IFRAME'){
+      const cursor = document.getElementById('cursor');
+      const ring = document.getElementById('cursorRing');
+      if(cursor) cursor.style.opacity = '1';
+      if(ring) ring.style.opacity = '1';
+    }
+  });
+});
