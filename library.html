@@ -99,6 +99,7 @@ let adminMode=false;
       </div>
       <div class="lib-panel" id="libArticles">
         <div class="lib-section-header"><h2>Articles &amp; Essays</h2><button class="btn-primary admin-only" onclick="openArticleModal()">+ New Article</button></div>
+        <div id="articleTagFilters" style="display:none;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem"></div>
         <div class="articles-grid" id="articlesGrid"></div>
         <div class="empty-state" id="articlesEmpty" style="display:none"><span class="empty-icon">✍️</span><h3>No articles yet</h3><p>Write your first article or essay.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openArticleModal()">+ New Article</button></div>
       </div>

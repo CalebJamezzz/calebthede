@@ -523,15 +523,45 @@ async function deleteChapter(id){
 
 let currentArticleId=null;
 
+let allArticles = [];
+let activeArticleTag = null;
+
 async function loadArticles(){
   const grid=document.getElementById('articlesGrid'),empty=document.getElementById('articlesEmpty');
   grid.innerHTML='<div style="padding:2rem 0">'+constellationLoader()+'</div>';
   const{data:articles}=await sb.from('articles').select('*').order('created_at',{ascending:false});
   grid.innerHTML='';
-  if(!articles||!articles.length){empty.style.display='block';return}
+  if(!articles||!articles.length){empty.style.display='block';document.getElementById('articleTagFilters').style.display='none';return}
+  empty.style.display='none';
+  allArticles = articles;
+  buildArticleTagFilters(articles);
+  renderArticleCards(articles);
+}
+
+function buildArticleTagFilters(articles){
+  const bar = document.getElementById('articleTagFilters');
+  const tags = [...new Set(articles.map(a=>a.tag).filter(Boolean))].sort();
+  if(tags.length < 2){bar.style.display='none';return}
+  bar.style.display='flex';
+  bar.innerHTML = `<button class="tag-filter-pill active" onclick="filterArticlesByTag(null,this)">All</button>`
+    + tags.map(t=>`<button class="tag-filter-pill" onclick="filterArticlesByTag('${t}',this)">${t}</button>`).join('');
+}
+
+function filterArticlesByTag(tag, btn){
+  activeArticleTag = tag;
+  document.querySelectorAll('.tag-filter-pill').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  const filtered = tag ? allArticles.filter(a=>a.tag===tag) : allArticles;
+  renderArticleCards(filtered);
+}
+
+function renderArticleCards(articles){
+  const grid=document.getElementById('articlesGrid'),empty=document.getElementById('articlesEmpty');
+  grid.innerHTML='';
+  if(!articles.length){empty.style.display='block';return}
   empty.style.display='none';
   articles.forEach(a=>{
-    const preview=(a.content||'').replace(/^###\s*/gm,'').slice(0,220)+'…';
+    const preview=(a.content||'').replace(/^###\s*/gm,'').replace(/<[^>]*>/g,'').slice(0,220)+'…';
     const words=(a.content||'').split(/\s+/).filter(Boolean).length;
     const mins=Math.max(1,Math.ceil(words/200));
     const card=document.createElement('div');card.className='article-card';
@@ -643,14 +673,17 @@ async function enterReaderMode(){
     document.getElementById('roTitle').textContent = bookTitle;
 
   } else {
-    // Article mode — paginate the article body
+    // Article mode — single column full scroll, no pagination
     const rawContent = document.getElementById('readerBody')?.innerHTML || '';
-    const pages = paginateContent(rawContent, 250);
-    roFlat = pages.map((pg,i)=>({content:pg, chIdx:0, chTitle:'', pageInCh:i, totalInCh:pages.length, totalChs:1}));
-    roFlatIdx = 0;
     const artTitle = document.getElementById('readerTitle')?.textContent || '';
+    const artMeta = document.getElementById('readerMeta')?.textContent || '';
     document.getElementById('roTitle').textContent = artTitle;
-    overlay.classList.add('active');
+
+    // Put full article in left page, hide right page + spine + nav
+    roFlat = [{content: rawContent, chIdx:0, chTitle:'', pageInCh:0, totalInCh:1, totalChs:1}];
+    roFlatIdx = 0;
+
+    overlay.classList.add('active', 'article-mode');
     document.body.classList.add('reader-locked');
     document.body.style.overflow = 'hidden';
   }
@@ -665,7 +698,7 @@ async function enterReaderMode(){
 
 // ── Exit ───────────────────────────────────────────────
 function exitReaderMode(){
-  document.getElementById('readerOverlay').classList.remove('active');
+  document.getElementById('readerOverlay').classList.remove('active','article-mode');
   document.body.classList.remove('reader-locked');
   document.body.style.overflow = '';
   roActive = false;
