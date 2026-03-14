@@ -249,6 +249,7 @@ function buildProjLinks(p){
   if(p.link_github) html += `<a class="proj-link-btn github" href="${p.link_github}" target="_blank" onclick="event.stopPropagation()">⌥ GitHub</a>`;
   if(p.link_figma)  html += `<a class="proj-link-btn figma"  href="${p.link_figma}"  target="_blank" onclick="event.stopPropagation()">◈ Figma</a>`;
   if(p.link_demo)   html += `<a class="proj-link-btn demo"   href="${p.link_demo}"   target="_blank" onclick="event.stopPropagation()">↗ Demo</a>`;
+  if(p.lab_entry_id) html += `<a class="proj-link-btn lab" href="/lab" onclick="event.stopPropagation();sessionStorage.setItem('openLabEntry','${p.lab_entry_id}');return true;">◉ Try in Lab</a>`;
   return html;
 }
 
@@ -270,26 +271,39 @@ function filterProjects(cat, btn){
 function openProjectModal(id=null){
   document.getElementById('projectModalTitle').textContent = id ? 'Edit Project' : 'New Project';
   document.getElementById('editProjectId').value = id||'';
-  if(id){
-    sb.from('projects').select('*').eq('id',id).single().then(({data:p})=>{
-      document.getElementById('projTitle').value = p?.title||'';
-      document.getElementById('projSubtitle').value = p?.subtitle||'';
-      document.getElementById('projDesc').value = p?.description||'';
-      document.getElementById('projCategory').value = p?.category||'Development';
-      document.getElementById('projTags').value = p?.tags||'';
-      document.getElementById('projGithub').value = p?.link_github||'';
-      document.getElementById('projFigma').value = p?.link_figma||'';
-      document.getElementById('projDemo').value = p?.link_demo||'';
-      document.getElementById('projBanner').value = p?.banner_image||'';
-      document.getElementById('projSort').value = p?.sort_order||0;
-      document.getElementById('projHighlight').value = p?.highlight?'true':'false';
+
+  // Load lab demo entries into dropdown
+  sb.from('lab_entries').select('id,title,category').eq('category','demo').order('title',{ascending:true}).then(({data:labs})=>{
+    const sel = document.getElementById('projLabEntry');
+    sel.innerHTML = '<option value="">None</option>';
+    (labs||[]).forEach(l=>{
+      const opt = document.createElement('option');
+      opt.value = l.id; opt.textContent = l.title;
+      sel.appendChild(opt);
     });
-  } else {
-    ['projTitle','projSubtitle','projDesc','projTags','projGithub','projFigma','projDemo','projBanner'].forEach(id=>document.getElementById(id).value='');
-    document.getElementById('projCategory').value='Development';
-    document.getElementById('projSort').value='0';
-    document.getElementById('projHighlight').value='false';
-  }
+    if(id){
+      sb.from('projects').select('*').eq('id',id).single().then(({data:p})=>{
+        document.getElementById('projTitle').value = p?.title||'';
+        document.getElementById('projSubtitle').value = p?.subtitle||'';
+        document.getElementById('projDesc').value = p?.description||'';
+        document.getElementById('projCategory').value = p?.category||'Development';
+        document.getElementById('projTags').value = p?.tags||'';
+        document.getElementById('projGithub').value = p?.link_github||'';
+        document.getElementById('projFigma').value = p?.link_figma||'';
+        document.getElementById('projDemo').value = p?.link_demo||'';
+        document.getElementById('projBanner').value = p?.banner_image||'';
+        document.getElementById('projSort').value = p?.sort_order||0;
+        document.getElementById('projHighlight').value = p?.highlight?'true':'false';
+        sel.value = p?.lab_entry_id||'';
+      });
+    } else {
+      ['projTitle','projSubtitle','projDesc','projTags','projGithub','projFigma','projDemo','projBanner'].forEach(id=>document.getElementById(id).value='');
+      document.getElementById('projCategory').value='Development';
+      document.getElementById('projSort').value='0';
+      document.getElementById('projHighlight').value='false';
+      sel.value='';
+    }
+  });
   openModal('projectModal');
 }
 
@@ -307,6 +321,7 @@ async function saveProject(){
     banner_image: document.getElementById('projBanner').value.trim()||null,
     sort_order:  parseInt(document.getElementById('projSort').value)||0,
     highlight:   document.getElementById('projHighlight').value==='true',
+    lab_entry_id: document.getElementById('projLabEntry').value||null,
   };
   if(!data.title){alert('Please add a title.');return}
   setLoading('projSaveBtn',true);
