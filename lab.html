@@ -95,7 +95,13 @@ let adminMode=false;
         <button class="lab-fb" onclick="filterLab('Research Note',this)">Research</button>
         <button class="lab-fb" onclick="filterLab('Experiment',this)">Experiments</button>
       </div>
-      <button class="btn-primary admin-only" onclick="openLabModal()">+ New Entry</button>
+      <div style="display:flex;align-items:center;gap:.6rem">
+        <div class="inline-search-wrap">
+          <input class="inline-search" id="labSearch" type="text" placeholder="Search entries…" oninput="filterLabInline(this.value)"/>
+          <span class="inline-search-icon">⌕</span>
+        </div>
+        <button class="btn-primary admin-only" onclick="openLabModal()">+ New Entry</button>
+      </div>
     </div>
     <div class="lab-grid" id="labGrid"></div>
     <div class="empty-state" id="labEmpty" style="display:none"><span class="empty-icon">◉</span><h3>The lab is empty</h3><p>Add your first idea — no matter how unformed.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openLabModal()">+ New Entry</button></div>
