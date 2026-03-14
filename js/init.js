@@ -243,15 +243,9 @@ function closeModal(id){document.getElementById(id).classList.remove('open')}
 document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
 function setLoading(btnId,loading,label){const b=document.getElementById(btnId);if(!b)return;b.innerHTML=loading?constellationLoader(true)+' Saving…':label;b.disabled=loading}
 function renderBody(content){
-  if(!content) return '';
-  // If already HTML (from Quill RTE), pass straight through
-  if(/<[a-z][\s\S]*>/i.test(content)) return content;
-  // Legacy plain text — convert 
-
- to paragraphs, ### to headings
-  return content.split('\n\n').map(p=>
-    p.trim().startsWith('###') ? `<h3>${p.replace(/^###\s*/,'')}</h3>` : `<p>${p}</p>`
-  ).join('');
+  if(!content)return'';
+  if(/<[a-z][\s\S]*>/i.test(content))return content;
+  return content.split('\n\n').map(p=>p.trim().startsWith('###')?`<h3>${p.replace(/^###[\s]*/,'')}</h3>`:`<p>${p}</p>`).join('');
 }
 function fmtDate(iso){if(!iso)return'';return new Date(iso).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}
 function refreshAdmin(el){if(adminMode)el.querySelectorAll('.admin-only').forEach(x=>x.style.removeProperty('display'))}
