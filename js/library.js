@@ -450,6 +450,7 @@ async function showChapter(id,idx,startPage=0){
   const body=document.getElementById('chBodyArea'),reader=document.getElementById('chReader');
   reader.style.display='block';document.getElementById('chEmpty').style.display='none';
   const focusBtn=document.getElementById('focusReaderBtn');if(focusBtn)focusBtn.style.display='flex';
+  const shareBtn=document.getElementById('shareChapterBtn');if(shareBtn)shareBtn.style.display='flex';
   body.innerHTML='<div class="reader-loading">'+constellationLoader()+'</div>';
   document.getElementById('pageNav').style.display='none';
   document.getElementById('chEyebrow').textContent='';document.getElementById('chTitleH').textContent='';
@@ -1129,4 +1130,42 @@ async function autoUpdateBookStatus(bookId){
   const{count}=await sb.from('chapters').select('id',{count:'exact',head:true}).eq('book_id',bookId).eq('published',true);
   const newStatus=count>=book.total_chapters?'complete':'in_progress';
   await sb.from('books').update({status:newStatus}).eq('id',bookId);
+}
+
+// ── SHARE ──────────────────────────────────────────────
+function shareChapter(){
+  const bookId = currentBookId;
+  const chId   = activeChId;
+  if(!bookId || !chId) return;
+  const url = window.location.origin + '/library#book/' + bookId;
+  copyShareLink(url, 'Chapter link copied!');
+}
+
+function shareArticle(){
+  const artId = typeof currentArticleId !== 'undefined' ? currentArticleId : null;
+  const url   = artId
+    ? window.location.origin + '/library#article/' + artId
+    : window.location.href;
+  copyShareLink(url, 'Article link copied!');
+}
+
+function copyShareLink(url, msg){
+  if(navigator.share){
+    navigator.share({ url }).catch(()=>{});
+  } else {
+    navigator.clipboard.writeText(url).then(()=>{
+      toast('✦ ' + msg, 'success');
+    }).catch(()=>{
+      // Fallback for older browsers
+      const el = document.createElement('textarea');
+      el.value = url;
+      el.style.position = 'fixed';
+      el.style.opacity = '0';
+      document.body.appendChild(el);
+      el.select();
+      document.execCommand('copy');
+      document.body.removeChild(el);
+      toast('✦ ' + msg, 'success');
+    });
+  }
 }
