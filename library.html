@@ -177,7 +177,10 @@ let adminMode=false;
           <div style="padding:2.5rem 4rem 0;max-width:680px;margin:0 auto">
             <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;margin-bottom:.8rem">
               <p id="chEyebrow" style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin:0"></p>
-              <button onclick="enterReaderMode()" id="focusReaderBtn" style="display:none;flex-shrink:0;background:none;border:1px solid rgba(200,164,90,.3);border-radius:20px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);padding:.32rem 1rem;transition:all .2s;white-space:nowrap" onmouseover="this.style.background='rgba(200,164,90,.08)'" onmouseout="this.style.background='none'">⊙ focus</button>
+              <div style="display:flex;gap:.5rem;align-items:center">
+                <button onclick="shareChapter()" id="shareChapterBtn" style="display:none;flex-shrink:0;background:none;border:1px solid var(--border);border-radius:20px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);padding:.32rem 1rem;transition:all .2s;white-space:nowrap" onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">↗ share</button>
+                <button onclick="enterReaderMode()" id="focusReaderBtn" style="display:none;flex-shrink:0;background:none;border:1px solid rgba(200,164,90,.3);border-radius:20px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);padding:.32rem 1rem;transition:all .2s;white-space:nowrap" onmouseover="this.style.background='rgba(200,164,90,.08)'" onmouseout="this.style.background='none'">⊙ focus</button>
+              </div>
             </div>
             <h2 id="chTitleH" style="font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3vw,2.6rem);font-weight:300;color:var(--text);margin-bottom:2.5rem;line-height:1.2"></h2>
           </div>
@@ -215,6 +218,7 @@ let adminMode=false;
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:1.5rem;flex-wrap:wrap;margin-bottom:1.2rem">
         <button class="back-btn" onclick="closeArticleReader()" style="margin-bottom:0">← Back to Library</button>
         <div style="display:flex;align-items:center;gap:.6rem;flex-shrink:0">
+          <button style="background:none;border:1px solid var(--border);border-radius:20px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);padding:.32rem 1rem;transition:all .2s;white-space:nowrap" onclick="shareArticle()" onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">↗ share</button>
           <button class="rfb-btn" style="border:1px solid rgba(200,164,90,.3);border-radius:20px;padding:.32rem 1rem;color:var(--gold)" onclick="enterReaderMode()">⊙ focus</button>
           <button class="btn-sm admin-only" id="readerEditBtn">Edit</button>
           <button class="btn-sm danger admin-only" id="readerDeleteBtn">Delete</button>
@@ -253,7 +257,7 @@ let adminMode=false;
     </form>
     <span class="footer-newsletter-success" id="footer-nl-success">✦ subscribed</span>
   </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:.7rem 4rem;border-top:1px solid var(--border)">
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:.7rem 4rem">
   <span>© 2026 Caleb Thede</span>
   <div class="footer-links">
     <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
