@@ -1,5 +1,6 @@
 [build]
   publish = "."
+  functions = "netlify/functions"
 
 # -- Maintenance mode --
 # To enable: uncomment the maintenance block and comment out the others

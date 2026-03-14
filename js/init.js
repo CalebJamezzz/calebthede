@@ -1,4 +1,3 @@
-
 // ── Inject Ask overlay + FAB on every page ──
 (function(){
   // Floating button — constellation icon
