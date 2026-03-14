@@ -28,20 +28,20 @@
     <div class="ask-panel">
       <div class="ask-header">
         <span class="ask-header-icon">✦</span>
-        <span class="ask-header-title">Ask JuztCleb</span>
+        <span class="ask-header-title">JuztCleb</span>
         <button class="ask-close" onclick="closeAsk()">✕</button>
       </div>
-      <div class="ask-input-wrap">
-        <input class="ask-input" id="askInput" type="text" placeholder="Ask anything — writing, projects, ideas, about Caleb…" autocomplete="off"/>
-        <span class="ask-shortcut">⌘K</span>
+      <div class="ask-messages" id="askMessages">
+        <div class="ask-welcome">
+          <p>Hey — I'm JuztCleb. Ask me anything about Caleb's writing, projects, or ideas.</p>
+        </div>
       </div>
-      <div class="ask-results" id="askResults"></div>
-      <div class="ask-answer-wrap" id="askAnswerWrap" style="display:none">
-        <div class="ask-answer-label">✦ JuztCleb</div>
-        <div class="ask-answer" id="askAnswer"></div>
+      <div class="ask-input-row">
+        <input class="ask-input" id="askInput" type="text" placeholder="Ask anything…" autocomplete="off"/>
+        <button class="ask-send-btn" id="askSendBtn" onclick="sendAskMessage()">↑</button>
       </div>
       <div class="ask-footer">
-        <span>Powered by the site's actual content</span>
+        <span>Searches the site's actual content</span>
         <span>esc to close</span>
       </div>
     </div>
@@ -212,6 +212,7 @@ async function handleFooterNewsletterSubmit(e){
 let askOpen = false;
 let askDebounce = null;
 let askAbort = null;
+let askHistory = []; // conversation history
 
 function openAsk(){
   const fab = document.getElementById('askFab');
@@ -235,6 +236,14 @@ function closeAsk(){
   if(askAbort){ askAbort.abort(); askAbort = null; }
 }
 
+function sendAskMessage(){
+  const input = document.getElementById('askInput');
+  const q = input.value.trim();
+  if(!q) return;
+  input.value = '';
+  runAsk(q);
+}
+
 // Cmd/Ctrl+K
 document.addEventListener('keydown', e=>{
   if((e.metaKey||e.ctrlKey) && e.key==='k'){ e.preventDefault(); askOpen ? closeAsk() : openAsk(); }
@@ -245,171 +254,123 @@ document.addEventListener('keydown', e=>{
 document.addEventListener('DOMContentLoaded', ()=>{
   const input = document.getElementById('askInput');
   if(!input) return;
-  input.addEventListener('input', ()=>{
-    clearTimeout(askDebounce);
-    const q = input.value.trim();
-    if(!q){ clearAskResults(); return; }
-    askDebounce = setTimeout(()=>runAsk(q), 400);
-  });
   input.addEventListener('keydown', e=>{
     if(e.key==='Enter'){
-      clearTimeout(askDebounce);
-      const q = input.value.trim();
-      if(q) runAsk(q, true);
+      e.preventDefault();
+      sendAskMessage();
     }
   });
 });
 
-function clearAskResults(){
-  document.getElementById('askResults').innerHTML = '';
-  document.getElementById('askAnswerWrap').style.display = 'none';
-  document.getElementById('askAnswer').innerHTML = '';
+function clearAskMessages(){
+  document.getElementById('askMessages').innerHTML = `
+    <div class="ask-welcome">
+      <p>Hey — I'm JuztCleb. Ask me anything about Caleb's writing, projects, or ideas.</p>
+    </div>`;
+  askHistory = [];
 }
 
-async function runAsk(query, forceAI=false){
+async function runAsk(query){
   if(!sb) return;
-  clearAskResults();
+  const messagesEl = document.getElementById('askMessages');
 
-  const resultsEl = document.getElementById('askResults');
-  resultsEl.innerHTML = '<div class="ask-searching">Searching…</div>';
+  // Remove welcome message after first message
+  const welcome = messagesEl.querySelector('.ask-welcome');
+  if(welcome) welcome.remove();
 
-  // 1. Search Supabase — articles, chapters, lab entries
-  const [artRes, chRes, labRes] = await Promise.all([
-    sb.from('articles').select('id,title,tag,content').ilike('title','%'+query+'%').limit(4),
-    sb.from('chapters').select('id,book_id,num,title,content').eq('published',true).ilike('title','%'+query+'%').limit(3),
-    typeof sb.from('lab_entries') !== 'undefined'
-      ? sb.from('lab_entries').select('id,title,content').ilike('title','%'+query+'%').limit(3)
-      : Promise.resolve({data:[]}),
+  // Add user message
+  messagesEl.innerHTML += `<div class="ask-msg ask-msg-user">${escapeHtml(query)}</div>`;
+
+  // Add typing indicator
+  const typingId = 'typing-' + Date.now();
+  messagesEl.innerHTML += `<div class="ask-msg ask-msg-bot" id="${typingId}"><span class="ask-typing">✦ thinking…</span></div>`;
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+
+  // Add to history
+  askHistory.push({ role: 'user', content: query });
+
+  // Search Supabase for context
+  const [artRes, chRes, labRes, artContent] = await Promise.all([
+    sb.from('articles').select('id,title,tag,content').ilike('title','%'+query+'%').limit(3),
+    sb.from('chapters').select('id,book_id,num,title,content').eq('published',true).ilike('title','%'+query+'%').limit(2),
+    sb.from('lab_entries').select('id,title,description').ilike('title','%'+query+'%').limit(2),
+    sb.from('articles').select('id,title,tag,content').ilike('content','%'+query+'%').limit(2),
   ]);
 
-  // Also do content search on articles
-  const [artContent] = await Promise.all([
-    sb.from('articles').select('id,title,tag,content').ilike('content','%'+query+'%').limit(3),
-  ]);
-
-  // Merge and deduplicate
-  const arts = [...new Map([
-    ...(artRes.data||[]),
-    ...(artContent.data||[])
-  ].map(a=>[a.id,a])).values()].slice(0,4);
+  const arts = [...new Map([...(artRes.data||[]),...(artContent.data||[])].map(a=>[a.id,a])).values()].slice(0,3);
   const chs = chRes.data||[];
   const labs = labRes.data||[];
 
-  const hasResults = arts.length || chs.length || labs.length;
-  resultsEl.innerHTML = '';
+  // Build context
+  const chunks = [];
+  arts.slice(0,2).forEach(a=> chunks.push(`[Article: "${a.title}"] ${(a.content||'').replace(/<[^>]*>/g,'').slice(0,500)}`));
+  chs.slice(0,2).forEach(c=> chunks.push(`[Chapter: "${c.title}"] ${(c.content||'').replace(/<[^>]*>/g,'').slice(0,500)}`));
+  labs.slice(0,1).forEach(l=> chunks.push(`[Lab: "${l.title}"] ${(l.description||'').slice(0,300)}`));
 
-  if(hasResults){
-    if(arts.length){
-      resultsEl.innerHTML += `<div class="ask-group-label">Articles</div>`;
-      arts.forEach(a=>{
-        resultsEl.innerHTML += `<a class="ask-result-item" href="/library#article/${a.id}">
-          <span class="ask-result-tag">${a.tag||'Article'}</span>
-          <span class="ask-result-title">${a.title}</span>
-        </a>`;
-      });
-    }
-    if(chs.length){
-      resultsEl.innerHTML += `<div class="ask-group-label">Book Chapters</div>`;
-      chs.forEach(c=>{
-        resultsEl.innerHTML += `<a class="ask-result-item" href="/library">
-          <span class="ask-result-tag">Ch.${c.num||'?'}</span>
-          <span class="ask-result-title">${c.title}</span>
-        </a>`;
-      });
-    }
-    if(labs.length){
-      resultsEl.innerHTML += `<div class="ask-group-label">Lab</div>`;
-      labs.forEach(l=>{
-        resultsEl.innerHTML += `<a class="ask-result-item" href="/lab">
-          <span class="ask-result-tag">Lab</span>
-          <span class="ask-result-title">${l.title}</span>
-        </a>`;
-      });
-    }
-    // Add click handlers to close overlay
-    resultsEl.querySelectorAll('.ask-result-item').forEach(el=>{
-      el.addEventListener('click', ()=>closeAsk());
-    });
-  } else {
-    resultsEl.innerHTML = '<div class="ask-no-results">No direct matches — see what JuztCleb thinks below ↓</div>';
-  }
+  // Also build search results links
+  let links = '';
+  if(arts.length) links += arts.map(a=>`<a class="ask-result-link" href="/library#article/${a.id}" onclick="closeAsk()">${a.tag?`<span class="ask-result-tag">${a.tag}</span>`:''}${a.title}</a>`).join('');
+  if(chs.length) links += chs.map(c=>`<a class="ask-result-link" href="/library" onclick="closeAsk()"><span class="ask-result-tag">Ch.${c.num||'?'}</span>${c.title}</a>`).join('');
 
-  // 2. AI answer — always run on Enter, run on debounce if query is a question
-  const isQuestion = forceAI || query.length > 20 || /\?|what|who|why|how|tell|explain|about/i.test(query);
-  if(isQuestion) await runAIAnswer(query, arts, chs, labs);
-}
+  const context = chunks.length ? `Relevant site content:\n\n${chunks.join('\n\n')}` : '';
 
-async function runAIAnswer(query, arts=[], chs=[], labs=[]){
-  const wrapEl = document.getElementById('askAnswerWrap');
-  const answerEl = document.getElementById('askAnswer');
-  wrapEl.style.display = 'block';
-  answerEl.innerHTML = '<span class="ask-typing">thinking…</span>';
-
-  // Build context from search results
-  const contextChunks = [];
-  arts.slice(0,2).forEach(a=>{
-    const snippet = (a.content||'').replace(/<[^>]*>/g,'').slice(0,600);
-    contextChunks.push(`[Article: "${a.title}"] ${snippet}`);
-  });
-  chs.slice(0,2).forEach(c=>{
-    const snippet = (c.content||'').replace(/<[^>]*>/g,'').slice(0,600);
-    contextChunks.push(`[Book chapter: "${c.title}"] ${snippet}`);
-  });
-  labs.slice(0,1).forEach(l=>{
-    const snippet = (l.content||'').replace(/<[^>]*>/g,'').slice(0,300);
-    contextChunks.push(`[Lab entry: "${l.title}"] ${snippet}`);
-  });
-
-  const context = contextChunks.length
-    ? `Here is relevant content from the site:\n\n${contextChunks.join('\n\n')}`
-    : 'No specific content matched — answer from general knowledge about Caleb.';
-
-  const systemPrompt = `You are JuztCleb — the AI voice of Caleb Thede's personal site at calebthede.com.
+  const systemPrompt = `You are JuztCleb — the AI voice of Caleb Thede's personal site at calebthede.com. You are a conversational assistant, not a search engine.
 
 About Caleb:
-- Full-stack developer, QA Engineer at TopNotch LTD
+- Full-stack developer and QA Engineer at TopNotch LTD
 - B.S. Computer Science (CSU Global, 3.33 GPA), A.S. Psychology (Red Rocks CC, 3.8 GPA)
-- Based in Colorado
-- Writing a book series called "Blue Ember" — mythology and psychology as a lens for modern human behavior
-- Interested in the intersection of CS and psychology: how technology can be built to better understand people
+- Based in Colorado. Gaming tag: JuztCleb
+- Writing the Blue Ember series — mythology and psychology as a lens for modern human behavior (8 books planned)
+- Deeply interested in the intersection of CS and psychology: technology built to understand people
 - Pursuing a Master's in Psychology
-- Gaming tag: JuztCleb
-- Previously managed a team of 16 at Ziggi's Coffee, which inspired his capstone project
+- Previously managed a team of 16 at Ziggi's Coffee — his capstone app was born there
+- Open to developer and design roles
 
-Your role:
-- Help visitors explore Caleb's writing, projects, and ideas
-- Answer questions about his work grounded in the actual content provided
-- Be conversational, warm, and direct — not robotic
-- Keep answers concise (2-4 sentences max unless the question needs more)
-- If you reference specific content, mention its title
-- If you don't know something, say so briefly and suggest where to look on the site
-
-${context}`;
+Personality: Conversational, warm, direct. Not robotic. Think of yourself as a knowledgeable friend who knows Caleb's work well.
+Keep responses concise — 2-4 sentences unless depth is needed.
+If referencing specific content, name it.
+${context ? `\n${context}` : ''}`;
 
   try {
     if(askAbort) askAbort.abort();
     askAbort = new AbortController();
 
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
+    const res = await fetch('/api/ask', {
       method: 'POST',
       signal: askAbort.signal,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
+        max_tokens: 600,
         system: systemPrompt,
-        messages: [{ role: 'user', content: query }]
+        messages: askHistory
       })
     });
 
     const data = await res.json();
-    const text = data.content?.[0]?.text || 'I couldn\'t find an answer for that.';
-    answerEl.innerHTML = text.replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+    const text = data.content?.[0]?.text || "I'm not sure about that one — try asking differently.";
+
+    // Add assistant reply to history
+    askHistory.push({ role: 'assistant', content: text });
+
+    // Replace typing indicator with real response
+    const typingEl = document.getElementById(typingId);
+    if(typingEl){
+      let html = text.replace(/\n\n/g,'<br><br>').replace(/\n/g,'<br>');
+      if(links) html += `<div class="ask-result-links">${links}</div>`;
+      typingEl.innerHTML = html;
+    }
   } catch(e){
-    if(e.name !== 'AbortError'){
-      answerEl.innerHTML = 'Something went wrong — try rephrasing your question.';
+    const typingEl = document.getElementById(typingId);
+    if(typingEl && e.name !== 'AbortError'){
+      typingEl.innerHTML = 'Something went wrong — try again.';
     }
   }
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+}
+
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
 
 // ── Inline search for Library articles ──
