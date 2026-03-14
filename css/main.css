@@ -1134,7 +1134,7 @@ body.has-custom-cursor #bookCompleteOverlay button{cursor:none}
 /* Nav trigger */
 .ask-fab{
   position:fixed;bottom:2rem;right:2rem;z-index:8999;
-  display:flex;align-items:center;justify-content:center;gap:.6rem;
+  display:flex;align-items:center;justify-content:center;gap:0;
   background:var(--bg2);border:1px solid rgba(200,164,90,.3);
   border-radius:50%;cursor:pointer;
   font-family:'JetBrains Mono',monospace;font-size:.58rem;
@@ -1146,7 +1146,7 @@ body.has-custom-cursor #bookCompleteOverlay button{cursor:none}
 }
 .ask-fab:hover{
   width:170px;height:50px;border-radius:25px;
-  padding:0 1.1rem 0 .6rem;justify-content:flex-start;
+  padding:0 1.1rem 0 .6rem;justify-content:flex-start;gap:.6rem;
   border-color:var(--gold);background:rgba(200,164,90,.06);
 }
 .ask-fab svg{flex-shrink:0;display:block;width:28px;height:28px;min-width:0}
