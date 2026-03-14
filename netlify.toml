@@ -36,6 +36,13 @@
   to = "/contact.html"
   status = 200
 
+# -- API function routes --
+[[redirects]]
+  from = "/api/ask"
+  to = "/.netlify/functions/ask"
+  status = 200
+  force = true
+
 # -- 404 fallback --
 [[redirects]]
   from = "/*"
