@@ -1085,3 +1085,44 @@ body.has-custom-cursor #bookCompleteOverlay button{cursor:none}
 .book-spine-status.in_progress{
   background:rgba(200,164,90,.12);border:1px solid rgba(200,164,90,.3);color:var(--gold);
 }
+
+/* ── ARTICLE TAG FILTER PILLS ── */
+.tag-filter-pill{
+  background:none;border:1px solid var(--border);border-radius:20px;
+  cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.58rem;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);
+  padding:.3rem .85rem;transition:all .18s;
+}
+.tag-filter-pill:hover{border-color:var(--gold);color:var(--gold)}
+.tag-filter-pill.active{
+  border-color:var(--gold);color:var(--gold);
+  background:rgba(200,164,90,.08);
+}
+
+/* ── ARTICLE READER FOCUS MODE ── */
+#readerOverlay.article-mode .ro-page-right,
+#readerOverlay.article-mode .ro-spine,
+#readerOverlay.article-mode .ro-bottombar,
+#readerOverlay.article-mode .ro-tap-left,
+#readerOverlay.article-mode .ro-tap-right{
+  display:none!important;
+}
+#readerOverlay.article-mode .ro-pages{
+  overflow-y:auto;
+}
+#readerOverlay.article-mode .ro-page-left{
+  border-right:none;
+  max-width:680px;
+  margin:0 auto;
+  padding:3rem 2rem 4rem;
+  overflow-y:auto;
+}
+#readerOverlay.article-mode .ro-page-content{
+  overflow:visible;
+}
+#readerOverlay.article-mode .ro-page-num{
+  display:none;
+}
+#readerOverlay.article-mode .ro-spread{
+  overflow-y:auto;
+}
