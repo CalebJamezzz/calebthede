@@ -215,9 +215,14 @@ function renderProjGrid(projects, appendZiggis=false){
       <div class="pcard-body">
         <h3 class="pcard-title">${p.title}</h3>
         ${p.subtitle?`<p class="pcard-subtitle">${p.subtitle}</p>`:''}
-        <p class="pcard-desc">${p.description||'<em style="opacity:.4">No description yet.</em>'}</p>
+        <div class="pcard-desc">${(p.description||'').split(/\n\n+/).filter(Boolean).map(para=>`<p style="margin-bottom:.5rem">${para.replace(/\n/g,'<br>')}</p>`).join('') || '<em style="opacity:.4">No description yet.</em>'}</div>
       </div>
       <div class="pcard-side">
+        ${(p.highlight1_label||p.highlight2_label||p.highlight3_label) ? `<div class="pcard-highlights">
+          ${p.highlight1_label?`<div class="pcard-highlight"><span class="ph-label">${p.highlight1_label}</span><span class="ph-value">${p.highlight1_value||'—'}</span></div>`:''}
+          ${p.highlight2_label?`<div class="pcard-highlight"><span class="ph-label">${p.highlight2_label}</span><span class="ph-value">${p.highlight2_value||'—'}</span></div>`:''}
+          ${p.highlight3_label?`<div class="pcard-highlight"><span class="ph-label">${p.highlight3_label}</span><span class="ph-value">${p.highlight3_value||'—'}</span></div>`:''}
+        </div>` : ''}
         <div class="pcard-tags">${tags.map(t=>`<span class="ptag">${t}</span>`).join('')}</div>
         ${links?`<div class="pcard-links">${links}</div>`:''}
         <div class="pcard-admin admin-only">
@@ -268,6 +273,11 @@ function filterProjects(cat, btn){
   loadProjects();
 }
 
+function appendSubtitle(val){
+  const el = document.getElementById('projSubtitle');
+  el.value = el.value ? el.value + ' · ' + val : val;
+}
+
 function openProjectModal(id=null){
   document.getElementById('projectModalTitle').textContent = id ? 'Edit Project' : 'New Project';
   document.getElementById('editProjectId').value = id||'';
@@ -295,9 +305,15 @@ function openProjectModal(id=null){
         document.getElementById('projSort').value = p?.sort_order||0;
         document.getElementById('projHighlight').value = p?.highlight?'true':'false';
         sel.value = p?.lab_entry_id||'';
+        document.getElementById('projH1Label').value = p?.highlight1_label||'';
+        document.getElementById('projH1Value').value = p?.highlight1_value||'';
+        document.getElementById('projH2Label').value = p?.highlight2_label||'';
+        document.getElementById('projH2Value').value = p?.highlight2_value||'';
+        document.getElementById('projH3Label').value = p?.highlight3_label||'';
+        document.getElementById('projH3Value').value = p?.highlight3_value||'';
       });
     } else {
-      ['projTitle','projSubtitle','projDesc','projTags','projGithub','projFigma','projDemo','projBanner'].forEach(id=>document.getElementById(id).value='');
+      ['projTitle','projSubtitle','projDesc','projTags','projGithub','projFigma','projDemo','projBanner','projH1Label','projH1Value','projH2Label','projH2Value','projH3Label','projH3Value'].forEach(id=>document.getElementById(id).value='');
       document.getElementById('projCategory').value='Development';
       document.getElementById('projSort').value='0';
       document.getElementById('projHighlight').value='false';
@@ -322,6 +338,12 @@ async function saveProject(){
     sort_order:  parseInt(document.getElementById('projSort').value)||0,
     highlight:   document.getElementById('projHighlight').value==='true',
     lab_entry_id: document.getElementById('projLabEntry').value||null,
+    highlight1_label: document.getElementById('projH1Label').value.trim()||null,
+    highlight1_value: document.getElementById('projH1Value').value.trim()||null,
+    highlight2_label: document.getElementById('projH2Label').value.trim()||null,
+    highlight2_value: document.getElementById('projH2Value').value.trim()||null,
+    highlight3_label: document.getElementById('projH3Label').value.trim()||null,
+    highlight3_value: document.getElementById('projH3Value').value.trim()||null,
   };
   if(!data.title){alert('Please add a title.');return}
   setLoading('projSaveBtn',true);

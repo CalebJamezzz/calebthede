@@ -134,16 +134,38 @@ let adminMode=false;
     <input type="hidden" id="editProjectId"/>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
       <div class="mf" style="grid-column:1/-1"><label>Title</label><input type="text" id="projTitle" placeholder="Project name"/></div>
-      <div class="mf" style="grid-column:1/-1"><label>Subtitle</label><input type="text" id="projSubtitle" placeholder="Short descriptor"/></div>
+      <div class="mf" style="grid-column:1/-1">
+        <label>Subtitle <span style="opacity:.5;font-size:.75em">— separate items with · (option+8 on Mac, alt+0183 on PC)</span></label>
+        <input type="text" id="projSubtitle" placeholder="Full-Stack · Kotlin · Android"/>
+        <div style="margin-top:.4rem;display:flex;gap:.4rem;flex-wrap:wrap">
+          <button type="button" onclick="appendSubtitle('Full-Stack')" class="btn-sm">+ Full-Stack</button>
+          <button type="button" onclick="appendSubtitle('Android')" class="btn-sm">+ Android</button>
+          <button type="button" onclick="appendSubtitle('Web App')" class="btn-sm">+ Web App</button>
+          <button type="button" onclick="appendSubtitle('Capstone')" class="btn-sm">+ Capstone</button>
+          <button type="button" onclick="appendSubtitle('Figma Design')" class="btn-sm">+ Figma</button>
+          <button type="button" onclick="appendSubtitle('Open Source')" class="btn-sm">+ Open Source</button>
+        </div>
+      </div>
       <div class="mf"><label>Category</label><select id="projCategory"><option>Development</option><option>Design</option><option>QA / Tools</option></select></div>
       <div class="mf"><label>Highlight on Home?</label><select id="projHighlight"><option value="false">No</option><option value="true">Yes — pin to Builder card</option></select></div>
-      <div class="mf" style="grid-column:1/-1"><label>Description</label><textarea id="projDesc" rows="3" placeholder="What did you build and why?"></textarea></div>
-      <div class="mf" style="grid-column:1/-1"><label>Tags (comma-separated)</label><input type="text" id="projTags" placeholder="Python, Data Generation, QA Tooling"/></div>
+      <div class="mf" style="grid-column:1/-1">
+        <label>Description <span style="opacity:.5;font-size:.75em">— supports paragraphs (press Enter for new paragraph)</span></label>
+        <textarea id="projDesc" rows="6" placeholder="What did you build and why?&#10;&#10;Press Enter twice for a new paragraph."></textarea>
+      </div>
+      <div class="mf" style="grid-column:1/-1"><label>Tags <span style="opacity:.5;font-size:.75em">(comma-separated)</span></label><input type="text" id="projTags" placeholder="Python, Data Generation, QA Tooling"/></div>
       <div class="mf"><label>GitHub Link</label><input type="text" id="projGithub" placeholder="https://github.com/…"/></div>
       <div class="mf"><label>Figma Link</label><input type="text" id="projFigma" placeholder="https://figma.com/…"/></div>
       <div class="mf" style="grid-column:1/-1"><label>Demo / Live Link</label><input type="text" id="projDemo" placeholder="https://…"/></div>
       <div class="mf" style="grid-column:1/-1"><label>Lab Demo <span style="opacity:.5;font-size:.75em">(links to a Lab entry — shows "Try it in Lab →" on the project card)</span></label><select id="projLabEntry"><option value="">None</option></select></div>
       <div class="mf" style="grid-column:1/-1"><label>Banner Image URL</label><input type="text" id="projBanner" placeholder="https://…"/></div>
+      <hr style="grid-column:1/-1;border:none;border-top:1px solid var(--border);margin:.5rem 0"/>
+      <p style="grid-column:1/-1;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Sidebar Highlights <span style="opacity:.5;font-weight:300;text-transform:none;letter-spacing:0"> — optional stats or details shown on the card</span></p>
+      <div class="mf"><label>Highlight 1 Label</label><input type="text" id="projH1Label" placeholder="e.g. Timeline"/></div>
+      <div class="mf"><label>Highlight 1 Value</label><input type="text" id="projH1Value" placeholder="e.g. 6 weeks"/></div>
+      <div class="mf"><label>Highlight 2 Label</label><input type="text" id="projH2Label" placeholder="e.g. Team Size"/></div>
+      <div class="mf"><label>Highlight 2 Value</label><input type="text" id="projH2Value" placeholder="e.g. Solo"/></div>
+      <div class="mf"><label>Highlight 3 Label</label><input type="text" id="projH3Label" placeholder="e.g. Platform"/></div>
+      <div class="mf"><label>Highlight 3 Value</label><input type="text" id="projH3Value" placeholder="e.g. Android"/></div>
       <div class="mf" style="grid-column:1/-1"><label>Sort Order</label><input type="number" id="projSort" value="0" min="0"/></div>
     </div>
     <div class="modal-actions"><button class="btn-primary" id="projSaveBtn" onclick="saveProject()">Save</button><button class="btn-ghost" onclick="closeModal('projectModal')">Cancel</button></div>
