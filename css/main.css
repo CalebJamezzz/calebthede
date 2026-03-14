@@ -1450,9 +1450,10 @@ body.ask-open{overflow:hidden}
   padding:0 2.5rem;
 }
 .proj-featured-statbar-label{
-  font-family:'JetBrains Mono',monospace;font-size:.52rem;
-  letter-spacing:.22em;text-transform:uppercase;
-  color:var(--gold);opacity:.5;
+  font-family:'Cormorant Garamond',serif;font-size:1rem;
+  font-weight:300;font-style:italic;
+  letter-spacing:.05em;
+  color:var(--gold);opacity:.7;
   padding:1.2rem 2rem 1.2rem 0;
   border-right:1px solid rgba(200,164,90,.15);
   margin-right:2rem;white-space:nowrap;flex-shrink:0;
