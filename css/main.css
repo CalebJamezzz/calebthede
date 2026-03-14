@@ -182,7 +182,7 @@ footer{padding:.7rem 4rem;display:flex;align-items:center;justify-content:space-
 .world-card:hover::after{transform:scaleX(1)}
 .world-card.span2{grid-column:span 2}
 .world-num{font-family:'Cormorant Garamond',serif;font-size:5rem;font-weight:300;line-height:1;color:rgba(200,164,90,.22);position:absolute;top:1rem;right:1.5rem;pointer-events:none;transition:color .35s}
-.builder-card-content .world-num{position:absolute;top:1rem;left:1.5rem;right:auto;font-size:3.5rem;opacity:.5}
+.builder-card-content .world-num{position:absolute;top:0;right:0;font-size:4rem}
 .world-card:hover .world-num{color:rgba(200,164,90,.38)}
 .world-icon{font-size:1.4rem;margin-bottom:1rem;display:block}
 .world-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--teal);margin-bottom:.6rem}
@@ -324,7 +324,7 @@ footer{padding:.7rem 4rem;display:flex;align-items:center;justify-content:space-
 @media(max-width:700px){.pcard{grid-template-columns:1fr}.pcard-banner{height:80px}.pcard-side{align-items:flex-start;padding:0 1.2rem 1.2rem}}
 
 .builder-card-inner{display:flex;gap:1.5rem;align-items:center;height:100%;padding-right:.5rem}
-.builder-card-content{flex:1;display:flex;flex-direction:column}
+.builder-card-content{flex:1;display:flex;flex-direction:column;position:relative}
 .builder-highlight{width:190px;flex-shrink:0;margin:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;transition:opacity .3s;align-self:flex-start}
 .builder-highlight-banner{height:110px;position:relative;flex-shrink:0}
 .builder-highlight-banner svg{position:absolute;inset:0;width:100%;height:100%}
