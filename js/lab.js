@@ -37,6 +37,19 @@ async function loadLab(){
   empty.style.display = 'none';
   allLabEntries = entries;
   renderLabCards(entries);
+
+  // Auto-open if arriving from a project link
+  const autoOpen = sessionStorage.getItem('openLabEntry');
+  if(autoOpen){
+    sessionStorage.removeItem('openLabEntry');
+    setTimeout(()=>{
+      const tile = document.getElementById('tile-' + autoOpen);
+      if(tile){
+        tile.scrollIntoView({behavior:'smooth', block:'center'});
+        setTimeout(()=>toggleEmbed(autoOpen), 400);
+      }
+    }, 300);
+  }
 }
 
 function renderLabCards(entries){
