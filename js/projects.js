@@ -191,11 +191,14 @@ async function loadProjects(){
         ${fHighlights.length ? `
         <div class="proj-featured-right">
           <div class="proj-featured-highlights">
-            ${fHighlights.map(h=>`
-              <div class="proj-featured-highlight">
+            ${fHighlights.map(h=>{
+              // Wrap numbers in em for gold color
+              const val = h.value.replace(/([\d]+)/g,'<em>$1</em>');
+              return `<div class="proj-featured-highlight">
                 <span class="pfh-label">${h.label}</span>
-                <span class="pfh-value">${h.value}</span>
-              </div>`).join('')}
+                <span class="pfh-value">${val}</span>
+              </div>`;
+            }).join('')}
           </div>
         </div>` : ''}
       </div>
