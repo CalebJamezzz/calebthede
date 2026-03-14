@@ -161,6 +161,16 @@ async function loadProjects(){
   const fBanner = projBanner(newest);
   const fTags = (newest.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
   const fLinks = buildProjLinks(newest);
+  // Build highlight sidebar for featured
+  const fHighlights = [
+    newest.highlight1_label ? {label:newest.highlight1_label, value:newest.highlight1_value||'—'} : null,
+    newest.highlight2_label ? {label:newest.highlight2_label, value:newest.highlight2_value||'—'} : null,
+    newest.highlight3_label ? {label:newest.highlight3_label, value:newest.highlight3_value||'—'} : null,
+  ].filter(Boolean);
+
+  const fDescHtml = (newest.description||'').split(/\n\n+/).filter(Boolean)
+    .map(p=>`<p class="proj-featured-desc" style="margin-bottom:.8rem">${p.replace(/\n/g,'<br>')}</p>`).join('');
+
   featWrap.innerHTML = `
     <div class="proj-featured" data-proj="${newest.id}">
       <div class="proj-featured-banner">${fBanner}
@@ -170,7 +180,7 @@ async function loadProjects(){
         <div>
           <h2 class="proj-featured-title">${formatProjTitle(newest.title)}</h2>
           ${newest.subtitle?`<p style="font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);margin-bottom:1rem">${newest.subtitle}</p>`:''}
-          <p class="proj-featured-desc">${newest.description||''}</p>
+          ${fDescHtml || `<p class="proj-featured-desc">${newest.description||''}</p>`}
           <div class="proj-links">${fLinks}</div>
           <div class="proj-tags">${fTags.map(t=>`<span class="ptag">${t}</span>`).join('')}</div>
           <div style="display:flex;gap:.6rem;margin-top:1.5rem" class="admin-only">
@@ -178,7 +188,16 @@ async function loadProjects(){
             <button class="btn-sm danger" onclick="deleteProject('${newest.id}')">Delete</button>
           </div>
         </div>
-        <div></div>
+        <div>
+          ${fHighlights.length ? `
+            <div class="proj-featured-highlights">
+              ${fHighlights.map(h=>`
+                <div class="proj-featured-highlight">
+                  <span class="pfh-label">${h.label}</span>
+                  <span class="pfh-value">${h.value}</span>
+                </div>`).join('')}
+            </div>` : ''}
+        </div>
       </div>
     </div>`;
   refreshAdmin(featWrap);

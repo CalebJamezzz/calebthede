@@ -1438,3 +1438,19 @@ body.ask-open{overflow:hidden}
   font-family:'Cormorant Garamond',serif;font-size:1.1rem;
   font-weight:400;color:var(--text);line-height:1.2;
 }
+
+/* ── FEATURED PROJECT HIGHLIGHTS ── */
+.proj-featured-highlights{
+  display:flex;flex-direction:column;gap:1.2rem;
+  padding:1.8rem;background:rgba(255,255,255,.03);
+  border:1px solid var(--border);border-radius:8px;
+}
+.proj-featured-highlight{display:flex;flex-direction:column;gap:.3rem}
+.pfh-label{
+  font-family:'JetBrains Mono',monospace;font-size:.52rem;
+  letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);opacity:.6;
+}
+.pfh-value{
+  font-family:'Cormorant Garamond',serif;font-size:1.4rem;
+  font-weight:300;color:var(--text);line-height:1.2;
+}
