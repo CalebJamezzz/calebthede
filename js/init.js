@@ -53,6 +53,76 @@ function seedRand(seed){
   return ()=>{s=(s*1664525+1013904223)&0xffffffff;return(s>>>0)/0xffffffff};
 }
 
+// ══ PROJECT SVG ══
+function makeProjSVG(projId, category){
+  const seed = (projId||'x').split('').reduce((a,ch)=>a+ch.charCodeAt(0),0);
+  const r = seedRand(seed);
+  const w=600, h=160;
+  const palettes = {
+    'Development': {bg:'#0A1520', accent:'#4EC9B0', accent2:'#2A7A68'},
+    'Design':      {bg:'#150A20', accent:'#A78BFA', accent2:'#6D4AC8'},
+    'QA / Tools':  {bg:'#1A1205', accent:'var(--gold)', accent2:'#8A6820'},
+  };
+  const p = palettes[category] || palettes['Development'];
+  let svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice">`;
+  svg += `<defs>
+    <linearGradient id="pbg${seed}" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="${p.bg}"/>
+      <stop offset="100%" stop-color="#0D0F14"/>
+    </linearGradient>
+    <linearGradient id="pfade${seed}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="40%" stop-color="transparent"/>
+      <stop offset="100%" stop-color="#0D0F14"/>
+    </linearGradient>
+  </defs>`;
+  svg += `<rect width="${w}" height="${h}" fill="url(#pbg${seed})"/>`;
+
+  if(category === 'Design'){
+    // Flowing bezier curves
+    for(let i=0;i<5;i++){
+      const y1=r()*h, y2=r()*h, y3=r()*h;
+      const op = 0.08 + r()*0.12;
+      svg += `<path d="M0,${y1} C${w*.3},${y2} ${w*.6},${y3} ${w},${r()*h}" fill="none" stroke="${p.accent}" stroke-width="${1+r()*1.5}" opacity="${op}"/>`;
+    }
+    // Scattered dots
+    for(let i=0;i<20;i++){
+      svg += `<circle cx="${r()*w}" cy="${r()*h}" r="${.8+r()*2}" fill="${p.accent}" opacity="${.15+r()*.25}"/>`;
+    }
+  } else if(category === 'QA / Tools'){
+    // Grid + data lines
+    for(let x=0;x<w;x+=40) svg += `<line x1="${x}" y1="0" x2="${x}" y2="${h}" stroke="${p.accent}" stroke-width=".3" opacity=".07"/>`;
+    for(let y=0;y<h;y+=30) svg += `<line x1="0" y1="${y}" x2="${w}" y2="${y}" stroke="${p.accent}" stroke-width=".3" opacity=".07"/>`;
+    // Highlight bars (like data rows)
+    for(let i=0;i<4;i++){
+      const bx=r()*(w*.6), by=r()*h*.8, bw=80+r()*120;
+      svg += `<rect x="${bx}" y="${by}" width="${bw}" height="${8+r()*6}" rx="2" fill="${p.accent}" opacity="${.06+r()*.08}"/>`;
+    }
+    // Accent line
+    svg += `<line x1="0" y1="${h*.5+r()*20}" x2="${w}" y2="${h*.5+r()*20}" stroke="${p.accent}" stroke-width="1" opacity=".15"/>`;
+  } else {
+    // Development: circuit nodes + connections
+    const nodes=[];
+    for(let i=0;i<10;i++) nodes.push([r()*w, r()*h]);
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const d=Math.hypot(nodes[j][0]-nodes[i][0],nodes[j][1]-nodes[i][1]);
+        if(d<120){
+          svg+=`<line x1="${nodes[i][0]}" y1="${nodes[i][1]}" x2="${nodes[j][0]}" y2="${nodes[j][1]}" stroke="${p.accent}" stroke-width="${.3+r()*.5}" opacity="${.08+r()*.1}"/>`;
+        }
+      }
+    }
+    nodes.forEach(([nx,ny])=>{
+      svg+=`<circle cx="${nx}" cy="${ny}" r="${1.5+r()*3}" fill="${p.accent}" opacity="${.2+r()*.3}"/>`;
+    });
+  }
+
+  // Right fade + bottom fade
+  svg += `<rect width="${w}" height="${h}" fill="url(#pfade${seed})"/>`;
+  svg += `<rect x="${w*.5}" width="${w*.5}" height="${h}" fill="url(#pbg${seed})" opacity=".5"/>`;
+  svg += `</svg>`;
+  return {svg, accent: p.accent};
+}
+
 // sb, adminMode declared inline in each page's <script> block
 
 function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} visible`;setTimeout(()=>t.classList.remove('visible'),3000)}
