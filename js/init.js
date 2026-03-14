@@ -1,7 +1,8 @@
+
 // ── Inject Ask overlay + FAB on every page ──
 (function(){
   // Floating button — constellation icon
-  const s=42,cx=21,cy=21,r=21*0.38;
+  const s=28,cx=14,cy=14,r=14*0.38;
   const stars=Array.from({length:5},(_,i)=>{const a=(i/5)*Math.PI*2-Math.PI/2;return{x:cx+Math.cos(a)*r,y:cy+Math.sin(a)*r}});
   const lines=[[0,1],[1,2],[2,3],[3,4],[4,0],[0,2]];
   const linesHTML=lines.map(([a,b])=>`<line x1="${stars[a].x.toFixed(1)}" y1="${stars[a].y.toFixed(1)}" x2="${stars[b].x.toFixed(1)}" y2="${stars[b].y.toFixed(1)}" stroke="var(--gold)" stroke-width=".7" opacity=".4"/>`).join('');
@@ -334,7 +335,7 @@ ${context ? `\n${context}` : ''}`;
     if(askAbort) askAbort.abort();
     askAbort = new AbortController();
 
-    const res = await fetch('/api/ask', {
+    const res = await fetch('/.netlify/functions/ask', {
       method: 'POST',
       signal: askAbort.signal,
       headers: { 'Content-Type': 'application/json' },
