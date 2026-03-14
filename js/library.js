@@ -498,13 +498,13 @@ function stepChapter(dir){
 async function openChModal(id=null,bookId=null){
   document.getElementById('chModalTitle').textContent=id?'Edit Chapter':'Add Chapter';
   document.getElementById('editChId').value=id||'';document.getElementById('chBookId').value=bookId||currentBookId||'';
-  if(id){const{data:ch}=await sb.from('chapters').select('*').eq('id',id).single();document.getElementById('chNum').value=ch?.num||'';document.getElementById('chTitle').value=ch?.title||'';document.getElementById('chContent').value=ch?.content||'';document.getElementById('chPublished').checked=ch?.published||false;updateChPublishedLbl();updateChPreview();}
-  else{document.getElementById('chNum').value='';document.getElementById('chTitle').value='';document.getElementById('chContent').value='';document.getElementById('chPublished').checked=false;updateChPublishedLbl();updateChPreview();}
+  if(id){const{data:ch}=await sb.from('chapters').select('*').eq('id',id).single();document.getElementById('chNum').value=ch?.num||'';document.getElementById('chTitle').value=ch?.title||'';document.getElementById('chPublished').checked=ch?.published||false;updateChPublishedLbl();quillSet('chContentEditor',ch?.content||'');}
+  else{document.getElementById('chNum').value='';document.getElementById('chTitle').value='';document.getElementById('chPublished').checked=false;updateChPublishedLbl();quillSet('chContentEditor','');}
   openModal('chModal');
 }
 
 async function saveChapter(){
-  const num=document.getElementById('chNum').value.trim(),title=document.getElementById('chTitle').value.trim(),content=document.getElementById('chContent').value.trim(),book_id=document.getElementById('chBookId').value,published=document.getElementById('chPublished').checked;
+  const num=document.getElementById('chNum').value.trim(),title=document.getElementById('chTitle').value.trim(),content=quillGet('chContentEditor'),book_id=document.getElementById('chBookId').value,published=document.getElementById('chPublished').checked;
   if(!title||!content){alert('Please add a title and content.');return}
   const editId=document.getElementById('editChId').value;
   setLoading('chSaveBtn',true);
