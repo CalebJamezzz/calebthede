@@ -150,7 +150,7 @@ async function loadProjects(){
   const {data:projects} = await sb.from('projects').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false});
   grid.innerHTML = '';
 
-  if(!projects||!projects.length){renderZiggisFallback(featWrap);empty.style.display='none';return}
+  if(!projects||!projects.length){empty.style.display='flex';return}
   empty.style.display = 'none';
 
   // Newest project auto-features at top, rest go to grid
@@ -188,7 +188,7 @@ async function loadProjects(){
   });
 
   // Rest go to grid — Ziggi's appended as last row
-  renderProjGrid(rest, true);
+  renderProjGrid(rest, false);
 }
 
 function renderProjGrid(projects, appendZiggis=false){
@@ -228,7 +228,7 @@ function renderProjGrid(projects, appendZiggis=false){
     grid.appendChild(card);
     refreshAdmin(card);
   });
-  if(appendZiggis) renderZiggisRow(grid);
+
 }
 
 
