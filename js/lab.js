@@ -203,7 +203,6 @@ async function deleteLabEntry(id){
 }
 
 // ── ARTICLE READER (shared with library) ─────────────────
-let currentArticleId = null;
 
 function openArticle(a, skipHistory){
   currentArticleId = a.id;
