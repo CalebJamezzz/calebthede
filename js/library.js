@@ -1132,6 +1132,36 @@ async function autoUpdateBookStatus(bookId){
   await sb.from('books').update({status:newStatus}).eq('id',bookId);
 }
 
+function openArticleModal(id=null){
+  document.getElementById('articleModalTitle').textContent=id?'Edit Article':'New Article';
+  document.getElementById('editArticleId').value=id||'';
+  if(id){
+    sb.from('articles').select('*').eq('id',id).single().then(({data:a})=>{
+      document.getElementById('articleTitle').value=a?.title||'';
+      document.getElementById('articleTag').value=a?.tag||'';
+      document.getElementById('articleBanner').value=a?.banner_image||'';
+      quillSet('articleContentEditor', a?.content||'');  // ✓ 'a' exists here
+    });
+  } else {
+    document.getElementById('articleTitle').value='';
+    document.getElementById('articleTag').value='';
+    document.getElementById('articleBanner').value='';
+    quillSet('articleContentEditor', '');
+  }
+  openModal('articleModal');
+}
+
+async function saveArticle(){
+  const title=document.getElementById('articleTitle').value.trim(),tag=document.getElementById('articleTag').value.trim(),content=typeof quillGet!=='undefined'?quillGet('articleContentEditor'):document.getElementById('articleContent').value.trim(),banner_image=document.getElementById('articleBanner').value.trim()||null;
+  if(!title||!content){alert('Please add a title and content.');return}
+  const editId=document.getElementById('editArticleId').value;
+  setLoading('articleSaveBtn',true);
+  const{error}=editId?await sb.from('articles').update({title,tag,content,banner_image}).eq('id',editId):await sb.from('articles').insert({title,tag,content,banner_image});
+  setLoading('articleSaveBtn',false,'Save');
+  if(error){toast('Error saving','error');return}
+  toast(editId?'Article updated':'Article created');closeModal('articleModal');loadArticles();
+}
+
 // ── SHARE ──────────────────────────────────────────────
 function shareChapter(){
   const bookId = currentBookId;

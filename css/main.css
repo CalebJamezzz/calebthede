@@ -182,6 +182,7 @@ footer{padding:.7rem 4rem;display:flex;align-items:center;justify-content:space-
 .world-card:hover::after{transform:scaleX(1)}
 .world-card.span2{grid-column:span 2}
 .world-num{font-family:'Cormorant Garamond',serif;font-size:5rem;font-weight:300;line-height:1;color:rgba(200,164,90,.22);position:absolute;top:1rem;right:1.5rem;pointer-events:none;transition:color .35s}
+.builder-card-content .world-num{position:absolute;top:0;right:0;font-size:5rem}
 .world-card:hover .world-num{color:rgba(200,164,90,.38)}
 .world-icon{font-size:1.4rem;margin-bottom:1rem;display:block}
 .world-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--teal);margin-bottom:.6rem}
@@ -322,9 +323,9 @@ footer{padding:.7rem 4rem;display:flex;align-items:center;justify-content:space-
 .pcard-admin{display:flex;gap:.4rem}
 @media(max-width:700px){.pcard{grid-template-columns:1fr}.pcard-banner{height:80px}.pcard-side{align-items:flex-start;padding:0 1.2rem 1.2rem}}
 
-.builder-card-inner{display:flex;gap:0;align-items:stretch;height:100%}
-.builder-card-content{flex:1;display:flex;flex-direction:column}
-.builder-highlight{width:240px;flex-shrink:0;margin:-2.5rem -2.5rem -2.5rem 2rem;border-left:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column;transition:opacity .3s}
+.builder-card-inner{display:flex;gap:1.5rem;align-items:center;height:100%;padding-right:.5rem}
+.builder-card-content{flex:1;display:flex;flex-direction:column;position:relative}
+.builder-highlight{width:190px;flex-shrink:0;margin:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;transition:opacity .3s;align-self:flex-start}
 .builder-highlight-banner{height:110px;position:relative;flex-shrink:0}
 .builder-highlight-banner svg{position:absolute;inset:0;width:100%;height:100%}
 .builder-highlight-body{padding:1.1rem 1.2rem;flex:1;display:flex;flex-direction:column}
@@ -334,7 +335,25 @@ footer{padding:.7rem 4rem;display:flex;align-items:center;justify-content:space-
 .builder-highlight-links{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:auto}
 .builder-highlight-link{font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;padding:.2rem .5rem;border:1px solid var(--border);border-radius:2px;transition:all .2s}
 .builder-highlight-link:hover{color:var(--teal);border-color:rgba(78,201,176,.4)}
-@media(max-width:768px){.builder-highlight{display:none}.builder-card-inner{display:block}}
+@media(max-width:768px){
+  .builder-card-inner{display:block}
+  .builder-highlight{
+    width:100%;margin:1rem 0 0;
+    border:1px solid var(--border);border-radius:8px;
+    flex-direction:row!important;
+    max-height:80px;
+  }
+  .builder-highlight-banner{
+    width:100px;height:auto;flex-shrink:0;
+  }
+  .builder-highlight-body{
+    padding:.7rem 1rem;flex-direction:row;
+    align-items:center;flex-wrap:wrap;gap:.4rem;
+  }
+  .builder-highlight-label{margin-bottom:0;margin-right:.5rem}
+  .builder-highlight-tags{margin-bottom:0;display:none}
+  .builder-highlight-links{margin-top:0}
+}
 
 
 /* ABOUT PHOTO */
@@ -590,7 +609,7 @@ body.flame-cursor,body.flame-cursor a,body.flame-cursor button,body.flame-cursor
 /* MODALS */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;display:grid;place-items:center;padding:2rem;opacity:0;visibility:hidden;transition:opacity .18s ease,visibility .18s ease;will-change:opacity}
 .modal-overlay.open{opacity:1;visibility:visible}
-.modal{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:2.5rem;width:100%;max-width:660px;max-height:90vh;overflow-y:auto;position:relative;contain:layout style;transform:translateZ(0)}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:2.5rem;width:100%;max-width:660px;max-height:90vh;overflow-y:auto;overflow-x:hidden;position:relative;contain:layout style;transform:translateZ(0)}
 .ch-modal-wide{max-width:min(92vw,1100px);width:100%}
 .ch-editor-wrap{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:1.5rem;min-height:480px}
 .ch-editor-pane{display:flex;flex-direction:column;border-right:1px solid var(--border)}
