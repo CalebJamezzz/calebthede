@@ -702,9 +702,51 @@ async function enterReaderMode(){
       .order('num', {ascending:true});
 
     roFlat = [];
+    // Build flat array — use paginateContent then render each page into a hidden
+    // measurement div to check actual height; if it overflows, split further
+    const roMeasure = document.createElement('div');
+    roMeasure.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;font-family:Lato,sans-serif;font-weight:300;line-height:1.85;font-size:1.05rem;padding:2rem 3rem;overflow:hidden;';
+    // Match the page width (half viewport for 2-page spread, full for mobile)
+    const pageW = window.innerWidth > 768 ? Math.floor(window.innerWidth/2) - 60 : window.innerWidth - 48;
+    roMeasure.style.width = pageW + 'px';
+    document.body.appendChild(roMeasure);
+
+    // Get available page height: viewport minus topbar (~48px) and bottombar (~60px)
+    const pageH = window.innerHeight - 48 - 60 - 40; // 40px extra buffer
+
+    function measureAndSplit(html, maxH){
+      roMeasure.innerHTML = renderBody(html);
+      if(roMeasure.scrollHeight <= maxH) return [html];
+      // Too tall — split in half by word count and recurse
+      const isHtml = /<[a-z]/i.test(html);
+      if(isHtml){
+        const div = document.createElement('div');
+        div.innerHTML = html;
+        const paras = Array.from(div.querySelectorAll('p,h1,h2,h3,h4,li,blockquote,pre')).filter(el=>el.textContent.trim());
+        if(paras.length <= 1) return [html]; // can't split further
+        const mid = Math.ceil(paras.length / 2);
+        const firstHtml = paras.slice(0,mid).map(el=>el.outerHTML).join('');
+        const secondHtml = paras.slice(mid).map(el=>el.outerHTML).join('');
+        return [...measureAndSplit(firstHtml, maxH), ...measureAndSplit(secondHtml, maxH)];
+      } else {
+        const paras = html.split('\n\n').filter(Boolean);
+        if(paras.length <= 1) return [html];
+        const mid = Math.ceil(paras.length / 2);
+        const first = paras.slice(0,mid).join('\n\n');
+        const second = paras.slice(mid).join('\n\n');
+        return [...measureAndSplit(first, maxH), ...measureAndSplit(second, maxH)];
+      }
+    }
+
     (allChs||[]).forEach((ch,ci)=>{
-      const pages = paginateContent(ch.content, 150);
-      pages.forEach((pg,pi)=>{
+      // Start with rough pagination then refine with pixel measurement
+      const roughPages = paginateContent(ch.content, 200);
+      const finalPages = [];
+      roughPages.forEach(pg => {
+        const splits = measureAndSplit(pg, pageH);
+        splits.forEach(s => finalPages.push(s));
+      });
+      finalPages.forEach((pg,pi)=>{
         roFlat.push({
           content: pg,
           chIdx: ci,
@@ -712,11 +754,13 @@ async function enterReaderMode(){
           chNum: ch.num || (ci+1),
           chTitle: ch.title,
           pageInCh: pi,
-          totalInCh: pages.length,
+          totalInCh: finalPages.length,
           totalChs: (allChs||[]).length
         });
       });
     });
+
+    document.body.removeChild(roMeasure);
 
     // Find where we currently are in the flat array
     roFlatIdx = roFlat.findIndex(p => p.chId === activeChId && p.pageInCh === currentPageIdx);

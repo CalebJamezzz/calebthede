@@ -823,11 +823,13 @@ body.reader-locked{overflow:hidden}
 
 .ro-chapter-label{flex-shrink:0}
 .ro-page-content{
-  flex:1;overflow:hidden;
+  flex:1;overflow-y:auto;
   font-family:'Lato',sans-serif;font-weight:300;line-height:1.85;
   color:var(--text);
   font-size:var(--ro-font,1.05rem);
+  scrollbar-width:none;
 }
+.ro-page-content::-webkit-scrollbar{display:none}
 .ro-page-content p{margin-bottom:1rem}
 .ro-page-content h3{
   font-family:'Cormorant Garamond',serif;font-size:1.6rem;
