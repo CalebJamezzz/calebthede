@@ -702,50 +702,56 @@ async function enterReaderMode(){
       .order('num', {ascending:true});
 
     roFlat = [];
-    // Build flat array — use paginateContent then render each page into a hidden
-    // measurement div to check actual height; if it overflows, split further
+
+    // Pixel-accurate pagination: measure a hidden div that matches page dimensions
     const roMeasure = document.createElement('div');
-    roMeasure.style.cssText = 'position:fixed;visibility:hidden;pointer-events:none;font-family:Lato,sans-serif;font-weight:300;line-height:1.85;font-size:1.05rem;padding:2rem 3rem;overflow:hidden;';
-    // Match the page width (half viewport for 2-page spread, full for mobile)
     const pageW = window.innerWidth > 768 ? Math.floor(window.innerWidth/2) - 60 : window.innerWidth - 48;
-    roMeasure.style.width = pageW + 'px';
+    // Match exact ro-page-content styles
+    roMeasure.style.cssText = [
+      'position:fixed','top:-9999px','left:0','visibility:hidden','pointer-events:none',
+      'font-family:Lato,sans-serif','font-weight:300','line-height:1.85',
+      'font-size:1.05rem','width:'+pageW+'px','overflow:visible'
+    ].join(';');
     document.body.appendChild(roMeasure);
 
-    // Get available page height: viewport minus topbar (~48px) and bottombar (~60px)
-    const pageH = window.innerHeight - 48 - 60 - 40; // 40px extra buffer
+    // Available page height: viewport minus topbar(~48px), bottombar(~60px), page padding(~48px), buffer(20px)
+    const pageH = window.innerHeight - 48 - 60 - 48 - 20;
 
-    function measureAndSplit(html, maxH){
-      roMeasure.innerHTML = renderBody(html);
-      if(roMeasure.scrollHeight <= maxH) return [html];
-      // Too tall — split in half by word count and recurse
-      const isHtml = /<[a-z]/i.test(html);
+    function greedyPaginate(content){
+      const isHtml = /<[a-z]/i.test(content);
+      // Extract paragraphs
+      let paras;
       if(isHtml){
-        const div = document.createElement('div');
-        div.innerHTML = html;
-        const paras = Array.from(div.querySelectorAll('p,h1,h2,h3,h4,li,blockquote,pre')).filter(el=>el.textContent.trim());
-        if(paras.length <= 1) return [html]; // can't split further
-        const mid = Math.ceil(paras.length / 2);
-        const firstHtml = paras.slice(0,mid).map(el=>el.outerHTML).join('');
-        const secondHtml = paras.slice(mid).map(el=>el.outerHTML).join('');
-        return [...measureAndSplit(firstHtml, maxH), ...measureAndSplit(secondHtml, maxH)];
+        const d = document.createElement('div');
+        d.innerHTML = content;
+        paras = Array.from(d.querySelectorAll('p,h1,h2,h3,h4,li,blockquote,pre'))
+          .filter(el => el.textContent.trim());
+        if(!paras.length) return [content];
+        paras = paras.map(el => el.outerHTML);
       } else {
-        const paras = html.split('\n\n').filter(Boolean);
-        if(paras.length <= 1) return [html];
-        const mid = Math.ceil(paras.length / 2);
-        const first = paras.slice(0,mid).join('\n\n');
-        const second = paras.slice(mid).join('\n\n');
-        return [...measureAndSplit(first, maxH), ...measureAndSplit(second, maxH)];
+        paras = content.split(/\n\n+/).filter(Boolean);
       }
+
+      const pages = [];
+      let cur = [];
+
+      for(let i=0; i<paras.length; i++){
+        const test = isHtml ? [...cur, paras[i]].join('') : [...cur, paras[i]].join('\n\n');
+        roMeasure.innerHTML = renderBody(test);
+        if(roMeasure.scrollHeight > pageH && cur.length > 0){
+          // Current para would overflow — start new page
+          pages.push(isHtml ? cur.join('') : cur.join('\n\n'));
+          cur = [paras[i]];
+        } else {
+          cur.push(paras[i]);
+        }
+      }
+      if(cur.length) pages.push(isHtml ? cur.join('') : cur.join('\n\n'));
+      return pages.length ? pages : [content];
     }
 
     (allChs||[]).forEach((ch,ci)=>{
-      // Start with rough pagination then refine with pixel measurement
-      const roughPages = paginateContent(ch.content, 200);
-      const finalPages = [];
-      roughPages.forEach(pg => {
-        const splits = measureAndSplit(pg, pageH);
-        splits.forEach(s => finalPages.push(s));
-      });
+      const finalPages = greedyPaginate(ch.content);
       finalPages.forEach((pg,pi)=>{
         roFlat.push({
           content: pg,
