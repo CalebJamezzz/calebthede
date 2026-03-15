@@ -817,17 +817,18 @@ body.reader-locked{overflow:hidden}
 .ro-page{
   flex:1;display:flex;flex-direction:column;
   overflow:hidden;position:relative;
-  padding:3rem 4rem 1.5rem;
+  padding:2rem 3rem 1rem;
 }
 .ro-page-left{border-right:1px solid rgba(200,164,90,.12)}
 
+.ro-chapter-label{flex-shrink:0}
 .ro-page-content{
   flex:1;overflow:hidden;
-  font-family:'Lato',sans-serif;font-weight:300;line-height:2;
+  font-family:'Lato',sans-serif;font-weight:300;line-height:1.85;
   color:var(--text);
   font-size:var(--ro-font,1.05rem);
 }
-.ro-page-content p{margin-bottom:1.4rem}
+.ro-page-content p{margin-bottom:1rem}
 .ro-page-content h3{
   font-family:'Cormorant Garamond',serif;font-size:1.6rem;
   font-weight:300;color:var(--gold);margin:2.5rem 0 1rem;font-style:italic;

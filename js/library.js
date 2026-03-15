@@ -320,7 +320,7 @@ async function deleteCurrentBook(){
 }
 
 let chapterIndex=[],activeChIdx=-1;
-const WORDS_PER_PAGE=250;
+const WORDS_PER_PAGE=180;
 let bookTotalPages=0,chapterPageOffsets=[],estimatedPagesPerChapter=[],actualPagesPerChapter=[];
 
 async function renderBookDetail(){
@@ -703,7 +703,7 @@ async function enterReaderMode(){
 
     roFlat = [];
     (allChs||[]).forEach((ch,ci)=>{
-      const pages = paginateContent(ch.content, 250);
+      const pages = paginateContent(ch.content, 150);
       pages.forEach((pg,pi)=>{
         roFlat.push({
           content: pg,
