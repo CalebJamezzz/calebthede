@@ -411,16 +411,17 @@ function paginateContent(content,wordsPerPage){
   }
 
   const pages=[];let cur=[],wc=0;
+  const sep = /<[a-z]/i.test(raw) ? '' : '\n\n';
   blocks.forEach(b=>{
     const bw=b.replace(/<[^>]*>/g,'').split(/\s+/).filter(Boolean).length;
     if(wc>0 && wc+bw>wordsPerPage){
-      pages.push(cur.join('\n'));
+      pages.push(cur.join(sep));
       cur=[b];wc=bw;
     } else {
       cur.push(b);wc+=bw;
     }
   });
-  if(cur.length) pages.push(cur.join('\n'));
+  if(cur.length) pages.push(cur.join(sep));
   return pages.length?pages:[''];
 }
 
