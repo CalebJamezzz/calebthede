@@ -189,18 +189,22 @@ function handleLibraryHash(){
     setTimeout(()=>{
       sb.from('books').select('*').eq('id',id).single().then(({data:b})=>{
         if(!b) return;
-        openBook(b.id,b.title,b.description,true).then(()=>{
-          if(autoResume&&typeof resumeReading==='function'){
-            resumeReading();
-          } else if(chapterId&&typeof renderBookDetail==='function'){
-            // Restore specific chapter — load book detail then open that chapter
-            renderBookDetail().then(()=>{
-              const idx = typeof chapterIndex!=='undefined'
-                ? chapterIndex.findIndex(c=>c.id===chapterId) : -1;
-              if(idx>=0) showChapter(chapterId, idx);
-            });
-          }
-        });
+        if(chapterId){
+          // Restore specific chapter — skip TOC, go straight to chapter
+          currentBookId = id;
+          document.getElementById('bookDetailTitle').textContent = b.title||'';
+          document.getElementById('bookDetailDesc').textContent = b.description||'';
+          showLibBookDetail();
+          renderBookDetail().then(()=>{
+            const idx = typeof chapterIndex!=='undefined'
+              ? chapterIndex.findIndex(c=>c.id===chapterId) : -1;
+            if(idx>=0) showChapter(chapterId, idx);
+          });
+        } else {
+          openBook(b.id,b.title,b.description,true).then(()=>{
+            if(autoResume&&typeof resumeReading==='function') resumeReading();
+          });
+        }
       });
     },600);
   } else if(sub==='article'&&id){

@@ -1076,7 +1076,7 @@ async function renderTOC(){
 
   tocList.innerHTML = chs.map((ch,i) => {
     const words = (ch.content||'').replace(/<[^>]*>/g,'').split(/\s+/).filter(Boolean).length;
-    const pages = Math.max(1, Math.ceil(words / WORDS_PER_PAGE));
+    const mins = Math.max(1, Math.ceil(words / 200));
     const isBookmarked = bm && bm.chId === ch.id;
     const isDraft = !ch.published;
     return `
@@ -1085,7 +1085,7 @@ async function renderTOC(){
       <div class="toc-info">
         <span class="toc-title">${ch.title}</span>
         <span class="toc-meta">
-          ${pages} page${pages!==1?'s':''}
+          ${mins} min read
           ${isDraft?'<span class="toc-draft-pill admin-only">draft</span>':''}
           ${isBookmarked?`<span style="color:var(--gold);opacity:.8">✦ bookmark — page ${bm.pageInCh+1}</span>`:''}
         </span>
