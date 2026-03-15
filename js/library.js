@@ -540,6 +540,8 @@ async function showChapter(id,idx,startPage=0){
   publishBtn.textContent=isPublished?'Unpublish':'Publish';
   publishBtn.style.borderColor=isPublished?'rgba(78,201,176,.4)':'';
   publishBtn.style.color=isPublished?'var(--teal)':'';
+  // Update URL hash to include chapter so refresh restores it
+  safePush({sub:'book',id:currentBookId,chId:id},'','#book/'+currentBookId+'/ch/'+id);
   scrollToChapterTop();
 }
 
@@ -1097,6 +1099,9 @@ async function renderTOC(){
 
 async function tocOpenChapter(chId, chIdx){
   hideTOC();
+  // Ensure book detail (sidebar + chapterIndex) is loaded first
+  if(!chapterIndex.length) await renderBookDetail();
+  else activeChId = chId; // set before renderBookDetail skipped so showChapter targets right ch
   await showChapter(chId, chIdx);
   // Scroll to chapter reader
   const reader = document.getElementById('chReader');
@@ -1105,14 +1110,8 @@ async function tocOpenChapter(chId, chIdx){
 
 async function startFromBeginning(){
   hideTOC();
-  // Load and show first chapter
-  const{data:chs} = await sb.from('chapters')
-    .select('id,num,title')
-    .eq('book_id', currentBookId)
-    .eq('published', true)
-    .order('num', {ascending:true})
-    .limit(1);
-  if(chs && chs.length) await tocOpenChapter(chs[0].id, 0);
+  if(!chapterIndex.length) await renderBookDetail();
+  if(chapterIndex.length) await showChapter(chapterIndex[0].id, 0);
 }
 
 async function resumeReading(){
@@ -1238,8 +1237,7 @@ function dismissCompletion(){
   const overlay = document.getElementById('bookCompleteOverlay');
   overlay.style.opacity = '0';
   setTimeout(()=>{ overlay.style.display = 'none'; }, 800);
-  // Exit reader mode too if active
-  if(roActive) exitReaderMode();
+  // Don't exit reader mode — let user continue reading
 }
 
 // Auto-update book status when chapters are published/unpublished
