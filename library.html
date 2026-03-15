@@ -360,6 +360,14 @@ let adminMode=false;
             <button class="ch-tb-btn" onclick="insertArticleFmt('###')" title="Subheading">H</button>
             <button class="ch-tb-btn" onclick="insertArticleFmt('> ')" title="Blockquote">"</button>
             <button class="ch-paste ch-tb-btn" onclick="triggerArticlePasteClean()">⊕ Paste from Docs</button>
+            <button class="ch-tb-btn" onclick="toggleArticleHtmlImport()" title="Import raw HTML" id="htmlImportToggle" style="border-color:rgba(200,164,90,.4);color:var(--gold)">&lt;/&gt; Import HTML</button>
+          </div>
+        </div>
+        <div id="articleHtmlImport" style="display:none;padding:.8rem 0">
+          <textarea id="articleHtmlRaw" placeholder="Paste raw HTML here, then click Import…" style="width:100%;height:140px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:.8rem;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.78rem;resize:vertical"></textarea>
+          <div style="display:flex;gap:.6rem;margin-top:.5rem">
+            <button class="btn-primary" style="padding:.4rem 1.2rem;font-size:.78rem" onclick="importArticleHtml()">Import</button>
+            <button class="btn-ghost" style="padding:.4rem 1.2rem;font-size:.78rem" onclick="toggleArticleHtmlImport()">Cancel</button>
           </div>
         </div>
         <div id="articleContentEditor" class="quill-editor-wrap"></div><input type="hidden" id="articleContent"/>
@@ -405,11 +413,13 @@ let adminMode=false;
 
     <div class="ro-pages" id="roPages">
       <div class="ro-page ro-page-left">
+        <div class="ro-chapter-label" id="roChLabelLeft" style="display:none;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid rgba(78,201,176,.15);flex-shrink:0"></div>
         <div class="ro-page-content" id="roContentLeft"></div>
         <div class="ro-page-num" id="roNumLeft"></div>
       </div>
       <div class="ro-spine"></div>
       <div class="ro-page ro-page-right">
+        <div class="ro-chapter-label" id="roChLabelRight" style="display:none;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid rgba(78,201,176,.15);flex-shrink:0"></div>
         <div class="ro-page-content" id="roContentRight"></div>
         <div class="ro-page-num" id="roNumRight"></div>
       </div>

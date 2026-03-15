@@ -792,15 +792,17 @@ async function enterReaderMode(){
     document.getElementById('roTitle').textContent = bookTitle;
 
   } else {
-    // Article mode — single column full scroll, no pagination
+    // Article mode — full content single scroll
     const rawContent = document.getElementById('readerBody')?.innerHTML || '';
     const artTitle = document.getElementById('readerTitle')?.textContent || '';
-    const artMeta = document.getElementById('readerMeta')?.textContent || '';
     document.getElementById('roTitle').textContent = artTitle;
 
-    // Put full article in left page, hide right page + spine + nav
     roFlat = [{content: rawContent, chIdx:0, chTitle:'', pageInCh:0, totalInCh:1, totalChs:1}];
     roFlatIdx = 0;
+
+    // Reset ro-pages so roRender builds article layout fresh
+    const pagesEl = document.getElementById('roPages');
+    if(pagesEl) pagesEl.innerHTML = '';
 
     overlay.classList.add('active', 'article-mode');
     document.body.classList.add('reader-locked');
@@ -818,6 +820,9 @@ async function enterReaderMode(){
 // ── Exit ───────────────────────────────────────────────
 function exitReaderMode(){
   document.getElementById('readerOverlay').classList.remove('active','article-mode');
+  // Reset pages so next enter rebuilds correctly for book vs article
+  const roP = document.getElementById('roPages');
+  if(roP) roP.innerHTML = '';
   document.body.classList.remove('reader-locked');
   document.body.style.overflow = '';
   roActive = false;
@@ -868,13 +873,23 @@ function roRender(){
   const cur = roFlat[roFlatIdx];
   const pagesEl = document.getElementById('roPages');
   const isMobile = window.innerWidth <= 768;
+  const html = cur ? renderBody(cur.content) : '';
+
+  // Article mode: single-column full scroll, no pagination UI
+  if(!roIsBook){
+    let articleEl = document.getElementById('roArticleContent');
+    if(!articleEl){
+      pagesEl.innerHTML = `<div id="roArticleContent" class="ro-article-content"></div>`;
+      articleEl = document.getElementById('roArticleContent');
+    }
+    articleEl.innerHTML = html;
+    return;
+  }
 
   // Chapter eyebrow for first spread of a chapter
   const chapterLabel = (cur && cur.pageInCh === 0 && cur.chTitle && roIsBook)
     ? `<div class="ro-ch-label">Chapter ${cur.chNum} — ${cur.chTitle}</div>`
     : '';
-
-  const html = cur ? renderBody(cur.content) : '';
 
   if(isMobile){
     // Mobile: single column, use existing left page
@@ -887,8 +902,7 @@ function roRender(){
     if(spine) spine.style.visibility = 'hidden';
     if(rightPage) rightPage.style.visibility = 'hidden';
   } else {
-    // Desktop: inject a single CSS-column spread container into ro-pages
-    // This lets browser flow text naturally left→right mid-sentence
+    // Desktop book mode: CSS-column spread container
     let spreadEl = document.getElementById('roSpreadContent');
     if(!spreadEl){
       pagesEl.innerHTML = `
@@ -1362,6 +1376,26 @@ async function deleteArticle(id,fromReader=false){
   await sb.from('articles').delete().eq('id',id);
   toast('Article deleted');if(fromReader)closeArticleReader();else loadArticles();
 }
+
+function toggleArticleHtmlImport(){
+  const panel = document.getElementById('articleHtmlImport');
+  const btn = document.getElementById('htmlImportToggle');
+  const open = panel.style.display === 'none';
+  panel.style.display = open ? 'block' : 'none';
+  if(btn) btn.style.background = open ? 'rgba(200,164,90,.15)' : '';
+  if(open) document.getElementById('articleHtmlRaw').focus();
+}
+
+function importArticleHtml(){
+  const raw = document.getElementById('articleHtmlRaw').value.trim();
+  if(!raw){ toast('No HTML to import','error'); return; }
+  quillSet('articleContentEditor', raw);
+  document.getElementById('articleHtmlRaw').value = '';
+  toggleArticleHtmlImport();
+  setTimeout(()=>{ if(typeof updateArticlePreview==='function') updateArticlePreview(); }, 50);
+  toast('HTML imported successfully','success');
+}
+
 
 function shareChapter(){
   const bookId = currentBookId;
