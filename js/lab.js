@@ -224,5 +224,3 @@ function closeArticleReader(){
   safePush({sub:'browse'},'','#');
 }
 
-function showLibBrowse(){}
-function showLibArticleReader(){}
