@@ -586,11 +586,21 @@ function quillGet(editorId) {
 document.addEventListener('DOMContentLoaded', () => {
   // Chapter editor
   if (document.getElementById('chContentEditor')) {
-    initQuill('chContentEditor', { placeholder: 'Write your chapter here…' });
+    const qCh = initQuill('chContentEditor', { placeholder: 'Write your chapter here…' });
+    if (qCh) {
+      qCh.on('text-change', () => {
+        if (typeof updateChPreview === 'function') updateChPreview();
+      });
+    }
   }
   // Article editor
   if (document.getElementById('articleContentEditor')) {
-    initQuill('articleContentEditor', { placeholder: 'Write your article here…' });
+    const qArt = initQuill('articleContentEditor', { placeholder: 'Write your article here…' });
+    if (qArt) {
+      qArt.on('text-change', () => {
+        if (typeof updateArticlePreview === 'function') updateArticlePreview();
+      });
+    }
   }
   // Lab description editor
   if (document.getElementById('labDescEditor')) {

@@ -526,7 +526,7 @@ function stepChapter(dir){
 async function openChModal(id=null,bookId=null){
   document.getElementById('chModalTitle').textContent=id?'Edit Chapter':'Add Chapter';
   document.getElementById('editChId').value=id||'';document.getElementById('chBookId').value=bookId||currentBookId||'';
-  if(id){const{data:ch}=await sb.from('chapters').select('*').eq('id',id).single();document.getElementById('chNum').value=ch?.num||'';document.getElementById('chTitle').value=ch?.title||'';document.getElementById('chPublished').checked=ch?.published||false;updateChPublishedLbl();quillSet('chContentEditor',ch?.content||'');}
+  if(id){const{data:ch}=await sb.from('chapters').select('*').eq('id',id).single();document.getElementById('chNum').value=ch?.num||'';document.getElementById('chTitle').value=ch?.title||'';document.getElementById('chPublished').checked=ch?.published||false;updateChPublishedLbl();quillSet('chContentEditor',ch?.content||'');setTimeout(()=>{ if(typeof updateChPreview==='function') updateChPreview(); },50);}
   else{document.getElementById('chNum').value='';document.getElementById('chTitle').value='';document.getElementById('chPublished').checked=false;updateChPublishedLbl();quillSet('chContentEditor','');}
   openModal('chModal');
 }
@@ -791,7 +791,7 @@ function roRender(){
   // Chapter label at top of first page — only for books with a real title
   if(left && left.pageInCh === 0 && left.chTitle && roIsBook){
     document.getElementById('roContentLeft').innerHTML =
-      `<div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid rgba(78,201,176,.15)">Chapter ${left.chNum} — ${left.chTitle}</div>`
+      `<div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:.6rem;opacity:.7">Chapter ${left.chNum} — ${left.chTitle}</div>`
       + document.getElementById('roContentLeft').innerHTML;
   }
 
@@ -802,7 +802,7 @@ function roRender(){
     // Chapter label on right page — only for books with a real title
     if(right.pageInCh === 0 && right.chTitle && roIsBook){
       document.getElementById('roContentRight').innerHTML =
-        `<div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid rgba(78,201,176,.15)">Chapter ${right.chNum} — ${right.chTitle}</div>`
+        `<div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:.6rem;opacity:.7">Chapter ${right.chNum} — ${right.chTitle}</div>`
         + document.getElementById('roContentRight').innerHTML;
     }
     if(spine) spine.style.visibility = 'visible';
