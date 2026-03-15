@@ -215,12 +215,16 @@ function openArticle(a, skipHistory){
   document.getElementById('readerMeta').textContent = fmtDate(a.created_at);
   document.getElementById('readerReadTime').textContent = artWords.toLocaleString()+' words · '+artMins+' min read';
   document.getElementById('readerBody').innerHTML = renderBody(a.content);
+  document.getElementById('readerEditBtn').onclick = ()=>openArticleModal(a.id);
+  document.getElementById('readerDeleteBtn').onclick = ()=>deleteArticle(a.id,true);
   showLibArticleReader();
   if(!skipHistory) safePush({sub:'article',id:a.id,title:a.title},'','#article/'+a.id);
 }
 
 function closeArticleReader(){
   showLibBrowse();
-  safePush({sub:'browse'},'','#');
+  loadArticles();
+  switchLibTab('Articles', document.querySelectorAll('.lib-tab')[1]);
+  safePush({sub:'articles'},'','#articles');
 }
 
