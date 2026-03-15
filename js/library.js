@@ -1,3 +1,23 @@
+// ── CHAPTER PREVIEW ──
+function updateChPreview(){
+  const content=(typeof quillGet!=='undefined'?quillGet('chContentEditor'):null)||document.getElementById('chContent')?.value||'';
+  const preview=document.getElementById('chPreviewBody');
+  if(preview) preview.innerHTML=renderBody(content);
+  const stripped=content.replace(/<[^>]*>/g,'');
+  const words=stripped.split(/\s+/).filter(Boolean).length;
+  const pages=Math.max(0,Math.ceil(words/WORDS_PER_PAGE));
+  const wc=document.getElementById('chWordCount');if(wc) wc.textContent=words.toLocaleString()+' words';
+  const pe=document.getElementById('chPageEst');if(pe) pe.textContent='~'+pages+' page'+(pages===1?'':'s');
+}
+
+function updateChPublishedLbl(){
+  const checked=document.getElementById('chPublished')?.checked;
+  const lbl=document.getElementById('chPublishedLbl');
+  const track=document.getElementById('chToggleTrack');
+  if(lbl){lbl.textContent=checked?'Published — visible':'Draft — hidden';lbl.classList.toggle('on',checked);}
+  if(track)track.classList.toggle('on',checked);
+}
+
 // ── CELESTIAL BOOK COVER GENERATOR ──
 function seedRand(seed){
   let s=seed;
@@ -360,42 +380,47 @@ function updateStarDots(idx){
 let currentPages=[],currentPageIdx=0;
 
 function paginateContent(content,wordsPerPage){
-  const raw = content||'';
-  let blocks;
-  // HTML content from Quill
+  const raw=(content||'').trim();
+  if(!raw) return [''];
+  let blocks=[];
+
   if(/<[a-z]/i.test(raw)){
-    const div = document.createElement('div');
-    div.innerHTML = raw;
-    // First get block-level elements
-    let elBlocks = Array.from(div.querySelectorAll('p,h1,h2,h3,h4,li,blockquote,pre'));
-    // If content was pasted from Google Docs it may be one big <p> with <br> breaks
-    // Split those large single blocks on <br> tags
-    blocks = [];
-    elBlocks.forEach(el => {
-      const text = el.innerText||el.textContent||'';
-      const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
-      if(wordCount > wordsPerPage * 1.5 && el.innerHTML.includes('<br')){
-        // Split on <br> and wrap each chunk in the same tag
-        const tag = el.tagName.toLowerCase();
-        el.innerHTML.split(/<br\s*\/?>/i).forEach(chunk => {
-          const cleaned = chunk.replace(/<[^>]*>/g,'').trim();
-          if(cleaned) blocks.push(`<${tag}>${chunk}</${tag}>`);
+    // HTML from Quill — parse into block elements
+    const div=document.createElement('div');
+    div.innerHTML=raw;
+    const els=Array.from(div.querySelectorAll('p,h1,h2,h3,h4,li,blockquote,pre'));
+    els.forEach(el=>{
+      const text=el.textContent||'';
+      if(!text.trim()) return;
+      // Split on <br> tags within a single element
+      if(el.innerHTML.includes('<br')){
+        const tag=el.tagName.toLowerCase();
+        el.innerHTML.split(/<br\s*\/?>/i).forEach(chunk=>{
+          const t=chunk.replace(/<[^>]*>/g,'').trim();
+          if(t) blocks.push(`<${tag}>${chunk.trim()}</${tag}>`);
         });
       } else {
-        if(el.outerHTML.replace(/<[^>]*>/g,'').trim()) blocks.push(el.outerHTML);
+        blocks.push(el.outerHTML);
       }
     });
-    if(!blocks.length) blocks = [raw];
+    // Fallback: no block elements found, use raw
+    if(!blocks.length) blocks=[raw];
   } else {
-    blocks = raw.split(/\n\n+/).map(b=>b.trim()).filter(Boolean);
+    // Plain text — split on double newlines
+    blocks=raw.split(/\n\n+/).map(b=>b.trim()).filter(Boolean);
   }
+
   const pages=[];let cur=[],wc=0;
   blocks.forEach(b=>{
     const bw=b.replace(/<[^>]*>/g,'').split(/\s+/).filter(Boolean).length;
-    if(wc>0&&wc+bw>wordsPerPage){pages.push(cur.join(''));cur=[b];wc=bw;}
-    else{cur.push(b);wc+=bw;}
+    if(wc>0 && wc+bw>wordsPerPage){
+      pages.push(cur.join('\n'));
+      cur=[b];wc=bw;
+    } else {
+      cur.push(b);wc+=bw;
+    }
   });
-  if(cur.length)pages.push(cur.join(''));
+  if(cur.length) pages.push(cur.join('\n'));
   return pages.length?pages:[''];
 }
 
