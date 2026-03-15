@@ -703,64 +703,74 @@ async function enterReaderMode(){
 
     roFlat = [];
 
-    // Pixel-accurate pagination: measure a hidden div that matches page dimensions
+    // CSS-column approach: each roFlat entry is a "spread" of content
+    // rendered into a 2-column div, letting the browser handle mid-sentence flow
+    // For mobile (1 column), each entry fills one screen
+
+    const isMobile = window.innerWidth <= 768;
+    const colCount = isMobile ? 1 : 2;
+
+    // Measure how much content fills one spread using a hidden column div
     const roMeasure = document.createElement('div');
-    const pageW = window.innerWidth > 768 ? Math.floor(window.innerWidth/2) - 60 : window.innerWidth - 48;
-    // Match exact ro-page-content styles
+    const spreadW = window.innerWidth - (isMobile ? 48 : 80); // total spread width minus padding
+    const spreadH = window.innerHeight - 48 - 60 - (isMobile ? 48 : 40); // viewport minus bars + padding
     roMeasure.style.cssText = [
       'position:fixed','top:-9999px','left:0','visibility:hidden','pointer-events:none',
+      'width:'+spreadW+'px','height:'+spreadH+'px',
+      'column-count:'+colCount,'column-gap:40px',
       'font-family:Lato,sans-serif','font-weight:300','line-height:1.85',
-      'font-size:1.05rem','width:'+pageW+'px','overflow:visible'
+      'font-size:1.05rem','overflow:hidden'
     ].join(';');
     document.body.appendChild(roMeasure);
 
-    // Available page height: viewport minus topbar(~48px), bottombar(~60px), page padding(~48px), buffer(20px)
-    const pageH = window.innerHeight - 48 - 60 - 48 - 20;
-
-    function greedyPaginate(content){
+    function buildSpreads(content){
       const isHtml = /<[a-z]/i.test(content);
-      // Extract paragraphs
       let paras;
       if(isHtml){
         const d = document.createElement('div');
         d.innerHTML = content;
         paras = Array.from(d.querySelectorAll('p,h1,h2,h3,h4,li,blockquote,pre'))
-          .filter(el => el.textContent.trim());
-        if(!paras.length) return [content];
-        paras = paras.map(el => el.outerHTML);
+          .filter(el=>el.textContent.trim())
+          .map(el=>el.outerHTML);
       } else {
-        paras = content.split(/\n\n+/).filter(Boolean);
+        paras = content.split(/\n\n+/).filter(Boolean)
+          .map(p=>p.trim().startsWith('###')?`<h3>${p.replace(/^###\s*/,'')}</h3>`:`<p>${p}</p>`);
       }
 
-      const pages = [];
+      const spreads = [];
       let cur = [];
-
-      for(let i=0; i<paras.length; i++){
-        const test = isHtml ? [...cur, paras[i]].join('') : [...cur, paras[i]].join('\n\n');
-        roMeasure.innerHTML = renderBody(test);
-        if(roMeasure.scrollHeight > pageH && cur.length > 0){
-          // Current para would overflow — start new page
-          pages.push(isHtml ? cur.join('') : cur.join('\n\n'));
-          cur = [paras[i]];
-        } else {
-          cur.push(paras[i]);
+      for(let i=0;i<paras.length;i++){
+        cur.push(paras[i]);
+        roMeasure.innerHTML = cur.join('');
+        // Check if content overflows the column container
+        if(roMeasure.scrollHeight > spreadH + 4){
+          // Last para caused overflow — pop it to next spread
+          if(cur.length > 1){
+            cur.pop();
+            spreads.push(cur.join(''));
+            cur = [paras[i]];
+          } else {
+            // Single para already too tall — keep it anyway
+            spreads.push(cur.join(''));
+            cur = [];
+          }
         }
       }
-      if(cur.length) pages.push(isHtml ? cur.join('') : cur.join('\n\n'));
-      return pages.length ? pages : [content];
+      if(cur.length) spreads.push(cur.join(''));
+      return spreads.length ? spreads : [paras.join('')];
     }
 
     (allChs||[]).forEach((ch,ci)=>{
-      const finalPages = greedyPaginate(ch.content);
-      finalPages.forEach((pg,pi)=>{
+      const spreads = buildSpreads(ch.content);
+      spreads.forEach((sp,si)=>{
         roFlat.push({
-          content: pg,
+          content: sp,
           chIdx: ci,
           chId: ch.id,
-          chNum: ch.num || (ci+1),
+          chNum: ch.num||(ci+1),
           chTitle: ch.title,
-          pageInCh: pi,
-          totalInCh: finalPages.length,
+          pageInCh: si,
+          totalInCh: spreads.length,
           totalChs: (allChs||[]).length
         });
       });
@@ -834,8 +844,7 @@ function roKeyHandler(e){
 // ── Step ───────────────────────────────────────────────
 function roStep(dir){
   if(roFlipping) return;
-  const spread = roSpread();
-  const next = roFlatIdx + dir * spread;
+  const next = roFlatIdx + dir;
   if(next < 0 || next >= roFlat.length) return;
   roFlatIdx = next;
   roAnimate(dir > 0 ? 'forward' : 'back');
@@ -853,41 +862,46 @@ function roAnimate(dir){
 
 // ── Render ─────────────────────────────────────────────
 function roRender(){
-  const spread = roSpread();
-  const left  = roFlat[roFlatIdx];
-  const right = spread > 1 ? roFlat[roFlatIdx + 1] : null;
-  const spine = document.querySelector('.ro-spine');
-  const rightPage = document.querySelector('.ro-page-right');
+  const cur = roFlat[roFlatIdx];
+  const pagesEl = document.getElementById('roPages');
+  const isMobile = window.innerWidth <= 768;
 
-  // Left page
-  document.getElementById('roContentLeft').innerHTML = left ? renderBody(left.content) : '';
-  document.getElementById('roNumLeft').innerHTML = left
-    ? roPageLabel(roFlatIdx, left) : '';
+  // Chapter eyebrow for first spread of a chapter
+  const chapterLabel = (cur && cur.pageInCh === 0 && cur.chTitle && roIsBook)
+    ? `<div class="ro-ch-label">Chapter ${cur.chNum} — ${cur.chTitle}</div>`
+    : '';
 
-  // Chapter label at top of first page — only for books with a real title
-  if(left && left.pageInCh === 0 && left.chTitle && roIsBook){
-    document.getElementById('roContentLeft').innerHTML =
-      `<div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:.6rem;opacity:.7">Chapter ${left.chNum} — ${left.chTitle}</div>`
-      + document.getElementById('roContentLeft').innerHTML;
-  }
+  const html = cur ? renderBody(cur.content) : '';
 
-  // Right page
-  if(right){
-    document.getElementById('roContentRight').innerHTML = renderBody(right.content);
-    document.getElementById('roNumRight').innerHTML = roPageLabel(roFlatIdx+1, right);
-    // Chapter label on right page — only for books with a real title
-    if(right.pageInCh === 0 && right.chTitle && roIsBook){
-      document.getElementById('roContentRight').innerHTML =
-        `<div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:.6rem;opacity:.7">Chapter ${right.chNum} — ${right.chTitle}</div>`
-        + document.getElementById('roContentRight').innerHTML;
-    }
-    if(spine) spine.style.visibility = 'visible';
-    if(rightPage) rightPage.style.visibility = 'visible';
-  } else {
+  if(isMobile){
+    // Mobile: single column, use existing left page
+    document.getElementById('roContentLeft').innerHTML = chapterLabel + html;
+    document.getElementById('roNumLeft').innerHTML = cur ? roPageLabel(roFlatIdx, cur) : '';
     document.getElementById('roContentRight').innerHTML = '';
     document.getElementById('roNumRight').innerHTML = '';
+    const spine = document.querySelector('.ro-spine');
+    const rightPage = document.querySelector('.ro-page-right');
     if(spine) spine.style.visibility = 'hidden';
     if(rightPage) rightPage.style.visibility = 'hidden';
+  } else {
+    // Desktop: inject a single CSS-column spread container into ro-pages
+    // This lets browser flow text naturally left→right mid-sentence
+    let spreadEl = document.getElementById('roSpreadContent');
+    if(!spreadEl){
+      pagesEl.innerHTML = `
+        <div id="roSpreadContent" class="ro-spread-content"></div>
+        <div class="ro-page-nums">
+          <span id="roNumLeft" class="ro-num-left"></span>
+          <span id="roNumRight" class="ro-num-right"></span>
+        </div>`;
+    }
+    spreadEl = document.getElementById('roSpreadContent');
+    spreadEl.innerHTML = chapterLabel + html;
+    // Page numbers
+    const numL = document.getElementById('roNumLeft');
+    const numR = document.getElementById('roNumRight');
+    if(numL) numL.innerHTML = cur ? roPageLabel(roFlatIdx, cur) : '';
+    if(numR) numR.innerHTML = cur ? `<span style="opacity:.35">${roFlatIdx+1}</span>` : '';
   }
 }
 
@@ -900,7 +914,7 @@ function roPageLabel(flatIdx, page){
 function roUpdateNav(){
   const spread = roSpread();
   const atStart = roFlatIdx <= 0;
-  const atEnd   = roFlatIdx + spread >= roFlat.length;
+  const atEnd   = roFlatIdx + 1 >= roFlat.length;
 
   document.getElementById('roPrevBtn').disabled = atStart;
   document.getElementById('roNextBtn').disabled = atEnd;
