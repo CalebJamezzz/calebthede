@@ -140,7 +140,6 @@ function filterLab(type, btn){
 }
 
 // ── ADMIN ────────────────────────────────────────────────
-function openArticleModal(id=null){ /* stub — articles are in library */ }
 
 function openLabModal(id=null){
   document.getElementById('labModalTitle').textContent = id ? 'Edit Entry' : 'New Lab Entry';
