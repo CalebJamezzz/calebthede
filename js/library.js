@@ -306,7 +306,8 @@ async function openBook(id,title,desc,skipHistory){
   currentBookId=id;activeChId=null;
   document.getElementById('bookDetailTitle').textContent=title;
   document.getElementById('bookDetailDesc').textContent=desc||'';
-  await renderBookDetail();showLibBookDetail();
+  // Show TOC first immediately, then load chapter detail in background
+  showLibBookDetail();
   await renderTOC();
   if(!skipHistory)safePush({sub:'book',id,title,desc},'','#book/'+id);
   return true;
@@ -703,23 +704,26 @@ async function enterReaderMode(){
 
     roFlat = [];
 
-    // CSS-column approach: each roFlat entry is a "spread" of content
-    // rendered into a 2-column div, letting the browser handle mid-sentence flow
-    // For mobile (1 column), each entry fills one screen
+    // CSS-column approach: each roFlat entry is one "spread" (2 columns on desktop)
+    // Measure using a SINGLE-column div so content overflows vertically
+    // Split when content exceeds 2x page height (= fills both columns)
 
     const isMobile = window.innerWidth <= 768;
-    const colCount = isMobile ? 1 : 2;
 
-    // Measure how much content fills one spread using a hidden column div
     const roMeasure = document.createElement('div');
-    const spreadW = window.innerWidth - (isMobile ? 48 : 80); // total spread width minus padding
-    const spreadH = window.innerHeight - 48 - 60 - (isMobile ? 48 : 40); // viewport minus bars + padding
+    // Use single-column width for measurement (half viewport on desktop)
+    const colW = isMobile
+      ? window.innerWidth - 48
+      : Math.floor((window.innerWidth - 80) / 2) - 40; // half spread minus gap
+    const pageH = window.innerHeight - 48 - 60 - 40;
+    // Two columns worth of content = 2x a single column's height
+    const spreadH = isMobile ? pageH : pageH * 2;
+
     roMeasure.style.cssText = [
       'position:fixed','top:-9999px','left:0','visibility:hidden','pointer-events:none',
-      'width:'+spreadW+'px','height:'+spreadH+'px',
-      'column-count:'+colCount,'column-gap:40px',
+      'width:'+colW+'px',
       'font-family:Lato,sans-serif','font-weight:300','line-height:1.85',
-      'font-size:1.05rem','overflow:hidden'
+      'font-size:1.05rem','overflow:visible'
     ].join(';');
     document.body.appendChild(roMeasure);
 
@@ -742,15 +746,12 @@ async function enterReaderMode(){
       for(let i=0;i<paras.length;i++){
         cur.push(paras[i]);
         roMeasure.innerHTML = cur.join('');
-        // Check if content overflows the column container
-        if(roMeasure.scrollHeight > spreadH + 4){
-          // Last para caused overflow — pop it to next spread
+        if(roMeasure.scrollHeight > spreadH){
           if(cur.length > 1){
             cur.pop();
             spreads.push(cur.join(''));
             cur = [paras[i]];
           } else {
-            // Single para already too tall — keep it anyway
             spreads.push(cur.join(''));
             cur = [];
           }
@@ -1182,7 +1183,7 @@ async function openSeriesModal(seriesId){
 async function checkBookCompletion(){
   if(!currentBookId || !roFlat.length) return;
   // Only trigger on very last page
-  if(roFlatIdx + roSpread() < roFlat.length) return;
+  if(roFlatIdx + 1 < roFlat.length) return;
 
   // Check if already seen
   if(localStorage.getItem('completed_' + currentBookId)) return;
