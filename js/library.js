@@ -1,3 +1,23 @@
+// ── CHAPTER PREVIEW ──
+function updateChPreview(){
+  const content=(typeof quillGet!=='undefined'?quillGet('chContentEditor'):null)||document.getElementById('chContent')?.value||'';
+  const preview=document.getElementById('chPreviewBody');
+  if(preview) preview.innerHTML=renderBody(content);
+  const stripped=content.replace(/<[^>]*>/g,'');
+  const words=stripped.split(/\s+/).filter(Boolean).length;
+  const pages=Math.max(0,Math.ceil(words/WORDS_PER_PAGE));
+  const wc=document.getElementById('chWordCount');if(wc) wc.textContent=words.toLocaleString()+' words';
+  const pe=document.getElementById('chPageEst');if(pe) pe.textContent='~'+pages+' page'+(pages===1?'':'s');
+}
+
+function updateChPublishedLbl(){
+  const checked=document.getElementById('chPublished')?.checked;
+  const lbl=document.getElementById('chPublishedLbl');
+  const track=document.getElementById('chToggleTrack');
+  if(lbl){lbl.textContent=checked?'Published — visible':'Draft — hidden';lbl.classList.toggle('on',checked);}
+  if(track)track.classList.toggle('on',checked);
+}
+
 // ── CELESTIAL BOOK COVER GENERATOR ──
 function seedRand(seed){
   let s=seed;
@@ -300,7 +320,7 @@ async function deleteCurrentBook(){
 }
 
 let chapterIndex=[],activeChIdx=-1;
-const WORDS_PER_PAGE=250;
+const WORDS_PER_PAGE=180;
 let bookTotalPages=0,chapterPageOffsets=[],estimatedPagesPerChapter=[],actualPagesPerChapter=[];
 
 async function renderBookDetail(){
@@ -360,14 +380,48 @@ function updateStarDots(idx){
 let currentPages=[],currentPageIdx=0;
 
 function paginateContent(content,wordsPerPage){
-  const blocks=(content||'').split(/\n\n+/).map(b=>b.trim()).filter(Boolean);
+  const raw=(content||'').trim();
+  if(!raw) return [''];
+  let blocks=[];
+
+  if(/<[a-z]/i.test(raw)){
+    // HTML from Quill — parse into block elements
+    const div=document.createElement('div');
+    div.innerHTML=raw;
+    const els=Array.from(div.querySelectorAll('p,h1,h2,h3,h4,li,blockquote,pre'));
+    els.forEach(el=>{
+      const text=el.textContent||'';
+      if(!text.trim()) return;
+      // Split on <br> tags within a single element
+      if(el.innerHTML.includes('<br')){
+        const tag=el.tagName.toLowerCase();
+        el.innerHTML.split(/<br\s*\/?>/i).forEach(chunk=>{
+          const t=chunk.replace(/<[^>]*>/g,'').trim();
+          if(t) blocks.push(`<${tag}>${chunk.trim()}</${tag}>`);
+        });
+      } else {
+        blocks.push(el.outerHTML);
+      }
+    });
+    // Fallback: no block elements found, use raw
+    if(!blocks.length) blocks=[raw];
+  } else {
+    // Plain text — split on double newlines
+    blocks=raw.split(/\n\n+/).map(b=>b.trim()).filter(Boolean);
+  }
+
   const pages=[];let cur=[],wc=0;
+  const sep = /<[a-z]/i.test(raw) ? '' : '\n\n';
   blocks.forEach(b=>{
     const bw=b.replace(/<[^>]*>/g,'').split(/\s+/).filter(Boolean).length;
-    if(wc>0&&wc+bw>wordsPerPage){pages.push(cur.join('\n\n'));cur=[b];wc=bw;}
-    else{cur.push(b);wc+=bw;}
+    if(wc>0 && wc+bw>wordsPerPage){
+      pages.push(cur.join(sep));
+      cur=[b];wc=bw;
+    } else {
+      cur.push(b);wc+=bw;
+    }
   });
-  if(cur.length)pages.push(cur.join('\n\n'));
+  if(cur.length) pages.push(cur.join(sep));
   return pages.length?pages:[''];
 }
 
@@ -498,7 +552,7 @@ function stepChapter(dir){
 async function openChModal(id=null,bookId=null){
   document.getElementById('chModalTitle').textContent=id?'Edit Chapter':'Add Chapter';
   document.getElementById('editChId').value=id||'';document.getElementById('chBookId').value=bookId||currentBookId||'';
-  if(id){const{data:ch}=await sb.from('chapters').select('*').eq('id',id).single();document.getElementById('chNum').value=ch?.num||'';document.getElementById('chTitle').value=ch?.title||'';document.getElementById('chPublished').checked=ch?.published||false;updateChPublishedLbl();quillSet('chContentEditor',ch?.content||'');}
+  if(id){const{data:ch}=await sb.from('chapters').select('*').eq('id',id).single();document.getElementById('chNum').value=ch?.num||'';document.getElementById('chTitle').value=ch?.title||'';document.getElementById('chPublished').checked=ch?.published||false;updateChPublishedLbl();quillSet('chContentEditor',ch?.content||'');setTimeout(()=>{ if(typeof updateChPreview==='function') updateChPreview(); },50);}
   else{document.getElementById('chNum').value='';document.getElementById('chTitle').value='';document.getElementById('chPublished').checked=false;updateChPublishedLbl();quillSet('chContentEditor','');}
   openModal('chModal');
 }
@@ -511,7 +565,7 @@ async function saveChapter(){
   const{error}=editId?await sb.from('chapters').update({num,title,content,published}).eq('id',editId):await sb.from('chapters').insert({num,title,content,published,book_id});
   setLoading('chSaveBtn',false,'Save');
   if(error){toast('Error saving chapter','error');return}
-  toast(editId?'Chapter updated':'Chapter added');closeModal('chModal');await renderBookDetail();await renderTOC();autoUpdateBookStatus(currentBookId);
+  toast(editId?'Chapter updated':'Chapter added');closeModal('chModal');if(editId) activeChId=editId;await renderBookDetail();await renderTOC();autoUpdateBookStatus(currentBookId);
 }
 
 async function deleteChapter(id){
@@ -649,7 +703,7 @@ async function enterReaderMode(){
 
     roFlat = [];
     (allChs||[]).forEach((ch,ci)=>{
-      const pages = paginateContent(ch.content, 250);
+      const pages = paginateContent(ch.content, 150);
       pages.forEach((pg,pi)=>{
         roFlat.push({
           content: pg,
@@ -763,7 +817,7 @@ function roRender(){
   // Chapter label at top of first page — only for books with a real title
   if(left && left.pageInCh === 0 && left.chTitle && roIsBook){
     document.getElementById('roContentLeft').innerHTML =
-      `<div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid rgba(78,201,176,.15)">Chapter ${left.chNum} — ${left.chTitle}</div>`
+      `<div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:.6rem;opacity:.7">Chapter ${left.chNum} — ${left.chTitle}</div>`
       + document.getElementById('roContentLeft').innerHTML;
   }
 
@@ -774,7 +828,7 @@ function roRender(){
     // Chapter label on right page — only for books with a real title
     if(right.pageInCh === 0 && right.chTitle && roIsBook){
       document.getElementById('roContentRight').innerHTML =
-        `<div style="font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:1.2rem;padding-bottom:.8rem;border-bottom:1px solid rgba(78,201,176,.15)">Chapter ${right.chNum} — ${right.chTitle}</div>`
+        `<div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:.6rem;opacity:.7">Chapter ${right.chNum} — ${right.chTitle}</div>`
         + document.getElementById('roContentRight').innerHTML;
     }
     if(spine) spine.style.visibility = 'visible';
@@ -1130,36 +1184,6 @@ async function autoUpdateBookStatus(bookId){
   const{count}=await sb.from('chapters').select('id',{count:'exact',head:true}).eq('book_id',bookId).eq('published',true);
   const newStatus=count>=book.total_chapters?'complete':'in_progress';
   await sb.from('books').update({status:newStatus}).eq('id',bookId);
-}
-
-function openArticleModal(id=null){
-  document.getElementById('articleModalTitle').textContent=id?'Edit Article':'New Article';
-  document.getElementById('editArticleId').value=id||'';
-  if(id){
-    sb.from('articles').select('*').eq('id',id).single().then(({data:a})=>{
-      document.getElementById('articleTitle').value=a?.title||'';
-      document.getElementById('articleTag').value=a?.tag||'';
-      document.getElementById('articleBanner').value=a?.banner_image||'';
-      quillSet('articleContentEditor', a?.content||'');  // ✓ 'a' exists here
-    });
-  } else {
-    document.getElementById('articleTitle').value='';
-    document.getElementById('articleTag').value='';
-    document.getElementById('articleBanner').value='';
-    quillSet('articleContentEditor', '');
-  }
-  openModal('articleModal');
-}
-
-async function saveArticle(){
-  const title=document.getElementById('articleTitle').value.trim(),tag=document.getElementById('articleTag').value.trim(),content=typeof quillGet!=='undefined'?quillGet('articleContentEditor'):document.getElementById('articleContent').value.trim(),banner_image=document.getElementById('articleBanner').value.trim()||null;
-  if(!title||!content){alert('Please add a title and content.');return}
-  const editId=document.getElementById('editArticleId').value;
-  setLoading('articleSaveBtn',true);
-  const{error}=editId?await sb.from('articles').update({title,tag,content,banner_image}).eq('id',editId):await sb.from('articles').insert({title,tag,content,banner_image});
-  setLoading('articleSaveBtn',false,'Save');
-  if(error){toast('Error saving','error');return}
-  toast(editId?'Article updated':'Article created');closeModal('articleModal');loadArticles();
 }
 
 // ── SHARE ──────────────────────────────────────────────

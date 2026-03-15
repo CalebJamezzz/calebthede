@@ -584,16 +584,23 @@ function triggerArticlePasteClean(){
       if(item.types.includes('text/html')){
         const blob=await item.getType('text/html');
         const cleaned=cleanGoogleDocs(await blob.text());
-        document.getElementById('articleContent').value=cleaned;
-        updateArticlePreview();toast('Cleaned and pasted from clipboard','success');return;
+        if(typeof quillSet!=='undefined') quillSet('articleContentEditor',cleaned);
+        else document.getElementById('articleContent').value=cleaned;
+        toast('Cleaned and pasted from clipboard','success');return;
       }
       if(item.types.includes('text/plain')){
         const blob=await item.getType('text/plain');
-        document.getElementById('articleContent').value=await blob.text();
-        updateArticlePreview();toast('Pasted as plain text','success');return;
+        const text=await blob.text();
+        if(typeof quillSet!=='undefined') quillSet('articleContentEditor',text);
+        else document.getElementById('articleContent').value=text;
+        toast('Pasted as plain text','success');return;
       }
     }
-  }).catch(()=>{document.getElementById('articleContent').focus();toast('Paste with Ctrl+V — auto-clean will run','success');});
+  }).catch(()=>{
+    const q=typeof _quillInstances!=='undefined'?_quillInstances['articleContentEditor']:null;
+    if(q) q.focus();
+    toast('Paste with Ctrl+V — auto-clean will run','success');
+  });
 }
 function insertArticleFmt(prefix){
   const ta=document.getElementById('articleContent');
@@ -603,12 +610,16 @@ function insertArticleFmt(prefix){
 }
 // Auto-clean paste into article editor
 document.addEventListener('paste',e=>{
-  if(document.activeElement.id!=='articleContent')return;
+  // Let Quill handle its own paste via clipboard module
+  const active=document.activeElement;
+  if(active&&active.closest&&active.closest('.ql-editor')) return;
+  if(active.id!=='articleContent') return;
   const html=e.clipboardData.getData('text/html');
   if(html&&(html.includes('google')||html.includes('docs-'))){
     e.preventDefault();
-    document.getElementById('articleContent').value=cleanGoogleDocs(html);
-    updateArticlePreview();toast('Google Docs formatting cleaned','success');
+    if(typeof quillSet!=='undefined') quillSet('articleContentEditor',cleanGoogleDocs(html));
+    else document.getElementById('articleContent').value=cleanGoogleDocs(html);
+    toast('Google Docs formatting cleaned','success');
   }
   setTimeout(updateArticlePreview,50);
 });
@@ -1244,7 +1255,8 @@ function triggerPasteClean(){
         const blob=await item.getType('text/html');
         const html=await blob.text();
         const cleaned=cleanGoogleDocs(html);
-        document.getElementById('chContent').value=cleaned;
+        if(typeof quillSet!=='undefined') quillSet('chContentEditor',cleaned);
+        else document.getElementById('chContent').value=cleaned;
         updateChPreview();
         toast('Cleaned and pasted from clipboard','success');
         return;
@@ -1252,15 +1264,17 @@ function triggerPasteClean(){
       if(item.types.includes('text/plain')){
         const blob=await item.getType('text/plain');
         const text=await blob.text();
-        document.getElementById('chContent').value=text;
+        if(typeof quillSet!=='undefined') quillSet('chContentEditor',text);
+        else document.getElementById('chContent').value=text;
         updateChPreview();
         toast('Pasted as plain text','success');
         return;
       }
     }
   }).catch(()=>{
-    // Fallback: focus textarea and let browser paste natively, then clean
-    const ta=document.getElementById('chContent');ta.focus();
+    // Fallback: focus Quill editor
+    const q=typeof _quillInstances!=='undefined'?_quillInstances['chContentEditor']:null;
+    if(q) q.focus(); else document.getElementById('chContent').focus();
     toast('Paste with Ctrl+V — auto-clean will run','success');
   });
 }
@@ -1293,12 +1307,14 @@ document.addEventListener('DOMContentLoaded',()=>{
 });
 
 function updateChPreview(){
-  const content=document.getElementById('chContent').value||'';
-  document.getElementById('chPreviewBody').innerHTML=renderBody(content);
-  const words=content.split(/\s+/).filter(Boolean).length;
+  const content=(typeof quillGet!=='undefined'?quillGet('chContentEditor'):null)||document.getElementById('chContent').value||'';
+  const preview=document.getElementById('chPreviewBody');
+  if(preview) preview.innerHTML=renderBody(content);
+  const stripped=content.replace(/<[^>]*>/g,'');
+  const words=stripped.split(/\s+/).filter(Boolean).length;
   const pages=Math.max(0,Math.ceil(words/WORDS_PER_PAGE));
-  document.getElementById('chWordCount').textContent=words.toLocaleString()+' words';
-  document.getElementById('chPageEst').textContent='~'+pages+' page'+(pages===1?'':'s');
+  const wc=document.getElementById('chWordCount');if(wc) wc.textContent=words.toLocaleString()+' words';
+  const pe=document.getElementById('chPageEst');if(pe) pe.textContent='~'+pages+' page'+(pages===1?'':'s');
 }
 
 function insertFmt(prefix){
