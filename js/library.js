@@ -1251,12 +1251,14 @@ async function autoUpdateBookStatus(bookId){
 
 // ── SHARE ──────────────────────────────────────────────
 function updateArticlePreview(){
-  const content=document.getElementById('articleContent').value||'';
-  document.getElementById('articlePreviewBody').innerHTML=renderBody(content);
-  const words=content.split(/\s+/).filter(Boolean).length;
+  const content=(typeof quillGet!=='undefined'?quillGet('articleContentEditor'):null)||document.getElementById('articleContent')?.value||'';
+  const preview=document.getElementById('articlePreviewBody');
+  if(preview) preview.innerHTML=renderBody(content);
+  const stripped=content.replace(/<[^>]*>/g,'');
+  const words=stripped.split(/\s+/).filter(Boolean).length;
   const mins=Math.max(1,Math.ceil(words/200));
-  document.getElementById('articleWordCount').textContent=words.toLocaleString()+' words';
-  document.getElementById('articleReadTime').textContent=mins+' min read';
+  const wc=document.getElementById('articleWordCount');if(wc) wc.textContent=words.toLocaleString()+' words';
+  const rt=document.getElementById('articleReadTime');if(rt) rt.textContent=mins+' min read';
 }
 function triggerArticlePasteClean(){
   navigator.clipboard.read().then(async items=>{
@@ -1306,8 +1308,20 @@ document.addEventListener('paste',e=>{
 function openArticleModal(id=null){
   document.getElementById('articleModalTitle').textContent=id?'Edit Article':'New Article';
   document.getElementById('editArticleId').value=id||'';
-  if(id){sb.from('articles').select('*').eq('id',id).single().then(({data:a})=>{document.getElementById('articleTitle').value=a?.title||'';document.getElementById('articleTag').value=a?.tag||'';document.getElementById('articleContent').value=a?.content||'';document.getElementById('articleBanner').value=a?.banner_image||'';updateArticlePreview();})}
-  else{document.getElementById('articleTitle').value='';document.getElementById('articleTag').value='';document.getElementById('articleContent').value='';document.getElementById('articleBanner').value='';updateArticlePreview();}
+  if(id){
+    sb.from('articles').select('*').eq('id',id).single().then(({data:a})=>{
+      document.getElementById('articleTitle').value=a?.title||'';
+      document.getElementById('articleTag').value=a?.tag||'';
+      document.getElementById('articleBanner').value=a?.banner_image||'';
+      quillSet('articleContentEditor',a?.content||'');
+      setTimeout(()=>{ if(typeof updateArticlePreview==='function') updateArticlePreview(); },50);
+    });
+  } else {
+    document.getElementById('articleTitle').value='';
+    document.getElementById('articleTag').value='';
+    document.getElementById('articleBanner').value='';
+    quillSet('articleContentEditor','');
+  }
   openModal('articleModal');
 }
 
