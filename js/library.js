@@ -1340,14 +1340,14 @@ function openArticleModal(id=null){
 }
 
 async function saveArticle(){
-  const title=document.getElementById('articleTitle').value.trim(),tag=document.getElementById('articleTag').value.trim(),content=typeof quillGet!=='undefined'?quillGet('articleContentEditor'):document.getElementById('articleContent').value.trim(),banner_image=document.getElementById('articleBanner').value.trim()||null;
+  const title=document.getElementById('articleTitle').value.trim(),tag=document.getElementById('articleTag').value.trim(),content=(typeof _articleRawHtml!=='undefined'&&_articleRawHtml)||(typeof quillGet!=='undefined'?quillGet('articleContentEditor'):null)||document.getElementById('articleContent').value.trim(),banner_image=document.getElementById('articleBanner').value.trim()||null;
   if(!title||!content){alert('Please add a title and content.');return}
   const editId=document.getElementById('editArticleId').value;
   setLoading('articleSaveBtn',true);
   const{error}=editId?await sb.from('articles').update({title,tag,content,banner_image}).eq('id',editId):await sb.from('articles').insert({title,tag,content,banner_image});
   setLoading('articleSaveBtn',false,'Save');
   if(error){toast('Error saving','error');return}
-  toast(editId?'Article updated':'Article created');closeModal('articleModal');loadArticles();
+  _articleRawHtml=null;if(typeof clearArticleRawHtml==='function')clearArticleRawHtml();toast(editId?'Article updated':'Article created');closeModal('articleModal');loadArticles();
 }
 
 function openArticle(a,skipHistory){
@@ -1386,14 +1386,61 @@ function toggleArticleHtmlImport(){
   if(open) document.getElementById('articleHtmlRaw').focus();
 }
 
+// Stores raw HTML when bypassing Quill (for tables/code/complex markup)
+let _articleRawHtml = null;
+
 function importArticleHtml(){
   const raw = document.getElementById('articleHtmlRaw').value.trim();
   if(!raw){ toast('No HTML to import','error'); return; }
-  quillSet('articleContentEditor', raw);
+
+  // Store raw HTML directly — don't push through Quill which strips tables/code
+  _articleRawHtml = raw;
+
+  // Show a read-only indicator in the Quill editor area
+  const editorEl = document.getElementById('articleContentEditor');
+  if(editorEl){
+    const q = _quillInstances['articleContentEditor'];
+    if(q) q.enable(false); // disable Quill editing
+    editorEl.style.opacity = '0.5';
+    editorEl.title = 'Rich HTML imported — editing disabled. Clear to use editor.';
+  }
+
+  // Show a notice badge
+  let badge = document.getElementById('articleHtmlBadge');
+  if(!badge){
+    badge = document.createElement('div');
+    badge.id = 'articleHtmlBadge';
+    badge.style.cssText = 'background:rgba(200,164,90,.12);border:1px solid rgba(200,164,90,.3);border-radius:4px;padding:.4rem .8rem;font-family:JetBrains Mono,monospace;font-size:.62rem;color:var(--gold);display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:.5rem';
+    badge.innerHTML = '<span>✦ Rich HTML imported — tables & code preserved</span><button onclick="clearArticleRawHtml()" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:.9rem" title="Clear and re-enable editor">✕</button>';
+    editorEl?.parentNode?.insertBefore(badge, editorEl.nextSibling);
+  }
+  badge.style.display = 'flex';
+
   document.getElementById('articleHtmlRaw').value = '';
   toggleArticleHtmlImport();
-  setTimeout(()=>{ if(typeof updateArticlePreview==='function') updateArticlePreview(); }, 50);
-  toast('HTML imported successfully','success');
+
+  // Update preview directly from raw HTML
+  const preview = document.getElementById('articlePreviewBody');
+  if(preview) preview.innerHTML = raw;
+  const stripped = raw.replace(/<[^>]*>/g,'');
+  const words = stripped.split(/\s+/).filter(Boolean).length;
+  const mins = Math.max(1,Math.ceil(words/200));
+  const wc = document.getElementById('articleWordCount'); if(wc) wc.textContent = words.toLocaleString()+' words';
+  const rt = document.getElementById('articleReadTime'); if(rt) rt.textContent = mins+' min read';
+
+  toast('HTML imported — tables & code preserved','success');
+}
+
+function clearArticleRawHtml(){
+  _articleRawHtml = null;
+  const editorEl = document.getElementById('articleContentEditor');
+  const q = _quillInstances?.['articleContentEditor'];
+  if(q){ q.enable(true); q.setText(''); }
+  if(editorEl){ editorEl.style.opacity='1'; editorEl.title=''; }
+  const badge = document.getElementById('articleHtmlBadge');
+  if(badge) badge.style.display = 'none';
+  if(typeof updateArticlePreview==='function') updateArticlePreview();
+  toast('Editor cleared','success');
 }
 
 
