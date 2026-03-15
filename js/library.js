@@ -67,7 +67,7 @@ function buildSwatches(current){const wrap=document.getElementById('colorSwatche
 function showLibBrowse(){document.getElementById('libBrowse').style.display='block';document.getElementById('libBookDetail').style.display='none';document.getElementById('libArticleReader').style.display='none'}
 function showLibBookDetail(){document.getElementById('libBrowse').style.display='none';document.getElementById('libBookDetail').style.display='block';document.getElementById('libArticleReader').style.display='none'}
 function showLibArticleReader(){document.getElementById('libBrowse').style.display='none';document.getElementById('libBookDetail').style.display='none';document.getElementById('libArticleReader').style.display='block'}
-function switchLibTab(tab,el){document.querySelectorAll('.lib-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.lib-panel').forEach(p=>p.classList.remove('active'));el.classList.add('active');document.getElementById('lib'+tab).classList.add('active')}
+function switchLibTab(tab,el){document.querySelectorAll('.lib-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.lib-panel').forEach(p=>p.classList.remove('active'));el.classList.add('active');document.getElementById('lib'+tab).classList.add('active');safePush({sub:'tab',tab:tab.toLowerCase()},'','#'+tab.toLowerCase());}
 
 let currentBookId=null,activeChId=null;
 
@@ -1352,10 +1352,10 @@ function openArticle(a,skipHistory){
   document.getElementById('readerEditBtn').onclick=()=>openArticleModal(a.id);
   document.getElementById('readerDeleteBtn').onclick=()=>deleteArticle(a.id,true);
   showLibArticleReader();
-  if(!skipHistory)safePush({page:'library',sub:'article',id:a.id},'','#library/article/'+a.id);
+  if(!skipHistory)safePush({sub:'article',id:a.id},'','#article/'+a.id);
 }
 
-function closeArticleReader(){showLibBrowse();loadArticles();switchLibTab('Articles',document.querySelectorAll('.lib-tab')[1]);safePush({page:'library'},'','#library');}
+function closeArticleReader(){showLibBrowse();loadArticles();switchLibTab('Articles',document.querySelectorAll('.lib-tab')[1]);safePush({sub:'articles'},'','#articles');}
 
 async function deleteArticle(id,fromReader=false){
   if(!confirm('Delete this article?'))return;

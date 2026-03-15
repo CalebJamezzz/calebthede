@@ -183,6 +183,25 @@ function handleLibraryHash(){
   if(!hash)return;
   const parts=hash.replace('#','').split('/');
   const sub=parts[0];const id=parts[1];
+
+  // Restore articles tab
+  if(sub==='articles'){
+    setTimeout(()=>{
+      const tab=document.querySelectorAll('.lib-tab')[1];
+      if(tab) switchLibTab('Articles',tab);
+    },300);
+    return;
+  }
+
+  // Restore article reader
+  if(sub==='article'&&id){
+    setTimeout(()=>{
+      sb.from('articles').select('*').eq('id',id).single().then(({data:a})=>{if(a)openArticle(a,true);});
+    },600);
+    return;
+  }
+
+  // Restore book or chapter
   if(sub==='book'&&id){
     const autoResume = parts[2]==='resume';
     const chapterId = parts[2]==='ch' ? parts[3] : null;
@@ -190,7 +209,6 @@ function handleLibraryHash(){
       sb.from('books').select('*').eq('id',id).single().then(({data:b})=>{
         if(!b) return;
         if(chapterId){
-          // Restore specific chapter — skip TOC, go straight to chapter
           currentBookId = id;
           document.getElementById('bookDetailTitle').textContent = b.title||'';
           document.getElementById('bookDetailDesc').textContent = b.description||'';
@@ -206,10 +224,6 @@ function handleLibraryHash(){
           });
         }
       });
-    },600);
-  } else if(sub==='article'&&id){
-    setTimeout(()=>{
-      sb.from('articles').select('*').eq('id',id).single().then(({data:a})=>{if(a)openArticle(a,true);});
     },600);
   }
 }
@@ -231,6 +245,17 @@ window.addEventListener('popstate',e=>{
   }
   if(state?.sub==='article'){
     sb.from('articles').select('*').eq('id',state.id).single().then(({data:a})=>{if(a)openArticle(a,true);});return;
+  }
+  if(state?.sub==='articles'){
+    const tab=document.querySelectorAll?.('.lib-tab')?.[1];
+    if(tab) switchLibTab('Articles',tab);
+    return;
+  }
+  if(state?.sub==='tab'){
+    const idx=state.tab==='articles'?1:0;
+    const tab=document.querySelectorAll?.('.lib-tab')?.[idx];
+    if(tab) switchLibTab(state.tab==='articles'?'Articles':'Books',tab);
+    return;
   }
   if(state?.sub==='browse')showLibBrowse();
 });
