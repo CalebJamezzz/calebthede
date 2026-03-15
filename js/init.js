@@ -536,7 +536,27 @@ function initQuill(editorId, options = {}) {
   const q = new Quill('#' + editorId, {
     theme: 'snow',
     placeholder: options.placeholder || 'Write here…',
-    modules: { toolbar: QUILL_TOOLBAR }
+    modules: {
+      toolbar: QUILL_TOOLBAR,
+      clipboard: {
+        matchVisual: false,
+        matchers: [
+          [Node.ELEMENT_NODE, function(node, delta) {
+            // Strip ALL formatting attributes — keep only semantic ones
+            const allowed = new Set(['bold','italic','underline','strike','list','header','link','blockquote','code-block','code','indent']);
+            delta.ops = delta.ops.map(op => {
+              if (op.attributes) {
+                Object.keys(op.attributes).forEach(k => {
+                  if (!allowed.has(k)) delete op.attributes[k];
+                });
+              }
+              return op;
+            });
+            return delta;
+          }]
+        ]
+      }
+    }
   });
   _quillInstances[editorId] = q;
   return q;

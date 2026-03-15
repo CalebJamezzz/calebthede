@@ -360,14 +360,42 @@ function updateStarDots(idx){
 let currentPages=[],currentPageIdx=0;
 
 function paginateContent(content,wordsPerPage){
-  const blocks=(content||'').split(/\n\n+/).map(b=>b.trim()).filter(Boolean);
+  const raw = content||'';
+  let blocks;
+  // HTML content from Quill
+  if(/<[a-z]/i.test(raw)){
+    const div = document.createElement('div');
+    div.innerHTML = raw;
+    // First get block-level elements
+    let elBlocks = Array.from(div.querySelectorAll('p,h1,h2,h3,h4,li,blockquote,pre'));
+    // If content was pasted from Google Docs it may be one big <p> with <br> breaks
+    // Split those large single blocks on <br> tags
+    blocks = [];
+    elBlocks.forEach(el => {
+      const text = el.innerText||el.textContent||'';
+      const wordCount = text.trim().split(/\s+/).filter(Boolean).length;
+      if(wordCount > wordsPerPage * 1.5 && el.innerHTML.includes('<br')){
+        // Split on <br> and wrap each chunk in the same tag
+        const tag = el.tagName.toLowerCase();
+        el.innerHTML.split(/<br\s*\/?>/i).forEach(chunk => {
+          const cleaned = chunk.replace(/<[^>]*>/g,'').trim();
+          if(cleaned) blocks.push(`<${tag}>${chunk}</${tag}>`);
+        });
+      } else {
+        if(el.outerHTML.replace(/<[^>]*>/g,'').trim()) blocks.push(el.outerHTML);
+      }
+    });
+    if(!blocks.length) blocks = [raw];
+  } else {
+    blocks = raw.split(/\n\n+/).map(b=>b.trim()).filter(Boolean);
+  }
   const pages=[];let cur=[],wc=0;
   blocks.forEach(b=>{
     const bw=b.replace(/<[^>]*>/g,'').split(/\s+/).filter(Boolean).length;
-    if(wc>0&&wc+bw>wordsPerPage){pages.push(cur.join('\n\n'));cur=[b];wc=bw;}
+    if(wc>0&&wc+bw>wordsPerPage){pages.push(cur.join(''));cur=[b];wc=bw;}
     else{cur.push(b);wc+=bw;}
   });
-  if(cur.length)pages.push(cur.join('\n\n'));
+  if(cur.length)pages.push(cur.join(''));
   return pages.length?pages:[''];
 }
 
@@ -511,7 +539,7 @@ async function saveChapter(){
   const{error}=editId?await sb.from('chapters').update({num,title,content,published}).eq('id',editId):await sb.from('chapters').insert({num,title,content,published,book_id});
   setLoading('chSaveBtn',false,'Save');
   if(error){toast('Error saving chapter','error');return}
-  toast(editId?'Chapter updated':'Chapter added');closeModal('chModal');await renderBookDetail();await renderTOC();autoUpdateBookStatus(currentBookId);
+  toast(editId?'Chapter updated':'Chapter added');closeModal('chModal');if(editId) activeChId=editId;await renderBookDetail();await renderTOC();autoUpdateBookStatus(currentBookId);
 }
 
 async function deleteChapter(id){
@@ -1130,36 +1158,6 @@ async function autoUpdateBookStatus(bookId){
   const{count}=await sb.from('chapters').select('id',{count:'exact',head:true}).eq('book_id',bookId).eq('published',true);
   const newStatus=count>=book.total_chapters?'complete':'in_progress';
   await sb.from('books').update({status:newStatus}).eq('id',bookId);
-}
-
-function openArticleModal(id=null){
-  document.getElementById('articleModalTitle').textContent=id?'Edit Article':'New Article';
-  document.getElementById('editArticleId').value=id||'';
-  if(id){
-    sb.from('articles').select('*').eq('id',id).single().then(({data:a})=>{
-      document.getElementById('articleTitle').value=a?.title||'';
-      document.getElementById('articleTag').value=a?.tag||'';
-      document.getElementById('articleBanner').value=a?.banner_image||'';
-      quillSet('articleContentEditor', a?.content||'');  // ✓ 'a' exists here
-    });
-  } else {
-    document.getElementById('articleTitle').value='';
-    document.getElementById('articleTag').value='';
-    document.getElementById('articleBanner').value='';
-    quillSet('articleContentEditor', '');
-  }
-  openModal('articleModal');
-}
-
-async function saveArticle(){
-  const title=document.getElementById('articleTitle').value.trim(),tag=document.getElementById('articleTag').value.trim(),content=typeof quillGet!=='undefined'?quillGet('articleContentEditor'):document.getElementById('articleContent').value.trim(),banner_image=document.getElementById('articleBanner').value.trim()||null;
-  if(!title||!content){alert('Please add a title and content.');return}
-  const editId=document.getElementById('editArticleId').value;
-  setLoading('articleSaveBtn',true);
-  const{error}=editId?await sb.from('articles').update({title,tag,content,banner_image}).eq('id',editId):await sb.from('articles').insert({title,tag,content,banner_image});
-  setLoading('articleSaveBtn',false,'Save');
-  if(error){toast('Error saving','error');return}
-  toast(editId?'Article updated':'Article created');closeModal('articleModal');loadArticles();
 }
 
 // ── SHARE ──────────────────────────────────────────────
