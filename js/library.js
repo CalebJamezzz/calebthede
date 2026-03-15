@@ -306,7 +306,8 @@ async function openBook(id,title,desc,skipHistory){
   currentBookId=id;activeChId=null;
   document.getElementById('bookDetailTitle').textContent=title;
   document.getElementById('bookDetailDesc').textContent=desc||'';
-  await renderBookDetail();showLibBookDetail();
+  // Show TOC first immediately, then load chapter detail in background
+  showLibBookDetail();
   await renderTOC();
   if(!skipHistory)safePush({sub:'book',id,title,desc},'','#book/'+id);
   return true;
@@ -539,6 +540,8 @@ async function showChapter(id,idx,startPage=0){
   publishBtn.textContent=isPublished?'Unpublish':'Publish';
   publishBtn.style.borderColor=isPublished?'rgba(78,201,176,.4)':'';
   publishBtn.style.color=isPublished?'var(--teal)':'';
+  // Update URL hash to include chapter so refresh restores it
+  safePush({sub:'book',id:currentBookId,chId:id},'','#book/'+currentBookId+'/ch/'+id);
   scrollToChapterTop();
 }
 
@@ -702,21 +705,81 @@ async function enterReaderMode(){
       .order('num', {ascending:true});
 
     roFlat = [];
+
+    // CSS-column approach: each roFlat entry is one "spread" (2 columns on desktop)
+    // Measure using a SINGLE-column div so content overflows vertically
+    // Split when content exceeds 2x page height (= fills both columns)
+
+    const isMobile = window.innerWidth <= 768;
+
+    const roMeasure = document.createElement('div');
+    // Use single-column width for measurement (half viewport on desktop)
+    const colW = isMobile
+      ? window.innerWidth - 48
+      : Math.floor((window.innerWidth - 80) / 2) - 40; // half spread minus gap
+    const pageH = window.innerHeight - 48 - 60 - 40;
+    // Two columns worth of content = 2x a single column's height
+    const spreadH = isMobile ? pageH : pageH * 2;
+
+    roMeasure.style.cssText = [
+      'position:fixed','top:-9999px','left:0','visibility:hidden','pointer-events:none',
+      'width:'+colW+'px',
+      'font-family:Lato,sans-serif','font-weight:300','line-height:1.85',
+      'font-size:1.05rem','overflow:visible'
+    ].join(';');
+    document.body.appendChild(roMeasure);
+
+    function buildSpreads(content){
+      const isHtml = /<[a-z]/i.test(content);
+      let paras;
+      if(isHtml){
+        const d = document.createElement('div');
+        d.innerHTML = content;
+        paras = Array.from(d.querySelectorAll('p,h1,h2,h3,h4,li,blockquote,pre'))
+          .filter(el=>el.textContent.trim())
+          .map(el=>el.outerHTML);
+      } else {
+        paras = content.split(/\n\n+/).filter(Boolean)
+          .map(p=>p.trim().startsWith('###')?`<h3>${p.replace(/^###\s*/,'')}</h3>`:`<p>${p}</p>`);
+      }
+
+      const spreads = [];
+      let cur = [];
+      for(let i=0;i<paras.length;i++){
+        cur.push(paras[i]);
+        roMeasure.innerHTML = cur.join('');
+        if(roMeasure.scrollHeight > spreadH){
+          if(cur.length > 1){
+            cur.pop();
+            spreads.push(cur.join(''));
+            cur = [paras[i]];
+          } else {
+            spreads.push(cur.join(''));
+            cur = [];
+          }
+        }
+      }
+      if(cur.length) spreads.push(cur.join(''));
+      return spreads.length ? spreads : [paras.join('')];
+    }
+
     (allChs||[]).forEach((ch,ci)=>{
-      const pages = paginateContent(ch.content, 150);
-      pages.forEach((pg,pi)=>{
+      const spreads = buildSpreads(ch.content);
+      spreads.forEach((sp,si)=>{
         roFlat.push({
-          content: pg,
+          content: sp,
           chIdx: ci,
           chId: ch.id,
-          chNum: ch.num || (ci+1),
+          chNum: ch.num||(ci+1),
           chTitle: ch.title,
-          pageInCh: pi,
-          totalInCh: pages.length,
+          pageInCh: si,
+          totalInCh: spreads.length,
           totalChs: (allChs||[]).length
         });
       });
     });
+
+    document.body.removeChild(roMeasure);
 
     // Find where we currently are in the flat array
     roFlatIdx = roFlat.findIndex(p => p.chId === activeChId && p.pageInCh === currentPageIdx);
@@ -784,8 +847,7 @@ function roKeyHandler(e){
 // ── Step ───────────────────────────────────────────────
 function roStep(dir){
   if(roFlipping) return;
-  const spread = roSpread();
-  const next = roFlatIdx + dir * spread;
+  const next = roFlatIdx + dir;
   if(next < 0 || next >= roFlat.length) return;
   roFlatIdx = next;
   roAnimate(dir > 0 ? 'forward' : 'back');
@@ -803,41 +865,46 @@ function roAnimate(dir){
 
 // ── Render ─────────────────────────────────────────────
 function roRender(){
-  const spread = roSpread();
-  const left  = roFlat[roFlatIdx];
-  const right = spread > 1 ? roFlat[roFlatIdx + 1] : null;
-  const spine = document.querySelector('.ro-spine');
-  const rightPage = document.querySelector('.ro-page-right');
+  const cur = roFlat[roFlatIdx];
+  const pagesEl = document.getElementById('roPages');
+  const isMobile = window.innerWidth <= 768;
 
-  // Left page
-  document.getElementById('roContentLeft').innerHTML = left ? renderBody(left.content) : '';
-  document.getElementById('roNumLeft').innerHTML = left
-    ? roPageLabel(roFlatIdx, left) : '';
+  // Chapter eyebrow for first spread of a chapter
+  const chapterLabel = (cur && cur.pageInCh === 0 && cur.chTitle && roIsBook)
+    ? `<div class="ro-ch-label">Chapter ${cur.chNum} — ${cur.chTitle}</div>`
+    : '';
 
-  // Chapter label at top of first page — only for books with a real title
-  if(left && left.pageInCh === 0 && left.chTitle && roIsBook){
-    document.getElementById('roContentLeft').innerHTML =
-      `<div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:.6rem;opacity:.7">Chapter ${left.chNum} — ${left.chTitle}</div>`
-      + document.getElementById('roContentLeft').innerHTML;
-  }
+  const html = cur ? renderBody(cur.content) : '';
 
-  // Right page
-  if(right){
-    document.getElementById('roContentRight').innerHTML = renderBody(right.content);
-    document.getElementById('roNumRight').innerHTML = roPageLabel(roFlatIdx+1, right);
-    // Chapter label on right page — only for books with a real title
-    if(right.pageInCh === 0 && right.chTitle && roIsBook){
-      document.getElementById('roContentRight').innerHTML =
-        `<div style="font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:.6rem;opacity:.7">Chapter ${right.chNum} — ${right.chTitle}</div>`
-        + document.getElementById('roContentRight').innerHTML;
-    }
-    if(spine) spine.style.visibility = 'visible';
-    if(rightPage) rightPage.style.visibility = 'visible';
-  } else {
+  if(isMobile){
+    // Mobile: single column, use existing left page
+    document.getElementById('roContentLeft').innerHTML = chapterLabel + html;
+    document.getElementById('roNumLeft').innerHTML = cur ? roPageLabel(roFlatIdx, cur) : '';
     document.getElementById('roContentRight').innerHTML = '';
     document.getElementById('roNumRight').innerHTML = '';
+    const spine = document.querySelector('.ro-spine');
+    const rightPage = document.querySelector('.ro-page-right');
     if(spine) spine.style.visibility = 'hidden';
     if(rightPage) rightPage.style.visibility = 'hidden';
+  } else {
+    // Desktop: inject a single CSS-column spread container into ro-pages
+    // This lets browser flow text naturally left→right mid-sentence
+    let spreadEl = document.getElementById('roSpreadContent');
+    if(!spreadEl){
+      pagesEl.innerHTML = `
+        <div id="roSpreadContent" class="ro-spread-content"></div>
+        <div class="ro-page-nums">
+          <span id="roNumLeft" class="ro-num-left"></span>
+          <span id="roNumRight" class="ro-num-right"></span>
+        </div>`;
+    }
+    spreadEl = document.getElementById('roSpreadContent');
+    spreadEl.innerHTML = chapterLabel + html;
+    // Page numbers
+    const numL = document.getElementById('roNumLeft');
+    const numR = document.getElementById('roNumRight');
+    if(numL) numL.innerHTML = cur ? roPageLabel(roFlatIdx, cur) : '';
+    if(numR) numR.innerHTML = cur ? `<span style="opacity:.35">${roFlatIdx+1}</span>` : '';
   }
 }
 
@@ -850,7 +917,7 @@ function roPageLabel(flatIdx, page){
 function roUpdateNav(){
   const spread = roSpread();
   const atStart = roFlatIdx <= 0;
-  const atEnd   = roFlatIdx + spread >= roFlat.length;
+  const atEnd   = roFlatIdx + 1 >= roFlat.length;
 
   document.getElementById('roPrevBtn').disabled = atStart;
   document.getElementById('roNextBtn').disabled = atEnd;
@@ -1009,7 +1076,7 @@ async function renderTOC(){
 
   tocList.innerHTML = chs.map((ch,i) => {
     const words = (ch.content||'').replace(/<[^>]*>/g,'').split(/\s+/).filter(Boolean).length;
-    const pages = Math.max(1, Math.ceil(words / WORDS_PER_PAGE));
+    const mins = Math.max(1, Math.ceil(words / 200));
     const isBookmarked = bm && bm.chId === ch.id;
     const isDraft = !ch.published;
     return `
@@ -1018,7 +1085,7 @@ async function renderTOC(){
       <div class="toc-info">
         <span class="toc-title">${ch.title}</span>
         <span class="toc-meta">
-          ${pages} page${pages!==1?'s':''}
+          ${mins} min read
           ${isDraft?'<span class="toc-draft-pill admin-only">draft</span>':''}
           ${isBookmarked?`<span style="color:var(--gold);opacity:.8">✦ bookmark — page ${bm.pageInCh+1}</span>`:''}
         </span>
@@ -1032,6 +1099,9 @@ async function renderTOC(){
 
 async function tocOpenChapter(chId, chIdx){
   hideTOC();
+  // Ensure book detail (sidebar + chapterIndex) is loaded first
+  if(!chapterIndex.length) await renderBookDetail();
+  else activeChId = chId; // set before renderBookDetail skipped so showChapter targets right ch
   await showChapter(chId, chIdx);
   // Scroll to chapter reader
   const reader = document.getElementById('chReader');
@@ -1040,14 +1110,8 @@ async function tocOpenChapter(chId, chIdx){
 
 async function startFromBeginning(){
   hideTOC();
-  // Load and show first chapter
-  const{data:chs} = await sb.from('chapters')
-    .select('id,num,title')
-    .eq('book_id', currentBookId)
-    .eq('published', true)
-    .order('num', {ascending:true})
-    .limit(1);
-  if(chs && chs.length) await tocOpenChapter(chs[0].id, 0);
+  if(!chapterIndex.length) await renderBookDetail();
+  if(chapterIndex.length) await showChapter(chapterIndex[0].id, 0);
 }
 
 async function resumeReading(){
@@ -1118,7 +1182,7 @@ async function openSeriesModal(seriesId){
 async function checkBookCompletion(){
   if(!currentBookId || !roFlat.length) return;
   // Only trigger on very last page
-  if(roFlatIdx + roSpread() < roFlat.length) return;
+  if(roFlatIdx + 1 < roFlat.length) return;
 
   // Check if already seen
   if(localStorage.getItem('completed_' + currentBookId)) return;
@@ -1173,8 +1237,7 @@ function dismissCompletion(){
   const overlay = document.getElementById('bookCompleteOverlay');
   overlay.style.opacity = '0';
   setTimeout(()=>{ overlay.style.display = 'none'; }, 800);
-  // Exit reader mode too if active
-  if(roActive) exitReaderMode();
+  // Don't exit reader mode — let user continue reading
 }
 
 // Auto-update book status when chapters are published/unpublished

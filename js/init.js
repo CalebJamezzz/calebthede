@@ -185,11 +185,26 @@ function handleLibraryHash(){
   const sub=parts[0];const id=parts[1];
   if(sub==='book'&&id){
     const autoResume = parts[2]==='resume';
+    const chapterId = parts[2]==='ch' ? parts[3] : null;
     setTimeout(()=>{
       sb.from('books').select('*').eq('id',id).single().then(({data:b})=>{
-        if(b)openBook(b.id,b.title,b.description,true).then(()=>{
-          if(autoResume&&typeof resumeReading==='function') resumeReading();
-        });
+        if(!b) return;
+        if(chapterId){
+          // Restore specific chapter — skip TOC, go straight to chapter
+          currentBookId = id;
+          document.getElementById('bookDetailTitle').textContent = b.title||'';
+          document.getElementById('bookDetailDesc').textContent = b.description||'';
+          showLibBookDetail();
+          renderBookDetail().then(()=>{
+            const idx = typeof chapterIndex!=='undefined'
+              ? chapterIndex.findIndex(c=>c.id===chapterId) : -1;
+            if(idx>=0) showChapter(chapterId, idx);
+          });
+        } else {
+          openBook(b.id,b.title,b.description,true).then(()=>{
+            if(autoResume&&typeof resumeReading==='function') resumeReading();
+          });
+        }
       });
     },600);
   } else if(sub==='article'&&id){
@@ -202,7 +217,18 @@ function handleLibraryHash(){
 // Back/forward within library
 window.addEventListener('popstate',e=>{
   const state=e.state;
-  if(state?.sub==='book'){openBook(state.id,state.title,state.desc,true);return;}
+  if(state?.sub==='book'){
+    openBook(state.id,state.title,state.desc,true).then(()=>{
+      if(state.chId&&typeof renderBookDetail==='function'){
+        renderBookDetail().then(()=>{
+          const idx=typeof chapterIndex!=='undefined'
+            ?chapterIndex.findIndex(c=>c.id===state.chId):-1;
+          if(idx>=0) showChapter(state.chId,idx);
+        });
+      }
+    });
+    return;
+  }
   if(state?.sub==='article'){
     sb.from('articles').select('*').eq('id',state.id).single().then(({data:a})=>{if(a)openArticle(a,true);});return;
   }
