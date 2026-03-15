@@ -1025,7 +1025,7 @@ function buildProjLinks(p){
   let html = '';
   if(p.link_github) html += `<a class="proj-link-btn github" href="${p.link_github}" target="_blank" onclick="event.stopPropagation()">⌥ GitHub</a>`;
   if(p.link_figma)  html += `<a class="proj-link-btn figma"  href="${p.link_figma}"  target="_blank" onclick="event.stopPropagation()">◈ Figma</a>`;
-  if(p.link_demo)   html += `<a class="proj-link-btn demo"   href="${p.link_demo}"   target="_blank" onclick="event.stopPropagation()">↗ Demo</a>`;
+  if(p.link_demo)   html += `<a class="proj-link-btn demo"   href="${p.link_demo}"   target="_blank" onclick="event.stopPropagation()">↗ Demo / Tool</a>`;
   return html;
 }
 
@@ -1117,7 +1117,7 @@ async function loadHighlightedProject(){
   let links = '';
   if(p.link_github) links += `<a class="builder-highlight-link" href="${p.link_github}" target="_blank" onclick="event.stopPropagation()">GitHub</a>`;
   if(p.link_figma)  links += `<a class="builder-highlight-link" href="${p.link_figma}"  target="_blank" onclick="event.stopPropagation()">Figma</a>`;
-  if(p.link_demo)   links += `<a class="builder-highlight-link" href="${p.link_demo}"   target="_blank" onclick="event.stopPropagation()">Demo</a>`;
+  if(p.link_demo)   links += `<a class="builder-highlight-link" href="${p.link_demo}"   target="_blank" onclick="event.stopPropagation()">Demo / Tool</a>`;
   wrap.innerHTML = `
     <div class="builder-highlight-banner">${svg}</div>
     <div class="builder-highlight-body">

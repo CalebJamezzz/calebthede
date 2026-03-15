@@ -149,15 +149,15 @@ let adminMode=false;
       </div>
       <div class="mf"><label>Category</label><select id="projCategory"><option>Development</option><option>Design</option><option>QA / Tools</option></select></div>
       <div class="mf"><label>Highlight on Home?</label><select id="projHighlight"><option value="false">No</option><option value="true">Yes — pin to Builder card</option></select></div>
-      <div class="mf" style="grid-column:1/-1">
+      <div class="mf" style="grid-column:1/-1;margin-bottom:1.8rem">
         <label>Description <span style="opacity:.5;font-size:.75em">— supports paragraphs (press Enter for new paragraph)</span></label>
-        <div id="projDescEditor" class="quill-editor-wrap"></div><input type="hidden" id="projDesc"/>
+        <div id="projDescEditor" class="quill-editor-wrap" style="min-height:220px"></div><input type="hidden" id="projDesc"/>
       </div>
       <div class="mf" style="grid-column:1/-1"><label>Tags <span style="opacity:.5;font-size:.75em">(comma-separated)</span></label><input type="text" id="projTags" placeholder="Python, Data Generation, QA Tooling"/></div>
       <div class="mf"><label>GitHub Link</label><input type="text" id="projGithub" placeholder="https://github.com/…"/></div>
       <div class="mf"><label>Figma Link</label><input type="text" id="projFigma" placeholder="https://figma.com/…"/></div>
-      <div class="mf" style="grid-column:1/-1"><label>Demo / Live Link</label><input type="text" id="projDemo" placeholder="https://…"/></div>
-      <div class="mf" style="grid-column:1/-1"><label>Lab Demo <span style="opacity:.5;font-size:.75em">(links to a Lab entry — shows "Try it in Lab →" on the project card)</span></label><select id="projLabEntry"><option value="">None</option></select></div>
+      <div class="mf" style="grid-column:1/-1"><label>Demo / Tool / Live Link</label><input type="text" id="projDemo" placeholder="https://…"/></div>
+      <div class="mf" style="grid-column:1/-1"><label>Lab Demo / Tool <span style="opacity:.5;font-size:.75em">(links to a Demo or Tool Lab entry — shows "Try it in Lab →" on the card)</span></label><select id="projLabEntry"><option value="">None</option></select></div>
       <div class="mf" style="grid-column:1/-1"><label>Banner Image URL</label><input type="text" id="projBanner" placeholder="https://…"/></div>
       <hr style="grid-column:1/-1;border:none;border-top:1px solid var(--border);margin:.5rem 0"/>
       <p style="grid-column:1/-1;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Sidebar Highlights <span style="opacity:.5;font-weight:300;text-transform:none;letter-spacing:0"> — optional stats or details shown on the card</span></p>

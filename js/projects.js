@@ -305,7 +305,7 @@ function openProjectModal(id=null){
   document.getElementById('editProjectId').value = id||'';
 
   // Load lab demo entries into dropdown
-  sb.from('lab_entries').select('id,title,category').eq('category','demo').order('title',{ascending:true}).then(({data:labs})=>{
+  sb.from('lab_entries').select('id,title,category').in('category',['demo','tool']).order('title',{ascending:true}).then(({data:labs})=>{
     const sel = document.getElementById('projLabEntry');
     sel.innerHTML = '<option value="">None</option>';
     (labs||[]).forEach(l=>{
