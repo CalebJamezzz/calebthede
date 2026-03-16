@@ -112,7 +112,14 @@ function toggleEmbed(id){
     if(entry.embed_url){
       inner.innerHTML = `<iframe src="${entry.embed_url}" frameborder="0" allowfullscreen style="width:100%;height:500px;border-radius:6px;background:#0D0F14"></iframe>`;
     } else if(entry.embed_html){
-      inner.innerHTML = `<iframe srcdoc="${entry.embed_html.replace(/"/g,'&quot;')}" frameborder="0" style="width:100%;height:560px;border-radius:6px;background:#0D0F14" sandbox="allow-scripts allow-same-origin"></iframe>`;
+      // Open in new tab so full features (file upload, scripts) work without sandbox restrictions
+      const blob = new Blob([entry.embed_html], {type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      // Revoke after short delay
+      setTimeout(()=>URL.revokeObjectURL(url), 5000);
+      // Don't expand the panel — close immediately
+      return;
     }
     
     panel.style.display = 'block';
