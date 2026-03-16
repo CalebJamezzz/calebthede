@@ -23,6 +23,29 @@ const STATUS_LABELS = {
   archived: 'Archived'
 };
 
+// Handle #launch/id hash — open experiment in new tab directly
+function handleLabHash(){
+  const hash = location.hash;
+  if(!hash || !hash.startsWith('#launch/')) return;
+  const id = hash.slice(8);
+  if(!id) return;
+  // Wait for lab entries to load then auto-launch
+  const tryLaunch = (attempts) => {
+    const entry = allLabEntries.find(e => e.id === id);
+    if(entry && entry.embed_html){
+      const blob = new Blob([entry.embed_html], {type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+      // Clear hash
+      history.replaceState(null, '', '/lab');
+    } else if(attempts > 0){
+      setTimeout(() => tryLaunch(attempts - 1), 300);
+    }
+  };
+  tryLaunch(10);
+}
+
 async function loadLab(){
   const grid = document.getElementById('labGrid');
   const empty = document.getElementById('labEmpty');
@@ -79,6 +102,7 @@ function renderLabCards(entries){
         </div>
         <div class="lab-tile-actions">
           ${hasEmbed ? `<button class="lab-launch-btn" onclick="toggleEmbed('${e.id}')"><span id="launch-icon-${e.id}">▶</span> <span id="launch-label-${e.id}">Launch</span></button>` : ''}
+          ${e.embed_html ? `<button class="lab-share-btn" onclick="event.stopPropagation();copyLabLink('${e.id}')" title="Copy shareable link">↗ Share</button>` : ''}
           ${e.link ? `<a class="lab-ext-link" href="${e.link}" target="_blank">↗</a>` : ''}
           <button class="lab-edit-btn admin-only" onclick="event.stopPropagation();openLabModal('${e.id}')">Edit</button>
           <button class="lab-del-btn admin-only danger" onclick="event.stopPropagation();deleteLabEntry('${e.id}')">Delete</button>
@@ -94,6 +118,22 @@ function renderLabCards(entries){
     
     grid.appendChild(tile);
     refreshAdmin(tile);
+  });
+}
+
+function copyLabLink(id){
+  const url = window.location.origin + '/lab#launch/' + id;
+  navigator.clipboard.writeText(url).then(() => {
+    toast('Link copied to clipboard', 'success');
+  }).catch(() => {
+    // Fallback
+    const el = document.createElement('textarea');
+    el.value = url;
+    el.style.position = 'fixed'; el.style.opacity = '0';
+    document.body.appendChild(el); el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    toast('Link copied to clipboard', 'success');
   });
 }
 
