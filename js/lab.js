@@ -23,6 +23,16 @@ const STATUS_LABELS = {
   archived: 'Archived'
 };
 
+// Handle #launch/id hash — redirect to permanent embed page
+function handleLabHash(){
+  const hash = location.hash;
+  if(!hash || !hash.startsWith('#launch/')) return;
+  const id = hash.slice(8);
+  if(!id) return;
+  window.open(window.location.origin + '/lab-embed?id=' + id, '_blank');
+  history.replaceState(null, '', '/lab');
+}
+
 async function loadLab(){
   const grid = document.getElementById('labGrid');
   const empty = document.getElementById('labEmpty');
@@ -79,6 +89,7 @@ function renderLabCards(entries){
         </div>
         <div class="lab-tile-actions">
           ${hasEmbed ? `<button class="lab-launch-btn" onclick="toggleEmbed('${e.id}')"><span id="launch-icon-${e.id}">▶</span> <span id="launch-label-${e.id}">Launch</span></button>` : ''}
+          ${hasEmbed ? `<button class="lab-share-btn" onclick="event.stopPropagation();copyLabLink('${e.id}')">↗ Share</button>` : ''}
           ${e.link ? `<a class="lab-ext-link" href="${e.link}" target="_blank">↗</a>` : ''}
           <button class="lab-edit-btn admin-only" onclick="event.stopPropagation();openLabModal('${e.id}')">Edit</button>
           <button class="lab-del-btn admin-only danger" onclick="event.stopPropagation();deleteLabEntry('${e.id}')">Delete</button>
@@ -94,6 +105,22 @@ function renderLabCards(entries){
     
     grid.appendChild(tile);
     refreshAdmin(tile);
+  });
+}
+
+function copyLabLink(id){
+  const url = window.location.origin + '/lab-embed?id=' + id;
+  navigator.clipboard.writeText(url).then(() => {
+    toast('Link copied to clipboard', 'success');
+  }).catch(() => {
+    // Fallback
+    const el = document.createElement('textarea');
+    el.value = url;
+    el.style.position = 'fixed'; el.style.opacity = '0';
+    document.body.appendChild(el); el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    toast('Link copied to clipboard', 'success');
   });
 }
 

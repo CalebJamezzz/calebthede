@@ -26,6 +26,12 @@
   to = "/library.html"
   status = 200
 
+# -- Lab embed --
+[[redirects]]
+  from = "/lab-embed"
+  to = "/lab-embed.html"
+  status = 200
+
 [[redirects]]
   from = "/lab"
   to = "/lab.html"
@@ -42,6 +48,13 @@
   to = "/.netlify/functions/ask"
   status = 200
   force = true
+
+# -- Tools --
+[[redirects]]
+  from = "/tools/doc-to-html"
+  to = "/tools/doc-to-html.html"
+  status = 200
+
 
 # -- 404 fallback --
 [[redirects]]
