@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Lab — Caleb Thede</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%;background:#0D0F14}
+    #loading{
+      display:flex;align-items:center;justify-content:center;
+      height:100vh;
+      font-family:'JetBrains Mono',monospace;font-size:.65rem;
+      letter-spacing:.2em;text-transform:uppercase;
+      color:rgba(200,164,90,.5);
+    }
+    #container{display:none;height:100%}
+    #container iframe{width:100%;height:100vh;border:none;background:#0D0F14}
+  </style>
+</head>
+<body>
+<div id="loading">Loading…</div>
+<div id="container"></div>
+<script>
+  const sb = supabase.createClient(
+    'https://lbviiggrxzhyxrpivbbi.supabase.co',
+    'sb_publishable_eQRvx-J1Cp4nlq6Q6TOjIA__QYJmJq6'
+  );
+
+  const id = new URLSearchParams(location.search).get('id');
+
+  if(!id){
+    document.getElementById('loading').textContent = 'No entry specified.';
+  } else {
+    sb.from('lab_entries').select('title,embed_html,embed_url').eq('id', id).single()
+      .then(({data, error}) => {
+        if(error || !data){
+          document.getElementById('loading').textContent = 'Entry not found.';
+          return;
+        }
+        document.title = (data.title || 'Lab') + ' — Caleb Thede';
+        const container = document.getElementById('container');
+        if(data.embed_html){
+          const iframe = document.createElement('iframe');
+          iframe.srcdoc = data.embed_html;
+          iframe.setAttribute('allowfullscreen','');
+          container.appendChild(iframe);
+        } else if(data.embed_url){
+          const iframe = document.createElement('iframe');
+          iframe.src = data.embed_url;
+          iframe.setAttribute('allowfullscreen','');
+          container.appendChild(iframe);
+        } else {
+          document.getElementById('loading').textContent = 'No embed available.';
+          return;
+        }
+        document.getElementById('loading').style.display = 'none';
+        container.style.display = 'block';
+      });
+  }
+</script>
+</body>
+</html>

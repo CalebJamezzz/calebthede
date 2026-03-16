@@ -1463,6 +1463,14 @@ body.ask-open{overflow:hidden}
 }
 .lab-ext-link:hover{ color:var(--text);border-color:rgba(255,255,255,.2) }
 
+.lab-share-btn{
+  background:none;border:1px solid var(--border);border-radius:3px;
+  cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.55rem;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);
+  padding:.3rem .6rem;transition:all .15s;
+}
+.lab-share-btn:hover{ color:var(--teal);border-color:rgba(78,201,176,.4) }
+
 .lab-edit-btn,.lab-del-btn{
   background:none;border:1px solid var(--border);border-radius:3px;
   cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.55rem;
