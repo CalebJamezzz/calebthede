@@ -29,7 +29,7 @@ function handleLabHash(){
   if(!hash || !hash.startsWith('#launch/')) return;
   const id = hash.slice(8);
   if(!id) return;
-  window.open(window.location.origin + '/lab/embed?id=' + id, '_blank');
+  window.open(window.location.origin + '/lab-embed?id=' + id, '_blank');
   history.replaceState(null, '', '/lab');
 }
 
@@ -109,7 +109,7 @@ function renderLabCards(entries){
 }
 
 function copyLabLink(id){
-  const url = window.location.origin + '/lab/embed?id=' + id;
+  const url = window.location.origin + '/lab-embed?id=' + id;
   navigator.clipboard.writeText(url).then(() => {
     toast('Link copied to clipboard', 'success');
   }).catch(() => {
