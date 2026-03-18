@@ -275,7 +275,7 @@ function buildProjLinks(p){
   let html = '';
   if(p.link_github) html += `<a class="proj-link-btn github" href="${p.link_github}" target="_blank" onclick="event.stopPropagation()">⌥ GitHub</a>`;
   if(p.link_figma)  html += `<a class="proj-link-btn figma"  href="${p.link_figma}"  target="_blank" onclick="event.stopPropagation()">◈ Figma</a>`;
-  if(p.link_demo)   html += `<a class="proj-link-btn demo"   href="${p.link_demo}"   target="_blank" onclick="event.stopPropagation()">↗ Demo</a>`;
+  if(p.link_demo)   html += `<a class="proj-link-btn demo"   href="${p.link_demo}"   target="_blank" onclick="event.stopPropagation()">↗ Visit Site</a>`;
   if(p.lab_entry_id) html += `<a class="proj-link-btn lab" href="/lab" onclick="event.stopPropagation();sessionStorage.setItem('openLabEntry','${p.lab_entry_id}');return true;">◉ Try in Lab</a>`;
   return html;
 }
