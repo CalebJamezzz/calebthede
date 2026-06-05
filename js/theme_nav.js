@@ -1,14 +1,15 @@
-// ══ THEME ══
+// ══ THEME ══ warm (light) is the default; dark is the "night" alternate.
 function toggleTheme(){
   const light=document.body.classList.toggle('light-mode');
-  document.getElementById('themeBtn').textContent=light?'🌑':'🌙';
+  const btn=document.getElementById('themeBtn');
+  if(btn)btn.textContent=light?'🌑':'🌙';
   localStorage.setItem('ct_theme',light?'light':'dark');
 }
 (function initTheme(){
-  if(localStorage.getItem('ct_theme')==='light'){
-    document.body.classList.add('light-mode');
-    document.getElementById('themeBtn').textContent='🌑';
-  }
+  const dark=localStorage.getItem('ct_theme')==='dark';
+  document.body.classList.toggle('light-mode',!dark);
+  const btn=document.getElementById('themeBtn');
+  if(btn)btn.textContent=dark?'🌙':'🌑';
 })();
 
 // ══ CHAPTER EDITOR ══

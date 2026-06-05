@@ -14,6 +14,7 @@
 </head>
 <body data-page="home">
 <script>
+if((localStorage.getItem('ct_theme')||'light')!=='dark')document.body.classList.add('light-mode');
 const SUPABASE_URL='https://lbviiggrxzhyxrpivbbi.supabase.co';
 const SUPABASE_KEY='sb_publishable_eQRvx-J1Cp4nlq6Q6TOjIA__QYJmJq6';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
