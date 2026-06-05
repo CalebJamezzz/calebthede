@@ -366,14 +366,14 @@ async function deleteCurrentBook(){
 }
 
 // ══ MANUSCRIPT IMPORT (.docx → book + chapters) ══
-async function openImportModal(){
+async function openImportModal(presetMode){
   window._importHtml='';window._importChapters=[];
   document.getElementById('importBookTitle').value='';
   document.getElementById('importFile').value='';
-  document.getElementById('importPublish').checked=false;
   document.getElementById('importHeading').value='h1';
   document.getElementById('importMode').value='new';
   document.getElementById('importBookSelectWrap').style.display='none';
+  const upNote=document.getElementById('importUpdateNote'); if(upNote)upNote.style.display='none';
   document.getElementById('importPreview').innerHTML='<p class="import-status" style="opacity:.6">Choose a .docx file to see detected chapters.</p>';
   openModal('importModal');
   // Populate the "book to update" dropdown
@@ -382,19 +382,28 @@ async function openImportModal(){
   const{data:books}=await sb.from('books').select('id,title').order('created_at',{ascending:false});
   sel.innerHTML=(books||[]).map(b=>`<option value="${b.id}">${(b.title||'Untitled').replace(/</g,'&lt;')}</option>`).join('')
     ||'<option value="">No books yet</option>';
+  // Re-sync entry from a book: preselect update mode + the current book
+  if(presetMode==='update'){
+    document.getElementById('importMode').value='update';
+    if(currentBookId) sel.value=currentBookId;
+    onImportModeChange();
+  }
 }
 
 function onImportModeChange(){
   const mode=document.getElementById('importMode').value;
   const wrap=document.getElementById('importBookSelectWrap');
   const runBtn=document.getElementById('importRunBtn');
+  const note=document.getElementById('importUpdateNote');
   if(mode==='update'){
     wrap.style.display='block';
     onImportBookSelect();
     if(runBtn)runBtn.textContent='Re-sync chapters';
+    if(note)note.style.display='block';
   }else{
     wrap.style.display='none';
     if(runBtn)runBtn.textContent='Import';
+    if(note)note.style.display='none';
   }
 }
 
@@ -448,12 +457,31 @@ function renderImportPreview(){
   const preview=document.getElementById('importPreview');
   if(!window._importHtml){preview.innerHTML='<p class="import-status" style="opacity:.6">Choose a .docx file to see detected chapters.</p>';return;}
   if(!chapters.length){preview.innerHTML='<p class="import-status">No headings found. Pick a different heading level, or style your chapter titles as Heading 1 in Google Docs.</p>';return;}
-  preview.innerHTML='<p class="import-status">'+chapters.length+' chapter'+(chapters.length>1?'s':'')+' detected — edit titles if needed:</p>'+
+  preview.innerHTML='<div class="import-ch-head"><p class="import-status" style="margin:0">'+chapters.length+' chapter'+(chapters.length>1?'s':'')+' detected — edit titles & set publish state:</p>'+
+    '<div class="import-ch-bulk"><button type="button" class="toc-ctl" title="Publish all" onclick="setAllImportPub(true)">all ●</button><button type="button" class="toc-ctl" title="Draft all" onclick="setAllImportPub(false)">all ○</button></div></div>'+
     chapters.map((c,i)=>{
       const words=(c.content||'').replace(/<[^>]*>/g,' ').split(/\s+/).filter(Boolean).length;
       const safe=(c.title||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
-      return '<div class="import-ch-row"><span class="import-ch-idx">'+(i+1)+'</span><input class="import-ch-title" value="'+safe+'"/><span class="import-ch-words">'+words+' words</span></div>';
+      return '<div class="import-ch-row"><span class="import-ch-idx">'+(i+1)+'</span><input class="import-ch-title" value="'+safe+'"/><span class="import-ch-words">'+words+' words</span>'+
+        '<button type="button" class="toc-ctl import-ch-pub on" data-pub="1" title="Published — click to make draft" onclick="toggleImportPub(this)">●</button></div>';
     }).join('');
+}
+
+function toggleImportPub(btn){
+  const on=btn.dataset.pub==='1';
+  btn.dataset.pub=on?'0':'1';
+  btn.classList.toggle('on',!on);
+  btn.textContent=on?'○':'●';
+  btn.title=on?'Draft — click to publish':'Published — click to make draft';
+}
+
+function setAllImportPub(state){
+  document.querySelectorAll('.import-ch-pub').forEach(btn=>{
+    btn.dataset.pub=state?'1':'0';
+    btn.classList.toggle('on',state);
+    btn.textContent=state?'●':'○';
+    btn.title=state?'Published — click to make draft':'Draft — click to publish';
+  });
 }
 
 async function runManuscriptImport(){
@@ -462,15 +490,16 @@ async function runManuscriptImport(){
   if(!title){alert('Give the book a title.');return;}
   const chapters=window._importChapters||[];
   if(!chapters.length){alert('No chapters detected. Choose a .docx file first.');return;}
-  const publish=document.getElementById('importPublish').checked;
   const titles=[...document.querySelectorAll('.import-ch-title')].map(i=>i.value.trim());
-  if(mode==='update'){ await resyncManuscript(title,chapters,titles,publish); return; }
+  const pubs=[...document.querySelectorAll('.import-ch-pub')].map(b=>b.dataset.pub==='1');
+  if(mode==='update'){ await resyncManuscript(title,chapters,titles,pubs); return; }
 
   setLoading('importRunBtn',true);
+  const anyPub=pubs.some(Boolean);
   const color=COVERS[Math.floor(Math.random()*COVERS.length)];
-  const{data:book,error:bErr}=await sb.from('books').insert({title,description:'',color,status:publish?'in_progress':'draft',total_chapters:chapters.length}).select().single();
+  const{data:book,error:bErr}=await sb.from('books').insert({title,description:'',color,status:anyPub?'in_progress':'draft',total_chapters:chapters.length}).select().single();
   if(bErr||!book){console.error(bErr);toast('Error creating book','error');setLoading('importRunBtn',false,'Import');return;}
-  const rows=chapters.map((c,i)=>({book_id:book.id,title:titles[i]||c.title,content:c.content,published:publish,position:i}));
+  const rows=chapters.map((c,i)=>({book_id:book.id,title:titles[i]||c.title,content:c.content,published:pubs[i]!==false,position:i}));
   const{error:cErr}=await sb.from('chapters').insert(rows);
   setLoading('importRunBtn',false,'Import');
   if(cErr){console.error(cErr);toast('Book created, but chapters failed to save','error');return;}
@@ -482,7 +511,8 @@ async function runManuscriptImport(){
 
 // Re-sync a re-exported .docx into an existing book, matching chapters by
 // position so existing chapter IDs (and reader bookmarks) survive.
-async function resyncManuscript(title,chapters,titles,publishNew){
+async function resyncManuscript(title,chapters,titles,pubs){
+  pubs=pubs||[];
   const bookId=document.getElementById('importBookSelect').value;
   if(!bookId){alert('Pick a book to update.');return;}
   if(!confirm('Re-sync '+chapters.length+' chapter'+(chapters.length>1?'s':'')+' into this book? Matching slots are overwritten; extra chapters beyond the new file are deleted.'))return;
@@ -496,9 +526,10 @@ async function resyncManuscript(title,chapters,titles,publishNew){
   chapters.forEach((c,i)=>{
     const t=titles[i]||c.title;
     if(i<old.length){
+      // Preserve the existing chapter's publish state — manage it from the TOC.
       ops.push(sb.from('chapters').update({title:t,content:c.content,position:i}).eq('id',old[i].id));
     }else{
-      ops.push(sb.from('chapters').insert({book_id:bookId,title:t,content:c.content,position:i,published:publishNew}));
+      ops.push(sb.from('chapters').insert({book_id:bookId,title:t,content:c.content,position:i,published:pubs[i]!==false}));
     }
   });
   // Remove chapters that no longer exist in the re-exported file
@@ -516,284 +547,7 @@ async function resyncManuscript(title,chapters,titles,publishNew){
   autoUpdateBookStatus(bookId);
 }
 
-let chapterIndex=[],activeChIdx=-1;
-const WORDS_PER_PAGE=180;
-let bookTotalPages=0,chapterPageOffsets=[],estimatedPagesPerChapter=[],actualPagesPerChapter=[];
-
-async function renderBookDetail(){
-  const list=document.getElementById('chList'),empty=document.getElementById('chEmpty'),reader=document.getElementById('chReader'),tracker=document.getElementById('celestialTracker');
-  list.innerHTML='<li style="font-family:JetBrains Mono,monospace;font-size:.6rem;color:var(--text-dim);padding:.5rem 0">Loading…</li>';
-  // Admins see all chapters; public only sees published ones (RLS handles this server-side)
-  const{data:chs,error:chErr}=await sb.from('chapters').select('id,num,title,content,published,position').eq('book_id',currentBookId).order('position',{ascending:true,nullsFirst:false}).order('num',{ascending:true});
-  if(chErr)console.warn('chapters fetch:',chErr);
-  list.innerHTML='';chapterIndex=chs||[];
-  if(!chapterIndex.length){empty.style.display='flex';empty.style.flexDirection='column';empty.style.alignItems='center';reader.style.display='none';tracker.style.display='none';refreshAdmin(list.closest('.ch-sidebar'));return}
-  empty.style.display='none';
-  let pageCount=1;chapterPageOffsets=[];estimatedPagesPerChapter=[];actualPagesPerChapter=[];
-  chapterIndex.forEach(ch=>{
-    chapterPageOffsets.push(pageCount);
-    const est=Math.max(1,Math.ceil(((ch.content||'').split(/\s+/).filter(Boolean).length)/WORDS_PER_PAGE));
-    estimatedPagesPerChapter.push(est);
-    actualPagesPerChapter.push(null);
-    pageCount+=est;
-  });
-  bookTotalPages=pageCount-1;
-  chapterIndex.forEach((ch,i)=>{
-    const li=document.createElement('li');li.className='ch-item';li.dataset.id=ch.id;li.dataset.idx=i;
-    const draftPill=ch.published===false?`<span class="ch-draft-pill">draft</span>`:'';
-    const reorder=`<span class="ch-reorder admin-only"><button class="ch-move" title="Move up" onclick="event.stopPropagation();moveChapter(${i},-1)"${i===0?' disabled':''}>↑</button><button class="ch-move" title="Move down" onclick="event.stopPropagation();moveChapter(${i},1)"${i===chapterIndex.length-1?' disabled':''}>↓</button></span>`;
-    li.innerHTML=`<span class="ch-num-lbl">${ch.num||i+1}</span><span class="ch-item-title">${ch.title}</span>${draftPill}${reorder}`;
-    li.onclick=()=>showChapter(ch.id,i);list.appendChild(li);
-  });
-  refreshAdmin(list.closest('.ch-sidebar'));
-  buildStarDots();tracker.style.display='flex';
-  const startIdx=activeChId?chapterIndex.findIndex(c=>c.id===activeChId):0;
-  showChapter(chapterIndex[Math.max(0,startIdx)].id,Math.max(0,startIdx));
-}
-
-function buildStarDots(){
-  const container=document.getElementById('starDots');container.innerHTML='';
-  if(!chapterIndex.length)return;
-  if(chapterIndex.length===1){container.style.justifyContent='center';}else{container.style.justifyContent='space-between';}
-  const total=chapterIndex.length,maxDots=Math.min(total,48),step=total/maxDots;
-  for(let i=0;i<maxDots;i++){
-    const chIdx=Math.min(Math.round(i*step),total-1),ch=chapterIndex[chIdx];
-    const dot=document.createElement('div');dot.className='star-dot';dot.dataset.idx=chIdx;
-    dot.innerHTML=`<span class="star-dot-tooltip">Ch. ${ch.num||chIdx+1} · ${ch.title}</span>`;
-    dot.onclick=()=>showChapter(ch.id,chIdx);container.appendChild(dot);
-  }
-}
-
-function updateStarDots(idx){
-  const total=chapterIndex.length,dots=[...document.querySelectorAll('.star-dot')],maxDots=dots.length,step=total/maxDots;
-  dots.forEach((dot,i)=>{
-    const chIdx=Math.min(Math.round(i*step),total-1);
-    dot.classList.remove('done','current');
-    if(chIdx<idx)dot.classList.add('done');
-    else if(chIdx===idx)dot.classList.add('current');
-  });
-  document.getElementById('constellationFill').style.width=(total>1?(idx/(total-1))*100:100)+'%';
-}
-
-// ══ PAGE PAGINATION ══
-let currentPages=[],currentPageIdx=0;
-
-function paginateContent(content,wordsPerPage){
-  const raw=(content||'').trim();
-  if(!raw) return [''];
-  let blocks=[];
-
-  if(/<[a-z]/i.test(raw)){
-    // HTML from Quill — parse into block elements
-    const div=document.createElement('div');
-    div.innerHTML=raw;
-    const els=Array.from(div.querySelectorAll('p,h1,h2,h3,h4,li,blockquote,pre'));
-    els.forEach(el=>{
-      const text=el.textContent||'';
-      if(!text.trim()) return;
-      // Split on <br> tags within a single element
-      if(el.innerHTML.includes('<br')){
-        const tag=el.tagName.toLowerCase();
-        el.innerHTML.split(/<br\s*\/?>/i).forEach(chunk=>{
-          const t=chunk.replace(/<[^>]*>/g,'').trim();
-          if(t) blocks.push(`<${tag}>${chunk.trim()}</${tag}>`);
-        });
-      } else {
-        blocks.push(el.outerHTML);
-      }
-    });
-    // Fallback: no block elements found, use raw
-    if(!blocks.length) blocks=[raw];
-  } else {
-    // Plain text — split on double newlines
-    blocks=raw.split(/\n\n+/).map(b=>b.trim()).filter(Boolean);
-  }
-
-  const pages=[];let cur=[],wc=0;
-  const sep = /<[a-z]/i.test(raw) ? '' : '\n\n';
-  blocks.forEach(b=>{
-    const bw=b.replace(/<[^>]*>/g,'').split(/\s+/).filter(Boolean).length;
-    if(wc>0 && wc+bw>wordsPerPage){
-      pages.push(cur.join(sep));
-      cur=[b];wc=bw;
-    } else {
-      cur.push(b);wc+=bw;
-    }
-  });
-  if(cur.length) pages.push(cur.join(sep));
-  return pages.length?pages:[''];
-}
-
-function renderPage(pageIdx){
-  document.getElementById('chBodyArea').innerHTML=renderBody(currentPages[pageIdx]||'');
-  updatePageNav(pageIdx);
-}
-
-function updatePageNav(pageIdx){
-  const total=currentPages.length,nav=document.getElementById('pageNav');
-  if(total<=1){nav.style.display='none';return}
-  nav.style.display='flex';
-  // Recalculate absolute page using actual counts for all preceding chapters
-  let absPage=1;
-  for(let i=0;i<activeChIdx;i++) absPage+=(actualPagesPerChapter[i]||estimatedPagesPerChapter[i]||1);
-  absPage+=pageIdx;
-  const atFirst=pageIdx===0,atLast=pageIdx===total-1;
-  document.getElementById('pagePrevBtn').disabled=atFirst;
-  document.getElementById('pageNextBtn').disabled=atLast;
-  document.getElementById('pageFirstBtn').disabled=atFirst;
-  document.getElementById('pageLastBtn').disabled=atLast;
-  document.getElementById('pageNavInfo').innerHTML=
-    `Page\u00a0<strong>${absPage}</strong>\u00a0of ${bookTotalPages}<br>`+
-    `<span style="opacity:.55">Chapter page ${pageIdx+1} of ${total}</span>`;
-}
-
-
-function scrollToChapterTop(){
-  const tracker=document.getElementById('celestialTracker');
-  const trackerH=tracker&&tracker.offsetParent?tracker.offsetHeight:0;
-  const navH=72;
-  const header=document.getElementById('chReader');
-  if(!header)return;
-  const top=header.getBoundingClientRect().top+window.scrollY-(navH+trackerH);
-  window.scrollTo({top:Math.max(0,top),behavior:'smooth'});
-}
-async function togglePublish(){
-  const ch=chapterIndex[activeChIdx];if(!ch)return;
-  const newState=!ch.published;
-  const{error}=await sb.from('chapters').update({published:newState}).eq('id',ch.id);
-  if(error){toast('Error updating','error');return;}
-  ch.published=newState;
-  toast(newState?'Chapter published — now visible to readers':'Chapter unpublished — draft only');
-  // Auto-update book status based on published count vs total
-  autoUpdateBookStatus(currentBookId);
-  document.getElementById('chPublishBtn').textContent=newState?'Unpublish':'Publish';
-  document.getElementById('chPublishBtn').style.borderColor=newState?'rgba(78,201,176,.4)':'';
-  document.getElementById('chPublishBtn').style.color=newState?'var(--teal)':'';
-  // refresh sidebar draft pill
-  document.querySelectorAll('.ch-item').forEach((el,i)=>{
-    if(i===activeChIdx){
-      const pill=el.querySelector('.ch-draft-pill');
-      if(newState&&pill)pill.remove();
-      else if(!newState&&!pill){const p=document.createElement('span');p.className='ch-draft-pill';p.textContent='draft';el.appendChild(p);}
-    }
-  });
-}
-
-function jumpToPage(target){
-  const idx=target==='last'?currentPages.length-1:0;
-  currentPageIdx=idx;renderPage(idx);saveNormalBookmark(idx);scrollToChapterTop();
-}
-
-function jumpToChapter(target){
-  const idx=target==='last'?chapterIndex.length-1:0;
-  showChapter(chapterIndex[idx].id,idx);
-}
-
-function stepPage(dir){
-  const next=currentPageIdx+dir;
-  if(next<0){stepChapter(-1);return}
-  if(next>=currentPages.length){stepChapter(1);return}
-  currentPageIdx=next;renderPage(next);
-  saveNormalBookmark(next);
-  scrollToChapterTop();
-}
-
-async function showChapter(id,idx,startPage=0){
-  activeChId=id;activeChIdx=idx;
-  const body=document.getElementById('chBodyArea'),reader=document.getElementById('chReader');
-  reader.style.display='block';document.getElementById('chEmpty').style.display='none';
-  const focusBtn=document.getElementById('focusReaderBtn');if(focusBtn)focusBtn.style.display='flex';
-  const shareBtn=document.getElementById('shareChapterBtn');if(shareBtn)shareBtn.style.display='flex';
-  body.innerHTML='<div class="reader-loading">'+constellationLoader()+'</div>';
-  document.getElementById('pageNav').style.display='none';
-  document.getElementById('chEyebrow').textContent='';document.getElementById('chTitleH').textContent='';
-  document.querySelectorAll('.ch-item').forEach((li,i)=>li.classList.toggle('active',i===idx));
-  updateStarDots(idx);
-  const{data:ch}=await sb.from('chapters').select('*').eq('id',id).single();
-  if(!ch){body.innerHTML='<p style="color:var(--danger)">Chapter not found.</p>';return}
-  const total=chapterIndex.length;
-  document.getElementById('chEyebrow').textContent=`Chapter ${ch.num||idx+1}`;
-  document.getElementById('chTitleH').textContent=ch.title;
-  currentPages=paginateContent(ch.content,WORDS_PER_PAGE);
-  // Update bookTotalPages with actual page count for this chapter
-  if(actualPagesPerChapter[idx]!==currentPages.length){
-    actualPagesPerChapter[idx]=currentPages.length;
-    bookTotalPages=chapterPageOffsets.reduce((sum,_,i)=>sum+(actualPagesPerChapter[i]||estimatedPagesPerChapter[i]||1),0);
-  }
-  currentPageIdx=startPage;renderPage(startPage);
-  const atFirst=idx===0,atLast=idx===total-1;
-  document.getElementById('chPrevBtn').disabled=atFirst;
-  document.getElementById('chNextBtn').disabled=atLast;
-  document.getElementById('chFirstBtn').disabled=atFirst;
-  document.getElementById('chLastBtn').disabled=atLast;
-  document.getElementById('chNavProgress').textContent=`${idx+1} of ${total}`;
-  const pageStart=chapterPageOffsets[idx]||1,pageEnd=Math.min(pageStart+currentPages.length-1,bookTotalPages);
-  document.getElementById('celestialMeta').innerHTML=
-    `<strong>Chapter\u00a0${idx+1}</strong> of ${total}<br>`+
-    `Pages\u00a0<strong>${pageStart}\u2013${pageEnd}</strong> of ${bookTotalPages}`;
-  document.getElementById('chEditBtn').onclick=()=>openChModal(id,currentBookId);
-  document.getElementById('chDeleteBtn').onclick=()=>deleteChapter(id);
-  const publishBtn=document.getElementById('chPublishBtn');
-  const isPublished=chapterIndex[idx]?.published;
-  publishBtn.textContent=isPublished?'Unpublish':'Publish';
-  publishBtn.style.borderColor=isPublished?'rgba(78,201,176,.4)':'';
-  publishBtn.style.color=isPublished?'var(--teal)':'';
-  // Update URL hash to include chapter so refresh restores it
-  safePush({sub:'book',id:currentBookId,chId:id},'','#book/'+currentBookId+'/ch/'+id);
-  scrollToChapterTop();
-}
-
-function stepChapter(dir){
-  const next=activeChIdx+dir;
-  if(next<0||next>=chapterIndex.length)return;
-  showChapter(chapterIndex[next].id,next);
-}
-
-
-async function openChModal(id=null,bookId=null){
-  document.getElementById('chModalTitle').textContent=id?'Edit Chapter':'Add Chapter';
-  document.getElementById('editChId').value=id||'';document.getElementById('chBookId').value=bookId||currentBookId||'';
-  if(id){const{data:ch}=await sb.from('chapters').select('*').eq('id',id).single();document.getElementById('chNum').value=ch?.num||'';document.getElementById('chTitle').value=ch?.title||'';document.getElementById('chPublished').checked=ch?.published||false;updateChPublishedLbl();quillSet('chContentEditor',ch?.content||'');setTimeout(()=>{ if(typeof updateChPreview==='function') updateChPreview(); },50);}
-  else{document.getElementById('chNum').value='';document.getElementById('chTitle').value='';document.getElementById('chPublished').checked=false;updateChPublishedLbl();quillSet('chContentEditor','');}
-  openModal('chModal');
-}
-
-async function saveChapter(){
-  const num=document.getElementById('chNum').value.trim(),title=document.getElementById('chTitle').value.trim(),content=quillGet('chContentEditor'),book_id=document.getElementById('chBookId').value,published=document.getElementById('chPublished').checked;
-  if(!title||!content){alert('Please add a title and content.');return}
-  const editId=document.getElementById('editChId').value;
-  setLoading('chSaveBtn',true);
-  let error;
-  if(editId){
-    ({error}=await sb.from('chapters').update({num,title,content,published}).eq('id',editId));
-  }else{
-    const{data:last}=await sb.from('chapters').select('position').eq('book_id',book_id).order('position',{ascending:false,nullsFirst:false}).limit(1);
-    const position=(last&&last.length&&last[0].position!=null)?last[0].position+1:0;
-    ({error}=await sb.from('chapters').insert({num,title,content,published,book_id,position}));
-  }
-  setLoading('chSaveBtn',false,'Save');
-  if(error){toast('Error saving chapter','error');return}
-  toast(editId?'Chapter updated':'Chapter added');closeModal('chModal');if(editId) activeChId=editId;await renderBookDetail();await renderTOC();autoUpdateBookStatus(currentBookId);
-}
-
-async function deleteChapter(id){
-  if(!confirm('Delete this chapter?'))return;
-  await sb.from('chapters').delete().eq('id',id);
-  if(activeChId===id)activeChId=null;
-  toast('Chapter deleted');await renderBookDetail();await renderTOC();autoUpdateBookStatus(currentBookId);
-}
-
-// Reorder a chapter up (dir=-1) or down (dir=+1); persists a clean 0..n sequence.
-async function moveChapter(idx,dir){
-  const arr=[...chapterIndex];
-  const j=idx+dir;
-  if(j<0||j>=arr.length)return;
-  [arr[idx],arr[j]]=[arr[j],arr[idx]];
-  await Promise.all(arr.map((c,i)=>sb.from('chapters').update({position:i}).eq('id',c.id)));
-  await renderBookDetail();await renderTOC();
-}
-
-
+let tocChapters=[];
 
 let currentArticleId=null;
 
@@ -862,24 +616,6 @@ function renderArticleCards(articles){
 }
 
 
-// Save bookmark from normal chapter view (no reader mode needed)
-function saveNormalBookmark(pageIdx){
-  if(!currentBookId||!activeChId||!chapterIndex.length)return;
-  const ch=chapterIndex[activeChIdx];
-  if(!ch)return;
-  const bm={
-    bookId:currentBookId,
-    chId:activeChId,
-    chIdx:activeChIdx,
-    chNum:ch.num||activeChIdx+1,
-    chTitle:ch.title,
-    flatIdx:pageIdx,
-    pageInCh:pageIdx,
-    savedAt:Date.now()
-  };
-  try{localStorage.setItem('bm_'+currentBookId,JSON.stringify(bm));}catch(e){}
-}
-
 // ══════════════════════════════════════════════════════
 // READER — distraction-free single-column scroll reader
 // ══════════════════════════════════════════════════════
@@ -909,6 +645,7 @@ async function enterReaderMode(opts){
   roIsBook = !articleVisible;
 
   overlay.classList.add('active');
+  requestAnimationFrame(()=>overlay.classList.add('ro-shown'));
   document.body.classList.add('reader-locked');
   document.body.style.overflow = 'hidden';
   roSetTheme(roCurTheme, true);
@@ -940,6 +677,14 @@ async function enterReaderMode(opts){
       '</section>'
     ).join('') + '<div class="ro-end">✦</div>';
 
+    const sel = document.getElementById('roChapterSelect');
+    if(sel){
+      sel.innerHTML = roChapters.map((ch,i)=>
+        '<option value="'+i+'">Ch. '+(ch.num||i+1)+(ch.title?' · '+roEsc(ch.title):'')+'</option>'
+      ).join('');
+      sel.style.display = '';
+    }
+
     // Decide where to land
     const bm = loadBookmark(currentBookId);
     let targetCh = opts.chId || (opts.top ? null : activeChId);
@@ -960,6 +705,8 @@ async function enterReaderMode(opts){
     const artTitle   = document.getElementById('readerTitle')?.textContent || '';
     document.getElementById('roTitle').textContent = artTitle;
     roChapters = [];
+    const selArt = document.getElementById('roChapterSelect');
+    if(selArt){ selArt.innerHTML = ''; selArt.style.display = 'none'; }
     inner.innerHTML =
       '<section class="ro-chapter"><h2 class="ro-ch-title">'+roEsc(artTitle)+'</h2>'+
       '<div class="ro-ch-body">'+rawContent+'</div></section>';
@@ -975,18 +722,31 @@ function exitReaderMode(){
   const overlay  = document.getElementById('readerOverlay');
   const scroller = document.getElementById('roScroll');
   saveReaderBookmark();
-  overlay.classList.remove('active');
-  document.body.classList.remove('reader-locked');
-  document.body.style.overflow = '';
+  overlay.classList.remove('ro-shown');
   roActive = false;
   if(scroller) scroller.removeEventListener('scroll', roOnScroll);
   document.removeEventListener('keydown', roKeyHandler);
+  setTimeout(()=>overlay.classList.remove('active'), 220);
+  document.body.classList.remove('reader-locked');
+  document.body.style.overflow = '';
   // Reflect progress on the TOC if it's the visible view
   if(roIsBook && roChapters[roCurChIdx]){
     activeChId = roChapters[roCurChIdx].id;
     const toc = document.getElementById('libBookTOC');
     if(toc && toc.style.display !== 'none' && typeof renderTOC==='function') renderTOC();
   }
+}
+
+// ── Jump to a chapter via the dropdown ─────────────────
+function roJumpToChapter(idx){
+  idx = parseInt(idx,10);
+  const ch = roChapters[idx];
+  const scroller = document.getElementById('roScroll');
+  if(!ch || !scroller) return;
+  const el = document.getElementById('roCh-'+ch.id);
+  if(!el) return;
+  roCurChIdx = idx;
+  scroller.scrollTo({top: Math.max(0, el.offsetTop - 24), behavior:'smooth'});
 }
 
 // ── Keyboard ───────────────────────────────────────────
@@ -1016,7 +776,11 @@ function roOnScroll(){
     document.querySelectorAll('.ro-chapter').forEach(sec=>{
       if(sec.offsetTop <= probe) idx = parseInt(sec.dataset.idx,10)||0;
     });
-    roCurChIdx = idx;
+    if(idx !== roCurChIdx){
+      roCurChIdx = idx;
+      const sel = document.getElementById('roChapterSelect');
+      if(sel && +sel.value !== idx) sel.value = idx;
+    }
   }
   if(roScrollSaveT) clearTimeout(roScrollSaveT);
   roScrollSaveT = setTimeout(saveReaderBookmark, 400);
@@ -1087,14 +851,9 @@ function clearBookmark(bookId){
   localStorage.removeItem(bmKey(bookId));
 }
 
-// ── TOC ────────────────────────────────────────────────
-function showTOC(){ 
+// ── TOC ── single book view ────────────────────────────
+function showTOC(){
   document.getElementById('libBookTOC').style.display = 'block';
-  document.getElementById('bookDetailLayout').style.display = 'none';
-}
-function hideTOC(){
-  document.getElementById('libBookTOC').style.display = 'none';
-  document.getElementById('bookDetailLayout').style.display = '';
 }
 
 async function renderTOC(){
@@ -1141,14 +900,23 @@ async function renderTOC(){
     return;
   }
   tocEmpty.style.display = 'none';
+  tocChapters = chs;
 
   tocList.innerHTML = chs.map((ch,i) => {
     const words = (ch.content||'').replace(/<[^>]*>/g,'').split(/\s+/).filter(Boolean).length;
     const mins = Math.max(1, Math.ceil(words / 200));
     const isBookmarked = bm && bm.chId === ch.id;
     const isDraft = !ch.published;
+    const last = i===chs.length-1;
+    const admin = `
+      <div class="toc-admin admin-only" onclick="event.stopPropagation()">
+        <button class="toc-ctl" title="Move up" onclick="moveTocChapter(${i},-1)"${i===0?' disabled':''}>↑</button>
+        <button class="toc-ctl" title="Move down" onclick="moveTocChapter(${i},1)"${last?' disabled':''}>↓</button>
+        <button class="toc-ctl${ch.published?' on':''}" title="${ch.published?'Unpublish (make draft)':'Publish'}" onclick="toggleTocPublish('${ch.id}')">${ch.published?'●':'○'}</button>
+        <button class="toc-ctl danger" title="Delete chapter" onclick="deleteTocChapter('${ch.id}')">✕</button>
+      </div>`;
     return `
-    <div class="toc-row${isBookmarked?' has-bookmark':''}" onclick="tocOpenChapter('${ch.id}',${i})">
+    <div class="toc-row${isBookmarked?' has-bookmark':''}" onclick="tocOpenChapter('${ch.id}')">
       <span class="toc-num">${ch.num||i+1}</span>
       <div class="toc-info">
         <span class="toc-title">${ch.title}</span>
@@ -1158,11 +926,42 @@ async function renderTOC(){
           ${isBookmarked?`<span style="color:var(--gold);opacity:.8">✦ bookmarked</span>`:''}
         </span>
       </div>
+      ${admin}
       <span class="toc-arrow">→</span>
     </div>`;
   }).join('');
 
   showTOC();
+}
+
+// ── TOC admin controls (single source of book management) ──
+async function moveTocChapter(idx,dir){
+  const arr=[...tocChapters];
+  const j=idx+dir;
+  if(j<0||j>=arr.length)return;
+  [arr[idx],arr[j]]=[arr[j],arr[idx]];
+  await Promise.all(arr.map((c,i)=>sb.from('chapters').update({position:i}).eq('id',c.id)));
+  await renderTOC();
+}
+
+async function toggleTocPublish(id){
+  const ch=tocChapters.find(c=>c.id===id);if(!ch)return;
+  const newState=!ch.published;
+  const{error}=await sb.from('chapters').update({published:newState}).eq('id',id);
+  if(error){toast('Error updating','error');return;}
+  toast(newState?'Chapter published':'Chapter set to draft');
+  await renderTOC();
+  autoUpdateBookStatus(currentBookId);
+}
+
+async function deleteTocChapter(id){
+  if(!confirm('Delete this chapter? This cannot be undone.'))return;
+  const{error}=await sb.from('chapters').delete().eq('id',id);
+  if(error){toast('Error deleting','error');return;}
+  if(activeChId===id)activeChId=null;
+  toast('Chapter deleted');
+  await renderTOC();
+  autoUpdateBookStatus(currentBookId);
 }
 
 // Reading routes — keep the TOC underneath so exiting the reader returns here.
@@ -1178,16 +977,6 @@ async function startFromBeginning(){
 async function resumeReading(){
   const bm = loadBookmark(currentBookId);
   await enterReaderMode(bm ? {chId: bm.chId} : {top:true});
-}
-
-// Admin: swap from the reader-facing TOC into the chapter management layout.
-async function openBookManage(){
-  hideTOC();
-  await renderBookDetail();
-}
-// Return from management layout back to the TOC.
-async function backToContents(){
-  await renderTOC();
 }
 
 // ══════════════════════════════════════════════════════
@@ -1496,14 +1285,6 @@ function clearArticleRawHtml(){
   toast('Editor cleared','success');
 }
 
-
-function shareChapter(){
-  const bookId = currentBookId;
-  const chId   = activeChId;
-  if(!bookId || !chId) return;
-  const url = window.location.origin + '/library#book/' + bookId;
-  copyShareLink(url, 'Chapter link copied!');
-}
 
 function shareArticle(){
   const artId = typeof currentArticleId !== 'undefined' ? currentArticleId : null;

@@ -484,6 +484,9 @@ body.flame-cursor,body.flame-cursor a,body.flame-cursor button,body.flame-cursor
 .import-ch-title{flex:1;background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.4rem .6rem;color:var(--text);font-family:'Lato',sans-serif;font-size:.85rem;outline:none}
 .import-ch-title:focus{border-color:var(--gold-dim)}
 .import-ch-words{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--text-dim);flex-shrink:0;white-space:nowrap}
+.import-ch-head{display:flex;align-items:center;justify-content:space-between;gap:.8rem;flex-wrap:wrap;margin-bottom:.4rem}
+.import-ch-bulk{display:flex;gap:.3rem;flex-shrink:0}
+.import-ch-pub{flex-shrink:0}
 .ch-item:hover{background:var(--bg3);color:var(--text)}.ch-item.active{background:var(--bg3);color:var(--gold);border-color:var(--border)}
 .ch-num-lbl{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);display:block;margin-bottom:.15rem}
 .ch-item.active .ch-num-lbl{color:var(--gold-dim)}
@@ -695,7 +698,8 @@ body.reader-locked #shootingStarCanvas,
 body.reader-locked .konami-overlay{
   display:none!important;
 }
-#readerOverlay.active{display:flex}
+#readerOverlay.active{display:flex;opacity:0;transition:opacity .22s ease}
+#readerOverlay.active.ro-shown{opacity:1}
 body.reader-locked{overflow:hidden}
 
 /* Progress bar */
@@ -717,6 +721,21 @@ body.reader-locked{overflow:hidden}
   letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:60%;
 }
+.ro-topbar-center{
+  display:flex;align-items:center;gap:.7rem;
+  flex:1;justify-content:center;min-width:0;padding:0 1rem;
+}
+.ro-chapter-select{
+  background:none;border:1px solid var(--border);border-radius:3px;
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;
+  letter-spacing:.06em;color:var(--text-dim);
+  padding:.3rem 1.6rem .3rem .6rem;cursor:pointer;max-width:18rem;
+  text-overflow:ellipsis;transition:all .2s;
+  -webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%238a7a63' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right .6rem center;
+}
+.ro-chapter-select:hover{border-color:var(--gold);color:var(--gold)}
 .ro-font-btns{display:flex;align-items:center;gap:.2rem}
 .ro-font-btn{
   background:none;border:1px solid transparent;border-radius:20px;
@@ -765,6 +784,8 @@ body.reader-locked{overflow:hidden}
 /* Top bar uses themed colors */
 #readerOverlay .ro-topbar{border-bottom-color:var(--ro-rule)}
 #readerOverlay .ro-topbar-title{color:var(--ro-dim)}
+#readerOverlay .ro-chapter-select{color:var(--ro-dim);border-color:var(--ro-rule)}
+#readerOverlay .ro-chapter-select:hover{color:var(--ro-accent);border-color:var(--ro-accent)}
 #readerOverlay .ro-font-btn{color:var(--ro-dim)}
 #readerOverlay .ro-font-btn:hover{color:var(--ro-accent);border-color:var(--ro-rule)}
 #readerOverlay .ro-exit-btn{color:var(--ro-dim);border-color:var(--ro-rule)}
@@ -852,6 +873,8 @@ body.reader-locked{overflow:hidden}
 @media(max-width:768px){
   .ro-topbar{padding:.7rem 1rem}
   .ro-topbar-title{display:none}
+  .ro-topbar-center{padding:0 .5rem;justify-content:flex-start}
+  .ro-chapter-select{max-width:42vw}
   .ro-topbar-right{gap:.5rem}
   .ro-scroll-inner{padding:2.5rem 1.4rem 6rem}
 }
@@ -976,6 +999,18 @@ body[data-rfont="xl"] {--ro-font:1.32rem}
 }
 .toc-arrow{color:var(--text-dim);opacity:.3;font-size:.9rem}
 .toc-row:hover .toc-arrow{opacity:.7;color:var(--gold)}
+
+/* Inline admin controls on TOC rows */
+.toc-admin{align-items:center;gap:.3rem}
+.toc-ctl{
+  width:1.6rem;height:1.6rem;display:inline-flex;align-items:center;justify-content:center;
+  background:var(--bg2);border:1px solid var(--border);border-radius:3px;
+  color:var(--text-dim);font-size:.72rem;line-height:1;cursor:pointer;transition:all .15s;
+}
+.toc-ctl:hover:not(:disabled){color:var(--gold);border-color:var(--gold-dim,rgba(200,164,90,.4))}
+.toc-ctl:disabled{opacity:.3;cursor:default}
+.toc-ctl.on{color:var(--teal);border-color:rgba(78,201,176,.4)}
+.toc-ctl.danger:hover{color:var(--danger,#e06c75);border-color:rgba(224,108,117,.5)}
 
 /* Custom cursor on completion overlay */
 body.has-custom-cursor #bookCompleteOverlay{cursor:none}
