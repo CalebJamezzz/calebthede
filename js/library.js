@@ -70,6 +70,7 @@ function showLibArticleReader(){document.getElementById('libBrowse').style.displ
 function switchLibTab(tab,el){document.querySelectorAll('.lib-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.lib-panel').forEach(p=>p.classList.remove('active'));el.classList.add('active');document.getElementById('lib'+tab).classList.add('active');safePush({sub:'tab',tab:tab.toLowerCase()},'','#'+tab.toLowerCase());}
 
 let currentBookId=null,activeChId=null;
+const WORDS_PER_PAGE=180;
 
 async function loadLibrary(){showLibBrowse();await Promise.all([loadBooks(),loadArticles()])}
 
