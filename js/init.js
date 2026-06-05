@@ -213,10 +213,8 @@ function handleLibraryHash(){
           document.getElementById('bookDetailTitle').textContent = b.title||'';
           document.getElementById('bookDetailDesc').textContent = b.description||'';
           showLibBookDetail();
-          renderBookDetail().then(()=>{
-            const idx = typeof chapterIndex!=='undefined'
-              ? chapterIndex.findIndex(c=>c.id===chapterId) : -1;
-            if(idx>=0) showChapter(chapterId, idx);
+          renderTOC().then(()=>{
+            if(typeof enterReaderMode==='function') enterReaderMode({chId:chapterId});
           });
         } else {
           openBook(b.id,b.title,b.description,true).then(()=>{
@@ -232,15 +230,7 @@ function handleLibraryHash(){
 window.addEventListener('popstate',e=>{
   const state=e.state;
   if(state?.sub==='book'){
-    openBook(state.id,state.title,state.desc,true).then(()=>{
-      if(state.chId&&typeof renderBookDetail==='function'){
-        renderBookDetail().then(()=>{
-          const idx=typeof chapterIndex!=='undefined'
-            ?chapterIndex.findIndex(c=>c.id===state.chId):-1;
-          if(idx>=0) showChapter(state.chId,idx);
-        });
-      }
-    });
+    openBook(state.id,state.title,state.desc,true);
     return;
   }
   if(state?.sub==='article'){

@@ -102,6 +102,7 @@ let adminMode=false;
               <input class="inline-search" id="bookSearch" type="text" placeholder="Search books…" oninput="filterBooksInline(this.value)"/>
               <span class="inline-search-icon">⌕</span>
             </div>
+            <button class="btn-sm admin-only" onclick="openImportModal()" title="Upload a .docx exported from Google Docs">⇧ Import manuscript</button>
             <button class="btn-primary admin-only" onclick="openBookModal()">+ New Book</button>
           </div>
         </div>
@@ -137,6 +138,7 @@ let adminMode=false;
     <div class="book-detail-header">
       <div><button class="back-btn" onclick="closeBookDetail()">← Back to Library</button><h1 class="book-detail-title" id="bookDetailTitle"></h1><p class="book-detail-desc" id="bookDetailDesc"></p></div>
       <div style="display:flex;gap:.8rem;flex-shrink:0;margin-top:3.5rem">
+        <button class="btn-sm admin-only" onclick="openBookManage()">⚙ Manage Chapters</button>
         <button class="btn-sm admin-only" onclick="openChModal(null,currentBookId)">+ Add Chapter</button>
         <button class="btn-sm admin-only" onclick="openBookModal(currentBookId)">Edit Book</button>
         <button class="btn-sm danger admin-only" onclick="deleteCurrentBook()">Delete Book</button>
@@ -167,7 +169,7 @@ let adminMode=false;
     </div>
 
     <div class="book-detail-layout" id="bookDetailLayout">
-      <div class="ch-sidebar"><p class="ch-sidebar-title">Chapters</p><ul class="ch-list" id="chList"></ul><button class="btn-sm admin-only" style="width:100%;margin-top:.5rem" onclick="openChModal(null,currentBookId)">+ Add Chapter</button></div>
+      <div class="ch-sidebar"><button class="btn-sm" style="width:100%;margin-bottom:.7rem" onclick="backToContents()">← Contents</button><p class="ch-sidebar-title">Chapters</p><ul class="ch-list" id="chList"></ul><button class="btn-sm admin-only" style="width:100%;margin-top:.5rem" onclick="openChModal(null,currentBookId)">+ Add Chapter</button></div>
       <div id="chMain">
         <div id="chEmpty" style="display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6rem 2rem;color:var(--text-dim)">
           <span style="font-size:2rem;opacity:.25;margin-bottom:1.2rem;display:block">✦</span>
@@ -233,20 +235,6 @@ let adminMode=false;
     </div>
     <div class="reader-body" id="readerBody"></div>
   </div>
-
-  <!-- Reader Mode Progress Strip -->
-  <div class="reader-progress-strip"><div class="reader-progress-strip-fill" id="readerProgressFill"></div></div>
-
-  <!-- Reader Mode Floating Controls -->
-  <div class="reader-float" id="readerFloat">
-    <div class="reader-float-bar">
-      <button class="rfb-btn" onclick="readerFontStep(-1)" title="Smaller text">A−</button>
-      <button class="rfb-btn" id="rfbFontLabel" style="cursor:default;opacity:.5">Aa</button>
-      <button class="rfb-btn" onclick="readerFontStep(1)" title="Larger text">A+</button>
-      <div class="rfb-sep"></div>
-      <button class="rfb-btn rfb-exit" onclick="exitReaderMode()">✕ Exit focus</button>
-    </div>
-  </div>
 </main>
 <footer>
   <div class="footer-newsletter">
@@ -279,7 +267,16 @@ let adminMode=false;
     <div class="mf"><label>Title</label><input type="text" id="bookTitle" placeholder="The title of your book"/></div>
     <div class="mf"><label>Description</label><textarea id="bookDesc" style="min-height:80px" placeholder="A short description shown on the library card"></textarea></div>
     <div class="mf"><label>Cover Color</label><div class="color-swatches" id="colorSwatches"></div><input type="hidden" id="bookColor"/></div>
-    <div class="mf"><label>Cover Image URL</label><input type="text" id="bookCoverImage" placeholder="https://example.com/image.jpg"/></div>
+    <div class="mf">
+      <label>Cover Image <span style="opacity:.5;text-transform:none;letter-spacing:0">— optional; a celestial cover is generated if left blank</span></label>
+      <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
+        <input type="file" id="bookCoverFile" accept="image/*" onchange="uploadCoverFile(event)" style="flex:1;min-width:180px;font-size:.78rem;color:var(--text-dim)"/>
+        <button type="button" class="btn-sm" id="coverClearBtn" onclick="clearCoverImage()" style="display:none;white-space:nowrap">✕ remove</button>
+      </div>
+      <div id="coverUploadStatus" style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--teal);margin-top:.4rem;min-height:.9rem"></div>
+      <div id="coverPreview" style="display:none;margin-top:.5rem"><img id="coverPreviewImg" style="max-height:120px;border-radius:4px;border:1px solid var(--border)"/></div>
+      <input type="text" id="bookCoverImage" placeholder="…or paste an image URL" style="margin-top:.5rem;width:100%" oninput="onCoverUrlInput()"/>
+    </div>
     <div class="mf"><label>Total Chapters Planned</label><input type="number" id="bookTotalChapters" min="1" placeholder="e.g. 12 — auto-marks complete when all are published"/></div>
     <div class="mf"><label>Series</label>
       <div style="display:flex;gap:.5rem;align-items:center">
@@ -299,6 +296,35 @@ let adminMode=false;
     </div>
     <div class="mf" id="seriesOrderWrap" style="display:none"><label>Book # in Series</label><input type="number" id="bookSeriesOrder" min="1" placeholder="e.g. 1" style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.6rem .8rem;color:var(--text);font-family:'Lato',sans-serif;font-size:.9rem;outline:none;width:100%"/></div>
     <div class="modal-actions"><button class="btn-primary" id="bookSaveBtn" onclick="saveBook()">Save Book</button><button class="btn-ghost" onclick="closeModal('bookModal')">Cancel</button></div>
+  </div>
+</div>
+<!-- IMPORT MANUSCRIPT MODAL -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('importModal')">✕</button>
+    <h2 class="modal-title">Import manuscript</h2>
+    <p style="color:var(--text-dim);font-size:.85rem;margin-bottom:1.2rem;line-height:1.5">In Google Docs, style each chapter title as <strong>Heading 1</strong>, then <em>File → Download → Microsoft Word (.docx)</em> and drop it here. Each heading becomes a chapter, in order.</p>
+    <div class="mf"><label>Mode</label>
+      <select id="importMode" onchange="onImportModeChange()" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.6rem .8rem;color:var(--text);font-family:'Lato',sans-serif;font-size:.9rem;outline:none">
+        <option value="new">Create a new book</option>
+        <option value="update">Update an existing book (re-sync from Docs)</option>
+      </select>
+    </div>
+    <div class="mf" id="importBookSelectWrap" style="display:none"><label>Book to update</label>
+      <select id="importBookSelect" onchange="onImportBookSelect()" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.6rem .8rem;color:var(--text);font-family:'Lato',sans-serif;font-size:.9rem;outline:none"></select>
+      <p style="color:var(--text-dim);font-size:.72rem;margin-top:.4rem;line-height:1.4">Chapters re-sync by order: matching slots are updated in place (bookmarks kept), new headings are added, removed headings are deleted.</p>
+    </div>
+    <div class="mf"><label>Book title</label><input type="text" id="importBookTitle" placeholder="The title of your book"/></div>
+    <div class="mf"><label>.docx file</label><input type="file" id="importFile" accept=".docx" onchange="handleManuscriptFile(this)" style="background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.55rem .7rem;color:var(--text);font-family:'Lato',sans-serif;font-size:.85rem;width:100%"/></div>
+    <div class="mf"><label>Split chapters at</label>
+      <select id="importHeading" onchange="renderImportPreview()" style="width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:3px;padding:.6rem .8rem;color:var(--text);font-family:'Lato',sans-serif;font-size:.9rem;outline:none">
+        <option value="h1">Heading 1 (recommended)</option>
+        <option value="h2">Heading 2</option>
+      </select>
+    </div>
+    <div id="importPreview" class="import-preview"><p class="import-status" style="opacity:.6">Choose a .docx file to see detected chapters.</p></div>
+    <label class="ch-toggle-wrap" style="margin:1rem 0"><input type="checkbox" id="importPublish" style="position:static;width:auto;height:auto;opacity:1"/> <span style="font-size:.85rem;color:var(--text-dim)">Publish chapters immediately (otherwise saved as drafts)</span></label>
+    <div class="modal-actions"><button class="btn-primary" id="importRunBtn" onclick="runManuscriptImport()">Import</button><button class="btn-ghost" onclick="closeModal('importModal')">Cancel</button></div>
   </div>
 </div>
 <!-- CHAPTER MODAL -->
@@ -383,6 +409,7 @@ let adminMode=false;
   </div>
 </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script src="js/init.js"></script>
 <script src="js/theme_nav.js"></script>
 <script src="js/easter_eggs.js"></script>
@@ -390,8 +417,8 @@ let adminMode=false;
 <script src="js/lab.js"></script>
 <script>document.addEventListener("DOMContentLoaded",()=>{loadLibrary();handleLibraryHash();});</script>
 
-<!-- ══ READER MODE OVERLAY ══ -->
-<div id="readerOverlay" role="dialog" aria-modal="true" aria-label="Focus reader">
+<!-- ══ READER OVERLAY (scroll) ══ -->
+<div id="readerOverlay" role="dialog" aria-modal="true" aria-label="Reader">
   <div class="ro-progress"><div class="ro-progress-fill" id="roProgressFill"></div></div>
 
   <!-- Top bar -->
@@ -403,44 +430,19 @@ let adminMode=false;
       <button class="ro-font-btn" style="font-size:1.1rem" onclick="roSetFont('xl')">A</button>
     </div>
     <div class="ro-topbar-title" id="roTitle"></div>
-    <button class="ro-exit-btn" onclick="exitReaderMode()">✕ exit focus</button>
-  </div>
-
-  <!-- Book spread -->
-  <div class="ro-spread">
-    <!-- Mobile tap zones -->
-    <div class="ro-tap-left" onclick="roStep(-1)"></div>
-    <div class="ro-tap-right" onclick="roStep(1)"></div>
-
-    <div class="ro-pages" id="roPages">
-      <div class="ro-page ro-page-left">
-        <div class="ro-chapter-label" id="roChLabelLeft" style="display:none;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid rgba(78,201,176,.15);flex-shrink:0"></div>
-        <div class="ro-page-content" id="roContentLeft"></div>
-        <div class="ro-page-num" id="roNumLeft"></div>
+    <div class="ro-topbar-right">
+      <div class="ro-theme-btns">
+        <button class="ro-theme-btn" data-th="sepia" onclick="roSetTheme('sepia')" title="Sepia">◐</button>
+        <button class="ro-theme-btn" data-th="light" onclick="roSetTheme('light')" title="Light">○</button>
+        <button class="ro-theme-btn" data-th="dark"  onclick="roSetTheme('dark')"  title="Dark">●</button>
       </div>
-      <div class="ro-spine"></div>
-      <div class="ro-page ro-page-right">
-        <div class="ro-chapter-label" id="roChLabelRight" style="display:none;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem;padding-bottom:.7rem;border-bottom:1px solid rgba(78,201,176,.15);flex-shrink:0"></div>
-        <div class="ro-page-content" id="roContentRight"></div>
-        <div class="ro-page-num" id="roNumRight"></div>
-      </div>
+      <button class="ro-exit-btn" onclick="exitReaderMode()">✕ exit</button>
     </div>
   </div>
 
-  <!-- Bottom nav bar -->
-  <div class="ro-bottombar">
-    <div class="ro-nav-group">
-      <button class="ro-nav-btn" id="roChPrevBtn" onclick="roJumpChapter(-1)">⇤ Chapter</button>
-      <button class="ro-nav-btn primary" id="roPrevBtn" onclick="roStep(-1)">← Prev</button>
-    </div>
-    <div class="ro-center-info">
-      <span id="roCenterLabel">Page <strong id="roPageNum">1</strong> of <strong id="roPageTotal">1</strong></span>
-      <span id="roChapterLabel" style="opacity:.5"></span>
-    </div>
-    <div class="ro-nav-group">
-      <button class="ro-nav-btn primary" id="roNextBtn" onclick="roStep(1)">Next →</button>
-      <button class="ro-nav-btn" id="roChNextBtn" onclick="roJumpChapter(1)">Chapter ⇥</button>
-    </div>
+  <!-- Scrolling reading column -->
+  <div class="ro-scroll" id="roScroll">
+    <div class="ro-scroll-inner" id="roScrollInner"></div>
   </div>
 </div>
 
