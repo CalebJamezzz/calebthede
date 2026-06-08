@@ -1,3 +1,34 @@
+// ── PUBLIC LIVENESS (auto-publish) ───────────────────────────────────────
+// A chapter is "live" on the public side if it's explicitly published OR its
+// scheduled publish_at has passed. These helpers degrade gracefully if the
+// publish_at column hasn't been added to the DB yet (falls back to published).
+function _publishAtMissing(err){
+  return err && /publish_at/.test((err.message||'')+(err.details||'')+(err.hint||''));
+}
+function chIsLive(c){
+  if(!c) return false;
+  if(c.published) return true;
+  return !!(c.publish_at && new Date(c.publish_at).getTime() <= Date.now());
+}
+// Run a chapters query restricted to live rows. `makeQuery` must return a FRESH
+// Supabase query builder each call (so we can retry on column-missing fallback).
+async function queryLiveChapters(makeQuery){
+  const nowIso = new Date().toISOString();
+  let res = await makeQuery().or(`published.eq.true,publish_at.lte.${nowIso}`);
+  if(res.error && _publishAtMissing(res.error)){
+    res = await makeQuery().eq('published', true);
+  }
+  return res;
+}
+// Fetch chapters (for in-JS counting) including publish_at when available.
+async function fetchChaptersWithSchedule(select){
+  let res = await sb.from('chapters').select(select + ',publish_at');
+  if(res.error && _publishAtMissing(res.error)){
+    res = await sb.from('chapters').select(select);
+  }
+  return res.data || [];
+}
+
 // ── CHAPTER PREVIEW ──
 function updateChPreview(){
   const content=(typeof quillGet!=='undefined'?quillGet('chContentEditor'):null)||document.getElementById('chContent')?.value||'';
@@ -64,14 +95,39 @@ let selectedCover=COVERS[0];
 
 function buildSwatches(current){const wrap=document.getElementById('colorSwatches');wrap.innerHTML='';COVERS.forEach(c=>{const s=document.createElement('div');s.className='swatch'+(c===(current||selectedCover)?' selected':'');s.style.background=c;s.onclick=()=>{selectedCover=c;document.getElementById('bookColor').value=c;wrap.querySelectorAll('.swatch').forEach(x=>x.classList.remove('selected'));s.classList.add('selected')};wrap.appendChild(s)});document.getElementById('bookColor').value=current||selectedCover}
 
-function showLibBrowse(){document.getElementById('libBrowse').style.display='block';document.getElementById('libBookDetail').style.display='none';document.getElementById('libArticleReader').style.display='none'}
-function showLibBookDetail(){document.getElementById('libBrowse').style.display='none';document.getElementById('libBookDetail').style.display='block';document.getElementById('libArticleReader').style.display='none'}
-function showLibArticleReader(){document.getElementById('libBrowse').style.display='none';document.getElementById('libBookDetail').style.display='none';document.getElementById('libArticleReader').style.display='block'}
-function switchLibTab(tab,el){document.querySelectorAll('.lib-tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.lib-panel').forEach(p=>p.classList.remove('active'));el.classList.add('active');document.getElementById('lib'+tab).classList.add('active');safePush({sub:'tab',tab:tab.toLowerCase()},'','#'+tab.toLowerCase());}
+function _libShow(id,disp){const el=document.getElementById(id);if(el)el.style.display=disp;}
+function showLibBrowse(){_libShow('libBrowse','block');_libShow('libBookDetail','none');_libShow('libArticleReader','none')}
+function showLibBookDetail(){_libShow('libBrowse','none');_libShow('libBookDetail','block');_libShow('libArticleReader','none')}
+function showLibArticleReader(){_libShow('libBrowse','none');_libShow('libBookDetail','none');_libShow('libArticleReader','block')}
+// Legacy tab switcher — Library is now books-only and Marginalia is its own
+// page, so there are no tabs. Kept as a guarded no-op for older history/hash
+// entries that may still call it.
+function switchLibTab(tab,el){
+  if(!el||!el.classList)return;
+  document.querySelectorAll('.lib-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.lib-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  const panel=document.getElementById('lib'+tab);if(panel)panel.classList.add('active');
+  safePush({sub:'tab',tab:tab.toLowerCase()},'','#'+tab.toLowerCase());
+}
 
 let currentBookId=null,activeChId=null;
 const WORDS_PER_PAGE=180;
 
+// Live tally for the hero legend card.
+function libSetCount(id,n){const el=document.getElementById(id);if(el)el.textContent=n;}
+
+// A series can carry its own visual identity. Blue Ember gets the midnight
+// "ember" band so its dark covers sit on a matching field. Unknown series
+// fall back to the plain parchment band.
+function seriesTheme(name){
+  const key=String(name||'').trim().toLowerCase();
+  if(key.includes('ember')) return 'theme-ember';
+  return '';
+}
+
+// Page-aware: Library (/library) renders books; Marginalia (/marginalia)
+// renders articles. Each loader no-ops if its container isn't on the page.
 async function loadLibrary(){showLibBrowse();await Promise.all([loadBooks(),loadArticles()])}
 
 
@@ -116,13 +172,16 @@ function makeArticleSVG(articleId, tag){
 }
 async function loadBooks(){
   const container=document.getElementById('booksContainer'),empty=document.getElementById('booksEmpty');
+  if(!container)return; // not on the Library page
   container.innerHTML='<div style="padding:2rem 0">'+constellationLoader()+'</div>';
-  const[{data:books},{data:chapters},{data:allSeries}]=await Promise.all([
+  const[{data:books},chapters,{data:allSeries}]=await Promise.all([
     sb.from('books').select('*').order('created_at',{ascending:true}),
-    sb.from('chapters').select('id,book_id,content,published'),
+    fetchChaptersWithSchedule('id,book_id,content,published'),
     sb.from('series').select('*').order('created_at',{ascending:true})
   ]);
   container.innerHTML='';
+  const isAdminBooks=document.body.classList.contains('is-admin');
+  libSetCount('libCountBooks',(books||[]).filter(b=>isAdminBooks||b.status!=='draft').length);
   if(!books||!books.length){empty.style.display='flex';return}
   empty.style.display='none';
   window._allBooks=books;window._allChapters=chapters;window._allSeries=allSeries;
@@ -130,27 +189,43 @@ async function loadBooks(){
   function makeBookCard(b){
     const chs=(chapters||[]).filter(c=>c.book_id===b.id);
     const count=chs.length;
-    const pubCount=chs.filter(c=>c.published).length;
+    const pubCount=chs.filter(chIsLive).length;
     const totalChCount=b.total_chapters||count;
-    const card=document.createElement('div');card.className='book-card';
-    const bgStyle=b.cover_image?`background:${b.color||COVERS[0]};background-image:url(${b.cover_image});background-size:cover;background-position:center`:`background:${b.color||COVERS[0]}`;
     const totalWords=chs.reduce((sum,ch)=>sum+(ch.content||'').split(/\s+/).filter(Boolean).length,0);
     const pageCount=Math.max(0,Math.ceil(totalWords/WORDS_PER_PAGE))||'—';
     const readMins=totalWords>0?Math.max(1,Math.ceil(totalWords/200)):'—';
     const statusLabel=b.status==='complete'?'Complete':b.status==='in_progress'?'In Progress':'Draft';
     const statusClass=b.status||'in_progress';
-    const spineStatus=b.status!=='draft'
-      ?`<div class="book-spine-status ${statusClass}">${statusLabel}</div>`
-      :`<div class="book-spine-status in_progress admin-only blk">Draft</div>`;
-    card.innerHTML=`
-      <div class="book-spine">
-        <div class="book-spine-bg" style="${bgStyle}"></div>
+    const hasCover=!!b.cover_image;
+
+    const card=document.createElement('div');
+    card.className='book-card '+(hasCover?'has-cover':'no-cover');
+
+    let spineInner;
+    if(hasCover){
+      // A real cover already carries the title + author + badges — keep the art clean.
+      spineInner=`<div class="book-spine-bg" style="background:${b.color||COVERS[0]};background-image:url(${b.cover_image});background-size:cover;background-position:center"></div>`;
+    }else{
+      // No cover → generated placeholder: colour field + constellation + title & status overlay.
+      const spineStatus=b.status!=='draft'
+        ?`<div class="book-spine-status ${statusClass}">${statusLabel}</div>`
+        :`<div class="book-spine-status in_progress admin-only blk">Draft</div>`;
+      spineInner=`
+        <div class="book-spine-bg" style="background:${b.color||COVERS[0]}"></div>
         <div class="book-spine-svg">${makeCelestialSVG(b.id)}</div>
         ${spineStatus}
         <div class="book-spine-content">
           <span class="book-spine-title">${b.title}</span>
-        </div>
-      </div>
+        </div>`;
+    }
+
+    // On cover cards the status moves to the caption (it isn't painted on the art).
+    const footStatus=hasCover
+      ? `<span class="book-foot-status ${statusClass}${b.status==='draft'?' admin-only blk':''}">${statusLabel}</span>`
+      : '';
+
+    card.innerHTML=`
+      <div class="book-spine">${spineInner}</div>
       <div class="book-foot">
         <div class="book-foot-title">${b.title}</div>
         <div class="book-foot-meta">
@@ -158,6 +233,7 @@ async function loadBooks(){
           <span>${pageCount} pg</span>
           <span>${readMins} min</span>
         </div>
+        ${footStatus}
         <div class="admin-only" style="margin-top:.5rem">
           <button class="btn-sm" style="width:100%" onclick="event.stopPropagation();openBookModal('${b.id}')">Edit</button>
         </div>
@@ -178,14 +254,16 @@ async function loadBooks(){
     if(!allSerBooks.length)return;
     allSerBooks.forEach(b=>usedBookIds.add(b.id));
 
-    const section=document.createElement('div');section.style.cssText='margin-bottom:3.5rem';
+    const themeClass=seriesTheme(ser.name);
+    const section=document.createElement('div');
+    section.className='series-band'+(themeClass?' '+themeClass:'');
     const totalPlanned=ser.total_books||serBooks.length;
     section.innerHTML=`
       <div class="series-header">
         <div>
-          <p class="series-eyebrow">Series</p>
+          <p class="series-eyebrow">Series · ${serBooks.length} of ${totalPlanned} published</p>
           <h3 class="series-title">${ser.name}</h3>
-          <p class="series-meta">${serBooks.length} of ${totalPlanned} book${totalPlanned!==1?'s':''} published${ser.description?` · ${ser.description}`:''}</p>
+          <p class="series-meta">${ser.description||(themeClass==='theme-ember'?'Greek myth, read through the lens of psychology.':'')}</p>
         </div>
         <button class="btn-sm admin-only blk" onclick="openSeriesModal('${ser.id}')">Edit Series</button>
       </div>`;
@@ -196,7 +274,9 @@ async function loadBooks(){
         const numBadge=document.createElement('div');
         numBadge.className='book-series-num';
         numBadge.textContent='#'+b.series_order;
-        card.querySelector('.book-spine-content').appendChild(numBadge);
+        const foot=card.querySelector('.book-foot')||card;
+        const meta=foot.querySelector('.book-foot-meta');
+        if(meta)foot.insertBefore(numBadge,meta);else foot.appendChild(numBadge);
       }
       grid.appendChild(card);
     });
@@ -204,7 +284,7 @@ async function loadBooks(){
     const written=allSerBooks.length;
     for(let i=written;i<totalPlanned;i++){
       const ph=document.createElement('div');ph.className='book-card book-card-placeholder';
-      ph.innerHTML=`<div class="book-spine book-spine-placeholder"><span style="font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.1em;color:rgba(255,255,255,.2)">Book ${i+1}</span></div><div class="book-foot"><div class="book-foot-title" style="opacity:.3">Coming soon</div></div>`;
+      ph.innerHTML=`<div class="book-spine book-spine-placeholder"><span class="ph-glyph">✦</span><span class="ph-num">Book ${i+1}</span></div><div class="book-foot"><span class="ph-soon">Coming soon</span></div>`;
       grid.appendChild(ph);
     }
     section.appendChild(grid);
@@ -237,6 +317,30 @@ async function loadBooks(){
     }
     container.appendChild(section);
   }
+  initEmberScroll();
+}
+
+// Subtle Blue Ember scroll treatment: as a `.series-band.theme-ember` enters
+// the viewport, fade in the deep-blue veil + soft animated flame glow. Leaves
+// the rest of the page on the shared celestial wash. Tasteful, not loud.
+let _emberObserver=null;
+function initEmberScroll(){
+  const veil=document.querySelector('.ember-veil');
+  if(!veil)return;
+  const bands=document.querySelectorAll('.series-band.theme-ember');
+  if(_emberObserver)_emberObserver.disconnect();
+  // Page-wide dusk gradient whenever a Blue Ember series is on the browse page.
+  document.body.classList.toggle('lib-ember-page',bands.length>0);
+  if(!bands.length){document.body.classList.remove('ember-active');return;}
+  // Honour reduced-motion: still tint, but the CSS animation is disabled there.
+  _emberObserver=new IntersectionObserver(entries=>{
+    const anyVisible=[..._emberObserver._tracked||[]].some(el=>el._inView);
+    entries.forEach(e=>{e.target._inView=e.isIntersecting;});
+    const active=[...bands].some(b=>b._inView);
+    document.body.classList.toggle('ember-active',active);
+  },{rootMargin:'-25% 0px -25% 0px',threshold:0.01});
+  _emberObserver._tracked=bands;
+  bands.forEach(b=>_emberObserver.observe(b));
 }
 
 function openBookModal(id=null){
@@ -333,10 +437,10 @@ async function saveBook(){
   // Auto-compute status from published chapter count vs total
   let status='in_progress';
   if(editId && total_chapters){
-    const{count}=await sb.from('chapters')
-      .select('id',{count:'exact',head:true})
-      .eq('book_id',editId).eq('published',true);
-    if(count>=total_chapters) status='complete';
+    const nowIso=new Date().toISOString();
+    let r=await sb.from('chapters').select('id',{count:'exact',head:true}).eq('book_id',editId).or(`published.eq.true,publish_at.lte.${nowIso}`);
+    if(r.error&&_publishAtMissing(r.error)) r=await sb.from('chapters').select('id',{count:'exact',head:true}).eq('book_id',editId).eq('published',true);
+    if((r.count||0)>=total_chapters) status='complete';
   }
 
   setLoading('bookSaveBtn',true);
@@ -348,17 +452,35 @@ async function saveBook(){
   toast(editId?'Book updated':'Book created');closeModal('bookModal');loadBooks();
 }
 
+// Resolve a book's series theme class (e.g. 'theme-ember' for Blue Ember) so
+// the detail view + reader can carry the same midnight-blue identity as the
+// shelf band. Falls back to a live lookup if the caches aren't warm yet.
+async function bookSeriesTheme(id){
+  let book=(window._allBooks||[]).find(b=>b.id===id);
+  let allSeries=window._allSeries;
+  if(!book){const{data}=await sb.from('books').select('series_id').eq('id',id).single();book=data;}
+  if(!book||!book.series_id)return '';
+  let ser=(allSeries||[]).find(s=>s.id===book.series_id);
+  if(!ser){const{data}=await sb.from('series').select('name').eq('id',book.series_id).single();ser=data;}
+  return seriesTheme(ser&&ser.name);
+}
+function applyBookTheme(themeClass){
+  document.body.classList.remove('book-ember');
+  if(themeClass==='theme-ember')document.body.classList.add('book-ember');
+}
 async function openBook(id,title,desc,skipHistory){
   currentBookId=id;activeChId=null;
   document.getElementById('bookDetailTitle').textContent=title;
   document.getElementById('bookDetailDesc').textContent=desc||'';
+  // Carry the series identity (Blue Ember → midnight band) into the detail view.
+  bookSeriesTheme(id).then(applyBookTheme);
   // Show TOC first immediately, then load chapter detail in background
   showLibBookDetail();
   await renderTOC();
   if(!skipHistory)safePush({sub:'book',id,title,desc},'','#book/'+id);
   return true;
 }
-function closeBookDetail(){showLibBrowse();loadBooks();safePush({sub:'browse'},'','#');}
+function closeBookDetail(){applyBookTheme('');showLibBrowse();loadBooks();safePush({sub:'browse'},'','#');}
 
 async function deleteCurrentBook(){
   if(!confirm('Delete this book and all its chapters?'))return;
@@ -557,9 +679,11 @@ let activeArticleTag = null;
 
 async function loadArticles(){
   const grid=document.getElementById('articlesGrid'),empty=document.getElementById('articlesEmpty');
+  if(!grid)return; // not on the Marginalia page
   grid.innerHTML='<div style="padding:2rem 0">'+constellationLoader()+'</div>';
   const{data:articles}=await sb.from('articles').select('*').order('created_at',{ascending:false});
   grid.innerHTML='';
+  libSetCount('libCountMarg',(articles||[]).length);
   if(!articles||!articles.length){empty.style.display='block';document.getElementById('articleTagFilters').style.display='none';return}
   empty.style.display='none';
   allArticles = articles;
@@ -642,7 +766,8 @@ async function enterReaderMode(opts){
   const scroller = document.getElementById('roScroll');
   if(!overlay || !inner || !scroller) return;
 
-  const articleVisible = document.getElementById('libArticleReader').style.display !== 'none';
+  const arEl = document.getElementById('libArticleReader');
+  const articleVisible = arEl ? arEl.style.display !== 'none' : false;
   roIsBook = !articleVisible;
 
   overlay.classList.add('active');
@@ -655,12 +780,12 @@ async function enterReaderMode(opts){
 
   if(roIsBook){
     inner.innerHTML = '<div class="ro-loading">Loading…</div>';
-    const {data:allChs} = await sb.from('chapters')
-      .select('id,num,title,content,position')
-      .eq('book_id', currentBookId)
-      .eq('published', true)
-      .order('position', {ascending:true,nullsFirst:false})
-      .order('num', {ascending:true});
+    const {data:allChs} = await queryLiveChapters(()=>
+      sb.from('chapters')
+        .select('id,num,title,content,position')
+        .eq('book_id', currentBookId)
+        .order('position', {ascending:true,nullsFirst:false})
+        .order('num', {ascending:true}));
     roChapters = allChs || [];
     document.getElementById('roTitle').textContent =
       document.getElementById('bookDetailTitle')?.textContent || '';
@@ -680,9 +805,11 @@ async function enterReaderMode(opts){
 
     const sel = document.getElementById('roChapterSelect');
     if(sel){
-      sel.innerHTML = roChapters.map((ch,i)=>
-        '<option value="'+i+'">Ch. '+(ch.num||i+1)+(ch.title?' · '+roEsc(ch.title):'')+'</option>'
-      ).join('');
+      sel.innerHTML = roChapters.map((ch,i)=>{
+        const w = (ch.content||'').replace(/<[^>]*>/g,' ').split(/\s+/).filter(Boolean).length;
+        const m = Math.max(1, Math.ceil(w/200));
+        return '<option value="'+i+'">Ch. '+(ch.num||i+1)+(ch.title?' · '+roEsc(ch.title):'')+' · '+m+' min</option>';
+      }).join('');
       sel.style.display = '';
     }
 
@@ -888,12 +1015,19 @@ async function renderTOC(){
     resumeWrap.style.display = 'none';
   }
 
-  // Fetch chapters for TOC
-  const{data:chs} = await sb.from('chapters')
-    .select('id,num,title,content,published,position')
-    .eq('book_id', currentBookId)
-    .order('position', {ascending:true,nullsFirst:false})
-    .order('num', {ascending:true});
+  // Fetch chapters for TOC. Admins see everything (incl. drafts/scheduled);
+  // the public sees only live chapters (published or past publish_at).
+  const isAdmin = document.body.classList.contains('is-admin');
+  let {data:chs} = await (async()=>{
+    const mk = sel => sb.from('chapters').select(sel)
+      .eq('book_id', currentBookId)
+      .order('position', {ascending:true,nullsFirst:false})
+      .order('num', {ascending:true});
+    let r = await mk('id,num,title,content,published,position,publish_at');
+    if(r.error && _publishAtMissing(r.error)) r = await mk('id,num,title,content,published,position');
+    return r;
+  })();
+  if(!isAdmin && chs) chs = chs.filter(chIsLive);
 
   if(!chs || !chs.length){
     tocList.innerHTML = '';
@@ -1101,7 +1235,12 @@ function dismissCompletion(){
 async function autoUpdateBookStatus(bookId){
   const{data:book}=await sb.from('books').select('total_chapters').eq('id',bookId).single();
   if(!book?.total_chapters)return; // no target set — don't auto-change
-  const{count}=await sb.from('chapters').select('id',{count:'exact',head:true}).eq('book_id',bookId).eq('published',true);
+  const{count}=await (async()=>{
+    const nowIso=new Date().toISOString();
+    let r=await sb.from('chapters').select('id',{count:'exact',head:true}).eq('book_id',bookId).or(`published.eq.true,publish_at.lte.${nowIso}`);
+    if(r.error&&_publishAtMissing(r.error)) r=await sb.from('chapters').select('id',{count:'exact',head:true}).eq('book_id',bookId).eq('published',true);
+    return r;
+  })();
   const newStatus=count>=book.total_chapters?'complete':'in_progress';
   await sb.from('books').update({status:newStatus}).eq('id',bookId);
 }
@@ -1212,7 +1351,7 @@ function openArticle(a,skipHistory){
   if(!skipHistory)safePush({sub:'article',id:a.id},'','#article/'+a.id);
 }
 
-function closeArticleReader(){showLibBrowse();loadArticles();switchLibTab('Articles',document.querySelectorAll('.lib-tab')[1]);safePush({sub:'articles'},'','#articles');}
+function closeArticleReader(){showLibBrowse();loadArticles();safePush({sub:'browse'},'','#');}
 
 async function deleteArticle(id,fromReader=false){
   if(!confirm('Delete this article?'))return;
@@ -1290,7 +1429,7 @@ function clearArticleRawHtml(){
 function shareArticle(){
   const artId = typeof currentArticleId !== 'undefined' ? currentArticleId : null;
   const url   = artId
-    ? window.location.origin + '/library#article/' + artId
+    ? window.location.origin + '/marginalia#article/' + artId
     : window.location.href;
   copyShareLink(url, 'Article link copied!');
 }

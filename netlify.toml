@@ -32,6 +32,11 @@
   to = "/library.html"
   status = 200
 
+[[redirects]]
+  from = "/marginalia"
+  to = "/marginalia.html"
+  status = 200
+
 # -- Lab embed --
 [[redirects]]
   from = "/lab-embed"

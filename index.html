@@ -23,6 +23,7 @@ let adminMode=false;
 <canvas id="shootingStarCanvas"></canvas>
 <div class="hub-bg"></div>
 <div class="hub-pattern"></div>
+<div class="home-sky"><span class="shoot shoot1"></span><span class="shoot shoot2"></span><span class="shoot shoot3"></span></div>
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 <div id="flameCursor"><svg width="28" height="40" viewBox="0 0 28 40" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="fg1" cx="50%" cy="80%" r="60%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="30%" stop-color="#60d0ff" stop-opacity="0.9"/><stop offset="70%" stop-color="#3b82f6" stop-opacity="0.7"/><stop offset="100%" stop-color="#1d4ed8" stop-opacity="0"/></radialGradient><radialGradient id="fg2" cx="50%" cy="70%" r="55%"><stop offset="0%" stop-color="#bfdbfe" stop-opacity="0.8"/><stop offset="50%" stop-color="#60a5fa" stop-opacity="0.5"/><stop offset="100%" stop-color="#2563eb" stop-opacity="0"/></radialGradient></defs><path d="M14 38 C6 32 2 24 4 16 C5 10 8 6 10 4 C10 8 11 10 13 11 C11 7 13 2 14 0 C15 4 17 8 20 10 C22 12 24 16 24 20 C24 28 20 34 14 38Z" fill="url(#fg1)" opacity="0.9"/><path d="M14 36 C9 30 7 24 8 18 C9 14 11 11 12 9 C12 12 13 14 14 15 C13 12 14 8 15 6 C16 9 18 12 20 14 C21 16 22 19 22 22 C22 28 18 33 14 36Z" fill="url(#fg2)" opacity="0.8"/><path d="M14 34 C11 29 10 25 11 21 C12 18 13 16 14 15 C15 17 15 20 14 22 C16 19 17 16 17 14 C18 17 19 20 19 23 C19 28 17 32 14 34Z" fill="#e0f2fe" opacity="0.7"/></svg></div>
@@ -57,9 +58,16 @@ let adminMode=false;
   <ul class="nav-center">
     <li><a href="/" class="active">Home</a></li>
     <li><a href="/about">About</a></li>
-    <li><a href="/projects">Projects</a></li>
-    <li><a href="/library">Library</a></li>
-    <li><a href="/lab">Lab</a></li>
+    <li class="nav-deck"><a href="/codex" class="deck-label">Codex<span class="deck-caret">▾</span></a>
+      <div class="nav-dropdown">
+        <a href="/library"><span class="dd-t">The Library</span><span class="dd-s">Books &amp; the Blue Ember series</span></a>
+        <a href="/marginalia"><span class="dd-t">Marginalia</span><span class="dd-s">Notes &amp; short writing</span></a>
+      </div></li>
+    <li class="nav-deck"><a href="/atlas" class="deck-label">Atlas<span class="deck-caret">▾</span></a>
+      <div class="nav-dropdown">
+        <a href="/projects"><span class="dd-t">The Forge</span><span class="dd-s">Tools &amp; things built</span></a>
+        <a href="/lab"><span class="dd-t">Orbit</span><span class="dd-s">Experiments in motion</span></a>
+      </div></li>
     <li><a href="/contact">Contact</a></li>
   </ul>
   <div class="nav-right">
@@ -74,9 +82,16 @@ let adminMode=false;
 <div class="mobile-drawer" id="mobileDrawer">
   <a class="mobile-nav-item active" href="/">Home</a>
   <a class="mobile-nav-item" href="/about">About</a>
-  <a class="mobile-nav-item" href="/projects">Projects</a>
-  <a class="mobile-nav-item" href="/library">Library</a>
-  <a class="mobile-nav-item" href="/lab">Lab</a>
+  <div class="mobile-group">
+    <span class="mobile-group-label">Codex</span>
+    <a class="mobile-nav-sub" href="/library">The Library</a>
+    <a class="mobile-nav-sub" href="/marginalia">Marginalia</a>
+  </div>
+  <div class="mobile-group">
+    <span class="mobile-group-label">Atlas</span>
+    <a class="mobile-nav-sub" href="/projects">The Forge</a>
+    <a class="mobile-nav-sub" href="/lab">Orbit</a>
+  </div>
   <a class="mobile-nav-item" href="/contact">Contact</a>
   <div class="mobile-drawer-footer">
     <div class="mobile-drawer-links">
@@ -87,98 +102,195 @@ let adminMode=false;
   </div>
 </div>
 <main>
-  <!-- HERO -->
-  <div class="hub-hero">
-    <div class="hub-hero-left">
-      <p class="hub-welcome">Welcome — you've found my corner of the internet.</p>
-      <h1 class="hub-headline">A place to<br>build, think,<br>and <em>write.</em></h1>
-      <p class="hub-name">Caleb Thede</p>
-      <div class="dual-bar">
-        <div class="dual-half left"><span class="dual-dot"></span>Computer Science</div>
-        <div class="dual-half right"><span class="dual-dot"></span>Psychology</div>
+  <!-- HERO · the frontispiece -->
+  <header class="hero">
+    <div class="hero-left">
+      <div class="plate-mark"><span class="rule"></span><span class="legend">Plate I · Frontispiece</span></div>
+      <p class="welcome">Welcome — you've found my corner of the cosmos.</p>
+      <h1 class="headline"><span class="drop">A</span> place to build, think, and <em>write.</em></h1>
+      <p class="byline">Caleb Thede · Cartographer of inner worlds</p>
+      <div class="ink-tags">
+        <span class="ink logic"><span class="dot"></span>Computer Science · the logic</span>
+        <span class="ink depth"><span class="dot"></span>Psychology · the depth</span>
       </div>
-      <p class="hub-bio">I'm a developer and designer with a deep interest in <strong>psychology</strong> and the way technology shapes human experience. This site is my personal hub — part portfolio, part library, part sketchpad. It's always growing, and it's genuinely mine.</p>
-      <div class="hub-cta">
-        <a class="btn-primary" href="/projects">See My Work</a>
-        <a class="btn-ghost" href="/about">Who I Am</a>
-      </div>
-    </div>
-    <div class="hub-hero-right">
-      <div class="status-card">
-        <div class="status-header"><span class="status-dot"></span>Current Status</div>
-        <div class="status-items" id="statusItems">
-          <div style="color:var(--text-dim);font-size:.85rem;padding:1rem 0"><span class="loading-spinner"></span></div>
-        </div>
-        <div class="status-admin-bar admin-only">
-          <button class="btn-sm" onclick="openStatusModal()">Edit Status</button>
-        </div>
+      <p class="bio">I build software and study the mind — and I believe myth, psychology, and the stars are three maps of the same territory. This is my workspace: the <strong>Blue Ember</strong> series I'm writing, the things I'm building, and the ideas I'm charting. It's <strong>mine</strong>, and it's always being drawn.</p>
+      <div class="cta">
+        <a class="btn solid" href="/projects">Enter the Atlas →</a>
+        <a class="btn ghost" href="/about">Who I Am</a>
       </div>
     </div>
-  </div>
 
-  <!-- WORLDS -->
-  <div class="worlds-section">
-    <div class="worlds-header reveal">
-      <div><p class="section-label">What lives here</p><h2 class="section-title">The <em>Worlds</em></h2></div>
-      <p style="font-size:.9rem;color:var(--text-dim);max-width:320px;text-align:right;line-height:1.7">This isn't just a portfolio — it's a living space. Each section is something I actively tend to.</p>
+    <div class="hero-right">
+      <div class="hero-plate">
+        <div class="plate-cap"><span class="t">Pisces</span><span class="coord">RA 01ʰ 00ᵐ · Dec +15°</span></div>
+        <svg class="pisces-art" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="The constellation Pisces" role="img">
+          <!-- the great V of Pisces: two cords meeting at Alrescha, tipped by the Circlet -->
+          <g>
+            <line class="strand" x1="165" y1="248" x2="122" y2="200"/>
+            <line class="strand" x1="122" y1="200" x2="84" y2="152"/>
+            <line class="strand" x1="84" y1="152" x2="52" y2="98"/>
+            <line class="strand" x1="165" y1="248" x2="210" y2="196"/>
+            <line class="strand" x1="210" y1="196" x2="246" y2="128"/>
+          </g>
+          <!-- the Circlet of Pisces (head of the western fish) -->
+          <g>
+            <line class="circlet-line" x1="52" y1="98" x2="34" y2="80"/>
+            <line class="circlet-line" x1="34" y1="80" x2="50" y2="62"/>
+            <line class="circlet-line" x1="50" y1="62" x2="72" y2="70"/>
+            <line class="circlet-line" x1="72" y1="70" x2="74" y2="94"/>
+            <line class="circlet-line" x1="74" y1="94" x2="52" y2="98"/>
+          </g>
+          <!-- circlet stars -->
+          <circle class="star minor twinkle" cx="34" cy="80" r="1.8"/>
+          <circle class="star minor twinkle" cx="50" cy="62" r="2"/>
+          <circle class="star minor twinkle" cx="72" cy="70" r="1.8"/>
+          <circle class="star minor twinkle" cx="74" cy="94" r="1.7"/>
+          <circle class="star twinkle" cx="52" cy="98" r="2.4"/>
+          <!-- cord stars -->
+          <circle class="star twinkle" cx="84" cy="152" r="2.6"/>
+          <circle class="star twinkle" cx="122" cy="200" r="2.6"/>
+          <circle class="star twinkle" cx="210" cy="196" r="2.6"/>
+          <circle class="star twinkle" cx="246" cy="128" r="2.4"/>
+          <!-- Alrescha · the knot where the cords meet -->
+          <circle class="glow" cx="165" cy="248" r="11"/>
+          <circle class="star major twinkle" cx="165" cy="248" r="3.6"/>
+          <!-- faint star labels -->
+          <text class="star-lbl" x="165" y="270" text-anchor="middle">ALRESCHA</text>
+          <text class="star-lbl dim" x="44" y="52" text-anchor="middle">the circlet</text>
+        </svg>
+        <div class="plate-foot"><span class="legend" style="color:var(--teal)">Pisces · the twin fish · my sign</span><span class="coord">est. mmxxvi</span></div>
+      </div>
     </div>
-    <div class="worlds-grid reveal">
-      <a class="world-card span2" href="/projects">
-        <div class="builder-card-inner">
-          <div class="builder-card-content">
-            <span class="world-num">01</span>
-            <span class="world-icon">◈</span>
-            <p class="world-tag">Code · Design · QA</p>
-            <h3 class="world-title">The <em>Builder</em></h3>
-            <p class="world-desc">I build full-stack applications, design interfaces in Figma before touching code, and bring a QA engineer's eye for edge cases to everything I make. My capstone was a complete management system built from real operational pain points. This is where that work lives.</p>
-            <span class="world-link">Explore Projects →</span>
+  </header>
+
+  <!-- PRINCIPLES · the two inks -->
+  <section class="principles reveal">
+    <div class="principle">
+      <span class="pr-mark logic">01</span>
+      <h3 class="pr-title">Build for humans first</h3>
+      <p class="pr-body">The best software is made by people who understand how we think, what we fear, and what we hope for — before a line of code is written.</p>
+    </div>
+    <div class="principle">
+      <span class="pr-mark depth">02</span>
+      <h3 class="pr-title">Myth is the first psychology</h3>
+      <p class="pr-body">The old stories mapped the inner world long before we had the words. I read them the way I read systems — looking for the pattern underneath.</p>
+    </div>
+    <div class="principle">
+      <span class="pr-mark logic">03</span>
+      <h3 class="pr-title">Two inks, one mind</h3>
+      <p class="pr-body">Teal for logic, gold for depth. The engineer and the writer aren't separate people — they're the same hand drawing the same map.</p>
+    </div>
+  </section>
+
+  <div class="divider"><span class="legend">The Worlds</span><span class="ln"></span><span class="star">✦</span><span class="ln"></span><span class="legend">III charts</span></div>
+
+  <!-- WORLDS · three atlas plates -->
+  <section class="section">
+    <div class="sec-head reveal">
+      <div><p class="legend" style="margin-bottom:.6rem">What lives here</p><h2 class="sec-title">The <em>Worlds</em></h2></div>
+      <p class="sec-note">Not a portfolio — a living atlas. Each chart is something I actively tend to.</p>
+    </div>
+    <div class="plates">
+      <a class="plate reveal" href="/projects">
+        <svg class="plate-glyph" viewBox="0 0 84 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g><line x1="14" y1="22" x2="38" y2="34"/><line x1="38" y1="34" x2="66" y2="18"/><line x1="38" y1="34" x2="46" y2="56"/></g><g><circle cx="14" cy="22" r="2.2"/><circle cx="38" cy="34" r="2.6"/><circle cx="66" cy="18" r="2"/><circle cx="46" cy="56" r="2.2"/></g></svg>
+        <p class="plate-no">Atlas · Chart I</p>
+        <p class="plate-greek">Hephaestus · the maker</p>
+        <h3 class="plate-name">The <em>Forge</em></h3>
+        <p class="plate-desc">Full-stack applications, interfaces designed in Figma first, and a QA engineer's eye for the edge cases everyone else misses. Where building lives — shipped, underway, or filed to the archive.</p>
+        <span class="plate-link">Enter the Forge →</span>
+      </a>
+      <a class="plate reveal" href="/library">
+        <svg class="plate-glyph" viewBox="0 0 84 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g><line x1="14" y1="18" x2="42" y2="30"/><line x1="42" y1="30" x2="70" y2="14"/><line x1="42" y1="30" x2="50" y2="54"/></g><g><circle cx="14" cy="18" r="2.2"/><circle cx="42" cy="30" r="2.6"/><circle cx="70" cy="14" r="2"/><circle cx="50" cy="54" r="2.2"/></g></svg>
+        <p class="plate-no">Codex · Chart I</p>
+        <p class="plate-greek">Athena · myth &amp; mind</p>
+        <h3 class="plate-name">The <em>Library</em></h3>
+        <p class="plate-desc">Where I write. The Blue Ember series — Greek myth and psychology — plus marginalia and ideas that outgrew a notes app. Everything here is in progress.</p>
+        <span class="plate-link">Browse the Library →</span>
+      </a>
+      <a class="plate reveal" href="/lab">
+        <svg class="plate-glyph" viewBox="0 0 84 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g><line x1="18" y1="40" x2="40" y2="16"/><line x1="40" y1="16" x2="64" y2="34"/><line x1="64" y1="34" x2="44" y2="52"/><line x1="44" y1="52" x2="18" y2="40"/></g><g><circle cx="18" cy="40" r="2.2"/><circle cx="40" cy="16" r="2.6"/><circle cx="64" cy="34" r="2.2"/><circle cx="44" cy="52" r="2.2"/></g></svg>
+        <p class="plate-no">Atlas · Chart II</p>
+        <p class="plate-greek">Prometheus · the spark</p>
+        <h3 class="plate-name"><em>Orbit</em></h3>
+        <p class="plate-desc">Experiments you can actually touch — interactive toys built right here, plus the clever demos I find in the wild and want to keep. Some becomes real, some stays a sketch — all of it worth charting.</p>
+        <span class="plate-link">Enter Orbit →</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- FEATURED · one project, charted in full (populated from Supabase) -->
+  <section class="featured" id="featuredSection" style="display:none">
+    <div class="divider"><span class="legend">Selected work</span><span class="ln"></span><span class="star">✶</span><span class="ln"></span><span class="legend">in focus</span></div>
+    <a class="featured-plate reveal" id="featuredProject" href="/projects"></a>
+  </section>
+
+  <div class="divider dim"><span class="legend">Now writing</span><span class="ln"></span><span class="star">✶</span><span class="ln"></span><span class="legend">The Blue Ember Series</span></div>
+
+  <!-- BOOK · the Blue Ember centerpiece -->
+  <section class="book">
+    <a class="book-wrap reveal" id="bookTeaser" href="/library" style="display:none">
+      <div class="book-plate ember">
+        <div class="book-embers" aria-hidden="true"><span class="bspark"></span><span class="bspark"></span><span class="bspark"></span><span class="bspark"></span><span class="bspark"></span><span class="bspark"></span><span class="bspark"></span></div>
+        <div>
+          <p class="book-eyebrow"><span>✦</span><span id="btEyebrow">Now Writing</span></p>
+          <h2 class="book-title" id="btTitle">Blue Ember</h2>
+          <p class="book-sub">An eight-book descent · Greek myth × psychology</p>
+          <p class="book-desc" id="btDesc"></p>
+          <div class="book-arc">
+            <span>I · Awakening</span><span>II · Loss of Control</span><span>III · Identity</span><span>IV · Fear</span><span>V · Consequence</span><span>VI · Loneliness</span><span>VII · Forgiveness</span><span>VIII · Integration</span>
           </div>
-          <div class="builder-highlight" id="builderHighlight" style="display:none"></div>
+          <div class="book-meta"><span>Eight books · in progress</span><span id="btCta">Begin Book One: Blue Ember →</span></div>
         </div>
-      </a>
-      <a class="world-card" href="/library">
-        <span class="world-num">02</span>
-        <span class="world-icon">✦</span>
-        <p class="world-tag gold">Psychology · Mythology · Writing</p>
-        <h3 class="world-title">The <em>Library</em></h3>
-        <p class="world-desc">Where I write. A book on mythology and psychology, standalone essays, and ideas that needed more than a note app. Everything here is in progress — that's the point.</p>
-        <span class="world-link">Browse the Library →</span>
-      </a>
-      <a class="world-card" href="/lab">
-        <span class="world-num">03</span>
-        <span class="world-icon">◉</span>
-        <p class="world-tag">Ideas · Concepts · Experiments</p>
-        <h3 class="world-title">The <em>Lab</em></h3>
-        <p class="world-desc">Half-formed ideas, design concepts, and things I'm thinking through out loud. Some of this becomes real projects. Some stays an idea. All of it is worth writing down.</p>
-        <span class="world-link">Step Inside →</span>
-      </a>
-    </div>
-  </div>
-
-  <!-- BOOK TEASER -->
-  <a class="book-teaser reveal" id="bookTeaser" style="display:none" href="/library">
-    <div class="book-teaser-inner">
-      <div>
-        <p class="bt-eyebrow" id="btEyebrow">Now Writing</p>
-        <h3 class="bt-title" id="btTitle"></h3>
-        <p class="bt-desc" id="btDesc"></p>
+        <div class="book-cover" id="btCover">
+        <svg class="bt-constellation" viewBox="0 0 260 230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <g stroke="#6fa8e0" stroke-width="1" opacity=".55">
+            <line x1="28" y1="52" x2="62" y2="84"/><line x1="62" y1="84" x2="92" y2="124"/>
+            <line x1="92" y1="124" x2="120" y2="165"/><line x1="120" y1="165" x2="150" y2="182"/>
+            <line x1="150" y1="182" x2="184" y2="150"/><line x1="184" y1="150" x2="214" y2="104"/>
+            <line x1="214" y1="104" x2="240" y2="54"/>
+          </g>
+          <g fill="#dceafb">
+            <circle cx="28" cy="52" r="2.6"/><circle cx="62" cy="84" r="2.4"/><circle cx="92" cy="124" r="2.6"/>
+            <circle cx="120" cy="165" r="2.8"/><circle cx="184" cy="150" r="2.6"/>
+            <circle cx="214" cy="104" r="2.4"/><circle cx="240" cy="54" r="3"/>
+          </g>
+          <circle cx="150" cy="182" r="13" fill="#5e95dd" opacity=".18"/>
+          <circle cx="150" cy="182" r="7" fill="#6fa8e0" opacity=".35"/>
+          <circle cx="150" cy="182" r="3.4" fill="#dceafb"/>
+          <text x="236" y="46" fill="#8fc0f4" text-anchor="end" font-family="JetBrains Mono" font-size="8" letter-spacing="1">WHOLE</text>
+          <text x="150" y="206" fill="#6fa8e0" text-anchor="middle" font-family="JetBrains Mono" font-size="7" letter-spacing="1">THE BLUE EMBER</text>
+        </svg>
+        </div>
       </div>
-      <div class="bt-cta">
-        <span id="btCta">Read the first chapter</span>
-        <span class="bt-cta-arrow">→</span>
-      </div>
-    </div>
-  </a>
+    </a>
+  </section>
 
-
-  <!-- NOTE -->
-  <div class="note-section reveal">
-    <div class="note-inner">
-      <p class="note-eyebrow">// A note from me</p>
-      <p class="note-text">I believe the best technology is built by people who understand <strong>humans first</strong> — how we think, what we fear, what we hope for. That's why I study psychology alongside code. Not as a curiosity, but as a foundation. This site exists because I needed a place that reflected <strong>all of that</strong> — not just a resumé, but a real space.</p>
-      <p class="note-sig">— Caleb Thede, Developer · Designer · Perpetual Learner</p>
+  <!-- LATEST WRITING · newest essays, auto-pulled (hidden until loaded) -->
+  <section class="section latest" id="latestSection" style="display:none">
+    <div class="sec-head reveal">
+      <div><p class="legend" style="margin-bottom:.6rem">From the library</p><h2 class="sec-title">Latest <em>writing</em></h2></div>
+      <p class="sec-note">Marginalia and ideas, freshest first. The notebook stays open.</p>
     </div>
-  </div>
+    <div class="writing-cards" id="latestWriting"></div>
+  </section>
+
+  <!-- PATH · the way so far, as a constellation timeline -->
+  <div class="divider dim"><span class="legend">The path</span><span class="ln"></span><span class="star">✶</span><span class="ln"></span><span class="legend">so far</span></div>
+  <section class="path reveal">
+    <ol class="path-line">
+      <li class="path-stop"><span class="ps-dot"></span><span class="ps-year">2021</span><span class="ps-label">Began Psychology — the study of the inner map</span></li>
+      <li class="path-stop"><span class="ps-dot"></span><span class="ps-year">2023</span><span class="ps-label">Turned to code — systems, interfaces, the logic side</span></li>
+      <li class="path-stop"><span class="ps-dot"></span><span class="ps-year">2025</span><span class="ps-label">Capstone — a full management system from real operational pain</span></li>
+      <li class="path-stop"><span class="ps-dot"></span><span class="ps-year">2026</span><span class="ps-label">Writing <strong>Blue Ember</strong>, Book I — the descent begins</span></li>
+    </ol>
+  </section>
+
+  <!-- NOTE · a bare quote under the stars -->
+  <section class="note reveal">
+    <span class="legend">A note from the cartographer</span>
+    <p>I believe the best technology is built by people who understand <strong>humans first</strong> — how we think, what we fear, what we hope for. Myth, psychology, and the stars are how we've always charted that. I study them the way I write code: <strong>to find the pattern underneath.</strong></p>
+    <span class="sig">— Caleb Thede · developer · designer · perpetual learner</span>
+  </section>
 
   <!-- CONNECT -->
   <div class="connect-strip reveal">
@@ -190,25 +302,50 @@ let adminMode=false;
   </div>
 </main>
 <footer>
-  <div class="footer-newsletter">
-    <span class="footer-newsletter-label">New writing →</span>
-    <form name="newsletter-footer" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="handleFooterNewsletterSubmit(event)" style="display:flex;align-items:center;gap:.5rem">
-      <input type="hidden" name="form-name" value="newsletter-footer"/>
-      <p style="display:none"><label><input name="bot-field"/></label></p>
-      <input class="footer-newsletter-input" type="email" name="email" placeholder="your@email.com" required/>
-      <button class="footer-newsletter-btn" type="submit">→</button>
-    </form>
-    <span class="footer-newsletter-success" id="footer-nl-success">✦ subscribed</span>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">CT.</a>
+      <p class="footer-tagline">Stories, essays, and things I build &mdash; written and read in the open.</p>
+      <div class="footer-newsletter">
+        <span class="footer-newsletter-label">New writing &rarr;</span>
+        <form name="newsletter-footer" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="handleFooterNewsletterSubmit(event)" style="display:flex;align-items:center;gap:.5rem">
+          <input type="hidden" name="form-name" value="newsletter-footer"/>
+          <p style="display:none"><label><input name="bot-field"/></label></p>
+          <input class="footer-newsletter-input" type="email" name="email" placeholder="your@email.com" required/>
+          <button class="footer-newsletter-btn" type="submit">&rarr;</button>
+        </form>
+        <span class="footer-newsletter-success" id="footer-nl-success">&#10038; subscribed</span>
+      </div>
+    </div>
+    <div class="footer-nav">
+      <div class="footer-col">
+        <h4 class="footer-col-title">Codex</h4>
+        <a href="/library">Library</a>
+        <a href="/marginalia">Marginalia</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Atlas</h4>
+        <a href="/projects">Forge</a>
+        <a href="/lab">Orbit</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Site</h4>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Elsewhere</h4>
+        <a href="https://github.com/CalebJamezzz" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://instagram.com/c.aleb_jamezzz" target="_blank" rel="noopener">Instagram</a>
+        <a href="mailto:calebthede@gmail.com">Email</a>
+      </div>
+    </div>
   </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:.7rem 4rem">
-  <span>© 2026 Caleb Thede</span>
-  <div class="footer-links">
-    <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
-    <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
-    <a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a>
-    <a href="mailto:calebthede@gmail.com">Email</a>
-    <a href="/contact">Contact</a>
-  </div>
+  <div class="footer-base">
+    <span>&copy; 2026 Caleb Thede</span>
+    <span class="footer-base-meta">Celestial Codex</span>
   </div>
 </footer>
 <!-- STATUS MODAL -->
@@ -227,12 +364,21 @@ let adminMode=false;
 <script src="js/init.js"></script>
 <script src="js/theme_nav.js"></script>
 <script src="js/easter_eggs.js"></script>
+<script src="js/tarot.js"></script>
 <script src="js/home.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   initReveal();
   upgradeSpinners();
   loadHomeData();
+  // scroll-aware nav: parchment over the bright hero, dark once the dusk arrives
+  const navEl=document.querySelector('nav');
+  if(navEl){
+    const onScroll=()=>navEl.classList.toggle('scrolled', window.scrollY > window.innerHeight*0.6);
+    onScroll();
+    window.addEventListener('scroll', onScroll, {passive:true});
+    window.addEventListener('resize', onScroll, {passive:true});
+  }
 });
 </script>
 </body>

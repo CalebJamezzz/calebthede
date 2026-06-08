@@ -1,14 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Projects — Caleb Thede</title>
+  <title>The Forge — Caleb Thede</title>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.css" rel="stylesheet"/>
   <link rel="stylesheet" href="css/main.css"/>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
@@ -58,9 +57,16 @@ let adminMode=false;
   <ul class="nav-center">
     <li><a href="/">Home</a></li>
     <li><a href="/about">About</a></li>
-    <li><a href="/projects" class="active">Projects</a></li>
-    <li><a href="/library">Library</a></li>
-    <li><a href="/lab">Lab</a></li>
+    <li class="nav-deck"><a href="/codex" class="deck-label">Codex<span class="deck-caret">▾</span></a>
+      <div class="nav-dropdown">
+        <a href="/library"><span class="dd-t">The Library</span><span class="dd-s">Books &amp; the Blue Ember series</span></a>
+        <a href="/marginalia"><span class="dd-t">Marginalia</span><span class="dd-s">Notes &amp; short writing</span></a>
+      </div></li>
+    <li class="nav-deck"><a href="/atlas" class="deck-label active">Atlas<span class="deck-caret">▾</span></a>
+      <div class="nav-dropdown">
+        <a href="/projects"><span class="dd-t">The Forge</span><span class="dd-s">Tools &amp; things built</span></a>
+        <a href="/lab"><span class="dd-t">Orbit</span><span class="dd-s">Experiments in motion</span></a>
+      </div></li>
     <li><a href="/contact">Contact</a></li>
   </ul>
   <div class="nav-right">
@@ -75,9 +81,16 @@ let adminMode=false;
 <div class="mobile-drawer" id="mobileDrawer">
   <a class="mobile-nav-item" href="/">Home</a>
   <a class="mobile-nav-item" href="/about">About</a>
-  <a class="mobile-nav-item active" href="/projects">Projects</a>
-  <a class="mobile-nav-item" href="/library">Library</a>
-  <a class="mobile-nav-item" href="/lab">Lab</a>
+  <div class="mobile-group">
+    <span class="mobile-group-label">Codex</span>
+    <a class="mobile-nav-sub" href="/library">The Library</a>
+    <a class="mobile-nav-sub" href="/marginalia">Marginalia</a>
+  </div>
+  <div class="mobile-group">
+    <span class="mobile-group-label">Atlas</span>
+    <a class="mobile-nav-sub active" href="/projects">The Forge</a>
+    <a class="mobile-nav-sub" href="/lab">Orbit</a>
+  </div>
   <a class="mobile-nav-item" href="/contact">Contact</a>
   <div class="mobile-drawer-footer">
     <div class="mobile-drawer-links">
@@ -88,96 +101,79 @@ let adminMode=false;
   </div>
 </div>
 <main>
-  <div class="page-hero reveal"><p class="section-label">03 — Projects</p><h1 class="section-title">Things<br><em>I've Built</em></h1><p class="page-hero-sub">Real problems, real solutions.</p></div>
-  <div class="proj-outer">
-    <div id="projFeaturedWrap"></div>
-    <div class="reveal" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1.5rem">
-      <div><p class="section-label">All Projects</p><h2 class="section-title" style="font-size:2rem">The <em>Work</em></h2></div>
-      <button class="btn-primary admin-only" onclick="openProjectModal()">+ New Project</button>
+  <header class="atlas-hero reveal">
+    <div class="atlas-hero-text">
+      <div class="plate-mark"><span class="rule"></span><span class="legend">Atlas · Chart I — The Forge</span></div>
+      <h1 class="atlas-headline">Made to be <em>used.</em></h1>
+      <p class="atlas-lead">The instruments — shipped software, tools still on the anvil, and the smaller builds worth keeping. Drawn from the same two inks as the rest of this site.</p>
+      <p class="atlas-body">The <strong>Forge</strong> is where building lives: finished applications, things still under construction, and the experiments that earned a place on the map. Each plate below records what a thing is, why it exists, and where it stands today — <strong>underway</strong>, <strong>shipped</strong>, or filed to <strong>the archive</strong>.</p>
+      <div class="ink-tags">
+        <span class="ink logic"><span class="dot"></span>Built with intent</span>
+        <span class="ink depth"><span class="dot"></span>Grounded in why</span>
+      </div>
     </div>
-    <div class="filter-bar reveal" id="projFilterBar">
-      <button class="fb active" onclick="filterProjects('all',this)">All</button>
-      <button class="fb" onclick="filterProjects('Development',this)">Development</button>
-      <button class="fb" onclick="filterProjects('Design',this)">Design</button>
-      <button class="fb" onclick="filterProjects('QA / Tools',this)">QA / Tools</button>
-    </div>
-    <div class="proj-grid reveal" id="projGrid"></div>
-    <div class="empty-state" id="projEmpty" style="display:none">
-      <span class="empty-icon">◈</span><h3>No projects yet</h3><p>Add your first project to get started.</p>
-      <button class="btn-primary admin-only" style="margin-top:1rem" onclick="openProjectModal()">+ New Project</button>
-    </div>
-  </div>
+    <aside class="atlas-legend">
+      <div class="alc-cap"><span class="t">forge</span><span class="coord">/fôrj/ · v.</span></div>
+      <p class="alc-def"><span class="pos">verb.</span>to form or shape, especially by heating and hammering; here, the living catalogue of what's been built and what's still being shaped.</p>
+      <div class="alc-row prog"><span class="k">Underway</span><span class="v" id="atlasCountProg">·</span></div>
+      <div class="alc-row ship"><span class="k">Shipped</span><span class="v" id="atlasCountShip">·</span></div>
+      <div class="alc-row arch"><span class="k">Archived</span><span class="v" id="atlasCountArch">·</span></div>
+    </aside>
+  </header>
+  <div class="atlas-admin-bar"><a class="btn-primary admin-only" href="/compose">✦ Manage in the Scriptorium →</a></div>
+  <div id="atlasRoot"></div>
 </main>
 <footer>
-  <div class="footer-newsletter">
-    <span class="footer-newsletter-label">New writing →</span>
-    <form name="newsletter-footer" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="handleFooterNewsletterSubmit(event)" style="display:flex;align-items:center;gap:.5rem">
-      <input type="hidden" name="form-name" value="newsletter-footer"/>
-      <p style="display:none"><label><input name="bot-field"/></label></p>
-      <input class="footer-newsletter-input" type="email" name="email" placeholder="your@email.com" required/>
-      <button class="footer-newsletter-btn" type="submit">→</button>
-    </form>
-    <span class="footer-newsletter-success" id="footer-nl-success">✦ subscribed</span>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">CT.</a>
+      <p class="footer-tagline">Stories, essays, and things I build &mdash; written and read in the open.</p>
+      <div class="footer-newsletter">
+        <span class="footer-newsletter-label">New writing &rarr;</span>
+        <form name="newsletter-footer" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="handleFooterNewsletterSubmit(event)" style="display:flex;align-items:center;gap:.5rem">
+          <input type="hidden" name="form-name" value="newsletter-footer"/>
+          <p style="display:none"><label><input name="bot-field"/></label></p>
+          <input class="footer-newsletter-input" type="email" name="email" placeholder="your@email.com" required/>
+          <button class="footer-newsletter-btn" type="submit">&rarr;</button>
+        </form>
+        <span class="footer-newsletter-success" id="footer-nl-success">&#10038; subscribed</span>
+      </div>
+    </div>
+    <div class="footer-nav">
+      <div class="footer-col">
+        <h4 class="footer-col-title">Codex</h4>
+        <a href="/library">Library</a>
+        <a href="/marginalia">Marginalia</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Atlas</h4>
+        <a href="/projects">Forge</a>
+        <a href="/lab">Orbit</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Site</h4>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Elsewhere</h4>
+        <a href="https://github.com/CalebJamezzz" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://instagram.com/c.aleb_jamezzz" target="_blank" rel="noopener">Instagram</a>
+        <a href="mailto:calebthede@gmail.com">Email</a>
+      </div>
+    </div>
   </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:.7rem 4rem">
-  <span>© 2026 Caleb Thede</span>
-  <div class="footer-links">
-    <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
-    <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
-    <a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a>
-    <a href="mailto:calebthede@gmail.com">Email</a>
-    <a href="/contact">Contact</a>
-  </div>
+  <div class="footer-base">
+    <span>&copy; 2026 Caleb Thede</span>
+    <span class="footer-base-meta">Celestial Codex</span>
   </div>
 </footer>
-<div class="modal-overlay" id="projectModal">
-  <div class="modal" style="max-width:640px">
-    <button class="modal-close" onclick="closeModal('projectModal')">✕</button>
-    <h2 class="modal-title" id="projectModalTitle">New Project</h2>
-    <input type="hidden" id="editProjectId"/>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
-      <div class="mf" style="grid-column:1/-1"><label>Title</label><input type="text" id="projTitle" placeholder="Project name"/></div>
-      <div class="mf" style="grid-column:1/-1">
-        <label>Subtitle <span style="opacity:.5;font-size:.75em">— separate items with · (option+8 on Mac, alt+0183 on PC)</span></label>
-        <input type="text" id="projSubtitle" placeholder="Full-Stack · Kotlin · Android"/>
-        <div style="margin-top:.4rem;display:flex;gap:.4rem;flex-wrap:wrap">
-          <button type="button" onclick="appendSubtitle('Full-Stack')" class="btn-sm">+ Full-Stack</button>
-          <button type="button" onclick="appendSubtitle('Android')" class="btn-sm">+ Android</button>
-          <button type="button" onclick="appendSubtitle('Web App')" class="btn-sm">+ Web App</button>
-          <button type="button" onclick="appendSubtitle('Capstone')" class="btn-sm">+ Capstone</button>
-          <button type="button" onclick="appendSubtitle('Figma Design')" class="btn-sm">+ Figma</button>
-          <button type="button" onclick="appendSubtitle('Open Source')" class="btn-sm">+ Open Source</button>
-        </div>
-      </div>
-      <div class="mf"><label>Category</label><select id="projCategory"><option>Development</option><option>Design</option><option>QA / Tools</option></select></div>
-      <div class="mf"><label>Highlight on Home?</label><select id="projHighlight"><option value="false">No</option><option value="true">Yes — pin to Builder card</option></select></div>
-      <div class="mf" style="grid-column:1/-1;margin-bottom:1.8rem">
-        <label>Description <span style="opacity:.5;font-size:.75em">— supports paragraphs (press Enter for new paragraph)</span></label>
-        <div id="projDescEditor" class="quill-editor-wrap" style="min-height:220px"></div><input type="hidden" id="projDesc"/>
-      </div>
-      <div class="mf" style="grid-column:1/-1"><label>Tags <span style="opacity:.5;font-size:.75em">(comma-separated)</span></label><input type="text" id="projTags" placeholder="Python, Data Generation, QA Tooling"/></div>
-      <div class="mf"><label>GitHub Link</label><input type="text" id="projGithub" placeholder="https://github.com/…"/></div>
-      <div class="mf"><label>Figma Link</label><input type="text" id="projFigma" placeholder="https://figma.com/…"/></div>
-      <div class="mf" style="grid-column:1/-1"><label>Demo / Tool / Live Link</label><input type="text" id="projDemo" placeholder="https://…"/></div>
-      <div class="mf" style="grid-column:1/-1"><label>Lab Demo / Tool <span style="opacity:.5;font-size:.75em">(links to a Demo or Tool Lab entry — shows "Try it in Lab →" on the card)</span></label><select id="projLabEntry"><option value="">None</option></select></div>
-      <div class="mf" style="grid-column:1/-1"><label>Banner Image URL</label><input type="text" id="projBanner" placeholder="https://…"/></div>
-      <hr style="grid-column:1/-1;border:none;border-top:1px solid var(--border);margin:.5rem 0"/>
-      <p style="grid-column:1/-1;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim)">Sidebar Highlights <span style="opacity:.5;font-weight:300;text-transform:none;letter-spacing:0"> — optional stats or details shown on the card</span></p>
-      <div class="mf"><label>Highlight 1 Label</label><input type="text" id="projH1Label" placeholder="e.g. Timeline"/></div>
-      <div class="mf"><label>Highlight 1 Value</label><input type="text" id="projH1Value" placeholder="e.g. 6 weeks"/></div>
-      <div class="mf"><label>Highlight 2 Label</label><input type="text" id="projH2Label" placeholder="e.g. Team Size"/></div>
-      <div class="mf"><label>Highlight 2 Value</label><input type="text" id="projH2Value" placeholder="e.g. Solo"/></div>
-      <div class="mf"><label>Highlight 3 Label</label><input type="text" id="projH3Label" placeholder="e.g. Platform"/></div>
-      <div class="mf"><label>Highlight 3 Value</label><input type="text" id="projH3Value" placeholder="e.g. Android"/></div>
-      <div class="mf" style="grid-column:1/-1"><label>Sort Order</label><input type="number" id="projSort" value="0" min="0"/></div>
-    </div>
-    <div class="modal-actions"><button class="btn-primary" id="projSaveBtn" onclick="saveProject()">Save</button><button class="btn-ghost" onclick="closeModal('projectModal')">Cancel</button></div>
-  </div>
-</div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
 <script src="js/init.js"></script>
 <script src="js/theme_nav.js"></script>
 <script src="js/easter_eggs.js"></script>
+<script src="js/tarot.js"></script>
 <script src="js/projects.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {

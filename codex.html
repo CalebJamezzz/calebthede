@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>The Codex — Caleb Thede</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body data-page="deck">
+<script>
+if((localStorage.getItem('ct_theme')||'light')!=='dark')document.body.classList.add('light-mode');
+const SUPABASE_URL='https://lbviiggrxzhyxrpivbbi.supabase.co';
+const SUPABASE_KEY='sb_publishable_eQRvx-J1Cp4nlq6Q6TOjIA__QYJmJq6';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let adminMode=false;
+</script>
+<canvas id="shootingStarCanvas"></canvas>
+<div class="hub-bg"></div>
+<div class="hub-pattern"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="toast" id="toast"></div>
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <h2 class="modal-title">Admin Login</h2>
+    <p style="font-size:.9rem;color:var(--text-dim);margin-bottom:1.5rem">Sign in to unlock editing.</p>
+    <div class="mf"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"/></div>
+    <div class="mf"><label>Password</label><input type="password" id="loginPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <p class="login-error" id="loginError">Incorrect credentials. Try again.</p>
+    <div class="modal-actions"><button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
+  </div>
+</div>
+<nav>
+  <a class="nav-logo" href="/">CT.</a>
+  <ul class="nav-center">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about">About</a></li>
+    <li class="nav-deck"><a href="/codex" class="deck-label active">Codex<span class="deck-caret">▾</span></a>
+      <div class="nav-dropdown">
+        <a href="/library"><span class="dd-t">The Library</span><span class="dd-s">Books &amp; the Blue Ember series</span></a>
+        <a href="/marginalia"><span class="dd-t">Marginalia</span><span class="dd-s">Notes &amp; short writing</span></a>
+      </div></li>
+    <li class="nav-deck"><a href="/atlas" class="deck-label">Atlas<span class="deck-caret">▾</span></a>
+      <div class="nav-dropdown">
+        <a href="/projects"><span class="dd-t">The Forge</span><span class="dd-s">Tools &amp; things built</span></a>
+        <a href="/lab"><span class="dd-t">Orbit</span><span class="dd-s">Experiments in motion</span></a>
+      </div></li>
+    <li><a href="/contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="admin-badge" id="adminBadge">Admin</span>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
+    <button class="lock-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login">🔒</button>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+<div class="mobile-drawer" id="mobileDrawer">
+  <a class="mobile-nav-item" href="/">Home</a>
+  <a class="mobile-nav-item" href="/about">About</a>
+  <div class="mobile-group">
+    <span class="mobile-group-label">Codex</span>
+    <a class="mobile-nav-sub" href="/library">The Library</a>
+    <a class="mobile-nav-sub" href="/marginalia">Marginalia</a>
+  </div>
+  <div class="mobile-group">
+    <span class="mobile-group-label">Atlas</span>
+    <a class="mobile-nav-sub" href="/projects">The Forge</a>
+    <a class="mobile-nav-sub" href="/lab">Orbit</a>
+  </div>
+  <a class="mobile-nav-item" href="/contact">Contact</a>
+  <div class="mobile-drawer-footer">
+    <div class="mobile-drawer-links">
+      <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
+    </div>
+    <button class="lock-btn" onclick="toggleAdmin();closeMobileNav()" style="font-size:.75rem">🔒 Admin</button>
+  </div>
+</div>
+<main>
+  <header class="deck-hero reveal">
+    <div class="plate-mark"><span class="rule"></span><span class="legend">Volume I · The Codex</span><span class="rule"></span></div>
+    <h1 class="deck-headline">Where I <em>write.</em></h1>
+    <p class="deck-sub">The written half of the work — bound books and the standalone pieces in between. Choose a shelf.</p>
+  </header>
+  <div class="deck-doors">
+    <a class="deck-door reveal" href="/library">
+      <svg class="deck-glyph" viewBox="0 0 84 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g><line x1="14" y1="18" x2="42" y2="30"/><line x1="42" y1="30" x2="70" y2="14"/><line x1="42" y1="30" x2="50" y2="54"/></g><g><circle cx="14" cy="18" r="2.2"/><circle cx="42" cy="30" r="2.6"/><circle cx="70" cy="14" r="2"/><circle cx="50" cy="54" r="2.2"/></g></svg>
+      <p class="deck-no">Shelf 01 · ☽ Moon</p>
+      <p class="deck-greek">Athena · myth &amp; mind</p>
+      <h3 class="deck-name">The <em>Library</em></h3>
+      <p class="deck-desc">The long-form work. The Blue Ember series — Greek myth read through the lens of psychology — and the books still being written, chapter by chapter.</p>
+      <span class="deck-link">Browse the Library →</span>
+    </a>
+    <a class="deck-door teal reveal" href="/marginalia">
+      <svg class="deck-glyph" viewBox="0 0 84 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g><line x1="16" y1="40" x2="38" y2="20"/><line x1="38" y1="20" x2="64" y2="28"/><line x1="38" y1="20" x2="48" y2="52"/></g><g><circle cx="16" cy="40" r="2.2"/><circle cx="38" cy="20" r="2.6"/><circle cx="64" cy="28" r="2"/><circle cx="48" cy="52" r="2.2"/></g></svg>
+      <p class="deck-no">Shelf 02 · ☿ Mercury</p>
+      <p class="deck-greek">Hermes · the messenger</p>
+      <h3 class="deck-name"><em>Marginalia</em></h3>
+      <p class="deck-desc">Notes in the margins — arguments, observations, and ideas that outgrew a notes app but didn't need a whole book. Written to be read in one sitting.</p>
+      <span class="deck-link">Read the marginalia →</span>
+    </a>
+  </div>
+</main>
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">CT.</a>
+      <p class="footer-tagline">Stories, essays, and things I build &mdash; written and read in the open.</p>
+      <div class="footer-newsletter">
+        <span class="footer-newsletter-label">New writing &rarr;</span>
+        <form name="newsletter-footer" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="handleFooterNewsletterSubmit(event)" style="display:flex;align-items:center;gap:.5rem">
+          <input type="hidden" name="form-name" value="newsletter-footer"/>
+          <p style="display:none"><label><input name="bot-field"/></label></p>
+          <input class="footer-newsletter-input" type="email" name="email" placeholder="your@email.com" required/>
+          <button class="footer-newsletter-btn" type="submit">&rarr;</button>
+        </form>
+        <span class="footer-newsletter-success" id="footer-nl-success">&#10038; subscribed</span>
+      </div>
+    </div>
+    <div class="footer-nav">
+      <div class="footer-col">
+        <h4 class="footer-col-title">Codex</h4>
+        <a href="/library">Library</a>
+        <a href="/marginalia">Marginalia</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Atlas</h4>
+        <a href="/projects">Forge</a>
+        <a href="/lab">Orbit</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Site</h4>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Elsewhere</h4>
+        <a href="https://github.com/CalebJamezzz" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://instagram.com/c.aleb_jamezzz" target="_blank" rel="noopener">Instagram</a>
+        <a href="mailto:calebthede@gmail.com">Email</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-base">
+    <span>&copy; 2026 Caleb Thede</span>
+    <span class="footer-base-meta">Celestial Codex</span>
+  </div>
+</footer>
+<script src="js/init.js"></script>
+<script src="js/theme_nav.js"></script>
+<script src="js/easter_eggs.js"></script>
+<script>document.addEventListener('DOMContentLoaded', () => { initReveal(); });</script>
+</body>
+</html>

@@ -155,8 +155,29 @@ async function doLogin(){
   else{closeModal('loginModal');document.getElementById('loginPw').value='';document.getElementById('loginError').classList.remove('visible')}
 }
 
-function grantAdmin(){adminMode=true;document.body.classList.add('is-admin');document.getElementById('adminBadge').classList.add('visible');document.getElementById('lockBtn').textContent='🔓';document.getElementById('lockBtn').title='Sign out';toast('Admin mode on')}
+function grantAdmin(){adminMode=true;document.body.classList.add('is-admin');document.getElementById('adminBadge').classList.add('visible');document.getElementById('lockBtn').textContent='🔓';document.getElementById('lockBtn').title='Sign out';ensureScriptoriumLink();toast('Admin mode on')}
 function revokeAdmin(){adminMode=false;document.body.classList.remove('is-admin');document.getElementById('adminBadge').classList.remove('visible');document.getElementById('lockBtn').textContent='🔒';document.getElementById('lockBtn').title='Admin login'}
+
+// Inject an admin-only "Scriptorium" link into the nav (desktop + mobile) once.
+// Hidden by default; CSS reveals it under body.is-admin. Safe to call repeatedly.
+function ensureScriptoriumLink(){
+  const center = document.querySelector('.nav-center');
+  if(center && !center.querySelector('.nav-scriptorium')){
+    const li = document.createElement('li');
+    li.className = 'nav-scriptorium';
+    li.innerHTML = '<a href="/compose">Scriptorium</a>';
+    center.appendChild(li);
+  }
+  const drawer = document.getElementById('mobileDrawer');
+  if(drawer && !drawer.querySelector('.nav-scriptorium')){
+    const a = document.createElement('a');
+    a.className = 'mobile-nav-item nav-scriptorium';
+    a.href = '/compose';
+    a.textContent = 'Scriptorium';
+    drawer.appendChild(a);
+  }
+}
+document.addEventListener('DOMContentLoaded', ensureScriptoriumLink);
 
 // Multi-page navigation — showPage navigates to actual HTML files
 // Library sub-nav (book/article reader) stays in-page via hash
@@ -175,7 +196,7 @@ function showPage(name,skipHistory){
 
 // Library deep-link handler (for book/article opens from other pages)
 function navigateToBook(bookId){window.location.href='/library#book/'+bookId;}
-function navigateToArticle(articleId){window.location.href='/library#article/'+articleId;}
+function navigateToArticle(articleId){window.location.href='/marginalia#article/'+articleId;}
 
 // Handle library hash routing (called on library page load)
 function handleLibraryHash(){
@@ -184,14 +205,9 @@ function handleLibraryHash(){
   const parts=hash.replace('#','').split('/');
   const sub=parts[0];const id=parts[1];
 
-  // Restore articles tab
-  if(sub==='articles'){
-    setTimeout(()=>{
-      const tab=document.querySelectorAll('.lib-tab')[1];
-      if(tab) switchLibTab('Articles',tab);
-    },300);
-    return;
-  }
+  // Legacy '#articles' hash (Marginalia used to be a Library tab) → just
+  // show the browse grid; Marginalia is now its own page.
+  if(sub==='articles'){showLibBrowse();return;}
 
   // Restore article reader
   if(sub==='article'&&id){
@@ -236,17 +252,7 @@ window.addEventListener('popstate',e=>{
   if(state?.sub==='article'){
     sb.from('articles').select('*').eq('id',state.id).single().then(({data:a})=>{if(a)openArticle(a,true);});return;
   }
-  if(state?.sub==='articles'){
-    const tab=document.querySelectorAll?.('.lib-tab')?.[1];
-    if(tab) switchLibTab('Articles',tab);
-    return;
-  }
-  if(state?.sub==='tab'){
-    const idx=state.tab==='articles'?1:0;
-    const tab=document.querySelectorAll?.('.lib-tab')?.[idx];
-    if(tab) switchLibTab(state.tab==='articles'?'Articles':'Books',tab);
-    return;
-  }
+  if(state?.sub==='articles'||state?.sub==='tab'){showLibBrowse();return;}
   if(state?.sub==='browse')showLibBrowse();
 });
 
@@ -406,7 +412,12 @@ async function runAsk(query){
   // Search Supabase for context
   const [artRes, chRes, labRes, artContent] = await Promise.all([
     sb.from('articles').select('id,title,tag,content').ilike('title','%'+query+'%').limit(3),
-    sb.from('chapters').select('id,book_id,num,title,content').eq('published',true).ilike('title','%'+query+'%').limit(2),
+    (async()=>{ // live = published OR scheduled publish_at in the past (graceful fallback)
+      const nowIso=new Date().toISOString();
+      let r=await sb.from('chapters').select('id,book_id,num,title,content').or(`published.eq.true,publish_at.lte.${nowIso}`).ilike('title','%'+query+'%').limit(2);
+      if(r.error&&/publish_at/.test((r.error.message||'')+(r.error.details||''))) r=await sb.from('chapters').select('id,book_id,num,title,content').eq('published',true).ilike('title','%'+query+'%').limit(2);
+      return r;
+    })(),
     sb.from('lab_entries').select('id,title,description').ilike('title','%'+query+'%').limit(2),
     sb.from('articles').select('id,title,tag,content').ilike('content','%'+query+'%').limit(2),
   ]);
@@ -423,7 +434,7 @@ async function runAsk(query){
 
   // Also build search results links
   let links = '';
-  if(arts.length) links += arts.map(a=>`<a class="ask-result-link" href="/library#article/${a.id}" onclick="closeAsk()">${a.tag?`<span class="ask-result-tag">${a.tag}</span>`:''}${a.title}</a>`).join('');
+  if(arts.length) links += arts.map(a=>`<a class="ask-result-link" href="/marginalia#article/${a.id}" onclick="closeAsk()">${a.tag?`<span class="ask-result-tag">${a.tag}</span>`:''}${a.title}</a>`).join('');
   if(chs.length) links += chs.map(c=>`<a class="ask-result-link" href="/library" onclick="closeAsk()"><span class="ask-result-tag">Ch.${c.num||'?'}</span>${c.title}</a>`).join('');
 
   const context = chunks.length ? `Relevant site content:\n\n${chunks.join('\n\n')}` : '';

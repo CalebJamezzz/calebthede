@@ -23,6 +23,7 @@ let adminMode=false;
 <canvas id="shootingStarCanvas"></canvas>
 <div class="hub-bg"></div>
 <div class="hub-pattern"></div>
+<div class="home-sky"></div>
 <div class="cursor" id="cursor"></div>
 <div class="cursor-ring" id="cursorRing"></div>
 <div id="flameCursor"><svg width="28" height="40" viewBox="0 0 28 40" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="fg1" cx="50%" cy="80%" r="60%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="30%" stop-color="#60d0ff" stop-opacity="0.9"/><stop offset="70%" stop-color="#3b82f6" stop-opacity="0.7"/><stop offset="100%" stop-color="#1d4ed8" stop-opacity="0"/></radialGradient><radialGradient id="fg2" cx="50%" cy="70%" r="55%"><stop offset="0%" stop-color="#bfdbfe" stop-opacity="0.8"/><stop offset="50%" stop-color="#60a5fa" stop-opacity="0.5"/><stop offset="100%" stop-color="#2563eb" stop-opacity="0"/></radialGradient></defs><path d="M14 38 C6 32 2 24 4 16 C5 10 8 6 10 4 C10 8 11 10 13 11 C11 7 13 2 14 0 C15 4 17 8 20 10 C22 12 24 16 24 20 C24 28 20 34 14 38Z" fill="url(#fg1)" opacity="0.9"/><path d="M14 36 C9 30 7 24 8 18 C9 14 11 11 12 9 C12 12 13 14 14 15 C13 12 14 8 15 6 C16 9 18 12 20 14 C21 16 22 19 22 22 C22 28 18 33 14 36Z" fill="url(#fg2)" opacity="0.8"/><path d="M14 34 C11 29 10 25 11 21 C12 18 13 16 14 15 C15 17 15 20 14 22 C16 19 17 16 17 14 C18 17 19 20 19 23 C19 28 17 32 14 34Z" fill="#e0f2fe" opacity="0.7"/></svg></div>
@@ -57,9 +58,16 @@ let adminMode=false;
   <ul class="nav-center">
     <li><a href="/">Home</a></li>
     <li><a href="/about">About</a></li>
-    <li><a href="/projects">Projects</a></li>
-    <li><a href="/library">Library</a></li>
-    <li><a href="/lab">Lab</a></li>
+    <li class="nav-deck"><a href="/codex" class="deck-label">Codex<span class="deck-caret">▾</span></a>
+      <div class="nav-dropdown">
+        <a href="/library"><span class="dd-t">The Library</span><span class="dd-s">Books &amp; the Blue Ember series</span></a>
+        <a href="/marginalia"><span class="dd-t">Marginalia</span><span class="dd-s">Notes &amp; short writing</span></a>
+      </div></li>
+    <li class="nav-deck"><a href="/atlas" class="deck-label">Atlas<span class="deck-caret">▾</span></a>
+      <div class="nav-dropdown">
+        <a href="/projects"><span class="dd-t">The Forge</span><span class="dd-s">Tools &amp; things built</span></a>
+        <a href="/lab"><span class="dd-t">Orbit</span><span class="dd-s">Experiments in motion</span></a>
+      </div></li>
     <li><a href="/contact" class="active">Contact</a></li>
   </ul>
   <div class="nav-right">
@@ -74,9 +82,16 @@ let adminMode=false;
 <div class="mobile-drawer" id="mobileDrawer">
   <a class="mobile-nav-item" href="/">Home</a>
   <a class="mobile-nav-item" href="/about">About</a>
-  <a class="mobile-nav-item" href="/projects">Projects</a>
-  <a class="mobile-nav-item" href="/library">Library</a>
-  <a class="mobile-nav-item" href="/lab">Lab</a>
+  <div class="mobile-group">
+    <span class="mobile-group-label">Codex</span>
+    <a class="mobile-nav-sub" href="/library">The Library</a>
+    <a class="mobile-nav-sub" href="/marginalia">Marginalia</a>
+  </div>
+  <div class="mobile-group">
+    <span class="mobile-group-label">Atlas</span>
+    <a class="mobile-nav-sub" href="/projects">The Forge</a>
+    <a class="mobile-nav-sub" href="/lab">Orbit</a>
+  </div>
   <a class="mobile-nav-item active" href="/contact">Contact</a>
   <div class="mobile-drawer-footer">
     <div class="mobile-drawer-links">
@@ -164,33 +179,68 @@ let adminMode=false;
   </div>
 </main>
 <footer>
-  <div class="footer-newsletter" id="footer-newsletter-wrap">
-    <span class="footer-newsletter-label">New writing →</span>
-    <form name="newsletter-footer" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="handleFooterNewsletterSubmit(event)" style="display:flex;align-items:center;gap:.5rem">
-      <input type="hidden" name="form-name" value="newsletter-footer"/>
-      <p style="display:none"><label><input name="bot-field"/></label></p>
-      <input class="footer-newsletter-input" type="email" name="email" placeholder="your@email.com" required/>
-      <button class="footer-newsletter-btn" type="submit">→</button>
-    </form>
-    <span class="footer-newsletter-success" id="footer-nl-success">✦ subscribed</span>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">CT.</a>
+      <p class="footer-tagline">Stories, essays, and things I build &mdash; written and read in the open.</p>
+      <div class="footer-newsletter">
+        <span class="footer-newsletter-label">New writing &rarr;</span>
+        <form name="newsletter-footer" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="handleFooterNewsletterSubmit(event)" style="display:flex;align-items:center;gap:.5rem">
+          <input type="hidden" name="form-name" value="newsletter-footer"/>
+          <p style="display:none"><label><input name="bot-field"/></label></p>
+          <input class="footer-newsletter-input" type="email" name="email" placeholder="your@email.com" required/>
+          <button class="footer-newsletter-btn" type="submit">&rarr;</button>
+        </form>
+        <span class="footer-newsletter-success" id="footer-nl-success">&#10038; subscribed</span>
+      </div>
+    </div>
+    <div class="footer-nav">
+      <div class="footer-col">
+        <h4 class="footer-col-title">Codex</h4>
+        <a href="/library">Library</a>
+        <a href="/marginalia">Marginalia</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Atlas</h4>
+        <a href="/projects">Forge</a>
+        <a href="/lab">Orbit</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Site</h4>
+        <a href="/">Home</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Elsewhere</h4>
+        <a href="https://github.com/CalebJamezzz" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://instagram.com/c.aleb_jamezzz" target="_blank" rel="noopener">Instagram</a>
+        <a href="mailto:calebthede@gmail.com">Email</a>
+      </div>
+    </div>
   </div>
-  <div style="display:flex;align-items:center;justify-content:space-between;padding:.7rem 4rem">
-  <span>© 2026 Caleb Thede</span>
-  <div class="footer-links">
-    <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
-    <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
-    <a href="https://instagram.com/c.aleb_jamezzz" target="_blank">Instagram</a>
-    <a href="mailto:calebthede@gmail.com">Email</a>
-  </div>
+  <div class="footer-base">
+    <span>&copy; 2026 Caleb Thede</span>
+    <span class="footer-base-meta">Celestial Codex</span>
   </div>
 </footer>
 <script src="js/init.js"></script>
 <script src="js/theme_nav.js"></script>
 <script src="js/easter_eggs.js"></script>
+<script src="js/tarot.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   initReveal();
   upgradeSpinners();
+  // scroll-aware nav: parchment over the form, dark once the dusk arrives
+  const navEl=document.querySelector('nav');
+  if(navEl){
+    const onScroll=()=>navEl.classList.toggle('scrolled', window.scrollY > window.innerHeight*0.5);
+    onScroll();
+    window.addEventListener('scroll', onScroll, {passive:true});
+    window.addEventListener('resize', onScroll, {passive:true});
+  }
 });
 </script>
 </body>

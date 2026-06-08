@@ -1,27 +1,40 @@
-// ── LAB ──────────────────────────────────────────────────
-let labFilter = 'all';
+// ══ ORBIT · experiments in motion ══
+// Read-only. Authoring lives in the Scriptorium (/compose).
+// Grouped by origin: Built (interactive embeds) → Found (tests in the wild).
+// Topics are free tags (Psychology, Game, …) and may overlap — a thing can be both.
+
 let allLabEntries = [];
 let expandedEntry = null;
 
-const CATEGORY_LABELS = {
-  psychology: 'Psychology',
-  experiment: 'Experiment',
-  tool: 'Tool',
-  demo: 'Demo'
+// status → chip class + label
+const ORBIT_STATUS = {
+  active:   { cls:'st-active',   label:'Active' },
+  brewing:  { cls:'st-brewing',  label:'Brewing' },
+  archived: { cls:'st-archived', label:'Archived' },
 };
 
-const CATEGORY_COLORS = {
-  psychology: 'var(--teal)',
-  experiment: 'var(--gold)',
-  tool: '#a78bfa',
-  demo: '#60a5fa'
+// topic → accent colour (free tags allowed; unknown topics cycle a neutral palette)
+const ORBIT_TOPIC_COLORS = {
+  psychology: 'var(--gold)',
+  game:       '#a78bfa',
+  tool:       'var(--teal)',
+  design:     '#60a5fa',
+  ai:         '#34d399',
 };
+const ORBIT_FALLBACK_COLORS = ['var(--teal)', 'var(--gold)', '#a78bfa', '#60a5fa', '#34d399'];
 
-const STATUS_LABELS = {
-  active: 'Active',
-  brewing: 'Brewing',
-  archived: 'Archived'
-};
+function orbitTopicColor(topic){
+  const key = String(topic||'').trim().toLowerCase();
+  if(ORBIT_TOPIC_COLORS[key]) return ORBIT_TOPIC_COLORS[key];
+  const s = key.split('').reduce((a,ch)=>a+ch.charCodeAt(0),0);
+  return ORBIT_FALLBACK_COLORS[s % ORBIT_FALLBACK_COLORS.length];
+}
+
+const ORBIT_ROMAN = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX'];
+function orbitRoman(n){ return ORBIT_ROMAN[n] || String(n); }
+
+// Built = something interactive lives here; Found = a curated external link only.
+function orbitOrigin(e){ return (e.embed_html || e.embed_url) ? 'built' : 'find'; }
 
 // Handle #launch/id hash — redirect to permanent embed page
 function handleLabHash(){
@@ -33,20 +46,136 @@ function handleLabHash(){
   history.replaceState(null, '', '/lab');
 }
 
+// orbital glyph — concentric orbits + a moon, accent-tinted, spins on hover
+function orbitGlyph(){
+  return `<svg class="orb-glyph" viewBox="0 0 64 50" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <ellipse class="ring" cx="32" cy="25" rx="27" ry="10"/>
+    <ellipse class="ring" cx="32" cy="25" rx="14" ry="22"/>
+    <circle class="core" cx="32" cy="25" r="3.1"/>
+    <g class="spin"><circle class="moon" cx="59" cy="25" r="2.3"/></g>
+    <g class="spin" style="animation-duration:9s"><circle class="moon" cx="18" cy="3" r="1.7"/></g>
+  </svg>`;
+}
+
+function orbitLinks(e){
+  const origin = orbitOrigin(e);
+  const hasEmbed = !!(e.embed_html || e.embed_url);
+  let h = '';
+  if(hasEmbed){
+    h += `<button class="orb-link launch" onclick="event.stopPropagation();toggleEmbed('${e.id}')"><span id="launch-icon-${e.id}">▶</span> <span id="launch-label-${e.id}">Launch</span></button>`;
+    h += `<button class="orb-link ghost" onclick="event.stopPropagation();copyLabLink('${e.id}')">↗ Share</button>`;
+  }
+  if(e.link){
+    const label = origin === 'find' ? 'Visit' : 'Source';
+    h += `<a class="orb-link ${origin === 'find' ? 'visit' : 'ghost'}" href="${e.link}" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ ${label}</a>`;
+  }
+  h += `<span class="admin-only"><button class="orb-link edit" onclick="event.stopPropagation();location.href='/compose'">✎ Edit in Scriptorium</button></span>`;
+  return h;
+}
+
+function orbitTopics(tags){
+  if(!tags.length) return '';
+  return `<div class="orb-topics">${tags.map(t =>
+    `<span class="orb-topic" style="--tc:${orbitTopicColor(t)}">${t}</span>`
+  ).join('')}</div>`;
+}
+
+function orbitCard(e, idx){
+  const origin = orbitOrigin(e);
+  const status = ORBIT_STATUS[e.status] || ORBIT_STATUS.active;
+  const tags = (e.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
+  const accent = tags.length ? orbitTopicColor(tags[0]) : (origin === 'find' ? 'var(--gold)' : 'var(--teal)');
+  const kind = origin === 'find' ? '↗ Found · in the wild' : '▶ Built · interactive';
+
+  const card = document.createElement('article');
+  card.className = 'orb reveal';
+  card.id = 'tile-' + e.id;
+  card.style.setProperty('--orb-accent', accent);
+  card.innerHTML = `
+    ${orbitGlyph()}
+    <div class="orb-body">
+      <div class="orb-top">
+        <p class="orb-kind">${kind}</p>
+        <span class="orb-chip ${status.cls}"><span class="orb-dot"></span>${status.label}</span>
+      </div>
+      <p class="orb-no">Orbit · ${orbitRoman(idx+1)}</p>
+      <h3 class="orb-title">${e.title || 'Untitled'}</h3>
+      ${e.description ? `<div class="orb-desc">${e.description}</div>` : ''}
+      ${orbitTopics(tags)}
+      <div class="orb-foot">${orbitLinks(e)}</div>
+      <div class="orb-embed-panel" id="embed-${e.id}" style="display:none">
+        <div class="orb-embed-inner" id="embed-inner-${e.id}"></div>
+      </div>
+    </div>`;
+  refreshAdmin(card);
+  return card;
+}
+
+function orbitSetCount(id, n){
+  const el = document.getElementById(id);
+  if(el) el.textContent = n;
+}
+
+function orbitEmpty(root){
+  root.innerHTML = `<div class="orbit-group"><div class="empty-state">
+    <span class="empty-icon">◉</span><h3>Nothing in orbit yet</h3>
+    <p>Experiments, interactive toys, and tests worth charting will appear here.</p>
+    <a class="btn-primary admin-only" style="margin-top:1rem" href="/compose">✦ Open the Scriptorium →</a>
+  </div></div>`;
+  refreshAdmin(root);
+}
+
 async function loadLab(){
-  const grid = document.getElementById('labGrid');
-  const empty = document.getElementById('labEmpty');
-  grid.innerHTML = '<div style="padding:3rem 0">' + constellationLoader() + '</div>';
-  
-  let query = sb.from('lab_entries').select('*').order('created_at', {ascending:false});
-  if(labFilter !== 'all') query = query.eq('category', labFilter);
-  const {data:entries} = await query;
-  
-  grid.innerHTML = '';
-  if(!entries || !entries.length){ empty.style.display = 'block'; return; }
-  empty.style.display = 'none';
+  const root = document.getElementById('orbitRoot');
+  if(!root) return;
+  root.innerHTML = '<div style="padding:3rem 4rem">' + constellationLoader() + '</div>';
+
+  const { data:entries, error } = await sb.from('lab_entries').select('*')
+    .order('created_at', {ascending:false});
+
+  if(error){ root.innerHTML=''; toast('Could not load Orbit','error'); return; }
+  if(!entries || !entries.length){ orbitEmpty(root); return; }
   allLabEntries = entries;
-  renderLabCards(entries);
+
+  const built = entries.filter(e => orbitOrigin(e) === 'built');
+  const finds = entries.filter(e => orbitOrigin(e) === 'find');
+  orbitSetCount('orbCountBuilt', built.length);
+  orbitSetCount('orbCountFinds', finds.length);
+
+  root.innerHTML = '';
+
+  const GROUPS = [
+    { items: built, lead:'Built',  trail:'made here',     noun:'experiment' },
+    { items: finds, lead:'Found',  trail:'tests in the wild', noun:'find' },
+  ];
+
+  GROUPS.forEach(g => {
+    if(!g.items.length) return;
+    const noun = g.items.length === 1 ? g.noun : g.noun + 's';
+    const divider = document.createElement('div');
+    divider.className = 'divider reveal';
+    divider.innerHTML = `<span class="legend">${g.lead}</span><span class="ln"></span>
+      <span class="star">✦</span><span class="count">${g.items.length} ${noun}</span><span class="ln"></span>
+      <span class="legend">${g.trail}</span>`;
+    root.appendChild(divider);
+
+    const group = document.createElement('div');
+    group.className = 'orbit-group';
+    const grid = document.createElement('div');
+    grid.className = 'orbit-grid';
+    g.items.forEach((e,i)=> grid.appendChild(orbitCard(e, i)));
+    group.appendChild(grid);
+    root.appendChild(group);
+  });
+
+  refreshAdmin(root);
+  if(typeof atlasObserveReveals === 'function'){ atlasObserveReveals(root); }
+  else {
+    root.querySelectorAll('.reveal:not(.visible)').forEach(el=>{
+      if(typeof _revealObs !== 'undefined' && _revealObs) _revealObs.observe(el);
+      else el.classList.add('visible');
+    });
+  }
 
   // Auto-open if arriving from a project link
   const autoOpen = sessionStorage.getItem('openLabEntry');
@@ -62,58 +191,11 @@ async function loadLab(){
   }
 }
 
-function renderLabCards(entries){
-  const grid = document.getElementById('labGrid');
-  const empty = document.getElementById('labEmpty');
-  grid.innerHTML = '';
-  if(!entries || !entries.length){ empty.style.display = 'block'; return; }
-  empty.style.display = 'none';
-
-  entries.forEach(e => {
-    const cat = e.category || e.type || 'experiment';
-    const catLabel = CATEGORY_LABELS[cat] || cat;
-    const catColor = CATEGORY_COLORS[cat] || 'var(--gold)';
-    const status = e.status || 'active';
-    const statusLabel = STATUS_LABELS[status] || status;
-    const hasEmbed = e.embed_html || e.embed_url;
-    const tags = (e.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
-
-    const tile = document.createElement('div');
-    tile.className = 'lab-tile';
-    tile.id = 'tile-' + e.id;
-    tile.innerHTML = `
-      <div class="lab-tile-header">
-        <div class="lab-tile-meta">
-          <span class="lab-cat-badge" style="color:${catColor};border-color:${catColor}33;background:${catColor}11">${catLabel}</span>
-          <span class="lab-status-badge lab-status-${status}">${statusLabel}</span>
-        </div>
-        <div class="lab-tile-actions">
-          ${hasEmbed ? `<button class="lab-launch-btn" onclick="toggleEmbed('${e.id}')"><span id="launch-icon-${e.id}">▶</span> <span id="launch-label-${e.id}">Launch</span></button>` : ''}
-          ${hasEmbed ? `<button class="lab-share-btn" onclick="event.stopPropagation();copyLabLink('${e.id}')">↗ Share</button>` : ''}
-          ${e.link ? `<a class="lab-ext-link" href="${e.link}" target="_blank">↗</a>` : ''}
-          <button class="lab-edit-btn admin-only" onclick="event.stopPropagation();openLabModal('${e.id}')">Edit</button>
-          <button class="lab-del-btn admin-only danger" onclick="event.stopPropagation();deleteLabEntry('${e.id}')">Delete</button>
-        </div>
-      </div>
-      <h3 class="lab-tile-title">${e.title}</h3>
-      ${e.description ? `<p class="lab-tile-desc">${e.description}</p>` : ''}
-      ${tags.length ? `<div class="lab-tags">${tags.map(t=>`<span class="lab-tag">${t}</span>`).join('')}</div>` : ''}
-      <div class="lab-embed-panel" id="embed-${e.id}" style="display:none">
-        <div class="lab-embed-inner" id="embed-inner-${e.id}"></div>
-      </div>
-    `;
-    
-    grid.appendChild(tile);
-    refreshAdmin(tile);
-  });
-}
-
 function copyLabLink(id){
   const url = window.location.origin + '/lab-embed?id=' + id;
   navigator.clipboard.writeText(url).then(() => {
     toast('Link copied to clipboard', 'success');
   }).catch(() => {
-    // Fallback
     const el = document.createElement('textarea');
     el.value = url;
     el.style.position = 'fixed'; el.style.opacity = '0';
@@ -130,135 +212,35 @@ function toggleEmbed(id){
   const icon = document.getElementById('launch-icon-' + id);
   const label = document.getElementById('launch-label-' + id);
   const tile = document.getElementById('tile-' + id);
+  if(!panel) return;
 
   if(panel.style.display === 'none'){
-    // Open
     const entry = allLabEntries.find(e => e.id === id);
     if(!entry) return;
-    
+
     if(entry.embed_url){
-      inner.innerHTML = `<iframe src="${entry.embed_url}" frameborder="0" allowfullscreen style="width:100%;height:500px;border-radius:6px;background:#0D0F14"></iframe>`;
+      inner.innerHTML = `<iframe src="${entry.embed_url}" frameborder="0" allowfullscreen></iframe>`;
     } else if(entry.embed_html){
       // Open in new tab so full features (file upload, scripts) work without sandbox restrictions
       const blob = new Blob([entry.embed_html], {type:'text/html'});
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
-      // Revoke after short delay
       setTimeout(()=>URL.revokeObjectURL(url), 5000);
-      // Don't expand the panel — close immediately
       return;
     }
-    
+
     panel.style.display = 'block';
-    icon.textContent = '◼';
-    label.textContent = 'Close';
-    tile.classList.add('lab-tile-expanded');
+    if(icon) icon.textContent = '◼';
+    if(label) label.textContent = 'Close';
+    if(tile) tile.classList.add('orb-expanded');
     setTimeout(() => panel.scrollIntoView({behavior:'smooth', block:'nearest'}), 100);
     expandedEntry = id;
   } else {
-    // Close
     panel.style.display = 'none';
     inner.innerHTML = '';
-    icon.textContent = '▶';
-    label.textContent = 'Launch';
-    tile.classList.remove('lab-tile-expanded');
+    if(icon) icon.textContent = '▶';
+    if(label) label.textContent = 'Launch';
+    if(tile) tile.classList.remove('orb-expanded');
     expandedEntry = null;
   }
 }
-
-function filterLab(type, btn){
-  document.querySelectorAll('.lab-fb').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  labFilter = type;
-  loadLab();
-}
-
-// ── ADMIN ────────────────────────────────────────────────
-
-function openLabModal(id=null){
-  document.getElementById('labModalTitle').textContent = id ? 'Edit Entry' : 'New Lab Entry';
-  document.getElementById('editLabId').value = id||'';
-  if(id){
-    sb.from('lab_entries').select('*').eq('id',id).single().then(({data:e})=>{
-      document.getElementById('labType').value = e?.category||e?.type||'experiment';
-      document.getElementById('labStatus').value = e?.status||'active';
-      document.getElementById('labTitle').value = e?.title||'';
-      quillSet('labDescEditor', e?.description||'');
-      document.getElementById('labEmbedHtml').value = e?.embed_html||'';
-      document.getElementById('labEmbedUrl').value = e?.embed_url||'';
-      document.getElementById('labLink').value = e?.link||'';
-      document.getElementById('labTags').value = e?.tags||'';
-    });
-  } else {
-    document.getElementById('labType').value = 'psychology';
-    document.getElementById('labStatus').value = 'active';
-    document.getElementById('labTitle').value = '';
-    quillSet('labDescEditor', '');
-    document.getElementById('labEmbedHtml').value = '';
-    document.getElementById('labEmbedUrl').value = '';
-    document.getElementById('labLink').value = '';
-    document.getElementById('labTags').value = '';
-  }
-  openModal('labModal');
-}
-
-async function saveLabEntry(){
-  const title = document.getElementById('labTitle').value.trim();
-  if(!title){ alert('Please add a title.'); return; }
-  const editId = document.getElementById('editLabId').value;
-  const payload = {
-    category: document.getElementById('labType').value,
-    type: document.getElementById('labType').value, // keep for backward compat
-    status: document.getElementById('labStatus').value,
-    title,
-    description: quillGet('labDescEditor'),
-    embed_html: document.getElementById('labEmbedHtml').value.trim() || null,
-    embed_url: document.getElementById('labEmbedUrl').value.trim() || null,
-    link: document.getElementById('labLink').value.trim() || null,
-    tags: document.getElementById('labTags').value.trim() || null,
-  };
-  setLoading('labSaveBtn', true);
-  const {error} = editId
-    ? await sb.from('lab_entries').update(payload).eq('id', editId)
-    : await sb.from('lab_entries').insert(payload);
-  setLoading('labSaveBtn', false, 'Save');
-  if(error){ toast('Error saving entry', 'error'); return; }
-  toast(editId ? 'Entry updated' : 'Entry added');
-  closeModal('labModal');
-  loadLab();
-}
-
-async function deleteLabEntry(id){
-  if(!confirm('Delete this entry?')) return;
-  await sb.from('lab_entries').delete().eq('id', id);
-  toast('Entry deleted');
-  loadLab();
-}
-
-// ── ARTICLE READER (shared with library) ─────────────────
-
-function openArticle(a, skipHistory){
-  currentArticleId = a.id;
-  const artWords = (a.content||'').split(/\s+/).filter(Boolean).length;
-  const artMins = Math.max(1, Math.ceil(artWords/200));
-  const bannerEl = document.getElementById('readerBanner');
-  if(a.banner_image){ bannerEl.style.backgroundImage=`url(${a.banner_image})`;bannerEl.style.display='block'; }
-  else{ bannerEl.style.display='none'; }
-  document.getElementById('readerTag').textContent = a.tag||'Article';
-  document.getElementById('readerTitle').textContent = a.title;
-  document.getElementById('readerMeta').textContent = fmtDate(a.created_at);
-  document.getElementById('readerReadTime').textContent = artWords.toLocaleString()+' words · '+artMins+' min read';
-  document.getElementById('readerBody').innerHTML = renderBody(a.content);
-  document.getElementById('readerEditBtn').onclick = ()=>openArticleModal(a.id);
-  document.getElementById('readerDeleteBtn').onclick = ()=>deleteArticle(a.id,true);
-  showLibArticleReader();
-  if(!skipHistory) safePush({sub:'article',id:a.id,title:a.title},'','#article/'+a.id);
-}
-
-function closeArticleReader(){
-  showLibBrowse();
-  loadArticles();
-  switchLibTab('Articles', document.querySelectorAll('.lib-tab')[1]);
-  safePush({sub:'articles'},'','#articles');
-}
-

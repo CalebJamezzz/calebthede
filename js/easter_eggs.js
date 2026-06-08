@@ -216,9 +216,9 @@ function triggerShootingStar(){
   shootStar(fromX, fromY, toX, toY);
 }
 
-// Fire on: konami, secret finds, random every 90–180s
+// Fire on: konami, secret finds, and rarely at random (~8–18 min apart)
 function scheduleRandomStar(){
-  const delay = 120000 + Math.random() * 80000;
+  const delay = 480000 + Math.random() * 600000;
   setTimeout(()=>{ triggerShootingStar(); scheduleRandomStar(); }, delay);
 }
 scheduleRandomStar();

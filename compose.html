@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Scriptorium — Caleb Thede</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="robots" content="noindex"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.ckeditor.com/ckeditor5/40.2.0/super-build/ckeditor.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+</head>
+<body data-page="compose">
+<script>
+if((localStorage.getItem('ct_theme')||'light')!=='dark')document.body.classList.add('light-mode');
+const SUPABASE_URL='https://lbviiggrxzhyxrpivbbi.supabase.co';
+const SUPABASE_KEY='sb_publishable_eQRvx-J1Cp4nlq6Q6TOjIA__QYJmJq6';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let adminMode=false;
+</script>
+<canvas id="shootingStarCanvas"></canvas>
+<div class="hub-bg"></div>
+<div class="hub-pattern"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="toast" id="toast"></div>
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <h2 class="modal-title">Admin Login</h2>
+    <p style="font-size:.9rem;color:var(--text-dim);margin-bottom:1.5rem">Sign in to unlock the Scriptorium.</p>
+    <div class="mf"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"/></div>
+    <div class="mf"><label>Password</label><input type="password" id="loginPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <p class="login-error" id="loginError">Incorrect credentials. Try again.</p>
+    <div class="modal-actions"><button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
+  </div>
+</div>
+<nav>
+  <a class="nav-logo" href="/">CT.</a>
+  <ul class="nav-center">
+    <li><a href="/">Home</a></li>
+    <li><a href="/about">About</a></li>
+    <li class="nav-deck"><a href="/codex" class="deck-label">Codex<span class="deck-caret">▾</span></a>
+      <div class="nav-dropdown">
+        <a href="/library"><span class="dd-t">The Library</span><span class="dd-s">Books &amp; the Blue Ember series</span></a>
+        <a href="/marginalia"><span class="dd-t">Marginalia</span><span class="dd-s">Notes &amp; short writing</span></a>
+      </div></li>
+    <li class="nav-deck"><a href="/atlas" class="deck-label">Atlas<span class="deck-caret">▾</span></a>
+      <div class="nav-dropdown">
+        <a href="/projects"><span class="dd-t">The Forge</span><span class="dd-s">Tools &amp; things built</span></a>
+        <a href="/lab"><span class="dd-t">Orbit</span><span class="dd-s">Experiments in motion</span></a>
+      </div></li>
+    <li><a href="/contact">Contact</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="admin-badge" id="adminBadge">Admin</span>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
+    <button class="lock-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login">🔒</button>
+    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</nav>
+<div class="mobile-drawer" id="mobileDrawer">
+  <a class="mobile-nav-item" href="/">Home</a>
+  <a class="mobile-nav-item" href="/about">About</a>
+  <div class="mobile-group">
+    <span class="mobile-group-label">Codex</span>
+    <a class="mobile-nav-sub" href="/library">The Library</a>
+    <a class="mobile-nav-sub" href="/marginalia">Marginalia</a>
+  </div>
+  <div class="mobile-group">
+    <span class="mobile-group-label">Atlas</span>
+    <a class="mobile-nav-sub" href="/projects">The Forge</a>
+    <a class="mobile-nav-sub" href="/lab">Orbit</a>
+  </div>
+  <a class="mobile-nav-item" href="/contact">Contact</a>
+</div>
+
+<main class="scriptorium">
+  <!-- Sealed state -->
+  <div id="composeGate" class="compose-gate">
+    <div class="cg-mark">✦</div>
+    <h1 class="cg-title">The Scriptorium is sealed</h1>
+    <p class="cg-sub">Sign in to manage your books, marginalia, projects, and lab.</p>
+    <button class="btn-primary" onclick="toggleAdmin()">Sign In →</button>
+  </div>
+
+  <!-- App -->
+  <div id="composeApp" class="scr-app" style="display:none">
+    <header class="scr-head">
+      <p class="section-label">The Scriptorium</p>
+      <div class="scr-workspaces">
+        <button class="scr-ws active" data-ws="books" onclick="scrSwitchWs('books')">Books</button>
+        <button class="scr-ws" data-ws="essays" onclick="scrSwitchWs('essays')">Marginalia</button>
+        <button class="scr-ws" data-ws="atlas" onclick="scrSwitchWs('atlas')">Atlas</button>
+        <button class="scr-ws" data-ws="orbit" onclick="scrSwitchWs('orbit')">Orbit</button>
+      </div>
+    </header>
+
+    <!-- BOOKS WORKSPACE -->
+    <div class="scr-books" id="scrBooksWs">
+      <!-- left: library browser -->
+      <aside class="scr-browser">
+        <div class="scr-browser-head">
+          <span class="scr-browser-title">Library</span>
+          <div class="scr-browser-acts">
+            <button class="scr-mini" onclick="scrNewSeries()">+ Series</button>
+            <button class="scr-mini gold" onclick="scrNewBook()">+ Book</button>
+          </div>
+        </div>
+        <div id="scrBookList" class="scr-booklist"></div>
+      </aside>
+
+      <!-- right: detail -->
+      <section class="scr-detail">
+        <div id="scrDetailEmpty" class="scr-detail-empty">
+          <p>Select a book to manage — or create one.</p>
+        </div>
+
+        <div id="scrBookPanel" style="display:none">
+          <!-- book header -->
+          <div class="scr-bookhead">
+            <div class="scr-cover">
+              <div class="scr-cover-prev" id="scrCoverPrev"></div>
+              <label class="cf-upload" for="scrCoverFile">Upload cover</label>
+              <input type="file" id="scrCoverFile" accept="image/*" hidden onchange="scrUploadCover(event)"/>
+              <button class="scr-cover-clear" id="scrCoverClear" onclick="scrClearCover()" style="display:none">remove</button>
+            </div>
+            <div class="scr-bookfields">
+              <input id="scrTitle" class="scr-title-input" placeholder="Book title"/>
+              <textarea id="scrDesc" class="scr-desc-input" rows="3" placeholder="Short description…"></textarea>
+              <div class="scr-fieldrow">
+                <div class="cf cf-sm"><label>Status</label>
+                  <select id="scrStatus">
+                    <option value="draft">Draft</option>
+                    <option value="in_progress">Writing</option>
+                    <option value="hiatus">On hiatus</option>
+                    <option value="complete">Complete</option>
+                  </select>
+                </div>
+                <div class="cf cf-sm"><label>Series</label><select id="scrSeries"></select></div>
+                <div class="cf cf-sm"><label># in series</label><input type="number" id="scrSeriesOrder" placeholder="1"/></div>
+                <div class="cf cf-sm"><label>Planned chapters</label><input type="number" id="scrTotalCh" placeholder="auto"/></div>
+              </div>
+              <div class="scr-bookhead-acts">
+                <button class="btn-primary" id="scrSaveBookBtn" onclick="scrSaveBook()">Save book</button>
+                <button class="btn-ghost danger" onclick="scrDeleteBook()">Delete book</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- chapters -->
+          <div class="scr-section-head">
+            <h3 id="scrChaptersTitle">Chapters</h3>
+            <div class="scr-section-acts">
+              <button class="scr-mini" onclick="scrToggleTimeline()" id="scrTimelineBtn">Timeline</button>
+              <button class="scr-mini" onclick="scrOpenImport()">⇪ Import .docx</button>
+              <button class="scr-mini gold" onclick="scrAddChapter()">+ Chapter</button>
+            </div>
+          </div>
+          <div id="scrTimeline" class="scr-timeline" style="display:none"></div>
+          <div id="scrChapters" class="scr-chapters"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ESSAYS WORKSPACE -->
+    <div class="scr-books" id="scrEssaysWs" style="display:none">
+      <!-- left: essay browser -->
+      <aside class="scr-browser">
+        <div class="scr-browser-head">
+          <span class="scr-browser-title">Marginalia</span>
+          <div class="scr-browser-acts">
+            <button class="scr-mini gold" onclick="scrNewArticle()">+ Entry</button>
+          </div>
+        </div>
+        <div id="scrArticleList" class="scr-booklist"></div>
+      </aside>
+
+      <!-- right: detail -->
+      <section class="scr-detail">
+        <div id="scrArticleEmpty" class="scr-detail-empty">
+          <p>Select an essay to manage — or create one.</p>
+        </div>
+
+        <div id="scrArticlePanel" style="display:none">
+          <div class="scr-bookhead">
+            <div class="scr-cover scr-cover-wide">
+              <div class="scr-cover-prev" id="scrArtBannerPrev"></div>
+              <label class="cf-upload" for="scrArtBannerFile">Upload banner</label>
+              <input type="file" id="scrArtBannerFile" accept="image/*" hidden onchange="scrUploadBanner(event)"/>
+              <button class="scr-cover-clear" id="scrArtBannerClear" onclick="scrClearBanner()" style="display:none">remove</button>
+            </div>
+            <div class="scr-bookfields">
+              <input id="scrArtTitle" class="scr-title-input" placeholder="Essay title"/>
+              <div class="scr-fieldrow">
+                <div class="cf cf-sm"><label>Tag <span class="cf-hint">e.g. Essay, Note</span></label><input id="scrArtTag" placeholder="Essay"/></div>
+              </div>
+              <div class="scr-bookhead-acts">
+                <button class="btn-primary" id="scrSaveArtBtn" onclick="scrSaveArticle()">Save essay</button>
+                <button class="btn-ghost danger" onclick="scrDeleteArticle()">Delete essay</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="scr-section-head">
+            <h3>Content</h3>
+            <div class="scr-section-acts">
+              <button class="scr-mini gold" onclick="scrWriteArticle()">✎ Open writer</button>
+            </div>
+          </div>
+          <div id="scrArtSummary" class="scr-art-summary"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ATLAS (projects) WORKSPACE -->
+    <div class="scr-books" id="scrAtlasWs" style="display:none">
+      <aside class="scr-browser">
+        <div class="scr-browser-head">
+          <span class="scr-browser-title">Atlas</span>
+          <div class="scr-browser-acts">
+            <button class="scr-mini gold" onclick="scrNewProject()">+ Project</button>
+          </div>
+        </div>
+        <div id="scrProjectList" class="scr-booklist"></div>
+      </aside>
+
+      <section class="scr-detail">
+        <div id="scrProjectEmpty" class="scr-detail-empty">
+          <p>Select a project to manage — or create one.</p>
+        </div>
+
+        <div id="scrProjectPanel" style="display:none">
+          <div class="scr-bookhead">
+            <div class="scr-cover scr-cover-wide">
+              <div class="scr-cover-prev" id="scrProjBannerPrev"></div>
+              <label class="cf-upload" for="scrProjBannerFile">Upload banner</label>
+              <input type="file" id="scrProjBannerFile" accept="image/*" hidden onchange="scrUploadProjBanner(event)"/>
+              <button class="scr-cover-clear" id="scrProjBannerClear" onclick="scrClearProjBanner()" style="display:none">remove</button>
+            </div>
+            <div class="scr-bookfields">
+              <input id="scrProjTitle" class="scr-title-input" placeholder="Project title"/>
+              <input id="scrProjSubtitle" class="scr-sub-input" placeholder="One-line subtitle"/>
+              <div class="scr-fieldrow">
+                <div class="cf cf-sm"><label>Status</label>
+                  <select id="scrProjStatus">
+                    <option value="in_progress">In progress</option>
+                    <option value="shipped">Shipped</option>
+                    <option value="archived">Archived</option>
+                  </select>
+                </div>
+                <div class="cf cf-sm"><label>Category</label><input id="scrProjCategory" placeholder="Development"/></div>
+                <div class="cf cf-sm"><label>Sort</label><input type="number" id="scrProjSort" placeholder="0"/></div>
+                <div class="cf cf-sm"><label>Featured</label>
+                  <select id="scrProjHighlight">
+                    <option value="false">No</option>
+                    <option value="true">Homepage hero</option>
+                  </select>
+                </div>
+              </div>
+              <div class="cf"><label>Tags <span class="cf-hint">comma separated</span></label><input id="scrProjTags" placeholder="React, Supabase"/></div>
+              <div class="scr-bookhead-acts">
+                <button class="btn-primary" id="scrSaveProjBtn" onclick="scrSaveProject()">Save project</button>
+                <button class="btn-ghost danger" onclick="scrDeleteProject()">Delete project</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- links -->
+          <div class="scr-section-head"><h3>Links</h3></div>
+          <div class="scr-fieldrow">
+            <div class="cf cf-sm"><label>GitHub</label><input id="scrProjGithub" placeholder="https://github.com/…"/></div>
+            <div class="cf cf-sm"><label>Live demo</label><input id="scrProjDemo" placeholder="https://…"/></div>
+            <div class="cf cf-sm"><label>Extra link · label</label><input id="scrProjLinkLabel" placeholder="itch.io / Write-up"/></div>
+            <div class="cf cf-sm"><label>Extra link · URL</label><input id="scrProjLinkUrl" placeholder="https://…"/></div>
+          </div>
+
+          <!-- stat callouts -->
+          <div class="scr-section-head"><h3>Highlights <span class="scr-muted" style="font-weight:400">· up to three stat callouts</span></h3></div>
+          <div class="scr-fieldrow">
+            <div class="cf cf-sm"><label>Label 1</label><input id="scrProjH1Label" placeholder="Stack"/></div>
+            <div class="cf cf-sm"><label>Value 1</label><input id="scrProjH1Value" placeholder="React + Supabase"/></div>
+            <div class="cf cf-sm"><label>Label 2</label><input id="scrProjH2Label" placeholder="Type"/></div>
+            <div class="cf cf-sm"><label>Value 2</label><input id="scrProjH2Value" placeholder="Solo build"/></div>
+            <div class="cf cf-sm"><label>Label 3</label><input id="scrProjH3Label" placeholder="Status"/></div>
+            <div class="cf cf-sm"><label>Value 3</label><input id="scrProjH3Value" placeholder="Beta"/></div>
+          </div>
+
+          <!-- description -->
+          <div class="scr-section-head">
+            <h3>Description</h3>
+            <div class="scr-section-acts">
+              <button class="scr-mini gold" onclick="scrWriteProject()">✎ Open writer</button>
+            </div>
+          </div>
+          <div id="scrProjSummary" class="scr-art-summary"></div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ORBIT (lab) WORKSPACE -->
+    <div class="scr-books" id="scrOrbitWs" style="display:none">
+      <aside class="scr-browser">
+        <div class="scr-browser-head">
+          <span class="scr-browser-title">Orbit</span>
+          <div class="scr-browser-acts">
+            <button class="scr-mini gold" onclick="scrNewLab()">+ Entry</button>
+          </div>
+        </div>
+        <div id="scrLabList" class="scr-booklist"></div>
+      </aside>
+
+      <section class="scr-detail">
+        <div id="scrLabEmpty" class="scr-detail-empty">
+          <p>Select an entry to manage — or create one.</p>
+        </div>
+
+        <div id="scrLabPanel" style="display:none">
+          <div class="scr-bookhead">
+            <div class="scr-bookfields" style="grid-column:1 / -1">
+              <input id="scrLabTitle" class="scr-title-input" placeholder="Entry title"/>
+              <div class="scr-fieldrow">
+                <div class="cf cf-sm"><label>Category</label>
+                  <select id="scrLabCategory">
+                    <option value="game">Game</option>
+                    <option value="puzzle">Puzzle</option>
+                    <option value="psych">Psych test</option>
+                    <option value="experiment">Experiment</option>
+                    <option value="tool">Tool</option>
+                  </select>
+                </div>
+                <div class="cf cf-sm"><label>Kind</label>
+                  <select id="scrLabKind" onchange="scrLabKindChange()">
+                    <option value="url">Embed a URL</option>
+                    <option value="upload">Upload .html</option>
+                    <option value="html">Paste raw HTML</option>
+                    <option value="link">Link only</option>
+                  </select>
+                </div>
+                <div class="cf cf-sm"><label>Tags <span class="cf-hint">comma sep</span></label><input id="scrLabTags" placeholder="canvas, toy"/></div>
+              </div>
+              <!-- kind-specific inputs -->
+              <div class="cf" id="scrLabUrlField"><label id="scrLabUrlLabel">Embed URL</label><input id="scrLabUrl" placeholder="https://…"/></div>
+              <div class="cf" id="scrLabUploadField" style="display:none">
+                <label>HTML file <span class="cf-hint">self-contained .html → hosted on storage</span></label>
+                <div class="scr-import-top" style="margin:0">
+                  <label class="cf-upload" for="scrLabHtmlFile">Upload .html</label>
+                  <input type="file" id="scrLabHtmlFile" accept=".html,text/html" hidden onchange="scrUploadLabHtml(event)"/>
+                  <span id="scrLabHtmlName" class="scr-import-fname">No file uploaded</span>
+                </div>
+              </div>
+              <div class="cf" id="scrLabHtmlField" style="display:none"><label>Raw HTML / JS</label><textarea id="scrLabEmbedHtml" class="scr-desc-input" rows="6" placeholder="&lt;canvas&gt;…"></textarea></div>
+              <div class="scr-bookhead-acts">
+                <button class="btn-primary" id="scrSaveLabBtn" onclick="scrSaveLab()">Save entry</button>
+                <button class="btn-ghost danger" onclick="scrDeleteLab()">Delete entry</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="scr-section-head">
+            <h3>Description</h3>
+            <div class="scr-section-acts">
+              <button class="scr-mini gold" onclick="scrWriteLab()">✎ Open writer</button>
+            </div>
+          </div>
+          <div id="scrLabSummary" class="scr-art-summary"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- CHAPTER DETAILS OVERLAY -->
+<div class="scr-overlay" id="scrChapterOverlay">
+  <div class="scr-sheet">
+    <button class="modal-close" onclick="scrCloseChapter()">✕</button>
+    <h2 class="scr-sheet-title" id="scrChTitle">Chapter details</h2>
+    <p class="scr-sheet-sub">Title, number and release. Write the chapter body in the full-screen writer.</p>
+    <div class="scr-ch-meta">
+      <div class="cf"><label>Chapter title</label><input id="scrChTitleInput" placeholder="Chapter title"/></div>
+      <div class="cf cf-sm"><label>Chapter #</label><input type="number" id="scrChNum" placeholder="auto"/></div>
+      <label class="cf-toggle"><input type="checkbox" id="scrChPub"/> <span>Published now</span></label>
+      <div class="cf cf-sm"><label>Release date <span class="cf-hint">auto-publishes</span></label><input type="datetime-local" id="scrChDate"/></div>
+    </div>
+    <div class="scr-sheet-acts">
+      <button class="btn-primary" id="scrSaveChBtn" onclick="scrSaveDetails()">Save details</button>
+      <button class="scr-mini gold" id="scrDetailsWriteBtn" onclick="scrWriteFromDetails()">Open writer →</button>
+      <button class="btn-ghost" onclick="scrCloseChapter()">Cancel</button>
+      <span class="rail-status" id="scrChStatus"></span>
+    </div>
+  </div>
+</div>
+
+<!-- FULL-SCREEN WRITER -->
+<div class="scr-write" id="scrWriteOverlay">
+  <div class="scr-write-bar">
+    <div class="scr-write-meta">
+      <span class="scr-write-eyebrow" id="scrWriteBook">Book</span>
+      <span class="scr-write-title" id="scrWriteTitle">Chapter</span>
+    </div>
+    <div class="scr-write-acts">
+      <span class="rail-status" id="scrWriteStatus"></span>
+      <button class="scr-mini" id="scrWriteDetailsBtn" onclick="scrEditDetailsFromWrite()">Details</button>
+      <button class="btn-primary" id="scrSaveContentBtn" onclick="scrSaveContent()">Save content</button>
+      <button class="btn-ghost" onclick="scrCloseWrite()">Close</button>
+    </div>
+  </div>
+  <div class="scr-write-canvas">
+    <div id="scrCkBody"></div>
+  </div>
+</div>
+
+<!-- SERIES OVERLAY -->
+<div class="scr-overlay" id="scrSeriesOverlay">
+  <div class="scr-sheet">
+    <button class="modal-close" onclick="scrCloseSeries()">✕</button>
+    <h2 class="scr-sheet-title" id="scrSeriesTitle">New series</h2>
+    <div class="scr-ch-meta">
+      <div class="cf"><label>Series name</label><input id="scrSeriesName" placeholder="e.g. Blue Ember"/></div>
+      <div class="cf cf-sm"><label>Planned books <span class="cf-hint">blank = unknown</span></label><input type="number" id="scrSeriesTotal" placeholder="auto"/></div>
+    </div>
+    <div class="scr-sheet-acts">
+      <button class="btn-primary" id="scrSaveSeriesBtn" onclick="scrSaveSeries()">Save series</button>
+      <button class="btn-ghost danger" id="scrDeleteSeriesBtn" onclick="scrDeleteSeries()" style="display:none">Delete series</button>
+      <button class="btn-ghost" onclick="scrCloseSeries()">Cancel</button>
+      <span class="rail-status" id="scrSeriesStatus"></span>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM OVERLAY -->
+<div class="scr-overlay" id="scrConfirmOverlay">
+  <div class="scr-sheet" style="max-width:440px">
+    <h2 class="scr-sheet-title" id="scrConfirmTitle">Are you sure?</h2>
+    <p class="scr-sheet-sub" id="scrConfirmMsg"></p>
+    <div class="scr-sheet-acts">
+      <button class="btn-primary" id="scrConfirmOk" onclick="scrConfirmResolve(true)">Confirm</button>
+      <button class="btn-ghost" onclick="scrConfirmResolve(false)">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT OVERLAY -->
+<div class="scr-overlay" id="scrImportOverlay">
+  <div class="scr-sheet">
+    <button class="modal-close" onclick="scrCloseImport()">✕</button>
+    <h2 class="scr-sheet-title">Import manuscript</h2>
+    <p class="scr-sheet-sub">Upload a <strong>.docx</strong> (Google Docs → Download → Microsoft Word). Style chapter titles as a heading so they split cleanly.</p>
+    <div class="scr-import-top">
+      <label class="cf-upload" for="scrImportFile">Choose .docx</label>
+      <input type="file" id="scrImportFile" accept=".docx" hidden onchange="scrHandleFile(this)"/>
+      <span id="scrImportFileName" class="scr-import-fname">No file chosen</span>
+      <div class="cf cf-sm"><label>Split on</label>
+        <select id="scrImportHeading" onchange="scrRenderImportPreview()">
+          <option value="h1">Heading 1</option>
+          <option value="h2">Heading 2</option>
+          <option value="h3">Heading 3</option>
+        </select>
+      </div>
+    </div>
+    <!-- staggered scheduler -->
+    <div class="scr-schedule">
+      <label class="cf-toggle"><input type="checkbox" id="scrSchedOn" onchange="scrRenderImportPreview()"/> <span>Staggered release</span></label>
+      <div class="scr-sched-fields">
+        <div class="cf cf-sm"><label>First release</label><input type="datetime-local" id="scrSchedStart" onchange="scrRenderImportPreview()"/></div>
+        <div class="cf cf-sm"><label>Every</label><input type="number" id="scrSchedEvery" value="7" min="1" onchange="scrRenderImportPreview()"/></div>
+        <div class="cf cf-sm"><label>Unit</label><select id="scrSchedUnit" onchange="scrRenderImportPreview()"><option value="1">days</option><option value="7">weeks</option></select></div>
+      </div>
+    </div>
+    <div id="scrImportPreview" class="scr-import-preview"><p class="scr-muted">Choose a file to see detected chapters.</p></div>
+    <div class="scr-sheet-acts">
+      <button class="btn-primary" id="scrImportRunBtn" onclick="scrRunImport()">Import into this book</button>
+      <button class="btn-ghost" onclick="scrCloseImport()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/init.js"></script>
+<script src="js/theme_nav.js"></script>
+<script src="js/easter_eggs.js"></script>
+<script src="js/compose.js"></script>
+<script>document.addEventListener('DOMContentLoaded', () => { initCompose(); });</script>
+</body>
+</html>
