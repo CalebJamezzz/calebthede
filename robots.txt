@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /compose
+Disallow: /compose.html
+Disallow: /lab-embed
+Disallow: /lab-embed.html
+Disallow: /maintenance.html
+
+Sitemap: https://calebthede.com/sitemap.xml

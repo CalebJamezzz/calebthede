@@ -10,6 +10,19 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="css/main.css"/>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta name="description" content="Codex — Caleb Thede's written worlds: the Library and Marginalia."/>
+  <meta name="author" content="Caleb Thede"/>
+  <link rel="canonical" href="https://calebthede.com/codex"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="Caleb Thede"/>
+  <meta property="og:title" content="Codex — Caleb Thede"/>
+  <meta property="og:description" content="Codex — Caleb Thede's written worlds: the Library and Marginalia."/>
+  <meta property="og:url" content="https://calebthede.com/codex"/>
+  <meta property="og:image" content="https://calebthede.com/photo.jpg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="Codex — Caleb Thede"/>
+  <meta name="twitter:description" content="Codex — Caleb Thede's written worlds: the Library and Marginalia."/>
+  <meta name="twitter:image" content="https://calebthede.com/photo.jpg"/>
 </head>
 <body data-page="deck">
 <script>
@@ -19,11 +32,8 @@ const SUPABASE_KEY='sb_publishable_eQRvx-J1Cp4nlq6Q6TOjIA__QYJmJq6';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let adminMode=false;
 </script>
-<canvas id="shootingStarCanvas"></canvas>
 <div class="hub-bg"></div>
 <div class="hub-pattern"></div>
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
 <div class="toast" id="toast"></div>
 <!-- LOGIN MODAL -->
 <div class="modal-overlay" id="loginModal">

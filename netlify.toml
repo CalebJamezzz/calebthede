@@ -53,6 +53,23 @@
   to = "/contact.html"
   status = 200
 
+# -- Section landing pages --
+[[redirects]]
+  from = "/atlas"
+  to = "/atlas.html"
+  status = 200
+
+[[redirects]]
+  from = "/codex"
+  to = "/codex.html"
+  status = 200
+
+# -- Admin (Scriptorium) --
+[[redirects]]
+  from = "/compose"
+  to = "/compose.html"
+  status = 200
+
 # -- API function routes --
 [[redirects]]
   from = "/api/ask"

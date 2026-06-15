@@ -143,3 +143,19 @@ async function saveStatusItems(){
   toast('Status updated');closeModal('statusModal');loadStatus();
 }
 
+
+// ── Easter egg: click the Pisces constellation in the hero to ignite it ──
+document.addEventListener('DOMContentLoaded', () => {
+  const pisces = document.querySelector('.pisces-art');
+  if (!pisces) return;
+  pisces.addEventListener('click', () => {
+    pisces.classList.remove('ignited');
+    if (pisces.parentElement) void pisces.parentElement.offsetWidth; // reflow → restart
+    pisces.classList.add('ignited');
+    clearTimeout(pisces._ig);
+    pisces._ig = setTimeout(() => pisces.classList.remove('ignited'), 2200);
+    if (typeof toast === 'function') {
+      toast('✦ Pisces · the twin fish — where logic and depth tie together. My sign, my map.', 'success', 6000);
+    }
+  });
+});

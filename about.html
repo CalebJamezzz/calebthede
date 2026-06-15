@@ -11,6 +11,19 @@
   <link rel="stylesheet" href="css/main.css"/>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
+  <meta name="description" content="Full-stack developer and QA engineer with a psychology background, writing the Blue Ember series and building tools where code meets the human mind."/>
+  <meta name="author" content="Caleb Thede"/>
+  <link rel="canonical" href="https://calebthede.com/about"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="Caleb Thede"/>
+  <meta property="og:title" content="About — Caleb Thede"/>
+  <meta property="og:description" content="Full-stack developer and QA engineer with a psychology background, writing the Blue Ember series and building tools where code meets the human mind."/>
+  <meta property="og:url" content="https://calebthede.com/about"/>
+  <meta property="og:image" content="https://calebthede.com/photo.jpg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="About — Caleb Thede"/>
+  <meta name="twitter:description" content="Full-stack developer and QA engineer with a psychology background, writing the Blue Ember series and building tools where code meets the human mind."/>
+  <meta name="twitter:image" content="https://calebthede.com/photo.jpg"/>
 </head>
 <body data-page="about">
 <script>
@@ -20,26 +33,9 @@ const SUPABASE_KEY='sb_publishable_eQRvx-J1Cp4nlq6Q6TOjIA__QYJmJq6';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let adminMode=false;
 </script>
-<canvas id="shootingStarCanvas"></canvas>
 <div class="hub-bg"></div>
 <div class="hub-pattern"></div>
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
-<div id="flameCursor"><svg width="28" height="40" viewBox="0 0 28 40" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="fg1" cx="50%" cy="80%" r="60%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="30%" stop-color="#60d0ff" stop-opacity="0.9"/><stop offset="70%" stop-color="#3b82f6" stop-opacity="0.7"/><stop offset="100%" stop-color="#1d4ed8" stop-opacity="0"/></radialGradient><radialGradient id="fg2" cx="50%" cy="70%" r="55%"><stop offset="0%" stop-color="#bfdbfe" stop-opacity="0.8"/><stop offset="50%" stop-color="#60a5fa" stop-opacity="0.5"/><stop offset="100%" stop-color="#2563eb" stop-opacity="0"/></radialGradient></defs><path d="M14 38 C6 32 2 24 4 16 C5 10 8 6 10 4 C10 8 11 10 13 11 C11 7 13 2 14 0 C15 4 17 8 20 10 C22 12 24 16 24 20 C24 28 20 34 14 38Z" fill="url(#fg1)" opacity="0.9"/><path d="M14 36 C9 30 7 24 8 18 C9 14 11 11 12 9 C12 12 13 14 14 15 C13 12 14 8 15 6 C16 9 18 12 20 14 C21 16 22 19 22 22 C22 28 18 33 14 36Z" fill="url(#fg2)" opacity="0.8"/><path d="M14 34 C11 29 10 25 11 21 C12 18 13 16 14 15 C15 17 15 20 14 22 C16 19 17 16 17 14 C18 17 19 20 19 23 C19 28 17 32 14 34Z" fill="#e0f2fe" opacity="0.7"/></svg></div>
 <div class="toast" id="toast"></div>
-<div class="konami-overlay" id="konamiOverlay">
-  <p class="konami-sub">// ↑ ↑ ↓ ↓ ← → ← → B A · sequence unlocked</p>
-  <h2 class="konami-title">You Know the Code.</h2>
-  <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text-dim);opacity:.5;margin-bottom:2rem;text-align:center">Most people don't get this far.</p>
-  <div class="konami-facts">
-    <div class="kf">⬡ &nbsp;<strong>CT.</strong> — the period isn't a typo. It's a full stop. An assertion. I wanted a name that felt like a completed thought.</div>
-    <div class="kf">⬡ &nbsp;<strong>The whole site</strong> was originally a single HTML file. One file. Every page, animation, reader, admin panel, SVG generator — all of it. No frameworks, no build step.</div>
-    <div class="kf">⬡ &nbsp;<strong>The book</strong> started as margin notes from my psychology degree. At some point the notes became chapters, and the chapters became something I couldn't stop writing.</div>
-    <div class="kf">⬡ &nbsp;<strong>Teal + gold</strong> — teal is the logic side. The systems thinker. Gold is the depth, the weight, the meaning behind things. You need both.</div>
-    <div class="kf">⬡ &nbsp;<strong>There are 6 secrets</strong> hidden across this site. You've found one of them. The others are quieter.</div>
-  </div>
-  <button class="konami-close" onclick="closeKonami()">[ close · esc ]</button>
-</div>
 <!-- LOGIN MODAL -->
 <div class="modal-overlay" id="loginModal">
   <div class="modal" style="max-width:420px">
@@ -122,7 +118,7 @@ let adminMode=false;
       <div class="hero-plate">
         <div class="plate-cap"><span class="t">The Cartographer</span><span class="coord">fig. I</span></div>
         <div class="about-photo">
-          <img src="https://raw.githubusercontent.com/CalebJamezzz/calebthede/main/photo.jpg" alt="Caleb Thede"/>
+          <img src="/photo.jpg" alt="Caleb Thede"/>
           <span class="ph-corner tl"></span><span class="ph-corner tr"></span><span class="ph-corner bl"></span><span class="ph-corner br"></span>
         </div>
         <div class="plate-foot"><span class="legend" style="color:var(--teal)">QA Engineer @ TopNotch</span><span class="coord">charting the Master's</span></div>
@@ -174,9 +170,9 @@ let adminMode=false;
   <section class="section path" id="sec-path">
     <ol class="path-rail reveal">
       <li class="tl-item"><span class="tl-dot"></span><span class="tl-year">2021</span><h3 class="tl-title">A.S. Psychology — Red Rocks</h3><p class="tl-body">Where it began. An Associate of Science in Psychology (GPA 3.8) and a lasting question: why do people do what they do?</p></li>
-      <li class="tl-item"><span class="tl-dot"></span><span class="tl-year">2021 – 2023</span><h3 class="tl-title">Managing 16 at Ziggi's Coffee</h3><p class="tl-body">Leading a team taught me systems and people in the same breath — and it's where my capstone app was first born.</p></li>
+      <li class="tl-item"><span class="tl-dot"></span><span class="tl-year">2022 – 2024</span><h3 class="tl-title">Managing 16 at Ziggi's Coffee</h3><p class="tl-body">Leading a team taught me systems and people in the same breath — and it's where my capstone app was first born.</p></li>
       <li class="tl-item"><span class="tl-dot"></span><span class="tl-year">2024</span><h3 class="tl-title">B.S. Computer Science — CSU Global</h3><p class="tl-body">The second path made formal. Full-stack development, Python / Java / C++ / Kotlin, and design-first thinking.</p></li>
-      <li class="tl-item"><span class="tl-dot"></span><span class="tl-year">Now</span><h3 class="tl-title">QA Engineer @ TopNotch LTD</h3><p class="tl-body">Test plans, regression &amp; integration testing, root-causing defects with dev teams — an eye for the edge cases everyone else misses.</p></li>
+      <li class="tl-item"><span class="tl-dot"></span><span class="tl-year">2024 – Now</span><h3 class="tl-title">QA Engineer @ TopNotch LTD</h3><p class="tl-body">Test plans, regression &amp; integration testing, root-causing defects with dev teams — an eye for the edge cases everyone else misses.</p></li>
       <li class="tl-item next"><span class="tl-dot"></span><span class="tl-year">Next</span><h3 class="tl-title">Master's in Psychology</h3><p class="tl-body">Going deeper into the human side of tech — so the tools I build are grounded in how people actually think.</p></li>
     </ol>
   </section>
@@ -239,7 +235,8 @@ let adminMode=false;
       <p class="mission-eyebrow"><span class="ember-dot"></span>The mission that started it all</p>
       <h3 class="mission-title">Therapy shouldn't be a <em>privilege.</em></h3>
       <p class="mission-text">Growing up, school counselors weren't actual counselors — they scheduled classes and handled paperwork. I know I could have used someone to really talk to, and I never had that. A lot of kids don't. A lot of families can't afford to change that.</p>
-      <p class="mission-text">I want to build tools that change that equation — accessible mental health support for kids and lower-income families who deserve it just as much as anyone else. Real psychological grounding, not just an app that books appointments.</p>
+      <p class="mission-text">This is the real reason I do any of this. The code, the design, the QA work — it's all in service of one thing: I want to help people, and I want the help to reach the people who usually get left out. Accessible mental health support for kids and lower-income families who deserve it just as much as anyone else — including LGBTQ+ kids who don't always have someone safe in their corner. As a gay man, I know how much a single safe person can matter.</p>
+      <p class="mission-text">The dream I keep coming back to: one day, to build or work for a non-profit that provides real therapy — free or genuinely affordable — to the families and young people who can't reach it today. Real psychological grounding, not just an app that books appointments.</p>
       <p class="mission-text">That's why the Master's matters. That's the thread that runs through everything here.</p>
     </div>
   </section>
@@ -282,7 +279,7 @@ let adminMode=false;
   <section class="section colophon" id="sec-colophon">
     <div class="colo-grid reveal">
       <div class="colo-item"><span class="colo-lbl">Star sign</span><span class="colo-val">Pisces ♓ · the twin fish</span></div>
-      <div class="colo-item"><span class="colo-lbl">Fuel</span><span class="colo-val">Coffee — old habits from the Ziggi's days</span></div>
+      <div class="colo-item"><span class="colo-lbl">Pride</span><span class="colo-val">Gay &amp; proud · he/him <span class="pride-star">✦</span></span></div>
       <div class="colo-item"><span class="colo-lbl">Currently playing</span><span class="colo-val">Story-driven RPGs · studying them like systems</span></div>
       <div class="colo-item"><span class="colo-lbl">Currently reading</span><span class="colo-val">Myth, psychology, and the space between</span></div>
       <div class="colo-item"><span class="colo-lbl">Writing</span><span class="colo-val">The Blue Ember series · eight books, one descent</span></div>
@@ -347,7 +344,6 @@ let adminMode=false;
 <script src="js/init.js"></script>
 <script src="js/theme_nav.js"></script>
 <script src="js/easter_eggs.js"></script>
-<script src="js/tarot.js"></script>
 <script src="js/about.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {

@@ -409,8 +409,9 @@ const TAROT_CARD_BACK = TAROT_IMG_DIR + 'card_back.jpg';
   const peekWrap = document.createElement('div');
   peekWrap.className = 'tarot-peeks';
   peekWrap.innerHTML = `
-    <button class="tarot-peek tarot-peek--right" aria-label="Draw a tarot card">${backHTML()}</button>
-    <button class="tarot-peek tarot-peek--left" aria-label="Draw a tarot card">${backHTML()}</button>`;
+    <button class="tarot-peek tarot-peek--1" aria-label="Draw a tarot card" tabindex="-1">${backHTML()}</button>
+    <button class="tarot-peek tarot-peek--2" aria-label="Draw a tarot card" tabindex="-1">${backHTML()}</button>
+    <button class="tarot-peek tarot-peek--3" aria-label="Draw a tarot card">${backHTML()}</button>`;
 
   function mount(){
     document.body.appendChild(peekWrap);

@@ -11,6 +11,19 @@
   <link rel="stylesheet" href="css/main.css"/>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
+  <meta name="description" content="Caleb Thede's corner of the internet — a developer and writer building software, the Blue Ember book series, games, and tools. Part workshop, part library, part atlas."/>
+  <meta name="author" content="Caleb Thede"/>
+  <link rel="canonical" href="https://calebthede.com/"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="Caleb Thede"/>
+  <meta property="og:title" content="Caleb Thede — Developer, Writer, Builder"/>
+  <meta property="og:description" content="Caleb Thede's corner of the internet — a developer and writer building software, the Blue Ember book series, games, and tools. Part workshop, part library, part atlas."/>
+  <meta property="og:url" content="https://calebthede.com/"/>
+  <meta property="og:image" content="https://calebthede.com/photo.jpg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="Caleb Thede — Developer, Writer, Builder"/>
+  <meta name="twitter:description" content="Caleb Thede's corner of the internet — a developer and writer building software, the Blue Ember book series, games, and tools. Part workshop, part library, part atlas."/>
+  <meta name="twitter:image" content="https://calebthede.com/photo.jpg"/>
 </head>
 <body data-page="home">
 <script>
@@ -20,27 +33,10 @@ const SUPABASE_KEY='sb_publishable_eQRvx-J1Cp4nlq6Q6TOjIA__QYJmJq6';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let adminMode=false;
 </script>
-<canvas id="shootingStarCanvas"></canvas>
 <div class="hub-bg"></div>
 <div class="hub-pattern"></div>
 <div class="home-sky"><span class="shoot shoot1"></span><span class="shoot shoot2"></span><span class="shoot shoot3"></span></div>
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
-<div id="flameCursor"><svg width="28" height="40" viewBox="0 0 28 40" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><radialGradient id="fg1" cx="50%" cy="80%" r="60%"><stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/><stop offset="30%" stop-color="#60d0ff" stop-opacity="0.9"/><stop offset="70%" stop-color="#3b82f6" stop-opacity="0.7"/><stop offset="100%" stop-color="#1d4ed8" stop-opacity="0"/></radialGradient><radialGradient id="fg2" cx="50%" cy="70%" r="55%"><stop offset="0%" stop-color="#bfdbfe" stop-opacity="0.8"/><stop offset="50%" stop-color="#60a5fa" stop-opacity="0.5"/><stop offset="100%" stop-color="#2563eb" stop-opacity="0"/></radialGradient></defs><path d="M14 38 C6 32 2 24 4 16 C5 10 8 6 10 4 C10 8 11 10 13 11 C11 7 13 2 14 0 C15 4 17 8 20 10 C22 12 24 16 24 20 C24 28 20 34 14 38Z" fill="url(#fg1)" opacity="0.9"/><path d="M14 36 C9 30 7 24 8 18 C9 14 11 11 12 9 C12 12 13 14 14 15 C13 12 14 8 15 6 C16 9 18 12 20 14 C21 16 22 19 22 22 C22 28 18 33 14 36Z" fill="url(#fg2)" opacity="0.8"/><path d="M14 34 C11 29 10 25 11 21 C12 18 13 16 14 15 C15 17 15 20 14 22 C16 19 17 16 17 14 C18 17 19 20 19 23 C19 28 17 32 14 34Z" fill="#e0f2fe" opacity="0.7"/></svg></div>
 <div class="toast" id="toast"></div>
-<div class="konami-overlay" id="konamiOverlay">
-  <p class="konami-sub">// ↑ ↑ ↓ ↓ ← → ← → B A · sequence unlocked</p>
-  <h2 class="konami-title">You Know the Code.</h2>
-  <p style="font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.15em;color:var(--text-dim);opacity:.5;margin-bottom:2rem;text-align:center">Most people don't get this far.</p>
-  <div class="konami-facts">
-    <div class="kf">⬡ &nbsp;<strong>CT.</strong> — the period isn't a typo. It's a full stop. An assertion. I wanted a name that felt like a completed thought.</div>
-    <div class="kf">⬡ &nbsp;<strong>The whole site</strong> was originally a single HTML file. One file. Every page, animation, reader, admin panel, SVG generator — all of it. No frameworks, no build step.</div>
-    <div class="kf">⬡ &nbsp;<strong>The book</strong> started as margin notes from my psychology degree. At some point the notes became chapters, and the chapters became something I couldn't stop writing.</div>
-    <div class="kf">⬡ &nbsp;<strong>Teal + gold</strong> — teal is the logic side. The systems thinker. Gold is the depth, the weight, the meaning behind things. You need both.</div>
-    <div class="kf">⬡ &nbsp;<strong>There are 6 secrets</strong> hidden across this site. You've found one of them. The others are quieter.</div>
-  </div>
-  <button class="konami-close" onclick="closeKonami()">[ close · esc ]</button>
-</div>
 <!-- LOGIN MODAL -->
 <div class="modal-overlay" id="loginModal">
   <div class="modal" style="max-width:420px">
@@ -124,39 +120,51 @@ let adminMode=false;
       <div class="hero-plate">
         <div class="plate-cap"><span class="t">Pisces</span><span class="coord">RA 01ʰ 00ᵐ · Dec +15°</span></div>
         <svg class="pisces-art" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="The constellation Pisces" role="img">
-          <!-- the great V of Pisces: two cords meeting at Alrescha, tipped by the Circlet -->
+          <!-- Pisces · two cords meeting at Alrescha (the knot, lower-left): one rises
+               to the northern fish, the other reaches west to the Circlet -->
           <g>
-            <line class="strand" x1="165" y1="248" x2="122" y2="200"/>
-            <line class="strand" x1="122" y1="200" x2="84" y2="152"/>
-            <line class="strand" x1="84" y1="152" x2="52" y2="98"/>
-            <line class="strand" x1="165" y1="248" x2="210" y2="196"/>
-            <line class="strand" x1="210" y1="196" x2="246" y2="128"/>
+            <!-- northern cord: Alrescha → up to the northern fish -->
+            <line class="strand" x1="82" y1="208" x2="106" y2="150"/>
+            <line class="strand" x1="106" y1="150" x2="124" y2="94"/>
+            <!-- western cord: Alrescha → out to the Circlet -->
+            <line class="strand" x1="82" y1="208" x2="146" y2="216"/>
+            <line class="strand" x1="146" y1="216" x2="202" y2="210"/>
+            <line class="strand" x1="202" y1="210" x2="238" y2="200"/>
           </g>
-          <!-- the Circlet of Pisces (head of the western fish) -->
+          <!-- the Circlet (head of the western fish) -->
           <g>
-            <line class="circlet-line" x1="52" y1="98" x2="34" y2="80"/>
-            <line class="circlet-line" x1="34" y1="80" x2="50" y2="62"/>
-            <line class="circlet-line" x1="50" y1="62" x2="72" y2="70"/>
-            <line class="circlet-line" x1="72" y1="70" x2="74" y2="94"/>
-            <line class="circlet-line" x1="74" y1="94" x2="52" y2="98"/>
+            <line class="circlet-line" x1="238" y1="200" x2="258" y2="189"/>
+            <line class="circlet-line" x1="258" y1="189" x2="273" y2="170"/>
+            <line class="circlet-line" x1="273" y1="170" x2="263" y2="149"/>
+            <line class="circlet-line" x1="263" y1="149" x2="243" y2="159"/>
+            <line class="circlet-line" x1="243" y1="159" x2="238" y2="200"/>
+          </g>
+          <!-- the northern fish · a small triangle (the knot) -->
+          <g>
+            <line class="circlet-line" x1="124" y1="94" x2="144" y2="76"/>
+            <line class="circlet-line" x1="144" y1="76" x2="116" y2="70"/>
+            <line class="circlet-line" x1="116" y1="70" x2="124" y2="94"/>
           </g>
           <!-- circlet stars -->
-          <circle class="star minor twinkle" cx="34" cy="80" r="1.8"/>
-          <circle class="star minor twinkle" cx="50" cy="62" r="2"/>
-          <circle class="star minor twinkle" cx="72" cy="70" r="1.8"/>
-          <circle class="star minor twinkle" cx="74" cy="94" r="1.7"/>
-          <circle class="star twinkle" cx="52" cy="98" r="2.4"/>
+          <circle class="star minor twinkle" cx="258" cy="189" r="1.9"/>
+          <circle class="star minor twinkle" cx="273" cy="170" r="2"/>
+          <circle class="star minor twinkle" cx="263" cy="149" r="1.8"/>
+          <circle class="star minor twinkle" cx="243" cy="159" r="1.8"/>
+          <!-- northern fish triangle stars -->
+          <circle class="star minor twinkle" cx="144" cy="76" r="1.9"/>
+          <circle class="star minor twinkle" cx="116" cy="70" r="1.8"/>
+          <circle class="star twinkle" cx="124" cy="94" r="2.4"/>
           <!-- cord stars -->
-          <circle class="star twinkle" cx="84" cy="152" r="2.6"/>
-          <circle class="star twinkle" cx="122" cy="200" r="2.6"/>
-          <circle class="star twinkle" cx="210" cy="196" r="2.6"/>
-          <circle class="star twinkle" cx="246" cy="128" r="2.4"/>
+          <circle class="star twinkle" cx="106" cy="150" r="2.5"/>
+          <circle class="star twinkle" cx="146" cy="216" r="2.5"/>
+          <circle class="star twinkle" cx="202" cy="210" r="2.5"/>
+          <circle class="star twinkle" cx="238" cy="200" r="2.4"/>
           <!-- Alrescha · the knot where the cords meet -->
-          <circle class="glow" cx="165" cy="248" r="11"/>
-          <circle class="star major twinkle" cx="165" cy="248" r="3.6"/>
+          <circle class="glow" cx="82" cy="208" r="11"/>
+          <circle class="star major twinkle" cx="82" cy="208" r="3.6"/>
           <!-- faint star labels -->
-          <text class="star-lbl" x="165" y="270" text-anchor="middle">ALRESCHA</text>
-          <text class="star-lbl dim" x="44" y="52" text-anchor="middle">the circlet</text>
+          <text class="star-lbl" x="82" y="230" text-anchor="middle">ALRESCHA</text>
+          <text class="star-lbl dim" x="256" y="210" text-anchor="middle">the circlet</text>
         </svg>
         <div class="plate-foot"><span class="legend" style="color:var(--teal)">Pisces · the twin fish · my sign</span><span class="coord">est. mmxxvi</span></div>
       </div>
@@ -279,8 +287,8 @@ let adminMode=false;
   <section class="path reveal">
     <ol class="path-line">
       <li class="path-stop"><span class="ps-dot"></span><span class="ps-year">2021</span><span class="ps-label">Began Psychology — the study of the inner map</span></li>
-      <li class="path-stop"><span class="ps-dot"></span><span class="ps-year">2023</span><span class="ps-label">Turned to code — systems, interfaces, the logic side</span></li>
-      <li class="path-stop"><span class="ps-dot"></span><span class="ps-year">2025</span><span class="ps-label">Capstone — a full management system from real operational pain</span></li>
+      <li class="path-stop"><span class="ps-dot"></span><span class="ps-year">2022</span><span class="ps-label">Leading a team at Ziggi's — systems and people, where the capstone was born</span></li>
+      <li class="path-stop"><span class="ps-dot"></span><span class="ps-year">2024</span><span class="ps-label">Computer Science degree, then QA at TopNotch — the logic side</span></li>
       <li class="path-stop"><span class="ps-dot"></span><span class="ps-year">2026</span><span class="ps-label">Writing <strong>Blue Ember</strong>, Book I — the descent begins</span></li>
     </ol>
   </section>
@@ -294,7 +302,7 @@ let adminMode=false;
 
   <!-- CONNECT -->
   <div class="connect-strip reveal">
-    <p class="connect-text"><strong>Open to work</strong> — developer and design roles, collaborations, and anything worth building together.</p>
+    <p class="connect-text"><strong>Always building something.</strong> If any of this resonates — the writing, the work, the ideas — I'd love to hear from you.</p>
     <div class="connect-btns">
       <a class="btn-primary" href="/contact">Get In Touch</a>
       <a class="btn-ghost" href="https://github.com/CalebJamezzz" target="_blank">GitHub ↗</a>

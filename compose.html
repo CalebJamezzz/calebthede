@@ -13,6 +13,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <link rel="stylesheet" href="css/main.css"/>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <meta name="robots" content="noindex,nofollow"/>
 </head>
 <body data-page="compose">
 <script>
@@ -22,11 +23,8 @@ const SUPABASE_KEY='sb_publishable_eQRvx-J1Cp4nlq6Q6TOjIA__QYJmJq6';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let adminMode=false;
 </script>
-<canvas id="shootingStarCanvas"></canvas>
 <div class="hub-bg"></div>
 <div class="hub-pattern"></div>
-<div class="cursor" id="cursor"></div>
-<div class="cursor-ring" id="cursorRing"></div>
 <div class="toast" id="toast"></div>
 <!-- LOGIN MODAL -->
 <div class="modal-overlay" id="loginModal">

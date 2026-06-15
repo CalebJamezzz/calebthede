@@ -125,18 +125,9 @@ function makeProjSVG(projId, category){
 
 // sb, adminMode declared inline in each page's <script> block
 
-function toast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} visible`;setTimeout(()=>t.classList.remove('visible'),3000)}
+function toast(msg,type='success',dur=3000){const t=document.getElementById('toast');t.textContent=msg;t.className=`toast ${type} visible`;clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('visible'),dur)}
 
-(function(){
-  // Only enable custom cursor on non-touch devices
-  if(window.matchMedia('(hover:hover) and (pointer:fine)').matches){
-    document.body.classList.add('has-custom-cursor');
-    const c=document.getElementById('cursor'),r=document.getElementById('cursorRing');
-    let mx=0,my=0,rx=0,ry=0;
-    document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;const fl=document.getElementById('flameCursor');if(fl){fl.style.left=e.clientX+'px';fl.style.top=e.clientY+'px';}});
-    (function tick(){rx+=(mx-rx)*.18;ry+=(my-ry)*.18;c.style.transform=`translate(${mx-5}px,${my-5}px)`;r.style.transform=`translate(${rx-18}px,${ry-18}px)`;requestAnimationFrame(tick)})();
-  }
-})();
+// Custom cursor removed — using the native pointer for clarity and performance.
 
 const canPush=(()=>{try{return window.self===window.top&&window.location.href!=='about:srcdoc';}catch(e){return false;}})();
 function safePush(state,title,url){if(canPush)try{history.pushState(state,title,url);}catch(e){}}
@@ -449,7 +440,7 @@ About Caleb:
 - Deeply interested in the intersection of CS and psychology: technology built to understand people
 - Pursuing a Master's in Psychology
 - Previously managed a team of 16 at Ziggi's Coffee — his capstone app was born there
-- Open to developer and design roles
+- Driven by using psychology and technology to help people, especially making mental-health support accessible to lower-income families
 
 Personality: Conversational, warm, direct. Not robotic. Think of yourself as a knowledgeable friend who knows Caleb's work well.
 Keep responses concise — 2-4 sentences unless depth is needed.
@@ -465,7 +456,7 @@ ${context ? `\n${context}` : ''}`;
       signal: askAbort.signal,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 600,
         system: systemPrompt,
         messages: askHistory
@@ -545,26 +536,6 @@ function filterBooksInline(q){
     section.style.display = visibleCards.length ? '' : 'none';
   });
 }
-
-// ── Hide custom cursor over iframes (can't track mouse inside) ──
-document.addEventListener('DOMContentLoaded', ()=>{
-  document.addEventListener('mouseover', e=>{
-    if(e.target.tagName === 'IFRAME'){
-      const cursor = document.getElementById('cursor');
-      const ring = document.getElementById('cursorRing');
-      if(cursor) cursor.style.opacity = '0';
-      if(ring) ring.style.opacity = '0';
-    }
-  });
-  document.addEventListener('mouseout', e=>{
-    if(e.target.tagName === 'IFRAME'){
-      const cursor = document.getElementById('cursor');
-      const ring = document.getElementById('cursorRing');
-      if(cursor) cursor.style.opacity = '1';
-      if(ring) ring.style.opacity = '1';
-    }
-  });
-});
 
 // ══════════════════════════════════════════════════════
 // QUILL RTE — initialised per modal, shared toolbar config
@@ -663,3 +634,16 @@ document.addEventListener('DOMContentLoaded', () => {
     initQuill('projDescEditor', { placeholder: 'What did you build and why?' });
   }
 });
+
+// ── Easter egg: the footer ✦ ──
+// Click the rainbow star by "Celestial Codex" for a quiet, genuine note.
+// Present on every page (the footer is shared), discoverable, never loud.
+(function(){
+  const meta = document.querySelector('.footer-base-meta');
+  if(!meta || typeof toast !== 'function') return;
+  meta.style.cursor = 'pointer';
+  meta.title = 'A small secret';
+  meta.addEventListener('click', () => {
+    toast('✦ Made with pride — by a gay man charting his own corner of the cosmos. However you found your way here, you belong under these stars.', 'success', 7000);
+  });
+})();

@@ -1,6 +1,6 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{--bg:#0D0F14;--bg2:#161B24;--bg3:#1E2433;--gold:#C8A45A;--gold-rgb:200,164,90;--gold-dim:#8A6E37;--teal:#4EC9B0;--teal-rgb:78,201,176;--teal-dim:#2C7A6A;--text:#E8E4DC;--text-dim:#A8A49C;--border:rgba(var(--gold-rgb),0.2);--danger:#C85A5A;--nav-bg:rgba(13,15,20,.92);--modal-bg:#161B24;--input-bg:#1E2433;--skills-bg:#161B24;--card-shadow:0 8px 26px -16px rgba(0,0,0,.6);--card-shadow-hover:0 16px 40px -16px rgba(0,0,0,.7)}
-body.light-mode{--bg:#ecdfc6;--bg2:#fbf5e8;--bg3:#f2e7d1;--gold:#9a6b3f;--gold-rgb:154,107,63;--gold-dim:#bb9468;--teal:#2f7d5e;--teal-rgb:47,125,94;--teal-dim:#5f9d83;--text:#3a3027;--text-dim:#756650;--border:rgba(120,90,50,0.2);--danger:#a83b32;--nav-bg:rgba(19,17,24,0.94);--modal-bg:#fbf5e8;--input-bg:#f2e7d1;--skills-bg:#f4ebd7;--card-shadow:0 10px 30px -16px rgba(90,60,25,.35);--card-shadow-hover:0 20px 44px -18px rgba(90,60,25,.5)}
+body.light-mode{--bg:#ecdfc6;--bg2:#fbf5e8;--bg3:#f2e7d1;--gold:#9a6b3f;--gold-rgb:154,107,63;--gold-dim:#bb9468;--teal:#2f7d5e;--teal-rgb:47,125,94;--teal-dim:#5f9d83;--text:#3a3027;--text-dim:#6a5b44;--border:rgba(120,90,50,0.2);--danger:#a83b32;--nav-bg:rgba(19,17,24,0.94);--modal-bg:#fbf5e8;--input-bg:#f2e7d1;--skills-bg:#f4ebd7;--card-shadow:0 10px 30px -16px rgba(90,60,25,.35);--card-shadow-hover:0 20px 44px -18px rgba(90,60,25,.5)}
 body.light-mode .btn-ghost{border-color:rgba(var(--gold-rgb),.5);color:var(--gold)}
 body.light-mode .btn-ghost:hover{border-color:var(--gold);color:var(--gold);background:rgba(var(--gold-rgb),.08)}
 body.light-mode .mobile-nav-item{color:var(--text-dim)}
@@ -11,7 +11,6 @@ body.light-mode .skills-wrap{background:var(--skills-bg)}
 body.light-mode .modal{background:var(--modal-bg)}
 body.light-mode .mf input,body.light-mode .mf textarea,body.light-mode .mf select{background:var(--input-bg)}
 body.light-mode .mobile-drawer{background:rgba(247,242,230,.99)}
-body.light-mode .konami-overlay{background:var(--bg)}
 body.light-mode .feat-item{background:var(--bg3)}
 body.light-mode .sbw{background:rgba(120,90,50,.14)}
 body.light-mode .ptag{background:rgba(120,90,50,.07);border-color:rgba(120,90,50,.18)}
@@ -57,18 +56,12 @@ body .night-panel::after{content:'';position:absolute;inset:0;pointer-events:non
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Lato',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px}
-.cursor{width:10px;height:10px;background:var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:10001;display:none}
-.cursor-ring{width:36px;height:36px;border:1px solid var(--gold);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:10000;opacity:.5;display:none}
-body.has-custom-cursor{cursor:none}
-body.has-custom-cursor iframe{cursor:auto}
-body.has-custom-cursor a,body.has-custom-cursor button,body.has-custom-cursor [onclick],body.has-custom-cursor .pc,body.has-custom-cursor .world-card,body.has-custom-cursor .book-card,body.has-custom-cursor .article-card,body.has-custom-cursor .lab-card,body.has-custom-cursor .pcard,body.has-custom-cursor .lib-tab,body.has-custom-cursor .fb,body.has-custom-cursor .lab-fb,body.has-custom-cursor .swatch,body.has-custom-cursor .ch-item,body.has-custom-cursor .mobile-nav-item,body.has-custom-cursor .recent-link,body.has-custom-cursor .back-btn{cursor:none}
-body.has-custom-cursor .cursor,body.has-custom-cursor .cursor-ring{display:block}
 nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:1.4rem 4rem;background:var(--nav-bg);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
 /* Global light-mode nav — parchment header on every page. Per-page rules
    (home/about/library/etc.) carry higher specificity and still override this. */
 body.light-mode nav{
   --text:#3a3027;--text-dim:#7a6a52;--border:rgba(120,90,50,.22);
-  background:rgba(244,234,211,.72);border-bottom-color:rgba(120,90,50,.18);
+  background:rgba(244,234,211,.97);border-bottom-color:rgba(120,90,50,.18);
 }
 body.light-mode nav .nav-logo{color:var(--gold)}
 body.light-mode nav .nav-center a{color:#7a6a52}
@@ -103,6 +96,9 @@ body.is-admin .nav-scriptorium{display:block}
 .nav-dropdown a:hover .dd-t{color:var(--gold)}
 .nav-dropdown .dd-s{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);opacity:.8}
 body.light-mode .nav-dropdown{background:rgba(247,242,230,.99);border-color:rgba(120,90,50,.22)}
+body.light-mode .nav-dropdown .dd-t{color:#3a3027}
+body.light-mode .nav-dropdown .dd-s{color:#7a6a52}
+body.light-mode .nav-dropdown a:hover .dd-t{color:#8f6230}
 .lock-btn{background:none;border:1px solid var(--border);border-radius:4px;color:var(--text-dim);font-size:.85rem;cursor:pointer;padding:.35rem .6rem;transition:all .2s}
 .lock-btn:hover{border-color:var(--gold);color:var(--gold)}
 /* HAMBURGER */
@@ -128,18 +124,7 @@ body.light-mode .mobile-nav-sub{color:var(--text-dim)}
 .mobile-drawer-links{display:flex;gap:2rem}
 .mobile-drawer-links a{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;transition:color .2s}
 .mobile-drawer-links a:hover{color:var(--teal)}
-/* EASTER EGGS */
-.konami-overlay{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .5s}
-.konami-overlay.visible{opacity:1;pointer-events:all}
-.konami-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,5vw,4rem);font-style:italic;color:var(--gold);margin-bottom:1rem;text-align:center;padding:0 2rem}
-.konami-sub{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:3rem;text-align:center}
-.konami-close{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim);background:none;border:1px solid var(--border);border-radius:3px;padding:.5rem 1.2rem;cursor:pointer;transition:all .2s}
-.konami-close:hover{border-color:var(--gold);color:var(--gold)}
-.konami-facts{display:flex;flex-direction:column;gap:.8rem;margin-bottom:2.5rem;max-width:500px;width:100%;padding:0 2rem}
-.kf{padding:1rem 1.5rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;font-size:.9rem;color:var(--text-dim);line-height:1.6;opacity:0;transform:translateY(10px);transition:opacity .4s,transform .4s}
-.kf.show{opacity:1;transform:translateY(0)}
-.kf strong{color:var(--text);font-weight:400}
-main{display:block;padding-top:80px;min-height:100vh}
+main{display:block;padding-top:80px;min-height:100vh;position:relative;z-index:1}
 .section-label{font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.3em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem;display:flex;align-items:center;gap:1rem}
 .section-label::after{content:'';display:block;height:1px;width:60px;background:var(--teal-dim)}
 .section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,4vw,3.5rem);font-weight:300;line-height:1.15;margin-bottom:2.5rem}
@@ -492,8 +477,6 @@ footer{
 .csocial-row-2 .cpill{flex:0 1 calc(50% - .375rem)}
 .csocial-row-3 .cpill{flex:0 1 calc(33.333% - .5rem)}
 
-#shootingStarCanvas{position:fixed;inset:0;pointer-events:none;z-index:9998;width:100%;height:100%}
-.rainbow-mode{transition:none}
 @keyframes rainbowCycle{
   0%  {--teal:#ff6b6b;--gold:#ff6b6b;--teal-dim:#cc4444;--gold-dim:#cc4444}
   12% {--teal:#ff9f43;--gold:#ff9f43;--teal-dim:#cc7a28;--gold-dim:#cc7a28}
@@ -506,21 +489,8 @@ footer{
   100%{--teal:#4EC9B0;--gold:#C8A45A;--teal-dim:#2C7A6A;--gold-dim:#8A6E37}
 }
 
-/* Blue flame cursor mode */
-body.flame-cursor .cursor{display:none}
-body.flame-cursor .cursor-ring{display:none}
-#flameCursor{position:fixed;pointer-events:none;z-index:10000;display:none;margin-left:-14px;margin-top:-32px}
-body.flame-cursor #flameCursor{display:block}
-body.flame-cursor,body.flame-cursor a,body.flame-cursor button,body.flame-cursor [onclick]{cursor:none!important}
-@keyframes flameFlicker{
-  0%,100%{transform:translate(-50%,-70%) scaleX(1) scaleY(1)}
-  25%{transform:translate(-50%,-70%) scaleX(.92) scaleY(1.06)}
-  50%{transform:translate(-50%,-70%) scaleX(1.05) scaleY(.96)}
-  75%{transform:translate(-50%,-70%) scaleX(.95) scaleY(1.04)}
-}
-#flameCursor svg{animation:flameFlicker .35s ease-in-out infinite;display:block}
 /* LIBRARY */
-.lib-outer{max-width:1200px;margin:0 auto;padding:3rem 4rem 6rem}
+.lib-outer{max-width:1200px;margin:0 auto;padding:3rem 4rem 2.5rem}
 .lib-tabs{display:flex;margin-bottom:3rem;border-bottom:1px solid var(--border)}
 .lib-tab{padding:.8rem 2rem;font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.15em;text-transform:uppercase;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s}
 .lib-tab:hover{color:var(--text)}.lib-tab.active{color:var(--gold);border-bottom-color:var(--gold)}
@@ -1158,7 +1128,7 @@ body.has-custom-cursor #bookCompleteOverlay button{cursor:none}
 }
 
 /* ── SERIES BAND ── a series can carry its own field ── */
-.series-band{margin-bottom:3.5rem}
+.series-band{margin-bottom:1.5rem}
 /* Blue Ember · midnight band so the dark covers sit on a matching night sky */
 .series-band.theme-ember{
   position:relative;padding:2.5rem 2.2rem 4rem;
@@ -1166,14 +1136,26 @@ body.has-custom-cursor #bookCompleteOverlay button{cursor:none}
      (see body.lib-ember-page below) so there are no card seams or hard lines. */
   background:transparent;border:none;border-radius:0;box-shadow:none;
 }
-/* faint stars scattered over the night portion the band sits on */
+/* a cool blue ember glow rising behind the series — the field the covers sit in */
+.series-band.theme-ember::before{
+  content:'';position:absolute;bottom:-2rem;left:50%;transform:translateX(-50%);
+  width:min(900px,92vw);height:70%;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 80% at 50% 100%, rgba(70,130,235,.22), rgba(40,80,180,.08) 45%, transparent 72%);
+  filter:blur(6px);
+}
+/* a denser, brighter star field over the night the band sits on */
 .series-band.theme-ember::after{
   content:'';position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);
-  width:100vw;z-index:0;pointer-events:none;opacity:.5;
+  width:100vw;z-index:0;pointer-events:none;opacity:.7;
   background:
-    radial-gradient(2px 2px at 30% 82%, rgba(150,200,255,.5), transparent),
-    radial-gradient(1.5px 1.5px at 72% 90%, rgba(120,180,255,.4), transparent),
-    radial-gradient(1.5px 1.5px at 52% 70%, rgba(180,215,255,.35), transparent);
+    radial-gradient(2px 2px at 18% 30%, rgba(200,225,255,.7), transparent),
+    radial-gradient(1.5px 1.5px at 30% 82%, rgba(150,200,255,.6), transparent),
+    radial-gradient(1px 1px at 42% 18%, rgba(180,210,255,.5), transparent),
+    radial-gradient(1.5px 1.5px at 52% 70%, rgba(180,215,255,.5), transparent),
+    radial-gradient(2px 2px at 64% 40%, rgba(210,230,255,.65), transparent),
+    radial-gradient(1.5px 1.5px at 72% 90%, rgba(120,180,255,.5), transparent),
+    radial-gradient(1px 1px at 84% 26%, rgba(170,205,255,.5), transparent),
+    radial-gradient(1.5px 1.5px at 90% 64%, rgba(200,225,255,.6), transparent);
 }
 .series-band.theme-ember .series-header,
 .series-band.theme-ember .books-grid{position:relative;z-index:1}
@@ -1186,6 +1168,12 @@ body.has-custom-cursor #bookCompleteOverlay button{cursor:none}
 .series-band.theme-ember .book-foot-meta span[style*="--teal"]{color:#7fd8c4!important}
 .series-band.theme-ember .book-card-placeholder{opacity:.4}
 .series-band.theme-ember .book-spine-placeholder{background:rgba(255,255,255,.03);border-color:rgba(120,170,255,.22)}
+/* Light mode: the series header sits on the parchment top of the dusk gradient,
+   so its text must be dark/cool-blue to stay readable (the light-blue is for the night). */
+body.light-mode .series-band.theme-ember .series-eyebrow{color:#3a5aa2;text-shadow:none}
+body.light-mode .series-band.theme-ember .series-title{color:#26345f}
+body.light-mode .series-band.theme-ember .series-meta{color:#5a6488}
+body.light-mode .series-band.theme-ember .book-series-num{color:#46568f}
 @media(max-width:768px){.series-band.theme-ember{padding:2rem 1.1rem 2.5rem}}
 .book-status-badge{
   display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.5rem;
@@ -1675,7 +1663,7 @@ body[data-page="home"].light-mode nav{
   --gold:#8f6230;--gold-rgb:143,98,48;--gold-dim:#bb9468;
   --teal:#256a4e;--teal-rgb:37,106,78;--teal-dim:#5f9d83;
   --border:rgba(120,90,50,.22);
-  background-color:rgba(244,234,211,.55);
+  background-color:rgba(244,234,211,.98);
 }
 body[data-page="home"].light-mode nav .nav-center a{color:#7a6a52}
 body[data-page="home"].light-mode nav .nav-center a:hover,
@@ -1751,7 +1739,7 @@ body[data-page="contact"].light-mode nav{
   --gold:#8f6230;--gold-rgb:143,98,48;--gold-dim:#bb9468;
   --teal:#256a4e;--teal-rgb:37,106,78;--teal-dim:#5f9d83;
   --border:rgba(120,90,50,.22);
-  background-color:rgba(244,234,211,.55);
+  background-color:rgba(244,234,211,.98);
 }
 body[data-page="contact"].light-mode nav .nav-center a{color:#7a6a52}
 body[data-page="contact"].light-mode nav .nav-center a:hover,
@@ -2100,7 +2088,7 @@ body[data-page="about"]:not(.light-mode) .legend{color:#9aa8d6}
 /* drop the grid (no place on a codex plate) */
 body[data-page="about"] .hub-pattern{display:none !important}
 /* soft colored wash behind the leaf — flips per theme, sits under the cards */
-body[data-page="about"] .hub-bg{z-index:-1;opacity:1}
+body[data-page="about"] .hub-bg{z-index:0;opacity:1}
 body[data-page="about"].light-mode .hub-bg{
   background:
     radial-gradient(ellipse 120% 70% at 50% -10%, rgba(var(--gold-rgb),.20), transparent 55%),
@@ -2119,7 +2107,7 @@ body[data-page="about"].light-mode nav{
   --gold:#8f6230;--gold-rgb:143,98,48;--gold-dim:#bb9468;
   --teal:#256a4e;--teal-rgb:37,106,78;--teal-dim:#5f9d83;
   --border:rgba(120,90,50,.22);
-  background:rgba(244,234,211,.7);border-bottom-color:rgba(120,90,50,.18);
+  background:rgba(244,234,211,.97);border-bottom-color:rgba(120,90,50,.18);
 }
 body[data-page="about"].light-mode nav .nav-center a{color:#7a6a52}
 body[data-page="about"].light-mode nav .nav-center a:hover,
@@ -2249,7 +2237,7 @@ body[data-page="about"] .mission-eyebrow{font-family:'JetBrains Mono',monospace;
 body[data-page="about"] .ember-dot{width:7px;height:7px;border-radius:50%;background:#e0bd72;box-shadow:0 0 10px rgba(216,181,106,.9)}
 body[data-page="about"] .mission-title{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(2rem,3.4vw,3.1rem);line-height:1.1;color:#f3ecdc;margin-bottom:1.4rem;position:relative}
 body[data-page="about"] .mission-title em{font-style:italic;color:#e0bd72}
-body[data-page="about"] .mission-text{font-family:'Lato',sans-serif;color:#cfc6b6;font-size:1rem;line-height:1.85;max-width:720px;margin-bottom:1.1rem;position:relative}
+body[data-page="about"] .mission-text{font-family:'Lato',sans-serif;color:#cfc6b6;font-size:1rem;line-height:1.85;max-width:none;margin-bottom:1.1rem;position:relative}
 body[data-page="about"] .mission-text:last-child{margin-bottom:0}
 
 /* ── THE INSTRUMENTS · two ink columns ── */
@@ -2472,7 +2460,7 @@ body[data-page="projects"].light-mode nav{
   --gold:#8f6230;--gold-rgb:143,98,48;--gold-dim:#bb9468;
   --teal:#256a4e;--teal-rgb:37,106,78;--teal-dim:#5f9d83;
   --border:rgba(120,90,50,.22);
-  background:rgba(244,234,211,.7);border-bottom-color:rgba(120,90,50,.18);
+  background:rgba(244,234,211,.97);border-bottom-color:rgba(120,90,50,.18);
 }
 body[data-page="projects"].light-mode nav .nav-center a{color:#7a6a52}
 body[data-page="projects"].light-mode nav .nav-center a:hover,
@@ -2661,7 +2649,7 @@ body[data-page="lab"]:not(.light-mode) .hub-bg{
     linear-gradient(180deg, rgba(40,48,92,.52) 0%, rgba(20,22,40,.28) 46%, rgba(var(--teal-rgb),.09) 100%);
 }
 body[data-page="lab"] nav{backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
-body[data-page="lab"].light-mode nav{--text:#3a3027;--text-dim:#7a6a52;--border:rgba(120,90,50,.22);background:rgba(244,234,211,.7);border-bottom-color:rgba(120,90,50,.18)}
+body[data-page="lab"].light-mode nav{--text:#3a3027;--text-dim:#7a6a52;--border:rgba(120,90,50,.22);background:rgba(244,234,211,.97);border-bottom-color:rgba(120,90,50,.18)}
 body[data-page="lab"].light-mode nav .nav-center a{color:#7a6a52}
 body[data-page="lab"].light-mode nav .nav-center a:hover,
 body[data-page="lab"].light-mode nav .nav-center a.active{color:var(--gold)}
@@ -2806,7 +2794,7 @@ body[data-page="marginalia"].light-mode nav{
   --gold:#8f6230;--gold-rgb:143,98,48;--gold-dim:#bb9468;
   --teal:#256a4e;--teal-rgb:37,106,78;--teal-dim:#5f9d83;
   --border:rgba(120,90,50,.22);
-  background:rgba(244,234,211,.7);border-bottom-color:rgba(120,90,50,.18);
+  background:rgba(244,234,211,.97);border-bottom-color:rgba(120,90,50,.18);
 }
 body[data-page="library"].light-mode nav .nav-center a,
 body[data-page="marginalia"].light-mode nav .nav-center a{color:#7a6a52}
@@ -2867,37 +2855,51 @@ body[data-page="library"] .book-spine-placeholder .ph-num{font-family:'JetBrains
 body[data-page="library"] .book-card-placeholder .ph-soon{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);border:1px solid var(--border);border-radius:20px;padding:.22rem .7rem;margin-top:.15rem}
 /* Blue Ember placeholders read in cool blue, clearly visible on the dark band */
 .series-band.theme-ember .book-card-placeholder{opacity:1}
-.series-band.theme-ember .book-spine-placeholder{background:rgba(120,170,255,.05);border:1px dashed rgba(120,170,255,.4)}
-.series-band.theme-ember .book-spine-placeholder .ph-glyph{color:#9fc4ff;opacity:.85;animation:phPulse 3.6s ease-in-out infinite}
-.series-band.theme-ember .book-spine-placeholder .ph-num{color:#9fb4d8;opacity:.9}
-.series-band.theme-ember .book-card-placeholder .ph-soon{color:#bcd4ff;border-color:rgba(120,170,255,.45);background:rgba(120,170,255,.07)}
+/* Darker navy card so the fire dims behind it and the outline/name/badge pop. */
+.series-band.theme-ember .book-spine-placeholder{background:rgba(9,15,38,.58);border:1px dashed rgba(150,186,255,.6)}
+.series-band.theme-ember .book-spine-placeholder .ph-glyph{color:#bcd8ff;opacity:1;animation:phPulse 3.6s ease-in-out infinite}
+.series-band.theme-ember .book-spine-placeholder .ph-num{color:#cdddff;opacity:1}
+.series-band.theme-ember .book-card-placeholder .ph-soon{color:#e2edff;border-color:rgba(150,186,255,.65);background:rgba(9,15,38,.6)}
+/* status badges (Complete / In progress) read clearly over the night */
+.series-band.theme-ember .book-status-badge{background:rgba(7,12,32,.72)}
+.series-band.theme-ember .book-status-badge.complete{border-color:rgba(120,214,184,.7);color:#a3ead2}
+.series-band.theme-ember .book-status-badge.draft{border-color:rgba(160,190,255,.55);color:#d2e0ff}
 @keyframes phPulse{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:.95;transform:scale(1.12)}}
 
 /* ═══ BLUE EMBER · scroll veil + animated flames (subtle, tasteful) ═══ */
-.ember-veil{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:0;transition:opacity 1.1s ease;
+.ember-veil{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1.1s ease;
   background:
-    radial-gradient(120% 90% at 50% 118%, rgba(40,96,210,.30), transparent 60%),
-    radial-gradient(90% 80% at 12% -10%, rgba(56,120,220,.18), transparent 55%),
-    linear-gradient(180deg, rgba(8,13,28,.0) 0%, rgba(9,15,34,.55) 55%, rgba(10,18,42,.82) 100%);
+    radial-gradient(120% 95% at 50% 122%, rgba(54,120,245,.5), transparent 62%),
+    radial-gradient(90% 80% at 12% -10%, rgba(56,120,220,.22), transparent 55%),
+    linear-gradient(180deg, rgba(8,13,28,.0) 0%, rgba(9,15,34,.5) 52%, rgba(10,18,42,.85) 100%);
 }
 body.ember-active .ember-veil{opacity:1}
-.ember-flames{position:absolute;left:0;right:0;bottom:0;height:46vh;overflow:hidden}
-.ember-flames .ef{position:absolute;bottom:-12vh;border-radius:50% 50% 48% 52%;filter:blur(26px);opacity:0;mix-blend-mode:screen;
-  background:radial-gradient(circle at 50% 80%, rgba(150,205,255,.85), rgba(60,130,245,.5) 45%, rgba(29,78,216,0) 72%);
-  animation:emberFlame 7s ease-in-out infinite}
-.ember-flames .ef1{left:8%;width:200px;height:300px;animation-delay:0s;animation-duration:7.5s}
-.ember-flames .ef2{left:30%;width:260px;height:380px;animation-delay:1.4s;animation-duration:8.6s}
-.ember-flames .ef3{left:52%;width:220px;height:330px;animation-delay:.7s;animation-duration:6.8s}
-.ember-flames .ef4{left:72%;width:280px;height:400px;animation-delay:2.1s;animation-duration:9.2s}
-.ember-flames .ef5{left:88%;width:180px;height:280px;animation-delay:1.1s;animation-duration:7.9s}
-@keyframes emberFlame{
-  0%{transform:translateY(20vh) scaleX(1);opacity:0}
-  18%{opacity:.5}
-  50%{transform:translateY(-6vh) scaleX(1.12);opacity:.7}
-  82%{opacity:.4}
-  100%{transform:translateY(-22vh) scaleX(.92);opacity:0}
-}
-@media(prefers-reduced-motion:reduce){.ember-flames .ef{animation:none;opacity:.32;transform:translateY(-4vh)}}
+.ember-flames{position:absolute;left:0;right:0;bottom:0;height:56vh;overflow:hidden}
+/* Blue fire — a full-bleed band in the page flow at the base of the shelf.
+   Sits above the footer; you scroll down to reveal it. mix-blend-mode:screen
+   drops the video's black background so only the flames show. */
+/* Transparent (alpha) webm fire, anchored as a BACKDROP at the base of the shelf:
+   it sits behind the books (rising behind the lower rows) with its base at the
+   footer — not a separate band, so it adds no height. Low opacity hides the blur. */
+/* Fire is a clean band BELOW the books (in flow), so the book cards keep their own
+   backing and don't wash out. main's min-height is dropped so the footer sits right
+   after the band — no filler gap. */
+body[data-page="library"] main{min-height:0}
+.ember-band{display:none}
+/* Tiled across the width: each copy shows the WHOLE flame (sized by height, no crop);
+   several copies fill the width. Alternate copies are mirrored so the repeat reads as
+   one continuous fire. The fade mask sits on the band so it's uniform across tiles. */
+body.lib-ember-page #libBrowse{position:relative}
+body[data-page="library"] .lib-outer{position:relative;z-index:1}
+body.lib-ember-page .ember-band{display:flex;flex-wrap:nowrap;justify-content:center;align-items:flex-end;
+  position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:100vw;height:76vh;z-index:0;overflow:hidden;pointer-events:none;
+  -webkit-mask-image:linear-gradient(to top, #000 42%, transparent 100%);
+          mask-image:linear-gradient(to top, #000 42%, transparent 100%)}
+.ember-fire{height:100%;width:auto;flex:0 0 auto;opacity:.6;pointer-events:none}
+.ember-fire:nth-child(even){transform:scaleX(-1)}
+/* close the 80px (5rem) gap between the fire and the footer on this page */
+body[data-page="library"] footer{margin-top:0}
+@media(prefers-reduced-motion:reduce){.ember-band{display:none}}
 
 /* ═══ BLUE EMBER · book detail — the page eases parchment → midnight, like the homepage dusk ═══ */
 /* A clean vertical gradient: parchment at the top, cooling into Blue Ember's deep blue night,
@@ -2923,18 +2925,33 @@ body[data-page="library"].book-ember .ember-flames{height:34vh}
    whenever a Blue Ember series band is present. */
 body[data-page="library"].lib-ember-page:not(.book-ember){
   position:relative;
+  /* Parchment at the very top (the series header stays readable), then the blue
+     NIGHT field rises behind the books so they sit in the dusk with the fire at
+     the base. Stops at a deep-but-not-midnight blue so book titles stay legible. */
   background:linear-gradient(180deg,
-    #f4ead3 0%, #f1e7ce 16%, #e3d9bc 24%, #b4afb6 31%,
-    #7c8099 38%, #525b88 45%, #353e6e 53%, #232a55 63%,
-    #161c3e 78%, #0c1130 100%);
+    #f4ead3 0%, #ece1c6 18%, #cdd0d2 38%, #95a2c2 58%, #5d6fa2 78%, #3c4d86 100%);
 }
 body[data-page="library"].lib-ember-page:not(.book-ember) .hub-pattern,
 body[data-page="library"].lib-ember-page:not(.book-ember) .hub-bg{display:none!important}
 body[data-page="library"].lib-ember-page:not(.book-ember) main{position:relative;z-index:1}
 /* light-blue flames glow up from the base — anchored to the document so they sit in
    the night zone and scroll away, rather than floating over the shelf as you scroll */
-body[data-page="library"].lib-ember-page:not(.book-ember) .ember-veil{position:absolute;opacity:1;z-index:0;background:none}
-body[data-page="library"].lib-ember-page:not(.book-ember) .ember-flames{height:34vh}
+body[data-page="library"].lib-ember-page:not(.book-ember) .ember-veil{position:absolute;opacity:1;z-index:0}
+
+/* ── Dark mode: the Blue Ember descent starts in the night sky, not on parchment.
+   (The parchment→midnight "dusk" gradient above is a light-mode idea; in dark mode
+   we descend dark-blue → midnight so the hero matches the rest of the dark theme.) */
+body[data-page="library"].lib-ember-page:not(.book-ember):not(.light-mode){
+  background:linear-gradient(180deg,#0b0d16 0%,#0d1024 20%,#10153a 46%,#0e1336 74%,#0a0e2a 100%);
+}
+body[data-page="library"].book-ember:not(.light-mode){
+  background:linear-gradient(180deg,#0b0d16 0%,#0e1230 26%,#141a40 52%,#0a0e2a 100%);
+}
+body[data-page="library"].book-ember:not(.light-mode) .book-detail-title{color:#cdddf9}
+body[data-page="library"].book-ember:not(.light-mode) .book-detail-desc{color:#9fb4d8}
+body[data-page="library"].book-ember:not(.light-mode) .back-btn{color:#8fb4f0}
+body[data-page="library"].book-ember:not(.light-mode) .back-btn:hover{color:#cdddf9}
+
 /* the TOC stays a readable parchment sheet — only the world behind it is on fire */
 body.book-ember .toc-plate{
   position:relative;
@@ -2990,7 +3007,7 @@ body[data-page="deck"]:not(.light-mode) .hub-bg{
     linear-gradient(180deg, rgba(40,48,92,.52) 0%, rgba(20,22,40,.28) 46%, rgba(var(--gold-rgb),.09) 100%);
 }
 body[data-page="deck"] nav{backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
-body[data-page="deck"].light-mode nav{--text:#3a3027;--text-dim:#7a6a52;--border:rgba(120,90,50,.22);background:rgba(244,234,211,.7);border-bottom-color:rgba(120,90,50,.18)}
+body[data-page="deck"].light-mode nav{--text:#3a3027;--text-dim:#7a6a52;--border:rgba(120,90,50,.22);background:rgba(244,234,211,.97);border-bottom-color:rgba(120,90,50,.18)}
 body[data-page="deck"].light-mode nav .nav-center a{color:#7a6a52}
 body[data-page="deck"].light-mode nav .nav-center a:hover,
 body[data-page="deck"].light-mode nav .nav-center a.active{color:var(--gold)}
@@ -3258,14 +3275,30 @@ body[data-page="compose"].has-custom-cursor .ck-content{cursor:text !important}
 
 /* ── Peeking cards: tucked off-screen, slide out on hover ── */
 .tarot-peeks{position:fixed;inset:0;pointer-events:none;z-index:120}
-.tarot-peek{position:fixed;pointer-events:auto;width:74px;height:116px;padding:0;border:none;background:none;cursor:pointer;
-  filter:drop-shadow(0 8px 22px rgba(0,0,0,.45));transition:transform .42s cubic-bezier(.2,.8,.2,1),filter .42s}
+/* Three card-backs stacked + fanned in the corner. Hover spreads them. */
+/* 3 card-backs CLUSTERED into a fan (like a held hand), poking out from the
+   right edge, up high. They all share one anchor and fan via rotation — not
+   spread vertically. Hover opens the fan and slides it further in. */
+.tarot-peek{position:fixed;right:0;top:34%;pointer-events:auto;width:74px;height:116px;padding:0;border:none;background:none;cursor:pointer;
+  transform-origin:right center;filter:drop-shadow(-6px 8px 22px rgba(0,0,0,.5));transition:transform .42s cubic-bezier(.2,.8,.2,1),filter .42s}
 .tarot-peek .tarot-face--back{width:74px;height:116px;border-radius:9px}
-.tarot-peek--right{right:0;top:38%;transform:translateX(48px) rotate(-7deg)}
-.tarot-peek--left{left:0;bottom:13%;transform:translateX(-50px) rotate(8deg)}
-.tarot-peek--right:hover,.tarot-peek--right:focus-visible{transform:translateX(8px) rotate(-4deg) scale(1.04);filter:drop-shadow(0 10px 26px rgba(111,168,224,.5));outline:none}
-.tarot-peek--left:hover,.tarot-peek--left:focus-visible{transform:translateX(-6px) rotate(4deg) scale(1.04);filter:drop-shadow(0 10px 26px rgba(111,168,224,.5));outline:none}
-@media (max-width:760px){ .tarot-peek--left{display:none} .tarot-peek--right{width:58px;height:92px;top:auto;bottom:18%} .tarot-peek--right .tarot-face--back{width:58px;height:92px} }
+.tarot-peek--1{transform:translateX(52%) rotate(-13deg);z-index:1}
+.tarot-peek--2{transform:translateX(52%) rotate(0deg);z-index:2}
+.tarot-peek--3{transform:translateX(52%) rotate(13deg);z-index:3}
+.tarot-peeks:hover .tarot-peek--1{transform:translateX(16%) rotate(-19deg)}
+.tarot-peeks:hover .tarot-peek--2{transform:translateX(10%) rotate(0deg) scale(1.04)}
+.tarot-peeks:hover .tarot-peek--3{transform:translateX(16%) rotate(19deg)}
+.tarot-peek:focus-visible{outline:none;filter:drop-shadow(-6px 10px 26px rgba(111,168,224,.6))}
+@media (max-width:760px){
+  .tarot-peek{top:30%;width:50px;height:80px}
+  .tarot-peek .tarot-face--back{width:50px;height:80px}
+  .tarot-peek--1{transform:translateX(56%) rotate(-11deg)}
+  .tarot-peek--2{transform:translateX(56%) rotate(0deg)}
+  .tarot-peek--3{transform:translateX(56%) rotate(11deg)}
+  .tarot-peeks:hover .tarot-peek--1{transform:translateX(20%) rotate(-15deg)}
+  .tarot-peeks:hover .tarot-peek--2{transform:translateX(14%) rotate(0deg)}
+  .tarot-peeks:hover .tarot-peek--3{transform:translateX(20%) rotate(15deg)}
+}
 
 /* ── Card faces (shared by peek, back, and front) ── */
 .tarot-card{position:relative;width:200px;height:312px;perspective:1100px}
@@ -3359,3 +3392,143 @@ body[data-page="compose"].has-custom-cursor .ck-content{cursor:text !important}
   .tarot-face--back .tarot-flame{animation:none}
   .tarot-peek{transition:none}
 }
+
+/* ── Global reduced-motion guard ──
+   Honors the OS "reduce motion" setting: kills ambient/decorative
+   animation site-wide while keeping content visible (reveal elements
+   are forced to their final state instead of fading in). */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+    scroll-behavior:auto !important;
+  }
+  .reveal{opacity:1 !important;transform:none !important}
+  .home-sky,.shoot,.hub-pattern{display:none !important}
+  .hub-bg::after{animation:none !important}
+}
+
+/* ════════════════════════════════════════════════════════════
+   THEME POLISH + AMBIENT STARFIELD
+   ════════════════════════════════════════════════════════════ */
+
+/* Light mode gets warm depth + a consistent field across every page,
+   instead of a single flat tan. (Library's Blue Ember gradient overrides this.) */
+body.light-mode{
+  background:
+    radial-gradient(ellipse 100% 60% at 50% -5%, #f6eed9 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 85% 30%, rgba(var(--teal-rgb),.07), transparent 60%),
+    linear-gradient(180deg, #efe4cb 0%, #e8dabd 100%);
+  background-attachment:fixed;
+}
+
+/* Footer in light mode: parchment on normal pages (readable dark text), but a dark
+   "night" footer on home & contact, whose lower sections already fade to dusk. */
+body.light-mode footer{background:#e8dcbf;border-top:1px solid var(--border);
+  --text:#3a3027;--text-dim:#5c4d34;--gold:#7e5526;--gold-rgb:126,85,38;}
+body.light-mode[data-page="home"] footer,
+body.light-mode[data-page="contact"] footer{
+  --text:#E8E4DC;--text-dim:#A8A49C;--gold:#C8A45A;--gold-rgb:200,164,90;
+  --teal:#4EC9B0;--teal-rgb:78,201,176;--border:rgba(200,164,90,.2);
+  background:#13111a;border-top:none;
+}
+/* a quiet rainbow pride star by the colophon */
+footer{overflow:hidden}
+.footer-base-meta::before{
+  content:'✦';display:inline-block;margin-right:.5em;transform-origin:center;
+  font-size:1.4rem;line-height:1;vertical-align:-.32em;
+  background:linear-gradient(90deg,#e0564f,#e8902a,#e6cf2f,#3fb56f,#4ea0e0,#9a6fe0,#e0564f);
+  background-size:300% 100%;
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;
+  animation:prideStarPulse 4s ease-in-out infinite, prideStarShift 9s linear infinite;
+}
+
+/* About star-chart tooltip: dark glass in dark mode, parchment in light. */
+body.light-mode .star-dot{background:var(--bg3)}
+body.light-mode .star-dot-tooltip{background:var(--bg2);color:var(--text);border-color:var(--border)}
+
+/* A quiet celestial pride star — rainbow ink on the same glyph the site uses everywhere. */
+.pride-star{
+  background:linear-gradient(90deg,#e0564f,#e8902a,#e6cf2f,#3fb56f,#4ea0e0,#9a6fe0);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  font-size:.95em;margin-left:.35em;letter-spacing:0;
+}
+@keyframes prideStarPulse{0%,100%{transform:scale(.92);opacity:.78}50%{transform:scale(1.22);opacity:1}}
+/* cycles the rainbow by sliding the gradient — no filter (which breaks text-clip). */
+@keyframes prideStarShift{0%{background-position:0% 50%}100%{background-position:300% 50%}}
+
+/* ── Ambient starfield · dark mode, every page ──
+   Painted into the existing .hub-bg layer (already present site-wide and
+   correctly behind content), so no markup changes are needed. Gives the
+   inner pages the same night-sky atmosphere as the home page. */
+body:not(.light-mode) .hub-bg::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  animation:starTwinkle 7s ease-in-out infinite;
+  background-repeat:no-repeat;
+  background-image:
+    radial-gradient(1.4px 1.4px at 8% 12%, rgba(255,255,255,.85), transparent 100%),
+    radial-gradient(1px 1px at 17% 28%, rgba(220,234,251,.55), transparent 100%),
+    radial-gradient(1.6px 1.6px at 24% 9%, rgba(255,247,224,.8), transparent 100%),
+    radial-gradient(1px 1px at 33% 22%, rgba(255,255,255,.5), transparent 100%),
+    radial-gradient(1.2px 1.2px at 41% 14%, rgba(200,229,255,.7), transparent 100%),
+    radial-gradient(1px 1px at 49% 31%, rgba(255,255,255,.45), transparent 100%),
+    radial-gradient(1.5px 1.5px at 57% 8%, rgba(255,255,255,.8), transparent 100%),
+    radial-gradient(1px 1px at 64% 24%, rgba(220,234,251,.55), transparent 100%),
+    radial-gradient(1.3px 1.3px at 72% 16%, rgba(255,247,224,.75), transparent 100%),
+    radial-gradient(1px 1px at 80% 30%, rgba(255,255,255,.5), transparent 100%),
+    radial-gradient(1.6px 1.6px at 88% 11%, rgba(255,255,255,.85), transparent 100%),
+    radial-gradient(1px 1px at 94% 26%, rgba(200,229,255,.6), transparent 100%),
+    radial-gradient(1px 1px at 6% 46%, rgba(255,255,255,.5), transparent 100%),
+    radial-gradient(1.3px 1.3px at 14% 62%, rgba(220,234,251,.6), transparent 100%),
+    radial-gradient(1px 1px at 22% 78%, rgba(255,255,255,.45), transparent 100%),
+    radial-gradient(1.5px 1.5px at 31% 54%, rgba(255,247,224,.7), transparent 100%),
+    radial-gradient(1px 1px at 39% 71%, rgba(255,255,255,.5), transparent 100%),
+    radial-gradient(1.2px 1.2px at 47% 88%, rgba(200,229,255,.6), transparent 100%),
+    radial-gradient(1px 1px at 55% 58%, rgba(255,255,255,.45), transparent 100%),
+    radial-gradient(1.4px 1.4px at 63% 82%, rgba(255,255,255,.75), transparent 100%),
+    radial-gradient(1px 1px at 71% 49%, rgba(220,234,251,.55), transparent 100%),
+    radial-gradient(1.3px 1.3px at 79% 67%, rgba(255,247,224,.65), transparent 100%),
+    radial-gradient(1px 1px at 87% 84%, rgba(255,255,255,.5), transparent 100%),
+    radial-gradient(1.5px 1.5px at 93% 55%, rgba(255,255,255,.8), transparent 100%),
+    radial-gradient(1px 1px at 3% 90%, rgba(200,229,255,.5), transparent 100%),
+    radial-gradient(1.2px 1.2px at 35% 38%, rgba(255,255,255,.6), transparent 100%),
+    radial-gradient(1px 1px at 68% 40%, rgba(255,255,255,.45), transparent 100%),
+    radial-gradient(1.3px 1.3px at 12% 96%, rgba(255,247,224,.6), transparent 100%);
+}
+@keyframes starTwinkle{0%,100%{opacity:.55}50%{opacity:1}}
+
+/* ── Light mode atmosphere · a custom antique "Hades" star chart faded into the page ──
+   Anchored to the document (not the viewport) so it SCROLLS WITH THE PAGE — the chart
+   unrolls top-to-bottom as you scroll. Multiply-blended so it reads as aged ink on the
+   parchment, behind all content. */
+body.light-mode:not([data-page="library"]) main::before{
+  content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
+  background-image:url(/media/star-chart-hades.jpg);
+  background-size:cover;background-position:top center;background-repeat:no-repeat;
+  mix-blend-mode:multiply;opacity:.08;
+}
+/* On home the page eases into a dark dusk lower down, so fade the chart out in the
+   tan upper section before the dark arrives (no hard cut-off). */
+body[data-page="home"].light-mode main::before{
+  -webkit-mask-image:linear-gradient(to bottom, #000 0%, #000 22%, transparent 50%);
+          mask-image:linear-gradient(to bottom, #000 0%, #000 22%, transparent 50%);
+}
+body.light-mode:not([data-page="home"]) .hub-bg{opacity:1}
+
+/* ── Easter egg: ignite the Pisces constellation (homepage hero) ──
+   A gentle glow that ripples out from Alrescha: the cords brighten, the stars
+   give a soft twinkle (staggered, not a balloon), and the knot flares quietly. */
+.pisces-art{cursor:pointer}
+@keyframes piscesStrandGlow{40%{stroke:#e8c87e;filter:drop-shadow(0 0 2.5px var(--gold))}}
+.pisces-art.ignited .strand{animation:piscesStrandGlow 1.5s ease}
+.pisces-art.ignited .circlet-line{animation:piscesStrandGlow 1.5s ease .25s}
+/* renamed so it does NOT clobber the base @keyframes piscesTwinkle (the steady
+   blink). Ignite = a quick blink then a bright flare — no scaling/ballooning. */
+@keyframes piscesIgniteStar{0%,100%{opacity:1;filter:none}30%{opacity:.5}58%{opacity:1;filter:drop-shadow(0 0 5px #fff) brightness(1.8)}}
+.pisces-art.ignited .star{animation:piscesIgniteStar 1.4s ease}
+.pisces-art.ignited .star.major{animation-delay:.04s}
+.pisces-art.ignited .star.minor{animation-delay:.28s}
+@keyframes piscesGlow{0%,100%{opacity:.4;transform:scale(1)}45%{opacity:.95;transform:scale(1.4)}}
+.pisces-art.ignited .glow{animation:piscesGlow 1.5s ease;transform-box:fill-box;transform-origin:center}
+@media(prefers-reduced-motion:reduce){.pisces-art.ignited .strand,.pisces-art.ignited .circlet-line,.pisces-art.ignited .star,.pisces-art.ignited .glow{animation:none}}
