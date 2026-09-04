@@ -126,17 +126,29 @@ let adminMode=false;
   </div>
   <div id="libBookDetail" style="display:none">
     <div class="book-detail-header">
-      <div><button class="back-btn" onclick="closeBookDetail()">← Back to Library</button><h1 class="book-detail-title" id="bookDetailTitle"></h1><p class="book-detail-desc" id="bookDetailDesc"></p></div>
-      <div style="display:flex;gap:.8rem;flex-shrink:0;margin-top:3.5rem">
-        <a class="btn-sm admin-only" href="/compose">Manage in Scriptorium →</a>
-        <button class="btn-sm admin-only" onclick="openBookModal(currentBookId)">Edit Book</button>
-        <button class="btn-sm danger admin-only" onclick="deleteCurrentBook()">Delete Book</button>
+      <button class="back-btn" onclick="closeBookDetail()">← Back to Library</button>
+      <div class="book-detail-hero">
+        <div class="book-detail-side">
+          <div class="book-spine book-detail-cover" id="bookDetailCover"></div>
+          <div id="bookBuyBox" class="book-buy-box" style="display:none">
+            <p class="book-buy-box-label">Available now</p>
+            <div id="bookBuyRow" class="book-buy-row"></div>
+          </div>
+        </div>
+        <div class="book-detail-info">
+          <h1 class="book-detail-title" id="bookDetailTitle"></h1>
+          <p class="book-detail-desc" id="bookDetailDesc"></p>
+          <div class="book-detail-actions">
+            <a class="btn-sm admin-only" href="/compose">Manage in Scriptorium →</a>
+            <button class="btn-sm admin-only" onclick="openBookModal(currentBookId)">Edit Book</button>
+            <button class="btn-sm danger admin-only" onclick="deleteCurrentBook()">Delete Book</button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Promo view: blurb, buy links, excerpt, reviews, launch note -->
+    <!-- Promo view: excerpt, reviews, launch note -->
     <div id="libBookPromo" class="book-promo">
-      <div id="bookBuyRow" class="book-buy-row" style="display:none"></div>
 
       <div id="bookExcerptSection" class="book-promo-section" style="display:none">
         <p class="book-promo-eyebrow">Read an excerpt</p>

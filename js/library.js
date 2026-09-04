@@ -40,6 +40,33 @@ function makeCelestialSVG(bookId,w=200,h=300){
 }
 
 const COVERS=['linear-gradient(135deg,#0D3B33,#1A6B5A)','linear-gradient(135deg,#3B2A0D,#7A5420)','linear-gradient(135deg,#0D1226,#1A2456)','linear-gradient(135deg,#2B0D0D,#6B1A1A)','linear-gradient(135deg,#0D2B10,#1A5E20)','linear-gradient(135deg,#1A1F2E,#2E3A50)','linear-gradient(135deg,#1E0D2B,#4A1A6B)','linear-gradient(135deg,#2B1A0D,#6B3A1A)'];
+
+// ── Shared cover rendering — used by both the library-grid card and the
+// book detail page's hero, so a cover (or its generated placeholder) looks
+// identical wherever it appears. ──
+function bookStatusInfo(b){
+  const statusClass=b.status||'in_progress';
+  const statusLabel=b.status==='complete'?'Complete':b.status==='in_progress'?'In Progress':b.status==='hiatus'?'On Hiatus':'Draft';
+  return{statusClass,statusLabel};
+}
+function bookSpineInner(b){
+  if(b.cover_image){
+    // A real cover already carries the title + author + badges — keep the art clean.
+    return `<div class="book-spine-bg" style="background:${b.color||COVERS[0]};background-image:url(${b.cover_image});background-size:cover;background-position:${b.cover_position||'50% 50%'}"></div>`;
+  }
+  // No cover → generated placeholder: colour field + constellation + title & status overlay.
+  const{statusClass,statusLabel}=bookStatusInfo(b);
+  const spineStatus=b.status!=='draft'
+    ?`<div class="book-spine-status ${statusClass}">${statusLabel}</div>`
+    :`<div class="book-spine-status in_progress admin-only blk">Draft</div>`;
+  return `
+    <div class="book-spine-bg" style="background:${b.color||COVERS[0]}"></div>
+    <div class="book-spine-svg">${makeCelestialSVG(b.id)}</div>
+    ${spineStatus}
+    <div class="book-spine-content">
+      <span class="book-spine-title">${b.title}</span>
+    </div>`;
+}
 let selectedCover=COVERS[0];
 
 function buildSwatches(current){const wrap=document.getElementById('colorSwatches');wrap.innerHTML='';COVERS.forEach(c=>{const s=document.createElement('div');s.className='swatch'+(c===(current||selectedCover)?' selected':'');s.style.background=c;s.onclick=()=>{selectedCover=c;document.getElementById('bookColor').value=c;wrap.querySelectorAll('.swatch').forEach(x=>x.classList.remove('selected'));s.classList.add('selected')};wrap.appendChild(s)});document.getElementById('bookColor').value=current||selectedCover}
@@ -125,32 +152,15 @@ async function loadBooks(){
   window._allBooks=books;window._allSeries=allSeries;
 
   function makeBookCard(b){
-    const statusLabel=b.status==='complete'?'Complete':b.status==='in_progress'?'In Progress':b.status==='hiatus'?'On Hiatus':'Draft';
-    const statusClass=b.status||'in_progress';
+    const{statusLabel,statusClass}=bookStatusInfo(b);
     const availLabel=(b.retailer_links||[]).length?'Available now':'Coming soon';
-    const blurbSnippet=(b.description||'').replace(/<[^>]*>/g,'').trim().slice(0,90);
+    const blurbFull=escHtml((b.description||'').replace(/<[^>]*>/g,'').trim());
     const hasCover=!!b.cover_image;
 
     const card=document.createElement('div');
     card.className='book-card '+(hasCover?'has-cover':'no-cover');
 
-    let spineInner;
-    if(hasCover){
-      // A real cover already carries the title + author + badges — keep the art clean.
-      spineInner=`<div class="book-spine-bg" style="background:${b.color||COVERS[0]};background-image:url(${b.cover_image});background-size:cover;background-position:${b.cover_position||'50% 50%'}"></div>`;
-    }else{
-      // No cover → generated placeholder: colour field + constellation + title & status overlay.
-      const spineStatus=b.status!=='draft'
-        ?`<div class="book-spine-status ${statusClass}">${statusLabel}</div>`
-        :`<div class="book-spine-status in_progress admin-only blk">Draft</div>`;
-      spineInner=`
-        <div class="book-spine-bg" style="background:${b.color||COVERS[0]}"></div>
-        <div class="book-spine-svg">${makeCelestialSVG(b.id)}</div>
-        ${spineStatus}
-        <div class="book-spine-content">
-          <span class="book-spine-title">${b.title}</span>
-        </div>`;
-    }
+    const spineInner=bookSpineInner(b);
 
     // On cover cards the status moves to the caption (it isn't painted on the art).
     const footStatus=hasCover
@@ -163,11 +173,11 @@ async function loadBooks(){
         <div class="book-foot-title">${b.title}</div>
         <div class="book-foot-meta">
           <span style="color:var(--teal)">${availLabel}</span>
-          ${blurbSnippet?`<span>${blurbSnippet}${blurbSnippet.length>=90?'…':''}</span>`:''}
+          ${footStatus}
         </div>
-        ${footStatus}
-        <div class="admin-only" style="margin-top:.5rem">
-          <button class="btn-sm" style="width:100%" onclick="event.stopPropagation();openBookModal('${b.id}')">Edit</button>
+        ${blurbFull?`<p class="book-foot-desc">${blurbFull}</p>`:''}
+        <div class="admin-only book-foot-admin">
+          <button class="btn-sm" onclick="event.stopPropagation();openBookModal('${b.id}')">Edit</button>
         </div>
       </div>`;
     card.onclick=()=>openBook(b.id,b.title,b.description);
@@ -202,12 +212,11 @@ async function loadBooks(){
     allSerBooks.forEach(b=>{
       const card=makeBookCard(b);
       if(b.series_order){
-        const numBadge=document.createElement('div');
+        const numBadge=document.createElement('span');
         numBadge.className='book-series-num';
-        numBadge.textContent='#'+b.series_order;
-        const foot=card.querySelector('.book-foot')||card;
-        const meta=foot.querySelector('.book-foot-meta');
-        if(meta)foot.insertBefore(numBadge,meta);else foot.appendChild(numBadge);
+        numBadge.textContent='Book '+b.series_order;
+        const meta=card.querySelector('.book-foot-meta');
+        if(meta)meta.insertBefore(numBadge,meta.firstChild);
       }
       grid.appendChild(card);
     });
@@ -398,10 +407,13 @@ function bookReviewCard(r){
 }
 async function renderBookPromo(){
   const{data:b}=await sb.from('books').select('*').eq('id',currentBookId).single();
+  const coverEl=document.getElementById('bookDetailCover');
+  if(coverEl&&b){ coverEl.className='book-spine book-detail-cover'+(b.cover_image?' has-cover':' no-cover'); coverEl.innerHTML=bookSpineInner(b); }
+  const buyBox=document.getElementById('bookBuyBox');
   const buyRow=document.getElementById('bookBuyRow');
   const links=(b&&b.retailer_links)||[];
   buyRow.innerHTML=links.map(l=>`<a class="book-buy-btn" href="${escHtml(l.url||'#')}" target="_blank" rel="noopener">${escHtml(l.label||'Buy now')} →</a>`).join('');
-  buyRow.style.display=links.length?'flex':'none';
+  if(buyBox) buyBox.style.display=links.length?'block':'none';
 
   const excerptSection=document.getElementById('bookExcerptSection');
   const excerpt=(b&&b.excerpt||'').trim();

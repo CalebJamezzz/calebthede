@@ -66,13 +66,31 @@ async function loadStatus(){
 }
 
 async function loadBookTeaser(){
-  const{data:books}=await sb.from('books').select('id,title,description,cover_image,cover_position,color').order('created_at',{ascending:true});
+  const{data:books}=await sb.from('books').select('id,title,description,cover_image,cover_position,color,status,series_id,series_order,retailer_links').order('created_at',{ascending:true});
   if(!books||!books.length)return;
 
   const display = books[0];
+  const available = (display.retailer_links||[]).length > 0;
 
   document.getElementById('btTitle').textContent=display.title;
   document.getElementById('btDesc').textContent=display.description||"Cade learns he's the son of Hades, marked by a blue flame tied to the Veil — but the real war is with the shadow he carries. An eight-book descent from Awakening to Integration: Greek myth as the first psychology.";
+
+  const eyebrow=document.getElementById('btEyebrow');
+  if(eyebrow) eyebrow.textContent = available ? 'Available now' : (display.status==='draft' ? 'Coming soon' : 'Now Writing');
+
+  const cta=document.getElementById('btCta');
+  if(cta) cta.textContent = available ? 'Get '+display.title+' →' : 'Explore the Library →';
+
+  const countEl=document.getElementById('btCount');
+  if(countEl){
+    if(display.series_id){
+      const{data:series}=await sb.from('series').select('total_books').eq('id',display.series_id).single();
+      const total=series?.total_books;
+      countEl.textContent = (display.series_order&&total?`Book ${display.series_order} of ${total}`:'Part of the series') + (available?' · Available now':'');
+    } else {
+      countEl.textContent = available?'Available now':'Coming soon';
+    }
+  }
 
   // book cover — real image if uploaded, else the procedural ember constellation
   const cover=document.getElementById('btCover');
