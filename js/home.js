@@ -66,7 +66,7 @@ async function loadStatus(){
 }
 
 async function loadBookTeaser(){
-  const{data:books}=await sb.from('books').select('id,title,description,cover_image,color').order('created_at',{ascending:true});
+  const{data:books}=await sb.from('books').select('id,title,description,cover_image,cover_position,color').order('created_at',{ascending:true});
   if(!books||!books.length)return;
 
   const display = books[0];
@@ -77,7 +77,7 @@ async function loadBookTeaser(){
   // book cover — real image if uploaded, else the procedural ember constellation
   const cover=document.getElementById('btCover');
   if(cover){
-    if(display.cover_image){ cover.style.backgroundImage='url('+display.cover_image+')'; cover.classList.add('has-cover'); }
+    if(display.cover_image){ cover.style.backgroundImage='url('+display.cover_image+')'; cover.style.backgroundPosition=display.cover_position||'50% 50%'; cover.classList.add('has-cover'); }
     else if(display.color){ cover.style.background=display.color; }
   }
 

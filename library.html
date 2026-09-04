@@ -227,12 +227,17 @@ let adminMode=false;
     <div class="mf"><label>Cover Color</label><div class="color-swatches" id="colorSwatches"></div><input type="hidden" id="bookColor"/></div>
     <div class="mf">
       <label>Cover Image <span style="opacity:.5;text-transform:none;letter-spacing:0">— optional; a celestial cover is generated if left blank</span></label>
+      <p style="font-size:.72rem;color:var(--text-dim);margin:.2rem 0 .6rem;line-height:1.4">Covers display at a <strong>2:3 portrait ratio</strong> (e.g. 1000×1500px works well) — any photo works, drag on the preview below to choose what stays in frame.</p>
       <div style="display:flex;gap:.5rem;align-items:center;flex-wrap:wrap">
         <input type="file" id="bookCoverFile" accept="image/*" onchange="uploadCoverFile(event)" style="flex:1;min-width:180px;font-size:.78rem;color:var(--text-dim)"/>
         <button type="button" class="btn-sm" id="coverClearBtn" onclick="clearCoverImage()" style="display:none;white-space:nowrap">✕ remove</button>
       </div>
       <div id="coverUploadStatus" style="font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;color:var(--teal);margin-top:.4rem;min-height:.9rem"></div>
-      <div id="coverPreview" style="display:none;margin-top:.5rem"><img id="coverPreviewImg" style="max-height:120px;border-radius:4px;border:1px solid var(--border)"/></div>
+      <div id="coverPreview" style="display:none;margin-top:.5rem">
+        <div id="coverPreviewBox" class="cover-focal-box"><img id="coverPreviewImg" alt="cover preview"/></div>
+        <p style="font-size:.65rem;color:var(--text-dim);margin-top:.4rem">Drag on the preview to reposition.</p>
+      </div>
+      <input type="hidden" id="bookCoverPosition"/>
       <input type="text" id="bookCoverImage" placeholder="…or paste an image URL" style="margin-top:.5rem;width:100%" oninput="onCoverUrlInput()"/>
     </div>
     <div class="mf"><label>Series</label>

@@ -11,6 +11,7 @@ let SCR_BOOKS  = [];
 let SCR_BOOK   = null;     // current book row
 let SCR_CKED   = null;     // CKEditor instance (writer body)
 let SCR_COVER  = null;     // pending cover url for current book
+let SCR_COVER_POS = '50% 50%'; // pending cover focal point for current book
 let SCR_RETAILERS = [];    // retailer links for current book
 let SCR_REVIEWS   = [];    // reviews for current book
 
@@ -93,7 +94,7 @@ function scrRenderBrowser(){
 function scrBookRow(b){
   const active = SCR_BOOK && SCR_BOOK.id === b.id ? ' active' : '';
   const thumb = b.cover_image
-    ? `<span class="scr-bk-cover" style="background-image:url(${b.cover_image})"></span>`
+    ? `<span class="scr-bk-cover" style="background-image:url(${b.cover_image});background-position:${cEsc(b.cover_position||'50% 50%')}"></span>`
     : `<span class="scr-bk-cover" style="background:${b.color||'#3a3550'}"></span>`;
   const stMap = {draft:'Draft', in_progress:'Writing', hiatus:'Hiatus', complete:'Complete'};
   return `<button class="scr-bk-row${active}" onclick="scrSelectBook('${b.id}')">
@@ -111,6 +112,7 @@ async function scrSelectBook(id){
   if(!book) return;
   SCR_BOOK = book;
   SCR_COVER = book.cover_image || null;
+  SCR_COVER_POS = book.cover_position || '50% 50%';
   SCR_RETAILERS = Array.isArray(book.retailer_links) ? book.retailer_links.map(r=>({...r})) : [];
   SCR_REVIEWS = Array.isArray(book.reviews) ? book.reviews.map(r=>({...r})) : [];
   cEl('scrDetailEmpty').style.display = 'none';
@@ -138,8 +140,14 @@ function scrRenderCover(){
   if(SCR_COVER){
     prev.classList.add('has-img');
     prev.style.background = '';
-    prev.innerHTML = `<img src="${cEsc(SCR_COVER)}" alt="cover"/>`;
+    prev.innerHTML = `<img src="${cEsc(SCR_COVER)}" alt="cover" style="object-position:${cEsc(SCR_COVER_POS)}"/>`;
     cEl('scrCoverClear').style.display = '';
+    initFocalPicker(prev, (x,y) => {
+      SCR_COVER_POS = x + '% ' + y + '%';
+      const img = prev.querySelector('img'); if(img) img.style.objectPosition = SCR_COVER_POS;
+    });
+    const [fx,fy] = SCR_COVER_POS.split(' ').map(v => parseFloat(v) || 50);
+    setFocalMarker(prev, fx, fy);
   }else{
     prev.classList.remove('has-img');
     prev.style.background = (SCR_BOOK && SCR_BOOK.color) || '#3a3550';
@@ -150,10 +158,10 @@ function scrRenderCover(){
 async function scrUploadCover(e){
   const file = e.target.files && e.target.files[0]; if(!file) return;
   cEl('scrCoverPrev').textContent = '…';
-  try{ SCR_COVER = await composeUpload(file); scrRenderCover(); toast('Cover uploaded'); }
+  try{ SCR_COVER = await composeUpload(file); SCR_COVER_POS = '50% 50%'; scrRenderCover(); toast('Cover uploaded'); }
   catch(err){ toast('Upload failed: '+err.message,'error'); }
 }
-function scrClearCover(){ SCR_COVER = null; scrRenderCover(); }
+function scrClearCover(){ SCR_COVER = null; SCR_COVER_POS = '50% 50%'; scrRenderCover(); }
 
 async function scrSaveBook(){
   if(!SCR_BOOK) return;
@@ -162,6 +170,7 @@ async function scrSaveBook(){
     description: cVal('scrDesc'),
     status: cVal('scrStatus'),
     cover_image: SCR_COVER || null,
+    cover_position: SCR_COVER_POS || '50% 50%',
     series_id: cVal('scrSeries') || null,
     series_order: parseInt(cVal('scrSeriesOrder')) || null,
     retailer_links: SCR_RETAILERS.filter(r=>r.label||r.url),

@@ -274,6 +274,35 @@ function renderBody(content){
 function fmtDate(iso){if(!iso)return'';return new Date(iso).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}
 function refreshAdmin(el){if(adminMode)el.querySelectorAll('.admin-only').forEach(x=>x.style.removeProperty('display'))}
 
+// ── COVER FOCAL-POINT PICKER ──
+// Click/drag on a cover preview (an <img style="object-fit:cover"> or a
+// background-image box) to choose what stays centered when it's cropped to
+// fill its slot. `container` is the element the picker is attached to.
+function focalMarker(container){
+  let m = container.querySelector('.focal-marker');
+  if(!m){ m = document.createElement('div'); m.className = 'focal-marker'; container.appendChild(m); }
+  return m;
+}
+function setFocalMarker(container, xPct, yPct){
+  const m = focalMarker(container);
+  m.style.left = xPct + '%'; m.style.top = yPct + '%';
+}
+// Attach once per container. `onChange(xPct,yPct)` fires as the user drags.
+function initFocalPicker(container, onChange){
+  if(container.dataset.focalInit) return;
+  container.dataset.focalInit = '1';
+  container.classList.add('focal-picker');
+  function apply(e){
+    const r = container.getBoundingClientRect();
+    const x = Math.max(0, Math.min(100, ((e.clientX - r.left) / r.width) * 100));
+    const y = Math.max(0, Math.min(100, ((e.clientY - r.top) / r.height) * 100));
+    setFocalMarker(container, x, y);
+    onChange(Math.round(x), Math.round(y));
+  }
+  container.addEventListener('pointerdown', e => { container.setPointerCapture(e.pointerId); apply(e); });
+  container.addEventListener('pointermove', e => { if(e.buttons === 1) apply(e); });
+}
+
 
 // ── NEWSLETTER FORMS ──
 async function handleNewsletterSubmit(e){

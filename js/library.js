@@ -137,7 +137,7 @@ async function loadBooks(){
     let spineInner;
     if(hasCover){
       // A real cover already carries the title + author + badges — keep the art clean.
-      spineInner=`<div class="book-spine-bg" style="background:${b.color||COVERS[0]};background-image:url(${b.cover_image});background-size:cover;background-position:center"></div>`;
+      spineInner=`<div class="book-spine-bg" style="background:${b.color||COVERS[0]};background-image:url(${b.cover_image});background-size:cover;background-position:${b.cover_position||'50% 50%'}"></div>`;
     }else{
       // No cover → generated placeholder: colour field + constellation + title & status overlay.
       const spineStatus=b.status!=='draft'
@@ -266,6 +266,7 @@ function openBookModal(id=null){
         document.getElementById('bookTitle').value=b?.title||'';
         document.getElementById('bookDesc').value=b?.description||'';
         document.getElementById('bookCoverImage').value=b?.cover_image||'';
+        document.getElementById('bookCoverPosition').value=b?.cover_position||'50% 50%';
         document.getElementById('bookStatus').value=b?.status||'draft';
         sel.value=b?.series_id||'';
         document.getElementById('bookSeriesOrder').value=b?.series_order||'';
@@ -277,6 +278,7 @@ function openBookModal(id=null){
       document.getElementById('bookTitle').value='';
       document.getElementById('bookDesc').value='';
       document.getElementById('bookCoverImage').value='';
+      document.getElementById('bookCoverPosition').value='50% 50%';
       document.getElementById('bookStatus').value='in_progress';
       sel.value='';
       document.getElementById('bookSeriesOrder').value='';
@@ -293,19 +295,36 @@ function openBookModal(id=null){
 function refreshCoverPreview(){
   const url=(document.getElementById('bookCoverImage')?.value||'').trim();
   const prev=document.getElementById('coverPreview');
+  const box=document.getElementById('coverPreviewBox');
   const img=document.getElementById('coverPreviewImg');
   const clr=document.getElementById('coverClearBtn');
-  if(url){ if(img)img.src=url; if(prev)prev.style.display='block'; if(clr)clr.style.display='inline-block'; }
+  const posInput=document.getElementById('bookCoverPosition');
+  if(url){
+    if(img){ img.src=url; img.style.objectPosition=posInput?.value||'50% 50%'; }
+    if(prev)prev.style.display='block';
+    if(clr)clr.style.display='inline-block';
+    if(box){
+      initFocalPicker(box, (x,y)=>{
+        const pos=x+'% '+y+'%';
+        if(posInput)posInput.value=pos;
+        if(img)img.style.objectPosition=pos;
+      });
+      const [fx,fy]=(posInput?.value||'50% 50%').split(' ').map(v=>parseFloat(v)||50);
+      setFocalMarker(box,fx,fy);
+    }
+  }
   else{ if(prev)prev.style.display='none'; if(clr)clr.style.display='none'; }
 }
 
 function onCoverUrlInput(){
   const status=document.getElementById('coverUploadStatus');if(status)status.textContent='';
+  const posInput=document.getElementById('bookCoverPosition');if(posInput)posInput.value='50% 50%';
   refreshCoverPreview();
 }
 
 function clearCoverImage(){
   document.getElementById('bookCoverImage').value='';
+  document.getElementById('bookCoverPosition').value='50% 50%';
   const fileEl=document.getElementById('bookCoverFile');if(fileEl)fileEl.value='';
   const status=document.getElementById('coverUploadStatus');if(status)status.textContent='';
   refreshCoverPreview();
@@ -327,6 +346,7 @@ async function uploadCoverFile(e){
   }
   const{data}=sb.storage.from('library').getPublicUrl(path);
   document.getElementById('bookCoverImage').value=data?.publicUrl||'';
+  document.getElementById('bookCoverPosition').value='50% 50%';
   if(status){status.style.color='var(--teal)';status.textContent='✓ Uploaded';}
   refreshCoverPreview();
 }
@@ -338,13 +358,14 @@ async function saveBook(){
   const status=document.getElementById('bookStatus').value||'draft';
   const color=document.getElementById('bookColor').value||selectedCover;
   const cover_image=document.getElementById('bookCoverImage').value.trim()||null;
+  const cover_position=document.getElementById('bookCoverPosition').value||'50% 50%';
   const series_id=document.getElementById('bookSeriesId').value||null;
   const series_order=document.getElementById('bookSeriesOrder').value?parseInt(document.getElementById('bookSeriesOrder').value):null;
 
   setLoading('bookSaveBtn',true);
   const{error}=editId
-    ?await sb.from('books').update({title,description,color,cover_image,status,series_id,series_order}).eq('id',editId)
-    :await sb.from('books').insert({title,description,color,cover_image,status,series_id,series_order});
+    ?await sb.from('books').update({title,description,color,cover_image,cover_position,status,series_id,series_order}).eq('id',editId)
+    :await sb.from('books').insert({title,description,color,cover_image,cover_position,status,series_id,series_order});
   setLoading('bookSaveBtn',false,'Save Book');
   if(error){toast('Error saving book','error');return}
   toast(editId?'Book updated':'Book created');closeModal('bookModal');loadBooks();
