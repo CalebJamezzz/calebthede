@@ -69,20 +69,7 @@ async function loadBookTeaser(){
   const{data:books}=await sb.from('books').select('id,title,description,cover_image,color').order('created_at',{ascending:true});
   if(!books||!books.length)return;
 
-  // Find the most recently saved bookmark across ALL books
-  let activeBm=null, activeBmBook=null;
-  try{
-    books.forEach(b=>{
-      const bm=JSON.parse(localStorage.getItem('bm_'+b.id));
-      if(bm&&(!activeBm||bm.savedAt>activeBm.savedAt)){
-        activeBm=bm; activeBmBook=b;
-      }
-    });
-  }catch(e){}
-
-  // If a bookmark exists, show that book as "Continue Reading"
-  // Otherwise fall back to the first/primary book as "Now Writing"
-  const display = activeBmBook || books[0];
+  const display = books[0];
 
   document.getElementById('btTitle').textContent=display.title;
   document.getElementById('btDesc').textContent=display.description||"Cade learns he's the son of Hades, marked by a blue flame tied to the Veil — but the real war is with the shadow he carries. An eight-book descent from Awakening to Integration: Greek myth as the first psychology.";
@@ -94,12 +81,7 @@ async function loadBookTeaser(){
     else if(display.color){ cover.style.background=display.color; }
   }
 
-  if(activeBm){
-    document.getElementById('btEyebrow').textContent='Continue Reading';
-    document.getElementById('btCta').textContent=`Ch.${activeBm.chNum} — ${activeBm.chTitle}, page ${activeBm.pageInCh+1}`;
-    document.getElementById('bookTeaser').href='/library#book/'+activeBmBook.id+'/resume';
-  }
-
+  document.getElementById('bookTeaser').href='/library#book/'+display.id;
   document.getElementById('bookTeaser').style.display='block';
 }
 

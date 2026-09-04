@@ -9,14 +9,12 @@ let SCR_INITED = false;
 let SCR_SERIES = [];
 let SCR_BOOKS  = [];
 let SCR_BOOK   = null;     // current book row
-let SCR_CHAPS  = [];       // chapters of current book
-let SCR_CKED   = null;     // CKEditor instance (chapter body)
-let SCR_CH_ID  = null;     // chapter being edited
+let SCR_CKED   = null;     // CKEditor instance (writer body)
 let SCR_COVER  = null;     // pending cover url for current book
-let _impHtml   = null;     // raw manuscript html
-let _impChaps  = [];       // parsed chapters
+let SCR_RETAILERS = [];    // retailer links for current book
+let SCR_REVIEWS   = [];    // reviews for current book
 
-let SCR_WRITE_CTX = 'chapter'; // which entity the full-screen writer is editing
+let SCR_WRITE_CTX = 'excerpt'; // which entity the full-screen writer is editing
 let SCR_WS         = 'books';  // active workspace
 let SCR_ARTS       = [];       // all essays/articles
 let SCR_ART        = null;     // current article row
@@ -51,26 +49,6 @@ function scrReadingTime(html){
   const words = (html||'').replace(/<[^>]*>/g,' ').split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words/200));
 }
-function scrChapterState(ch){
-  if(ch.published) return 'live';
-  if(ch.publish_at){
-    return (new Date(ch.publish_at) <= new Date()) ? 'live' : 'scheduled';
-  }
-  return 'draft';
-}
-function scrFmtDate(iso){
-  if(!iso) return '';
-  const d = new Date(iso);
-  return d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}) + ' · ' +
-         d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
-}
-// <input type=datetime-local> wants 'YYYY-MM-DDTHH:mm' in local time
-function scrToLocalInput(iso){
-  if(!iso) return '';
-  const d = new Date(iso); const p = n => String(n).padStart(2,'0');
-  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`;
-}
-function scrFromLocalInput(v){ return v ? new Date(v).toISOString() : null; }
 
 // ════════ ADMIN GATE ════════
 function composeOnAdmin(on){
@@ -133,6 +111,8 @@ async function scrSelectBook(id){
   if(!book) return;
   SCR_BOOK = book;
   SCR_COVER = book.cover_image || null;
+  SCR_RETAILERS = Array.isArray(book.retailer_links) ? book.retailer_links.map(r=>({...r})) : [];
+  SCR_REVIEWS = Array.isArray(book.reviews) ? book.reviews.map(r=>({...r})) : [];
   cEl('scrDetailEmpty').style.display = 'none';
   cEl('scrBookPanel').style.display = 'block';
   // fill header
@@ -140,11 +120,13 @@ async function scrSelectBook(id){
   cEl('scrDesc').value = book.description || '';
   cEl('scrStatus').value = book.status || 'draft';
   cEl('scrSeriesOrder').value = book.series_order ?? '';
-  cEl('scrTotalCh').value = book.total_chapters ?? '';
   scrFillSeriesSelect(book.series_id);
   scrRenderCover();
   scrRenderBrowser();
-  await scrLoadChapters(id);
+  scrRenderRetailerRows();
+  scrRenderReviewRows();
+  scrRenderExcerptSummary();
+  scrRenderLaunchSummary();
 }
 function scrFillSeriesSelect(selected){
   const sel = cEl('scrSeries');
@@ -182,7 +164,8 @@ async function scrSaveBook(){
     cover_image: SCR_COVER || null,
     series_id: cVal('scrSeries') || null,
     series_order: parseInt(cVal('scrSeriesOrder')) || null,
-    total_chapters: parseInt(cVal('scrTotalCh')) || null,
+    retailer_links: SCR_RETAILERS.filter(r=>r.label||r.url),
+    reviews: SCR_REVIEWS.filter(r=>r.quote),
   };
   setLoading('scrSaveBookBtn', true);
   const { error } = await sb.from('books').update(payload).eq('id', SCR_BOOK.id);
@@ -201,9 +184,8 @@ async function scrNewBook(){
 }
 async function scrDeleteBook(){
   if(!SCR_BOOK) return;
-  const ok = await scrConfirm({ title:'Delete book?', message:`"${SCR_BOOK.title}" and all of its chapters will be permanently removed. This cannot be undone.`, confirmText:'Delete book', danger:true });
+  const ok = await scrConfirm({ title:'Delete book?', message:`"${SCR_BOOK.title}" will be permanently removed. This cannot be undone.`, confirmText:'Delete book', danger:true });
   if(!ok) return;
-  await sb.from('chapters').delete().eq('book_id', SCR_BOOK.id);
   const { error } = await sb.from('books').delete().eq('id', SCR_BOOK.id);
   if(error){ toast('Delete failed: '+error.message,'error'); return; }
   toast('Book deleted');
@@ -274,123 +256,67 @@ async function scrDeleteSeries(){
   if(SCR_BOOK){ scrFillSeriesSelect(SCR_BOOK.series_id); }
 }
 
-// ════════ CHAPTERS ════════
-async function scrLoadChapters(bookId){
-  const { data } = await sb.from('chapters').select('*').eq('book_id', bookId)
-    .order('position',{ascending:true,nullsFirst:false});
-  SCR_CHAPS = data || [];
-  scrRenderChapters();
-  if(cEl('scrTimeline').style.display !== 'none') scrRenderTimeline();
+// ════════ RETAILER LINKS ════════
+function scrRenderRetailerRows(){
+  const wrap = cEl('scrRetailerRows');
+  if(!SCR_RETAILERS.length){ wrap.innerHTML = '<p class="scr-muted">No retailer links yet.</p>'; return; }
+  wrap.innerHTML = SCR_RETAILERS.map((r,i) => `
+    <div class="scr-row">
+      <input placeholder="Label (e.g. Amazon)" value="${cEsc(r.label||'')}" oninput="SCR_RETAILERS[${i}].label=this.value"/>
+      <input placeholder="https://…" value="${cEsc(r.url||'')}" oninput="SCR_RETAILERS[${i}].url=this.value"/>
+      <button class="scr-row-remove" onclick="SCR_RETAILERS.splice(${i},1);scrRenderRetailerRows()">✕</button>
+    </div>`).join('');
 }
-function scrRenderChapters(){
-  const wrap = cEl('scrChapters');
-  cEl('scrChaptersTitle').textContent = `Chapters (${SCR_CHAPS.length})`;
-  if(!SCR_CHAPS.length){ wrap.innerHTML = '<p class="scr-muted">No chapters yet. Add one, or import a manuscript.</p>'; return; }
-  wrap.innerHTML = SCR_CHAPS.map((ch,i) => {
-    const state = scrChapterState(ch);
-    const badge = state==='live' ? '<em class="ri-live">live</em>'
-                : state==='scheduled' ? `<em class="ri-sched">scheduled · ${scrFmtDate(ch.publish_at)}</em>`
-                : '<em class="ri-draft">draft</em>';
-    return `<div class="scr-ch-row" data-id="${ch.id}">
-      <span class="scr-ch-ord">
-        <button class="scr-ord-btn" onclick="scrMoveChapter('${ch.id}',-1)" ${i===0?'disabled':''}>▲</button>
-        <button class="scr-ord-btn" onclick="scrMoveChapter('${ch.id}',1)" ${i===SCR_CHAPS.length-1?'disabled':''}>▼</button>
-      </span>
-      <span class="scr-ch-num">${i+1}</span>
-      <span class="scr-ch-main">
-        <span class="scr-ch-title">${cEsc(ch.title||'Untitled')}</span>
-        <span class="scr-ch-meta">${scrReadingTime(ch.content)} min · ${badge}</span>
-      </span>
-      <span class="scr-ch-acts">
-        <button class="scr-mini" onclick="scrEditDetails('${ch.id}')">Details</button>
-        <button class="scr-mini gold" onclick="scrOpenWrite('${ch.id}')">Write</button>
-        <button class="scr-mini" onclick="scrToggleChapterPub('${ch.id}')">${ch.published?'Unpublish':'Publish'}</button>
-        <button class="scr-mini danger" onclick="scrDeleteChapter('${ch.id}')">✕</button>
-      </span>
-    </div>`;
-  }).join('');
-}
-async function scrMoveChapter(id, dir){
-  const i = SCR_CHAPS.findIndex(c => String(c.id)===String(id));
-  const j = i + dir;
-  if(i<0 || j<0 || j>=SCR_CHAPS.length) return;
-  [SCR_CHAPS[i], SCR_CHAPS[j]] = [SCR_CHAPS[j], SCR_CHAPS[i]];
-  scrRenderChapters();
-  await Promise.all(SCR_CHAPS.map((c,k) => sb.from('chapters').update({position:k}).eq('id',c.id)));
-}
-async function scrToggleChapterPub(id){
-  const ch = SCR_CHAPS.find(c => String(c.id)===String(id)); if(!ch) return;
-  const next = !ch.published;
-  const { error } = await sb.from('chapters').update({published:next}).eq('id',id);
-  if(error){ toast('Failed: '+error.message,'error'); return; }
-  ch.published = next; scrRenderChapters();
-  toast(next?'Published':'Moved to draft');
-}
-async function scrDeleteChapter(id){
-  const ch = SCR_CHAPS.find(c => String(c.id)===String(id)); if(!ch) return;
-  const ok = await scrConfirm({ title:'Delete chapter?', message:`"${ch.title||'Untitled'}" will be permanently removed.`, confirmText:'Delete chapter', danger:true });
-  if(!ok) return;
-  const { error } = await sb.from('chapters').delete().eq('id',id);
-  if(error){ toast('Delete failed: '+error.message,'error'); return; }
-  toast('Chapter deleted');
-  await scrLoadChapters(SCR_BOOK.id);
-}
-
-// ════════ CHAPTER · DETAILS (metadata only) ════════
-function scrAddChapter(){
+function scrAddRetailerRow(){
   if(!SCR_BOOK){ toast('Select a book first.','error'); return; }
-  scrEditDetails(null);
-}
-function scrEditChapter(id){ scrEditDetails(id); }   // back-compat
-function scrEditDetails(id){
-  const ch = id ? SCR_CHAPS.find(c => String(c.id)===String(id)) : null;
-  SCR_CH_ID = ch ? ch.id : null;
-  cEl('scrChTitle').textContent = ch ? 'Chapter details' : 'New chapter';
-  cEl('scrChTitleInput').value = ch ? (ch.title||'') : '';
-  cEl('scrChNum').value = ch && ch.num != null ? ch.num : (SCR_CHAPS.length + 1);
-  cEl('scrChPub').checked = ch ? !!ch.published : false;
-  cEl('scrChDate').value = ch ? scrToLocalInput(ch.publish_at) : '';
-  cEl('scrChStatus').textContent = '';
-  cEl('scrDetailsWriteBtn').textContent = ch ? 'Open writer →' : 'Save & write →';
-  cEl('scrChapterOverlay').classList.add('open');
-}
-function scrCloseChapter(){ cEl('scrChapterOverlay').classList.remove('open'); }
-// Save just the metadata. Returns the chapter id (existing or newly created), or null on failure.
-async function scrSaveDetails(){
-  if(!SCR_BOOK) return null;
-  const payload = {
-    title: cVal('scrChTitleInput') || 'Untitled',
-    num: parseInt(cVal('scrChNum')) || null,
-    published: cEl('scrChPub').checked,
-    publish_at: scrFromLocalInput(cVal('scrChDate')),
-  };
-  setLoading('scrSaveChBtn', true);
-  let err = null, savedId = SCR_CH_ID;
-  if(SCR_CH_ID){
-    ({ error: err } = await sb.from('chapters').update(payload).eq('id', SCR_CH_ID));
-  }else{
-    payload.book_id = SCR_BOOK.id;
-    payload.position = SCR_CHAPS.length;
-    payload.content = '';
-    const { data, error } = await sb.from('chapters').insert(payload).select().single();
-    err = error; if(data) savedId = data.id;
-  }
-  setLoading('scrSaveChBtn', false, 'Save details');
-  if(err){ cEl('scrChStatus').textContent = err.message; toast('Save failed: '+err.message,'error'); return null; }
-  const wasNew = !SCR_CH_ID;
-  SCR_CH_ID = savedId;
-  toast(wasNew ? 'Chapter created' : 'Details saved');
-  scrCloseChapter();
-  await scrLoadChapters(SCR_BOOK.id);
-  return savedId;
-}
-// "Save & write" / "Open writer" from the details modal
-async function scrWriteFromDetails(){
-  const id = await scrSaveDetails();
-  if(id) scrOpenWrite(id);
+  SCR_RETAILERS.push({ label:'', url:'' });
+  scrRenderRetailerRows();
 }
 
-// ════════ CHAPTER · FULL-SCREEN WRITER (content only) ════════
+// ════════ REVIEWS ════════
+function scrRenderReviewRows(){
+  const wrap = cEl('scrReviewRows');
+  if(!SCR_REVIEWS.length){ wrap.innerHTML = '<p class="scr-muted">No reviews yet.</p>'; return; }
+  wrap.innerHTML = SCR_REVIEWS.map((r,i) => `
+    <div class="scr-row">
+      <textarea rows="2" placeholder="Quote" oninput="SCR_REVIEWS[${i}].quote=this.value">${cEsc(r.quote||'')}</textarea>
+      <input placeholder="Source (e.g. Kirkus, a reader)" value="${cEsc(r.source||'')}" oninput="SCR_REVIEWS[${i}].source=this.value"/>
+      <button class="scr-row-remove" onclick="SCR_REVIEWS.splice(${i},1);scrRenderReviewRows()">✕</button>
+    </div>`).join('');
+}
+function scrAddReviewRow(){
+  if(!SCR_BOOK){ toast('Select a book first.','error'); return; }
+  SCR_REVIEWS.push({ quote:'', source:'' });
+  scrRenderReviewRows();
+}
+
+// ════════ EXCERPT + LAUNCH NOTE (rich text, via the shared writer) ════════
+function scrRenderExcerptSummary(){
+  const el = cEl('scrExcerptSummary'); if(!el || !SCR_BOOK) return;
+  const words = (SCR_BOOK.excerpt||'').replace(/<[^>]*>/g,' ').split(/\s+/).filter(Boolean).length;
+  el.innerHTML = words
+    ? `<p class="scr-muted">${words.toLocaleString()} words · ${scrReadingTime(SCR_BOOK.excerpt)} min read</p>`
+    : '<p class="scr-muted">No excerpt yet — open the writer to add a sample from the book.</p>';
+}
+function scrRenderLaunchSummary(){
+  const el = cEl('scrLaunchSummary'); if(!el || !SCR_BOOK) return;
+  const words = (SCR_BOOK.launch_note||'').replace(/<[^>]*>/g,' ').split(/\s+/).filter(Boolean).length;
+  el.innerHTML = words
+    ? `<p class="scr-muted">${words.toLocaleString()} words · ${scrReadingTime(SCR_BOOK.launch_note)} min read</p>`
+    : '<p class="scr-muted">No launch note yet — open the writer to write about the book.</p>';
+}
+async function scrWriteExcerpt(){
+  if(!SCR_BOOK){ toast('Select a book first.','error'); return; }
+  SCR_WRITE_CTX = 'excerpt';
+  await scrShowWriter(SCR_BOOK.title||'Book', 'Excerpt', SCR_BOOK.excerpt);
+}
+async function scrWriteLaunchNote(){
+  if(!SCR_BOOK){ toast('Select a book first.','error'); return; }
+  SCR_WRITE_CTX = 'launch_note';
+  await scrShowWriter(SCR_BOOK.title||'Book', 'Launch note', SCR_BOOK.launch_note);
+}
+
+// ════════ FULL-SCREEN WRITER (content only) ════════
 function scrInitCkEditor(){
   if(SCR_CKED) return Promise.resolve(SCR_CKED);
   if(!window.CKEDITOR || !CKEDITOR.ClassicEditor){
@@ -430,35 +356,27 @@ function scrInitCkEditor(){
     .catch(err => { console.error('CKEditor failed', err); cEl('scrWriteStatus').textContent = 'Editor error: '+(err && err.message || err); return null; });
 }
 // Shared mount: open the full-screen writer with given header text + body html.
-async function scrShowWriter(eyebrow, title, content, showDetails){
+async function scrShowWriter(eyebrow, title, content){
   cEl('scrWriteBook').textContent  = eyebrow || '';
   cEl('scrWriteTitle').textContent = title || 'Untitled';
   cEl('scrWriteStatus').textContent = '';
-  const det = cEl('scrWriteDetailsBtn'); if(det) det.style.display = showDetails ? '' : 'none';
   cEl('scrWriteOverlay').classList.add('open');
   // mount only now that the container is visible + full-size (reliable mount)
   const ed = await scrInitCkEditor();
   if(ed) ed.setData(content || '');
 }
-async function scrOpenWrite(id){
-  const ch = SCR_CHAPS.find(c => String(c.id)===String(id));
-  if(!ch){ toast('Save the chapter details first.','error'); return; }
-  SCR_WRITE_CTX = 'chapter';
-  SCR_CH_ID = ch.id;
-  await scrShowWriter(SCR_BOOK ? (SCR_BOOK.title||'Book') : '', ch.title || 'Untitled', ch.content, true);
-}
 function scrCloseWrite(){ cEl('scrWriteOverlay').classList.remove('open'); }
-function scrEditDetailsFromWrite(){ if(SCR_WRITE_CTX==='chapter' && SCR_CH_ID) scrEditDetails(SCR_CH_ID); }
 // One place that maps each writer context → table, body column, and refresh.
 const SCR_WRITE_CFG = {
-  chapter: { table:'chapters',     field:'content',     id:()=>SCR_CH_ID,                after:async()=>{ if(SCR_BOOK) await scrLoadChapters(SCR_BOOK.id); } },
+  excerpt:     { table:'books',    field:'excerpt',     id:()=>SCR_BOOK && SCR_BOOK.id, set:h=>{ if(SCR_BOOK) SCR_BOOK.excerpt = h; },     after:()=>scrRenderExcerptSummary() },
+  launch_note: { table:'books',    field:'launch_note',  id:()=>SCR_BOOK && SCR_BOOK.id, set:h=>{ if(SCR_BOOK) SCR_BOOK.launch_note = h; }, after:()=>scrRenderLaunchSummary() },
   article: { table:'articles',     field:'content',     id:()=>SCR_ART  && SCR_ART.id,  set:h=>{ if(SCR_ART)  SCR_ART.content  = h; }, after:()=>scrRenderArtSummary() },
   project: { table:'projects',     field:'description', id:()=>SCR_PROJ && SCR_PROJ.id, set:h=>{ if(SCR_PROJ) SCR_PROJ.description = h; }, after:()=>scrRenderProjSummary() },
   lab:     { table:'lab_entries',  field:'description', id:()=>SCR_LAB  && SCR_LAB.id,  set:h=>{ if(SCR_LAB)  SCR_LAB.description  = h; }, after:()=>scrRenderLabSummary() },
 };
 async function scrSaveContent(){
   if(!SCR_CKED){ toast('Editor not ready.','error'); return; }
-  const cfg = SCR_WRITE_CFG[SCR_WRITE_CTX] || SCR_WRITE_CFG.chapter;
+  const cfg = SCR_WRITE_CFG[SCR_WRITE_CTX] || SCR_WRITE_CFG.excerpt;
   const id = cfg.id();
   if(!id){ toast('Nothing selected.','error'); return; }
   const html = SCR_CKED.getData();
@@ -471,124 +389,6 @@ async function scrSaveContent(){
   cEl('scrWriteStatus').textContent = 'Saved ✓';
   toast('Content saved');
   if(cfg.after) await cfg.after();
-}
-
-// ── timeline of upcoming scheduled chapters ──
-function scrToggleTimeline(){
-  const t = cEl('scrTimeline');
-  const show = t.style.display === 'none';
-  t.style.display = show ? 'block' : 'none';
-  cEl('scrTimelineBtn').classList.toggle('active', show);
-  if(show) scrRenderTimeline();
-}
-function scrRenderTimeline(){
-  const t = cEl('scrTimeline');
-  const upcoming = SCR_CHAPS
-    .filter(c => c.publish_at && new Date(c.publish_at) > new Date())
-    .sort((a,b)=> new Date(a.publish_at) - new Date(b.publish_at));
-  if(!upcoming.length){ t.innerHTML = '<p class="scr-muted">No upcoming scheduled releases.</p>'; return; }
-  t.innerHTML = '<div class="scr-tl-line">' + upcoming.map(c =>
-    `<div class="scr-tl-item"><span class="scr-tl-dot"></span><span class="scr-tl-date">${scrFmtDate(c.publish_at)}</span><span class="scr-tl-title">${cEsc(c.title)}</span></div>`
-  ).join('') + '</div>';
-}
-
-// ════════ MANUSCRIPT IMPORT ════════
-function scrOpenImport(){
-  if(!SCR_BOOK){ toast('Select a book first.','error'); return; }
-  _impHtml = null; _impChaps = [];
-  cEl('scrImportFileName').textContent = 'No file chosen';
-  cEl('scrImportPreview').innerHTML = '<p class="scr-muted">Choose a file to see detected chapters.</p>';
-  cEl('scrSchedOn').checked = false;
-  cEl('scrImportOverlay').classList.add('open');
-}
-function scrCloseImport(){ cEl('scrImportOverlay').classList.remove('open'); }
-async function scrHandleFile(input){
-  const file = input.files && input.files[0]; if(!file) return;
-  cEl('scrImportFileName').textContent = file.name;
-  cEl('scrImportPreview').innerHTML = '<p class="scr-muted">Reading…</p>';
-  try{
-    const arrayBuffer = await file.arrayBuffer();
-    const result = await mammoth.convertToHtml({ arrayBuffer });
-    _impHtml = result.value || '';
-    scrRenderImportPreview();
-  }catch(err){
-    cEl('scrImportPreview').innerHTML = '<p class="scr-muted">Could not read that file — make sure it’s a .docx (Google Docs → Download → Microsoft Word).</p>';
-  }
-}
-// reuse the proven splitter shape from library.js
-function scrSplit(html, headingTag){
-  const div = document.createElement('div'); div.innerHTML = html || '';
-  const chapters = []; let cur = null; const lead = [];
-  Array.from(div.childNodes).forEach(n => {
-    const isHeading = n.nodeType===1 && n.tagName.toLowerCase()===headingTag;
-    if(isHeading){ cur = { title:(n.textContent||'').trim()||'Untitled', parts:[] }; chapters.push(cur); }
-    else if(cur){ if(n.outerHTML) cur.parts.push(n.outerHTML); }
-    else if(n.outerHTML && (n.textContent||'').trim()) lead.push(n.outerHTML);
-  });
-  const result = []; const leadHtml = lead.join('');
-  if(leadHtml.replace(/<[^>]*>/g,'').trim()) result.push({ title:'Opening', content:leadHtml });
-  chapters.forEach(c => result.push({ title:c.title, content:c.parts.join('') }));
-  return result;
-}
-function scrScheduleDates(n){
-  if(!cEl('scrSchedOn').checked) return [];
-  const start = cVal('scrSchedStart'); if(!start) return [];
-  const every = (parseInt(cVal('scrSchedEvery'))||1) * (parseInt(cVal('scrSchedUnit'))||1);
-  const base = new Date(start); const out = [];
-  for(let i=0;i<n;i++){ const d = new Date(base); d.setDate(d.getDate() + every*i); out.push(d); }
-  return out;
-}
-function scrRenderImportPreview(){
-  if(!_impHtml){ cEl('scrImportPreview').innerHTML = '<p class="scr-muted">Choose a file to see detected chapters.</p>'; return; }
-  const tag = cVal('scrImportHeading');
-  _impChaps = scrSplit(_impHtml, tag);
-  const prev = cEl('scrImportPreview');
-  if(!_impChaps.length){ prev.innerHTML = '<p class="scr-muted">No headings found — try a different heading level, or style chapter titles as Heading 1 in Google Docs.</p>'; return; }
-  const dates = scrScheduleDates(_impChaps.length);
-  const sched = cEl('scrSchedOn').checked && dates.length;
-  prev.innerHTML = `<div class="scr-imp-head"><span>${_impChaps.length} chapter${_impChaps.length>1?'s':''} detected</span>
-    <span class="scr-imp-bulk"><button class="scr-mini" type="button" onclick="scrSetAllPub(true)">all live</button><button class="scr-mini" type="button" onclick="scrSetAllPub(false)">all draft</button></span></div>` +
-    _impChaps.map((c,i) => {
-      const words = (c.content||'').replace(/<[^>]*>/g,' ').split(/\s+/).filter(Boolean).length;
-      const dlabel = sched ? `<span class="scr-imp-date">→ ${dates[i].toLocaleDateString(undefined,{month:'short',day:'numeric'})}</span>` : '';
-      return `<div class="scr-imp-row"><span class="scr-imp-idx">${i+1}</span>
-        <input class="scr-imp-title" value="${cEsc(c.title)}"/>
-        <span class="scr-imp-words">${words}w</span>${dlabel}
-        <button type="button" class="scr-imp-pub ${sched?'':'on'}" data-pub="${sched?'0':'1'}" onclick="scrTogglePub(this)">${sched?'○':'●'}</button></div>`;
-    }).join('');
-}
-function scrTogglePub(btn){
-  const on = btn.dataset.pub==='1';
-  btn.dataset.pub = on?'0':'1';
-  btn.classList.toggle('on',!on);
-  btn.textContent = on?'○':'●';
-}
-function scrSetAllPub(state){
-  document.querySelectorAll('.scr-imp-pub').forEach(b => { b.dataset.pub = state?'1':'0'; b.classList.toggle('on',state); b.textContent = state?'●':'○'; });
-}
-async function scrRunImport(){
-  if(!SCR_BOOK){ toast('Select a book first.','error'); return; }
-  if(!_impChaps.length){ toast('Choose a .docx file first.','error'); return; }
-  const titles = [...document.querySelectorAll('.scr-imp-title')].map(i => i.value.trim());
-  const pubs   = [...document.querySelectorAll('.scr-imp-pub')].map(b => b.dataset.pub==='1');
-  const dates  = scrScheduleDates(_impChaps.length);
-  const sched  = cEl('scrSchedOn').checked && dates.length;
-  const base   = SCR_CHAPS.length;
-  const rows = _impChaps.map((c,i) => ({
-    book_id: SCR_BOOK.id,
-    title: titles[i] || c.title,
-    content: c.content,
-    position: base + i,
-    published: sched ? false : (pubs[i] !== false),
-    publish_at: sched ? dates[i].toISOString() : null,
-  }));
-  setLoading('scrImportRunBtn', true);
-  const { error } = await sb.from('chapters').insert(rows);
-  setLoading('scrImportRunBtn', false, 'Import into this book');
-  if(error){ toast('Import failed: '+error.message,'error'); return; }
-  toast(`Imported ${rows.length} chapter${rows.length>1?'s':''}`);
-  scrCloseImport();
-  await scrLoadChapters(SCR_BOOK.id);
 }
 
 // ════════ WORKSPACE SWITCHING ════════

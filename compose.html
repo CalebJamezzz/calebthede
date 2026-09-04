@@ -10,7 +10,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.ckeditor.com/ckeditor5/40.2.0/super-build/ckeditor.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
   <link rel="stylesheet" href="css/main.css"/>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta name="robots" content="noindex,nofollow"/>
@@ -142,7 +141,6 @@ let adminMode=false;
                 </div>
                 <div class="cf cf-sm"><label>Series</label><select id="scrSeries"></select></div>
                 <div class="cf cf-sm"><label># in series</label><input type="number" id="scrSeriesOrder" placeholder="1"/></div>
-                <div class="cf cf-sm"><label>Planned chapters</label><input type="number" id="scrTotalCh" placeholder="auto"/></div>
               </div>
               <div class="scr-bookhead-acts">
                 <button class="btn-primary" id="scrSaveBookBtn" onclick="scrSaveBook()">Save book</button>
@@ -151,17 +149,27 @@ let adminMode=false;
             </div>
           </div>
 
-          <!-- chapters -->
+          <!-- retailer links -->
+          <div class="scr-section-head"><h3>Retailer links</h3><div class="scr-section-acts"><button class="scr-mini gold" onclick="scrAddRetailerRow()">+ Link</button></div></div>
+          <div id="scrRetailerRows" class="scr-rows"></div>
+
+          <!-- excerpt -->
           <div class="scr-section-head">
-            <h3 id="scrChaptersTitle">Chapters</h3>
-            <div class="scr-section-acts">
-              <button class="scr-mini" onclick="scrToggleTimeline()" id="scrTimelineBtn">Timeline</button>
-              <button class="scr-mini" onclick="scrOpenImport()">⇪ Import .docx</button>
-              <button class="scr-mini gold" onclick="scrAddChapter()">+ Chapter</button>
-            </div>
+            <h3>Excerpt</h3>
+            <div class="scr-section-acts"><button class="scr-mini gold" onclick="scrWriteExcerpt()">✎ Open writer</button></div>
           </div>
-          <div id="scrTimeline" class="scr-timeline" style="display:none"></div>
-          <div id="scrChapters" class="scr-chapters"></div>
+          <div id="scrExcerptSummary" class="scr-art-summary"></div>
+
+          <!-- reviews -->
+          <div class="scr-section-head"><h3>Reviews</h3><div class="scr-section-acts"><button class="scr-mini gold" onclick="scrAddReviewRow()">+ Review</button></div></div>
+          <div id="scrReviewRows" class="scr-rows"></div>
+
+          <!-- launch note -->
+          <div class="scr-section-head">
+            <h3>Launch note</h3>
+            <div class="scr-section-acts"><button class="scr-mini gold" onclick="scrWriteLaunchNote()">✎ Open writer</button></div>
+          </div>
+          <div id="scrLaunchSummary" class="scr-art-summary"></div>
         </div>
       </section>
     </div>
@@ -373,27 +381,6 @@ let adminMode=false;
   </div>
 </main>
 
-<!-- CHAPTER DETAILS OVERLAY -->
-<div class="scr-overlay" id="scrChapterOverlay">
-  <div class="scr-sheet">
-    <button class="modal-close" onclick="scrCloseChapter()">✕</button>
-    <h2 class="scr-sheet-title" id="scrChTitle">Chapter details</h2>
-    <p class="scr-sheet-sub">Title, number and release. Write the chapter body in the full-screen writer.</p>
-    <div class="scr-ch-meta">
-      <div class="cf"><label>Chapter title</label><input id="scrChTitleInput" placeholder="Chapter title"/></div>
-      <div class="cf cf-sm"><label>Chapter #</label><input type="number" id="scrChNum" placeholder="auto"/></div>
-      <label class="cf-toggle"><input type="checkbox" id="scrChPub"/> <span>Published now</span></label>
-      <div class="cf cf-sm"><label>Release date <span class="cf-hint">auto-publishes</span></label><input type="datetime-local" id="scrChDate"/></div>
-    </div>
-    <div class="scr-sheet-acts">
-      <button class="btn-primary" id="scrSaveChBtn" onclick="scrSaveDetails()">Save details</button>
-      <button class="scr-mini gold" id="scrDetailsWriteBtn" onclick="scrWriteFromDetails()">Open writer →</button>
-      <button class="btn-ghost" onclick="scrCloseChapter()">Cancel</button>
-      <span class="rail-status" id="scrChStatus"></span>
-    </div>
-  </div>
-</div>
-
 <!-- FULL-SCREEN WRITER -->
 <div class="scr-write" id="scrWriteOverlay">
   <div class="scr-write-bar">
@@ -403,7 +390,6 @@ let adminMode=false;
     </div>
     <div class="scr-write-acts">
       <span class="rail-status" id="scrWriteStatus"></span>
-      <button class="scr-mini" id="scrWriteDetailsBtn" onclick="scrEditDetailsFromWrite()">Details</button>
       <button class="btn-primary" id="scrSaveContentBtn" onclick="scrSaveContent()">Save content</button>
       <button class="btn-ghost" onclick="scrCloseWrite()">Close</button>
     </div>
@@ -439,41 +425,6 @@ let adminMode=false;
     <div class="scr-sheet-acts">
       <button class="btn-primary" id="scrConfirmOk" onclick="scrConfirmResolve(true)">Confirm</button>
       <button class="btn-ghost" onclick="scrConfirmResolve(false)">Cancel</button>
-    </div>
-  </div>
-</div>
-
-<!-- IMPORT OVERLAY -->
-<div class="scr-overlay" id="scrImportOverlay">
-  <div class="scr-sheet">
-    <button class="modal-close" onclick="scrCloseImport()">✕</button>
-    <h2 class="scr-sheet-title">Import manuscript</h2>
-    <p class="scr-sheet-sub">Upload a <strong>.docx</strong> (Google Docs → Download → Microsoft Word). Style chapter titles as a heading so they split cleanly.</p>
-    <div class="scr-import-top">
-      <label class="cf-upload" for="scrImportFile">Choose .docx</label>
-      <input type="file" id="scrImportFile" accept=".docx" hidden onchange="scrHandleFile(this)"/>
-      <span id="scrImportFileName" class="scr-import-fname">No file chosen</span>
-      <div class="cf cf-sm"><label>Split on</label>
-        <select id="scrImportHeading" onchange="scrRenderImportPreview()">
-          <option value="h1">Heading 1</option>
-          <option value="h2">Heading 2</option>
-          <option value="h3">Heading 3</option>
-        </select>
-      </div>
-    </div>
-    <!-- staggered scheduler -->
-    <div class="scr-schedule">
-      <label class="cf-toggle"><input type="checkbox" id="scrSchedOn" onchange="scrRenderImportPreview()"/> <span>Staggered release</span></label>
-      <div class="scr-sched-fields">
-        <div class="cf cf-sm"><label>First release</label><input type="datetime-local" id="scrSchedStart" onchange="scrRenderImportPreview()"/></div>
-        <div class="cf cf-sm"><label>Every</label><input type="number" id="scrSchedEvery" value="7" min="1" onchange="scrRenderImportPreview()"/></div>
-        <div class="cf cf-sm"><label>Unit</label><select id="scrSchedUnit" onchange="scrRenderImportPreview()"><option value="1">days</option><option value="7">weeks</option></select></div>
-      </div>
-    </div>
-    <div id="scrImportPreview" class="scr-import-preview"><p class="scr-muted">Choose a file to see detected chapters.</p></div>
-    <div class="scr-sheet-acts">
-      <button class="btn-primary" id="scrImportRunBtn" onclick="scrRunImport()">Import into this book</button>
-      <button class="btn-ghost" onclick="scrCloseImport()">Cancel</button>
     </div>
   </div>
 </div>

@@ -208,26 +208,12 @@ function handleLibraryHash(){
     return;
   }
 
-  // Restore book or chapter
+  // Restore book detail page
   if(sub==='book'&&id){
-    const autoResume = parts[2]==='resume';
-    const chapterId = parts[2]==='ch' ? parts[3] : null;
     setTimeout(()=>{
       sb.from('books').select('*').eq('id',id).single().then(({data:b})=>{
         if(!b) return;
-        if(chapterId){
-          currentBookId = id;
-          document.getElementById('bookDetailTitle').textContent = b.title||'';
-          document.getElementById('bookDetailDesc').textContent = b.description||'';
-          showLibBookDetail();
-          renderTOC().then(()=>{
-            if(typeof enterReaderMode==='function') enterReaderMode({chId:chapterId});
-          });
-        } else {
-          openBook(b.id,b.title,b.description,true).then(()=>{
-            if(autoResume&&typeof resumeReading==='function') resumeReading();
-          });
-        }
+        openBook(b.id,b.title,b.description,true);
       });
     },600);
   }

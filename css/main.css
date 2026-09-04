@@ -749,7 +749,7 @@ footer{
   
 
 /* ══════════════════════════════════════════
-   READER MODE OVERLAY (distraction-free scroll)
+   FOCUS READER OVERLAY (Marginalia — distraction-free scroll)
    ══════════════════════════════════════════ */
 
 #readerOverlay{
@@ -765,7 +765,6 @@ body.reader-locked #askFab,
 body.reader-locked #shootingStarCanvas,
 body.reader-locked .hub-bg,
 body.reader-locked .hub-pattern,
-body.reader-locked .ember-veil,
 body.reader-locked .konami-overlay{
   display:none!important;
 }
@@ -891,7 +890,7 @@ body.reader-locked{overflow:hidden}
   letter-spacing:.2em;text-transform:uppercase;
 }
 
-/* Chapter blocks */
+/* Article block */
 .ro-chapter{margin-bottom:4.5rem;scroll-margin-top:2rem}
 .ro-ch-eyebrow{
   font-family:'JetBrains Mono',monospace;font-size:.6rem;
@@ -949,13 +948,6 @@ body.reader-locked{overflow:hidden}
   .ro-topbar-right{gap:.5rem}
   .ro-scroll-inner{padding:2.5rem 1.4rem 6rem}
 }
-
-/* Font size variables */
-body[data-rfont="sm"] {--ro-font:.9rem}
-body[data-rfont="md"] {--ro-font:1.05rem}
-body[data-rfont="lg"] {--ro-font:1.18rem}
-body[data-rfont="xl"] {--ro-font:1.32rem}
-
 
 /* ── NEWSLETTER ── */
 .newsletter-section{
@@ -1031,78 +1023,27 @@ body[data-rfont="xl"] {--ro-font:1.32rem}
   .footer-newsletter-input{width:140px}
 }
 
-/* ── TABLE OF CONTENTS ── */
-.toc-row{
-  display:grid;grid-template-columns:2rem 1fr auto;
-  align-items:center;gap:1.2rem;
-  padding:1.1rem 1.4rem;border-radius:6px;
-  cursor:pointer;transition:background .18s;
-  border-bottom:1px solid rgba(var(--gold-rgb),.06);
+/* ── BOOK PROMO PAGE (blurb, buy links, excerpt, reviews, launch note) ── */
+.book-promo{max-width:900px;margin:0 auto;padding:2.5rem 4rem 5rem}
+.book-promo-blurb{font-size:1.05rem;line-height:1.7;color:var(--text-dim);max-width:640px;margin-bottom:1.8rem}
+.book-buy-row{display:flex;flex-wrap:wrap;gap:.8rem;margin-bottom:2.5rem}
+.book-buy-btn{
+  font-family:'JetBrains Mono',monospace;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--bg);background:var(--gold);border:1px solid var(--gold);border-radius:3px;
+  padding:.75rem 1.5rem;cursor:pointer;transition:all .2s;text-decoration:none;display:inline-flex;align-items:center;gap:.5rem;
 }
-.toc-row:last-child{border-bottom:none}
-.toc-row:hover{background:rgba(var(--gold-rgb),.04)}
-.toc-row.has-bookmark{background:rgba(var(--gold-rgb),.05)}
-.toc-num{
-  font-family:'JetBrains Mono',monospace;font-size:.58rem;
-  letter-spacing:.15em;color:var(--text-dim);text-align:right;
-}
-.toc-info{display:flex;flex-direction:column;gap:.25rem}
-.toc-title{
-  font-family:'Cormorant Garamond',serif;font-size:1.15rem;
-  font-weight:300;color:var(--text);
-}
-.toc-meta{
-  font-family:'JetBrains Mono',monospace;font-size:.55rem;
-  letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);
-  display:flex;align-items:center;gap:.7rem;
-}
-.toc-draft-pill{
-  font-family:'JetBrains Mono',monospace;font-size:.5rem;
-  letter-spacing:.1em;text-transform:uppercase;
-  border:1px solid var(--border);border-radius:2px;
-  color:var(--text-dim);padding:.1rem .4rem;opacity:.6;
-}
-.toc-bookmark{
-  font-size:.7rem;color:var(--gold);opacity:.7;
-  font-family:'JetBrains Mono',monospace;font-size:.55rem;
-  letter-spacing:.1em;white-space:nowrap;
-}
-.toc-arrow{color:var(--text-dim);opacity:.3;font-size:.9rem}
-.toc-row:hover .toc-arrow{opacity:.7;color:var(--gold)}
-
-/* TOC plate — header + reading CTAs */
-.toc-plate{max-width:1100px;margin:0 auto;padding:2.5rem 4rem 4rem}
-.toc-plate-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:2.2rem;flex-wrap:wrap;gap:1.2rem}
-.toc-plate-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem}
-.toc-plate-titlerow{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
-.toc-plate-titlerow .toc-plate-eyebrow{margin-bottom:0}
-.toc-plate-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.5rem,2.6vw,2.2rem);font-weight:300;color:var(--text);margin:0}
-.toc-cta-row{display:flex;gap:.7rem;align-items:center;flex-wrap:wrap}
-.toc-cta{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;border-radius:3px;padding:.6rem 1.3rem;cursor:pointer;transition:all .2s;border:1px solid}
-.toc-cta.resume{color:var(--gold);border-color:rgba(var(--gold-rgb),.4);background:rgba(var(--gold-rgb),.08)}
-.toc-cta.resume:hover{background:rgba(var(--gold-rgb),.16);border-color:var(--gold)}
-.toc-cta.ghost{color:var(--text-dim);border-color:var(--border);background:none}
-.toc-cta.ghost:hover{color:var(--gold);border-color:var(--gold)}
-.toc-list{display:flex;flex-direction:column;gap:0}
-.toc-empty{text-align:center;padding:4rem 2rem;color:var(--text-dim)}
-.toc-empty-head{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;margin-bottom:.5rem}
-@media(max-width:768px){.toc-plate{padding:2rem 1.5rem 3rem}}
-
-/* Inline admin controls on TOC rows */
-.toc-admin{align-items:center;gap:.3rem}
-.toc-ctl{
-  width:1.6rem;height:1.6rem;display:inline-flex;align-items:center;justify-content:center;
-  background:var(--bg2);border:1px solid var(--border);border-radius:3px;
-  color:var(--text-dim);font-size:.72rem;line-height:1;cursor:pointer;transition:all .15s;
-}
-.toc-ctl:hover:not(:disabled){color:var(--gold);border-color:var(--gold-dim,rgba(var(--gold-rgb),.4))}
-.toc-ctl:disabled{opacity:.3;cursor:default}
-.toc-ctl.on{color:var(--teal);border-color:rgba(var(--teal-rgb),.4)}
-.toc-ctl.danger:hover{color:var(--danger,#e06c75);border-color:rgba(224,108,117,.5)}
-
-/* Custom cursor on completion overlay */
-body.has-custom-cursor #bookCompleteOverlay{cursor:none}
-body.has-custom-cursor #bookCompleteOverlay button{cursor:none}
+.book-buy-btn:hover{opacity:.85}
+.book-promo-section{padding:2.2rem 0;border-top:1px solid var(--border)}
+.book-promo-section:first-of-type{border-top:none;padding-top:0}
+.book-promo-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:1rem}
+.book-prose{font-family:'Cormorant Garamond',serif;font-size:1.15rem;line-height:1.75;color:var(--text)}
+.book-prose p{margin:0 0 1.2em}
+.book-prose p:first-of-type::first-letter{font-size:2.6em;line-height:.75;float:left;padding:.03em .1em 0 0;color:var(--gold);font-weight:500}
+.book-prose blockquote{border-left:2px solid var(--gold);padding:.2rem 0 .2rem 1.2rem;margin:1.4rem 0;color:var(--text-dim);font-style:italic}
+.book-reviews{display:flex;flex-direction:column;gap:1.4rem}
+.book-review-quote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.2rem;line-height:1.6;color:var(--text);border-left:2px solid rgba(var(--gold-rgb),.4);padding-left:1.2rem}
+.book-review-source{display:block;margin-top:.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);font-style:normal}
+@media(max-width:768px){.book-promo{padding:2rem 1.5rem 3rem}}
 
 /* ── SERIES ── */
 .series-header{
@@ -1127,54 +1068,8 @@ body.has-custom-cursor #bookCompleteOverlay button{cursor:none}
   margin-top:.3rem;display:block;
 }
 
-/* ── SERIES BAND ── a series can carry its own field ── */
+/* ── SERIES BAND ── */
 .series-band{margin-bottom:1.5rem}
-/* Blue Ember · midnight band so the dark covers sit on a matching night sky */
-.series-band.theme-ember{
-  position:relative;padding:2.5rem 2.2rem 4rem;
-  /* No background of its own — the page background carries the continuous dusk gradient
-     (see body.lib-ember-page below) so there are no card seams or hard lines. */
-  background:transparent;border:none;border-radius:0;box-shadow:none;
-}
-/* a cool blue ember glow rising behind the series — the field the covers sit in */
-.series-band.theme-ember::before{
-  content:'';position:absolute;bottom:-2rem;left:50%;transform:translateX(-50%);
-  width:min(900px,92vw);height:70%;z-index:0;pointer-events:none;
-  background:radial-gradient(ellipse 60% 80% at 50% 100%, rgba(70,130,235,.22), rgba(40,80,180,.08) 45%, transparent 72%);
-  filter:blur(6px);
-}
-/* a denser, brighter star field over the night the band sits on */
-.series-band.theme-ember::after{
-  content:'';position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);
-  width:100vw;z-index:0;pointer-events:none;opacity:.7;
-  background:
-    radial-gradient(2px 2px at 18% 30%, rgba(200,225,255,.7), transparent),
-    radial-gradient(1.5px 1.5px at 30% 82%, rgba(150,200,255,.6), transparent),
-    radial-gradient(1px 1px at 42% 18%, rgba(180,210,255,.5), transparent),
-    radial-gradient(1.5px 1.5px at 52% 70%, rgba(180,215,255,.5), transparent),
-    radial-gradient(2px 2px at 64% 40%, rgba(210,230,255,.65), transparent),
-    radial-gradient(1.5px 1.5px at 72% 90%, rgba(120,180,255,.5), transparent),
-    radial-gradient(1px 1px at 84% 26%, rgba(170,205,255,.5), transparent),
-    radial-gradient(1.5px 1.5px at 90% 64%, rgba(200,225,255,.6), transparent);
-}
-.series-band.theme-ember .series-header,
-.series-band.theme-ember .books-grid{position:relative;z-index:1}
-.series-band.theme-ember .series-eyebrow{color:#bcd4ff;text-shadow:0 1px 12px rgba(8,16,46,.6)}
-.series-band.theme-ember .book-series-num{color:rgba(198,216,255,.9)}
-.series-band.theme-ember .series-title{color:#eaf1ff;font-style:italic}
-.series-band.theme-ember .series-meta{color:#9fb4d8}
-.series-band.theme-ember .book-foot-title{color:#e8eefc}
-.series-band.theme-ember .book-foot-meta{color:#8ea4c8}
-.series-band.theme-ember .book-foot-meta span[style*="--teal"]{color:#7fd8c4!important}
-.series-band.theme-ember .book-card-placeholder{opacity:.4}
-.series-band.theme-ember .book-spine-placeholder{background:rgba(255,255,255,.03);border-color:rgba(120,170,255,.22)}
-/* Light mode: the series header sits on the parchment top of the dusk gradient,
-   so its text must be dark/cool-blue to stay readable (the light-blue is for the night). */
-body.light-mode .series-band.theme-ember .series-eyebrow{color:#3a5aa2;text-shadow:none}
-body.light-mode .series-band.theme-ember .series-title{color:#26345f}
-body.light-mode .series-band.theme-ember .series-meta{color:#5a6488}
-body.light-mode .series-band.theme-ember .book-series-num{color:#46568f}
-@media(max-width:768px){.series-band.theme-ember{padding:2rem 1.1rem 2.5rem}}
 .book-status-badge{
   display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.5rem;
   letter-spacing:.12em;text-transform:uppercase;border-radius:2px;
@@ -2853,132 +2748,6 @@ body[data-page="library"] .book-spine-placeholder{display:flex;flex-direction:co
 body[data-page="library"] .book-spine-placeholder .ph-glyph{font-size:1.1rem;color:var(--text-dim);opacity:.6}
 body[data-page="library"] .book-spine-placeholder .ph-num{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);opacity:.7}
 body[data-page="library"] .book-card-placeholder .ph-soon{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);border:1px solid var(--border);border-radius:20px;padding:.22rem .7rem;margin-top:.15rem}
-/* Blue Ember placeholders read in cool blue, clearly visible on the dark band */
-.series-band.theme-ember .book-card-placeholder{opacity:1}
-/* Darker navy card so the fire dims behind it and the outline/name/badge pop. */
-.series-band.theme-ember .book-spine-placeholder{background:rgba(9,15,38,.58);border:1px dashed rgba(150,186,255,.6)}
-.series-band.theme-ember .book-spine-placeholder .ph-glyph{color:#bcd8ff;opacity:1;animation:phPulse 3.6s ease-in-out infinite}
-.series-band.theme-ember .book-spine-placeholder .ph-num{color:#cdddff;opacity:1}
-.series-band.theme-ember .book-card-placeholder .ph-soon{color:#e2edff;border-color:rgba(150,186,255,.65);background:rgba(9,15,38,.6)}
-/* status badges (Complete / In progress) read clearly over the night */
-.series-band.theme-ember .book-status-badge{background:rgba(7,12,32,.72)}
-.series-band.theme-ember .book-status-badge.complete{border-color:rgba(120,214,184,.7);color:#a3ead2}
-.series-band.theme-ember .book-status-badge.draft{border-color:rgba(160,190,255,.55);color:#d2e0ff}
-@keyframes phPulse{0%,100%{opacity:.55;transform:scale(1)}50%{opacity:.95;transform:scale(1.12)}}
-
-/* ═══ BLUE EMBER · scroll veil + animated flames (subtle, tasteful) ═══ */
-.ember-veil{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:0;transition:opacity 1.1s ease;
-  background:
-    radial-gradient(120% 95% at 50% 122%, rgba(54,120,245,.5), transparent 62%),
-    radial-gradient(90% 80% at 12% -10%, rgba(56,120,220,.22), transparent 55%),
-    linear-gradient(180deg, rgba(8,13,28,.0) 0%, rgba(9,15,34,.5) 52%, rgba(10,18,42,.85) 100%);
-}
-body.ember-active .ember-veil{opacity:1}
-.ember-flames{position:absolute;left:0;right:0;bottom:0;height:56vh;overflow:hidden}
-/* Blue fire — a full-bleed band in the page flow at the base of the shelf.
-   Sits above the footer; you scroll down to reveal it. mix-blend-mode:screen
-   drops the video's black background so only the flames show. */
-/* Transparent (alpha) webm fire, anchored as a BACKDROP at the base of the shelf:
-   it sits behind the books (rising behind the lower rows) with its base at the
-   footer — not a separate band, so it adds no height. Low opacity hides the blur. */
-/* Fire is a clean band BELOW the books (in flow), so the book cards keep their own
-   backing and don't wash out. main's min-height is dropped so the footer sits right
-   after the band — no filler gap. */
-body[data-page="library"] main{min-height:0}
-.ember-band{display:none}
-/* Tiled across the width: each copy shows the WHOLE flame (sized by height, no crop);
-   several copies fill the width. Alternate copies are mirrored so the repeat reads as
-   one continuous fire. The fade mask sits on the band so it's uniform across tiles. */
-body.lib-ember-page #libBrowse{position:relative}
-body[data-page="library"] .lib-outer{position:relative;z-index:1}
-body.lib-ember-page .ember-band{display:flex;flex-wrap:nowrap;justify-content:center;align-items:flex-end;
-  position:absolute;left:50%;transform:translateX(-50%);bottom:0;width:100vw;height:76vh;z-index:0;overflow:hidden;pointer-events:none;
-  -webkit-mask-image:linear-gradient(to top, #000 42%, transparent 100%);
-          mask-image:linear-gradient(to top, #000 42%, transparent 100%)}
-.ember-fire{height:100%;width:auto;flex:0 0 auto;opacity:.6;pointer-events:none}
-.ember-fire:nth-child(even){transform:scaleX(-1)}
-/* close the 80px (5rem) gap between the fire and the footer on this page */
-body[data-page="library"] footer{margin-top:0}
-@media(prefers-reduced-motion:reduce){.ember-band{display:none}}
-
-/* ═══ BLUE EMBER · book detail — the page eases parchment → midnight, like the homepage dusk ═══ */
-/* A clean vertical gradient: parchment at the top, cooling into Blue Ember's deep blue night,
-   with the light-blue flames glowing over the dark gradient at the base. */
-body[data-page="library"].book-ember{
-  position:relative;
-  background:linear-gradient(180deg,
-    #f3e9d6 0%, #ecdfc2 4%, #c3bcae 7%, #7b809e 11%,
-    #444c78 15%, #2a3260 20%, #1a2048 28%, #121738 42%, #0c1130 100%);
-}
-body[data-page="library"].book-ember .hub-pattern,
-body[data-page="library"].book-ember .hub-bg{display:none!important}
-body[data-page="library"].book-ember main{position:relative;z-index:1}
-/* light-blue flames glow up from the base — anchored to the document, not the
-   viewport, so they settle in the night zone and scroll away instead of floating
-   over the content as you read */
-body[data-page="library"].book-ember .ember-veil{position:absolute;opacity:1;z-index:0;background:none}
-body[data-page="library"].book-ember .ember-flames{height:34vh}
-
-/* Blue Ember on the BROWSE page · one continuous document-relative gradient on the
-   page background (like the homepage) so the parchment hero melts down into the night
-   where the shelf sits — no band rectangle, no hard seams. JS adds .lib-ember-page
-   whenever a Blue Ember series band is present. */
-body[data-page="library"].lib-ember-page:not(.book-ember){
-  position:relative;
-  /* Parchment at the very top (the series header stays readable), then the blue
-     NIGHT field rises behind the books so they sit in the dusk with the fire at
-     the base. Stops at a deep-but-not-midnight blue so book titles stay legible. */
-  background:linear-gradient(180deg,
-    #f4ead3 0%, #ece1c6 18%, #cdd0d2 38%, #95a2c2 58%, #5d6fa2 78%, #3c4d86 100%);
-}
-body[data-page="library"].lib-ember-page:not(.book-ember) .hub-pattern,
-body[data-page="library"].lib-ember-page:not(.book-ember) .hub-bg{display:none!important}
-body[data-page="library"].lib-ember-page:not(.book-ember) main{position:relative;z-index:1}
-/* light-blue flames glow up from the base — anchored to the document so they sit in
-   the night zone and scroll away, rather than floating over the shelf as you scroll */
-body[data-page="library"].lib-ember-page:not(.book-ember) .ember-veil{position:absolute;opacity:1;z-index:0}
-
-/* ── Dark mode: the Blue Ember descent starts in the night sky, not on parchment.
-   (The parchment→midnight "dusk" gradient above is a light-mode idea; in dark mode
-   we descend dark-blue → midnight so the hero matches the rest of the dark theme.) */
-body[data-page="library"].lib-ember-page:not(.book-ember):not(.light-mode){
-  background:linear-gradient(180deg,#0b0d16 0%,#0d1024 20%,#10153a 46%,#0e1336 74%,#0a0e2a 100%);
-}
-body[data-page="library"].book-ember:not(.light-mode){
-  background:linear-gradient(180deg,#0b0d16 0%,#0e1230 26%,#141a40 52%,#0a0e2a 100%);
-}
-body[data-page="library"].book-ember:not(.light-mode) .book-detail-title{color:#cdddf9}
-body[data-page="library"].book-ember:not(.light-mode) .book-detail-desc{color:#9fb4d8}
-body[data-page="library"].book-ember:not(.light-mode) .back-btn{color:#8fb4f0}
-body[data-page="library"].book-ember:not(.light-mode) .back-btn:hover{color:#cdddf9}
-
-/* the TOC stays a readable parchment sheet — only the world behind it is on fire */
-body.book-ember .toc-plate{
-  position:relative;
-  background:linear-gradient(180deg,#f6edd9,#efe4cb);
-  border:1px solid rgba(140,170,235,.35);border-radius:10px;
-  box-shadow:0 36px 90px -34px rgba(8,16,46,.85),0 0 70px -12px rgba(70,140,250,.32);
-}
-/* the plate is ALWAYS parchment, so force the warm dark text palette regardless of theme */
-body.book-ember .toc-plate-title{color:#2f2a22}
-body.book-ember .toc-title{color:#33291f}
-body.book-ember .toc-num{color:#9a7b48}
-body.book-ember .toc-meta{color:#8a7a5e}
-body.book-ember .toc-row{border-bottom-color:rgba(120,90,50,.12)}
-body.book-ember .toc-row:hover{background:rgba(120,90,50,.06)}
-body.book-ember .toc-row.has-bookmark{background:rgba(143,98,48,.08)}
-body.book-ember .toc-arrow{color:#9a7b48}
-body.book-ember .toc-bookmark{color:#9a6b3f}
-body.book-ember .toc-cta.ghost{color:#7a6a52;border-color:rgba(120,90,50,.3)}
-body.book-ember .toc-cta.ghost:hover{color:#8f6230;border-color:#8f6230}
-body.book-ember .toc-cta.resume{color:#8f6230;border-color:rgba(143,98,48,.4);background:rgba(143,98,48,.08)}
-body.book-ember .toc-empty .toc-empty-head{color:#33291f}
-body.book-ember .toc-plate-eyebrow{color:#2f5fc0}
-/* the book title + back link sit on the parchment top of the gradient → cool blue, legible */
-body.book-ember .book-detail-title{color:#243a6e}
-body.book-ember .book-detail-desc{color:#4a5577}
-body.book-ember .back-btn{color:#3a6fd0}
-body.book-ember .back-btn:hover{color:#1d4ed8}
 
 @media(max-width:980px){
   body[data-page="library"] .lib-hero-book,
@@ -3156,58 +2925,24 @@ body[data-page="compose"] .scr-section-head{display:flex;align-items:center;just
 body[data-page="compose"] .scr-section-head h3{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.4rem;color:var(--text);margin:0}
 body[data-page="compose"] .scr-section-acts{display:flex;gap:.5rem;flex-wrap:wrap}
 
-/* timeline */
-body[data-page="compose"] .scr-timeline{border:1px solid var(--border);border-radius:10px;background:rgba(var(--teal-rgb),.04);padding:1rem 1.2rem;margin-bottom:1.2rem}
-body[data-page="compose"] .scr-tl-line{display:flex;flex-direction:column;gap:.1rem;border-left:2px solid rgba(var(--teal-rgb),.35);padding-left:1rem}
-body[data-page="compose"] .scr-tl-item{position:relative;display:flex;align-items:baseline;gap:.7rem;padding:.4rem 0}
-body[data-page="compose"] .scr-tl-dot{position:absolute;left:-1.36rem;top:.7rem;width:8px;height:8px;border-radius:50%;background:var(--teal);box-shadow:0 0 0 3px rgba(var(--teal-rgb),.15)}
-body[data-page="compose"] .scr-tl-date{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.05em;color:var(--teal);white-space:nowrap;flex:none}
-body[data-page="compose"] .scr-tl-title{font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--text)}
-
-/* chapters list */
-body[data-page="compose"] .scr-chapters{display:flex;flex-direction:column;gap:.5rem}
-body[data-page="compose"] .scr-ch-row{display:flex;align-items:center;gap:.8rem;padding:.6rem .8rem;border:1px solid var(--border);border-radius:9px;background:rgba(var(--gold-rgb),.03);transition:border-color .15s}
-body[data-page="compose"] .scr-ch-row:hover{border-color:rgba(var(--gold-rgb),.45)}
-body[data-page="compose"] .scr-ch-ord{display:flex;flex-direction:column;gap:.1rem;flex:none}
-body[data-page="compose"] .scr-ord-btn{font-size:.6rem;line-height:1;width:20px;height:16px;display:flex;align-items:center;justify-content:center;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--text-dim);cursor:pointer}
-body[data-page="compose"] .scr-ord-btn:hover:not(:disabled){color:var(--gold);border-color:rgba(var(--gold-rgb),.5)}
-body[data-page="compose"] .scr-ord-btn:disabled{opacity:.25;cursor:not-allowed}
-body[data-page="compose"] .scr-ch-num{flex:none;width:1.6rem;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.8rem;color:var(--gold)}
-body[data-page="compose"] .scr-ch-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:.12rem}
-body[data-page="compose"] .scr-ch-main .scr-ch-title{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--text);line-height:1.2}
-body[data-page="compose"] .scr-ch-row .scr-ch-meta{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.05em;color:var(--text-dim);text-transform:uppercase}
-body[data-page="compose"] .scr-ch-acts{display:flex;gap:.35rem;flex:none}
-
-/* ── overlays (chapter editor + import) ── */
+/* ── overlays (series / confirm) ── */
 body[data-page="compose"] .scr-overlay{position:fixed;inset:0;z-index:200;display:none;align-items:flex-start;justify-content:center;padding:4vh 1.2rem;background:rgba(0,0,0,.55);backdrop-filter:blur(3px);overflow-y:auto}
 body[data-page="compose"] .scr-overlay.open{display:flex}
 body[data-page="compose"] .scr-sheet{position:relative;width:100%;max-width:620px;background:var(--bg2,var(--bg));border:1px solid var(--border);border-radius:14px;padding:2rem 2rem 1.6rem;box-shadow:0 30px 80px rgba(0,0,0,.45)}
 body[data-page="compose"] .scr-sheet-wide{max-width:1000px}
 body[data-page="compose"] .scr-sheet-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.8rem;color:var(--text);margin:0 0 .3rem}
 body[data-page="compose"] .scr-sheet-sub{color:var(--text-dim);font-size:.88rem;line-height:1.55;margin:0 0 1.2rem}
-body[data-page="compose"] .scr-sheet .scr-ch-meta{display:flex;gap:.9rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1.2rem}
-body[data-page="compose"] .scr-sheet .scr-ch-meta .cf{flex:1;min-width:140px}
-body[data-page="compose"] .scr-sheet .scr-ch-meta .cf-sm{flex:0 1 160px}
-body[data-page="compose"] .scr-sheet .scr-ch-meta .cf-toggle{flex:none;padding-bottom:.5rem}
 body[data-page="compose"] .scr-sheet-acts{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;margin-top:1.3rem}
 
-/* import overlay specifics */
-body[data-page="compose"] .scr-import-top{display:flex;align-items:flex-end;gap:1rem;flex-wrap:wrap;margin-bottom:1rem}
-body[data-page="compose"] .scr-import-fname{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--text-dim);flex:1;min-width:120px}
-body[data-page="compose"] .scr-schedule{border:1px solid var(--border);border-radius:9px;background:rgba(var(--teal-rgb),.04);padding:.8rem 1rem;margin-bottom:1rem}
-body[data-page="compose"] .scr-sched-fields{display:flex;gap:.8rem;flex-wrap:wrap;margin-top:.7rem}
-body[data-page="compose"] .scr-sched-fields .cf-sm{flex:1;min-width:110px}
-body[data-page="compose"] .scr-import-preview{max-height:46vh;overflow-y:auto;border:1px solid var(--border);border-radius:9px;padding:.8rem}
-body[data-page="compose"] .scr-imp-head{display:flex;align-items:center;justify-content:space-between;gap:.6rem;font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);padding-bottom:.6rem;border-bottom:1px solid var(--border);margin-bottom:.5rem}
-body[data-page="compose"] .scr-imp-bulk{display:flex;gap:.35rem}
-body[data-page="compose"] .scr-imp-row{display:flex;align-items:center;gap:.6rem;padding:.4rem 0}
-body[data-page="compose"] .scr-imp-idx{flex:none;width:1.5rem;text-align:center;font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--gold)}
-body[data-page="compose"] .scr-imp-title{flex:1;min-width:0;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--text);background:transparent;border:0;border-bottom:1px solid var(--border);padding:.2rem 0;outline:none}
-body[data-page="compose"] .scr-imp-title:focus{border-bottom-color:rgba(var(--gold-rgb),.6)}
-body[data-page="compose"] .scr-imp-words{flex:none;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--text-dim)}
-body[data-page="compose"] .scr-imp-date{flex:none;font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--teal)}
-body[data-page="compose"] .scr-imp-pub{flex:none;width:24px;height:24px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--text-dim);cursor:pointer;font-size:.7rem;line-height:1;transition:all .15s}
-body[data-page="compose"] .scr-imp-pub.on{color:var(--teal);border-color:rgba(var(--teal-rgb),.6);background:rgba(var(--teal-rgb),.12)}
+/* repeatable rows — retailer links / reviews */
+body[data-page="compose"] .scr-rows{display:flex;flex-direction:column;gap:.6rem;margin-bottom:.8rem}
+body[data-page="compose"] .scr-row{display:flex;align-items:flex-start;gap:.6rem}
+body[data-page="compose"] .scr-row input,
+body[data-page="compose"] .scr-row textarea{flex:1;min-width:0;background:rgba(var(--gold-rgb),.04);border:1px solid var(--border);border-radius:6px;padding:.55rem .7rem;color:var(--text);font-family:'Lato',sans-serif;font-size:.85rem;outline:none;resize:vertical}
+body[data-page="compose"] .scr-row input:focus,
+body[data-page="compose"] .scr-row textarea:focus{border-color:rgba(var(--gold-rgb),.6)}
+body[data-page="compose"] .scr-row-remove{flex:none;width:1.8rem;height:1.8rem;display:flex;align-items:center;justify-content:center;background:transparent;border:1px solid var(--border);border-radius:4px;color:var(--text-dim);cursor:pointer;transition:all .15s}
+body[data-page="compose"] .scr-row-remove:hover{color:var(--danger,#e06c75);border-color:rgba(224,108,117,.5)}
 
 /* confirm-modal danger button */
 body[data-page="compose"] .btn-primary.danger{background:#c2554a !important;border-color:#c2554a !important;color:#fbf5e8 !important}
@@ -3258,14 +2993,12 @@ body[data-page="compose"].has-custom-cursor [onclick],
 body[data-page="compose"].has-custom-cursor .scr-ws,
 body[data-page="compose"].has-custom-cursor .scr-mini,
 body[data-page="compose"].has-custom-cursor .scr-bk-row,
-body[data-page="compose"].has-custom-cursor .scr-ord-btn,
-body[data-page="compose"].has-custom-cursor .scr-imp-pub,
+body[data-page="compose"].has-custom-cursor .scr-row-remove,
 body[data-page="compose"].has-custom-cursor .ck-button{cursor:pointer !important}
 body[data-page="compose"].has-custom-cursor input,
 body[data-page="compose"].has-custom-cursor textarea,
 body[data-page="compose"].has-custom-cursor .scr-title-input,
 body[data-page="compose"].has-custom-cursor .scr-desc-input,
-body[data-page="compose"].has-custom-cursor .scr-imp-title,
 body[data-page="compose"].has-custom-cursor .ck-content{cursor:text !important}
 
 /* ══════════════════════════════════════════════════════════════════════════
