@@ -171,13 +171,16 @@ function slugify(s){ return (s||'').toLowerCase().trim().replace(/[^a-z0-9]+/g,'
 // ── ONE-TIME SEED: the starter content package, imported as drafts only.
 // Never edited to 'approved' here — that's Caleb's call, from the Scriptorium.
 async function seedBlueEmberContent(){
-  const {count} = await sb.from('be_entries').select('id',{count:'exact',head:true});
-  if(count>0){ toast('Entries already exist, seed skipped','error'); return; }
-  if(!confirm('Import the '+BE_SEED_DATA.length+' starter entries as drafts?')) return;
-  const {error} = await sb.from('be_entries').insert(BE_SEED_DATA);
-  if(error){ toast('Seed failed: '+error.message,'error'); return; }
-  toast('Imported. Review and approve each entry.');
-  await loadBlueEmberPage();
+  const {data:existing,error:readErr} = await sb.from('be_entries').select('kind,slug');
+  if(readErr){ toast('Could not read entries: '+readErr.message,'error'); return; }
+  const have = new Set((existing||[]).map(e=>e.kind+':'+e.slug));
+  const fresh = BE_SEED_DATA.filter(e=>!have.has(e.kind+':'+e.slug));
+  if(!fresh.length){ toast('Every starter entry is already there','error'); return; }
+  if(!confirm('Import '+fresh.length+' starter entries as drafts?'+(have.size?' ('+(BE_SEED_DATA.length-fresh.length)+' already exist and will be skipped.)':''))) return;
+  const {error} = await sb.from('be_entries').insert(fresh);
+  if(error){ toast('Import failed: '+error.message,'error'); return; }
+  toast('Imported '+fresh.length+'. Review and approve each entry.');
+  if(typeof loadBlueEmberPage==='function' && document.getElementById('beRoot')) await loadBlueEmberPage();
 }
 
 const BE_SEED_DATA = [
