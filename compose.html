@@ -396,6 +396,7 @@ let adminMode=false;
         <div class="scr-browser-head">
           <span class="scr-browser-title">Blue Ember</span>
           <div class="scr-browser-acts">
+            <button class="scr-mini" onclick="scrImportBeStarter()" title="Add the starter characters and world entries as drafts">Import starter</button>
             <button class="scr-mini gold" onclick="scrNewBeEntry()">+ Entry</button>
           </div>
         </div>
@@ -454,7 +455,7 @@ let adminMode=false;
           <div class="cf"><textarea id="scrBeSourceNotes" rows="3"></textarea></div>
 
           <div class="scr-section-head"><h3>Starter content</h3></div>
-          <p class="scr-muted">First time here? <button class="scr-mini" onclick="seedBlueEmberContent().then(scrLoadBe)">Import the starter package</button>. Everything lands as drafts for you to review.</p>
+          <p class="scr-muted">First time here? <button class="scr-mini" onclick="scrImportBeStarter()">Import the starter package</button>. Everything lands as drafts for you to review.</p>
         </div>
       </section>
     </div>

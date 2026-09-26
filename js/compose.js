@@ -804,7 +804,7 @@ async function scrLoadBe(){
 }
 function scrRenderBeList(){
   const wrap = cEl('scrBeList');
-  if(!SCR_BES.length){ wrap.innerHTML = '<p class="scr-muted">No entries yet. Create one, or import the starter package below.</p>'; return; }
+  if(!SCR_BES.length){ wrap.innerHTML = '<p class="scr-muted">No entries yet.</p><button class="scr-mini gold" onclick="scrImportBeStarter()">Import the starter package</button>'; return; }
   let html = '';
   ['character','world','beyond'].forEach(kind => {
     const items = SCR_BES.filter(e => e.kind === kind);
@@ -993,3 +993,5 @@ function initCompose(){
   }
   sb.auth.getSession().then(({ data }) => composeOnAdmin(!!(data && data.session)));
 }
+
+async function scrImportBeStarter(){ await seedBlueEmberContent(); await scrLoadBe(); }
