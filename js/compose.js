@@ -25,6 +25,10 @@ let SCR_ARTS_LOADED = false;   // lazy-load essays on first visit
 let SCR_PROJS = [], SCR_PROJ = null, SCR_PROJ_BANNER = null, SCR_PROJS_LOADED = false;
 let SCR_LABS  = [], SCR_LAB  = null, SCR_LABS_LOADED  = false;
 
+let SCR_BES = [], SCR_BE = null, SCR_BES_LOADED = false;
+let SCR_BE_SECTIONS = [], SCR_BE_RELS = [], SCR_BE_QUOTES = [];
+let SCR_BE_SECTION_IDX = null;
+
 // ── shared image upload → Supabase 'library' bucket ──
 async function composeUpload(file){
   const ext  = (file.name.split('.').pop() || 'png').toLowerCase();
@@ -120,6 +124,8 @@ async function scrSelectBook(id){
   // fill header
   cEl('scrTitle').value = book.title || '';
   cEl('scrDesc').value = book.description || '';
+  cEl('scrCompanionLabel').value = book.companion_label || '';
+  cEl('scrCompanionUrl').value = book.companion_url || '';
   cEl('scrStatus').value = book.status || 'draft';
   cEl('scrSeriesOrder').value = book.series_order ?? '';
   scrFillSeriesSelect(book.series_id);
@@ -132,7 +138,7 @@ async function scrSelectBook(id){
 }
 function scrFillSeriesSelect(selected){
   const sel = cEl('scrSeries');
-  sel.innerHTML = '<option value="">— none —</option>' +
+  sel.innerHTML = '<option value="">None</option>' +
     SCR_SERIES.map(s => `<option value="${s.id}"${s.id===selected?' selected':''}>${cEsc(s.name)}</option>`).join('');
 }
 function scrRenderCover(){
@@ -174,6 +180,8 @@ async function scrSaveBook(){
     series_id: cVal('scrSeries') || null,
     series_order: parseInt(cVal('scrSeriesOrder')) || null,
     retailer_links: SCR_RETAILERS.filter(r=>r.label||r.url),
+    companion_label: cVal('scrCompanionLabel') || null,
+    companion_url: cVal('scrCompanionUrl') || null,
     reviews: SCR_REVIEWS.filter(r=>r.quote),
   };
   setLoading('scrSaveBookBtn', true);
@@ -305,14 +313,14 @@ function scrRenderExcerptSummary(){
   const words = (SCR_BOOK.excerpt||'').replace(/<[^>]*>/g,' ').split(/\s+/).filter(Boolean).length;
   el.innerHTML = words
     ? `<p class="scr-muted">${words.toLocaleString()} words · ${scrReadingTime(SCR_BOOK.excerpt)} min read</p>`
-    : '<p class="scr-muted">No excerpt yet — open the writer to add a sample from the book.</p>';
+    : '<p class="scr-muted">No excerpt yet. Open the writer to add a sample from the book.</p>';
 }
 function scrRenderLaunchSummary(){
   const el = cEl('scrLaunchSummary'); if(!el || !SCR_BOOK) return;
   const words = (SCR_BOOK.launch_note||'').replace(/<[^>]*>/g,' ').split(/\s+/).filter(Boolean).length;
   el.innerHTML = words
     ? `<p class="scr-muted">${words.toLocaleString()} words · ${scrReadingTime(SCR_BOOK.launch_note)} min read</p>`
-    : '<p class="scr-muted">No launch note yet — open the writer to write about the book.</p>';
+    : '<p class="scr-muted">No launch note yet. Open the writer to write about the book.</p>';
 }
 async function scrWriteExcerpt(){
   if(!SCR_BOOK){ toast('Select a book first.','error'); return; }
@@ -385,6 +393,7 @@ const SCR_WRITE_CFG = {
 };
 async function scrSaveContent(){
   if(!SCR_CKED){ toast('Editor not ready.','error'); return; }
+  if(SCR_WRITE_CTX === 'be_section'){ await scrSaveBeSectionContent(); return; }
   const cfg = SCR_WRITE_CFG[SCR_WRITE_CTX] || SCR_WRITE_CFG.excerpt;
   const id = cfg.id();
   if(!id){ toast('Nothing selected.','error'); return; }
@@ -404,13 +413,14 @@ async function scrSaveContent(){
 function scrSwitchWs(name){
   SCR_WS = name;
   document.querySelectorAll('.scr-ws').forEach(b => b.classList.toggle('active', b.dataset.ws === name));
-  const map = { books:'scrBooksWs', essays:'scrEssaysWs', atlas:'scrAtlasWs', orbit:'scrOrbitWs' };
+  const map = { books:'scrBooksWs', essays:'scrEssaysWs', atlas:'scrAtlasWs', orbit:'scrOrbitWs', blueember:'scrBeWs' };
   Object.entries(map).forEach(([ws, id]) => {
     const el = cEl(id); if(el) el.style.display = (ws === name) ? '' : 'none';
   });
   if(name === 'essays' && !SCR_ARTS_LOADED)  scrLoadArticles();
   if(name === 'atlas'  && !SCR_PROJS_LOADED) scrLoadProjects();
   if(name === 'orbit'  && !SCR_LABS_LOADED)  scrLoadLab();
+  if(name === 'blueember' && !SCR_BES_LOADED) scrLoadBe();
 }
 
 // ════════ ESSAYS (articles) ════════
@@ -477,7 +487,7 @@ function scrRenderArtSummary(){
   const el = cEl('scrArtSummary'); if(!el) return;
   if(!SCR_ART){ el.innerHTML = ''; return; }
   const words = (SCR_ART.content||'').replace(/<[^>]*>/g,' ').split(/\s+/).filter(Boolean).length;
-  if(!words){ el.innerHTML = '<p class="scr-muted">No content yet — open the writer to draft this essay.</p>'; return; }
+  if(!words){ el.innerHTML = '<p class="scr-muted">No content yet. Open the writer to draft this essay.</p>'; return; }
   el.innerHTML = `<p class="scr-muted">${words.toLocaleString()} words · ${scrReadingTime(SCR_ART.content)} min read</p>`;
 }
 async function scrSaveArticle(){
@@ -600,7 +610,7 @@ function scrRenderProjSummary(){
   const words = (SCR_PROJ.description||'').replace(/<[^>]*>/g,' ').split(/\s+/).filter(Boolean).length;
   el.innerHTML = words
     ? `<p class="scr-muted">${words.toLocaleString()} words · ${scrReadingTime(SCR_PROJ.description)} min read</p>`
-    : '<p class="scr-muted">No description yet — open the writer to add one.</p>';
+    : '<p class="scr-muted">No description yet. Open the writer to add one.</p>';
 }
 async function scrSaveProject(){
   if(!SCR_PROJ) return;
@@ -727,7 +737,7 @@ function scrRenderLabSummary(){
   const words = (SCR_LAB.description||'').replace(/<[^>]*>/g,' ').split(/\s+/).filter(Boolean).length;
   el.innerHTML = words
     ? `<p class="scr-muted">${words.toLocaleString()} words · ${scrReadingTime(SCR_LAB.description)} min read</p>`
-    : '<p class="scr-muted">No description yet — open the writer to add one.</p>';
+    : '<p class="scr-muted">No description yet. Open the writer to add one.</p>';
 }
 async function scrSaveLab(){
   if(!SCR_LAB) return;
@@ -773,6 +783,204 @@ async function scrWriteLab(){
   if(!SCR_LAB){ toast('Select an entry first.','error'); return; }
   SCR_WRITE_CTX = 'lab';
   await scrShowWriter('Orbit', SCR_LAB.title || 'Untitled', SCR_LAB.description, false);
+}
+
+// ════════ BLUE EMBER (characters / world / beyond) ════════
+// The only place these get created or edited — library-blue-ember.html
+// only reads (status='approved' rows for a visitor, everything for an
+// admin previewing). Sections/relationships/quotes are edited as in-memory
+// arrays exactly like retailer links / reviews above; a section's own long
+// body text goes through the same shared full-screen writer, special-cased
+// in scrSaveContent() since it has to write back into a JSONB array rather
+// than a single column.
+const SCR_BE_KIND_LABEL = { character:'Characters', world:'World', beyond:'Beyond the Book' };
+
+async function scrLoadBe(){
+  SCR_BES_LOADED = true;
+  const { data } = await sb.from('be_entries').select('*')
+    .order('sort_order',{ascending:true}).order('created_at',{ascending:true});
+  SCR_BES = data || [];
+  scrRenderBeList();
+}
+function scrRenderBeList(){
+  const wrap = cEl('scrBeList');
+  if(!SCR_BES.length){ wrap.innerHTML = '<p class="scr-muted">No entries yet. Create one, or import the starter package below.</p>'; return; }
+  let html = '';
+  ['character','world','beyond'].forEach(kind => {
+    const items = SCR_BES.filter(e => e.kind === kind);
+    if(!items.length) return;
+    html += `<div class="scr-series-grp"><div class="scr-series-lbl">${SCR_BE_KIND_LABEL[kind]} <span class="scr-series-tot">${items.length}</span></div>` +
+      items.map(scrBeRow).join('') + `</div>`;
+  });
+  wrap.innerHTML = html;
+}
+function scrBeRow(e){
+  const active = SCR_BE && SCR_BE.id === e.id ? ' active' : '';
+  return `<button class="scr-bk-row${active}" onclick="scrSelectBe('${e.id}')">
+    <span class="scr-bk-cover" style="background:${e.status==='approved'?'#3f7a55':'#8a7548'}"></span>
+    <span class="scr-bk-meta">
+      <span class="scr-bk-title">${cEsc(e.name||'Untitled')}</span>
+      <span class="scr-bk-sub">${e.status==='approved'?'Approved':'Draft'} · Tier ${e.entry_tier}</span>
+    </span>
+  </button>`;
+}
+async function scrSelectBe(id){
+  const { data:e } = await sb.from('be_entries').select('*').eq('id',id).single();
+  if(!e) return;
+  SCR_BE = e;
+  SCR_BE_SECTIONS = Array.isArray(e.sections) ? e.sections.map(s=>({...s})) : [];
+  SCR_BE_RELS = Array.isArray(e.relationships) ? e.relationships.map(r=>({...r})) : [];
+  SCR_BE_QUOTES = Array.isArray(e.quotes) ? e.quotes.map(q=>({...q})) : [];
+  cEl('scrBeEmpty').style.display = 'none';
+  cEl('scrBePanel').style.display = 'block';
+  cEl('scrBeName').value = e.name || '';
+  cEl('scrBeKind').value = e.kind || 'character';
+  cEl('scrBeStatus').value = e.status || 'draft';
+  cEl('scrBeSlug').value = e.slug || '';
+  cEl('scrBeEntryTier').value = e.entry_tier ?? 0;
+  cEl('scrBeFirstAppearance').value = e.first_appearance ?? 1;
+  cEl('scrBeRole').value = e.role || '';
+  cEl('scrBeAbout').value = (e.about||[]).join(', ');
+  cEl('scrBeSummary').value = e.summary || '';
+  cEl('scrBeSourceNotes').value = e.source_notes || '';
+  scrBeKindChange();
+  scrRenderBeSectionRows();
+  scrRenderBeRelRows();
+  scrRenderBeQuoteRows();
+  scrRenderBeList();
+}
+// Role means something different (or nothing) per kind — hide/relabel
+// rather than showing an irrelevant field for World entries.
+function scrBeKindChange(){
+  const kind = cEl('scrBeKind').value;
+  cEl('scrBeRoleWrap').style.display = (kind === 'world') ? 'none' : '';
+  cEl('scrBeRoleLabel').textContent = (kind === 'beyond') ? 'Format' : 'Role';
+  cEl('scrBeRole').placeholder = (kind === 'beyond') ? 'essay, timeline, character-study, ...' : 'Narrator of Book 1';
+  cEl('scrBeAboutWrap').style.display = (kind === 'beyond') ? '' : 'none';
+}
+async function scrNewBeEntry(){
+  const { data, error } = await sb.from('be_entries').insert({
+    kind:'character', slug:'untitled-'+Date.now(), name:'Untitled entry', status:'draft', entry_tier:0, first_appearance:1
+  }).select().single();
+  if(error){ toast('Could not create entry: '+error.message,'error'); return; }
+  await scrLoadBe();
+  scrSelectBe(data.id);
+}
+async function scrSaveBe(){
+  if(!SCR_BE) return;
+  const name = cVal('scrBeName') || 'Untitled entry';
+  const slug = slugify(cVal('scrBeSlug')) || slugify(name);
+  const payload = {
+    kind: cVal('scrBeKind'),
+    slug,
+    name,
+    status: cVal('scrBeStatus'),
+    entry_tier: parseInt(cVal('scrBeEntryTier'))||0,
+    first_appearance: parseInt(cVal('scrBeFirstAppearance'))||1,
+    role: cVal('scrBeRole') || null,
+    about: cVal('scrBeAbout').split(',').map(s=>slugify(s)).filter(Boolean),
+    summary: cVal('scrBeSummary'),
+    source_notes: cVal('scrBeSourceNotes') || null,
+    sections: SCR_BE_SECTIONS,
+    relationships: SCR_BE_RELS,
+    quotes: SCR_BE_QUOTES,
+    updated_at: new Date().toISOString(),
+  };
+  setLoading('scrSaveBeBtn', true);
+  const { error } = await sb.from('be_entries').update(payload).eq('id', SCR_BE.id);
+  setLoading('scrSaveBeBtn', false, 'Save entry');
+  if(error){ toast('Save failed: '+error.message,'error'); return; }
+  toast('Entry saved');
+  Object.assign(SCR_BE, payload);
+  cEl('scrBeSlug').value = slug;
+  await scrLoadBe();
+}
+async function scrDeleteBe(){
+  if(!SCR_BE) return;
+  const ok = await scrConfirm({ title:'Delete entry?', message:`"${SCR_BE.name}" will be permanently removed. This cannot be undone.`, confirmText:'Delete entry', danger:true });
+  if(!ok) return;
+  const { error } = await sb.from('be_entries').delete().eq('id', SCR_BE.id);
+  if(error){ toast('Delete failed: '+error.message,'error'); return; }
+  toast('Entry deleted');
+  SCR_BE = null;
+  cEl('scrBePanel').style.display = 'none';
+  cEl('scrBeEmpty').style.display = '';
+  await scrLoadBe();
+}
+
+// ── sections (each has its own writer for the long body text) ──
+function scrRenderBeSectionRows(){
+  const wrap = cEl('scrBeSectionRows');
+  if(!SCR_BE_SECTIONS.length){ wrap.innerHTML = '<p class="scr-muted">No sections yet.</p>'; return; }
+  wrap.innerHTML = SCR_BE_SECTIONS.map((s,i) => {
+    const words = (s.body||'').replace(/<[^>]*>/g,' ').split(/\s+/).filter(Boolean).length;
+    return `<div class="scr-row">
+      <input type="number" min="0" value="${s.tier??0}" placeholder="Tier" style="max-width:70px" oninput="SCR_BE_SECTIONS[${i}].tier=parseInt(this.value)||0"/>
+      <input placeholder="Heading (optional)" value="${cEsc(s.heading||'')}" oninput="SCR_BE_SECTIONS[${i}].heading=this.value"/>
+      <button class="scr-mini gold" onclick="scrWriteBeSection(${i})">✎ ${words?words+' words':'Open writer'}</button>
+      <button class="scr-row-remove" onclick="SCR_BE_SECTIONS.splice(${i},1);scrRenderBeSectionRows()">✕</button>
+    </div>`;
+  }).join('');
+}
+function scrAddBeSectionRow(){
+  if(!SCR_BE){ toast('Select or create an entry first.','error'); return; }
+  SCR_BE_SECTIONS.push({ tier:0, heading:'', body:'' });
+  scrRenderBeSectionRows();
+}
+async function scrWriteBeSection(idx){
+  if(!SCR_BE) return;
+  SCR_BE_SECTION_IDX = idx;
+  SCR_WRITE_CTX = 'be_section';
+  await scrShowWriter(SCR_BE.name || 'Blue Ember', SCR_BE_SECTIONS[idx].heading || ('Section '+(idx+1)), SCR_BE_SECTIONS[idx].body);
+}
+async function scrSaveBeSectionContent(){
+  if(!SCR_BE || SCR_BE_SECTION_IDX == null) return;
+  const html = SCR_CKED.getData();
+  SCR_BE_SECTIONS[SCR_BE_SECTION_IDX].body = html;
+  setLoading('scrSaveContentBtn', true);
+  const { error } = await sb.from('be_entries').update({ sections:SCR_BE_SECTIONS }).eq('id', SCR_BE.id);
+  setLoading('scrSaveContentBtn', false, 'Save content');
+  if(error){ cEl('scrWriteStatus').textContent = error.message; toast('Save failed: '+error.message,'error'); return; }
+  cEl('scrWriteStatus').textContent = 'Saved ✓';
+  toast('Section saved');
+  scrRenderBeSectionRows();
+}
+
+// ── relationships ──
+function scrRenderBeRelRows(){
+  const wrap = cEl('scrBeRelRows');
+  if(!SCR_BE_RELS.length){ wrap.innerHTML = '<p class="scr-muted">No relationships yet.</p>'; return; }
+  wrap.innerHTML = SCR_BE_RELS.map((r,i) => `
+    <div class="scr-row">
+      <input placeholder="slug (e.g. laila)" value="${cEsc(r.with||'')}" oninput="SCR_BE_RELS[${i}].with=this.value"/>
+      <input type="number" min="0" value="${r.tier??0}" placeholder="Tier" style="max-width:70px" oninput="SCR_BE_RELS[${i}].tier=parseInt(this.value)||0"/>
+      <input placeholder="Label (e.g. Best friend)" value="${cEsc(r.label||'')}" oninput="SCR_BE_RELS[${i}].label=this.value"/>
+      <input placeholder="Note" value="${cEsc(r.note||'')}" oninput="SCR_BE_RELS[${i}].note=this.value"/>
+      <button class="scr-row-remove" onclick="SCR_BE_RELS.splice(${i},1);scrRenderBeRelRows()">✕</button>
+    </div>`).join('');
+}
+function scrAddBeRelRow(){
+  if(!SCR_BE){ toast('Select or create an entry first.','error'); return; }
+  SCR_BE_RELS.push({ with:'', tier:0, label:'', note:'' });
+  scrRenderBeRelRows();
+}
+
+// ── quotes ──
+function scrRenderBeQuoteRows(){
+  const wrap = cEl('scrBeQuoteRows');
+  if(!SCR_BE_QUOTES.length){ wrap.innerHTML = '<p class="scr-muted">No quotes yet.</p>'; return; }
+  wrap.innerHTML = SCR_BE_QUOTES.map((q,i) => `
+    <div class="scr-row">
+      <textarea rows="2" placeholder="Quote text" oninput="SCR_BE_QUOTES[${i}].text=this.value">${cEsc(q.text||'')}</textarea>
+      <input placeholder="Source (e.g. Book 1, Ch. 6)" value="${cEsc(q.source||'')}" oninput="SCR_BE_QUOTES[${i}].source=this.value"/>
+      <input type="number" min="0" value="${q.tier??0}" placeholder="Tier" style="max-width:70px" oninput="SCR_BE_QUOTES[${i}].tier=parseInt(this.value)||0"/>
+      <button class="scr-row-remove" onclick="SCR_BE_QUOTES.splice(${i},1);scrRenderBeQuoteRows()">✕</button>
+    </div>`).join('');
+}
+function scrAddBeQuoteRow(){
+  if(!SCR_BE){ toast('Select or create an entry first.','error'); return; }
+  SCR_BE_QUOTES.push({ text:'', source:'', tier:0 });
+  scrRenderBeQuoteRows();
 }
 
 // ════════ BOOT ════════

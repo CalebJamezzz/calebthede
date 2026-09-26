@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Blue Ember · Library · Caleb Thede</title>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Lora:ital,wght@0,400;0,600;1,400&family=Courier+Prime:wght@400;700&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="css/main.css"/>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+
+  <meta name="description" content="The official hub for Blue Ember, Caleb Thede's dark fantasy series. Meet the characters, explore the world, and go deeper once you've read."/>
+  <meta name="author" content="Caleb Thede"/>
+  <link rel="canonical" href="https://library.calebthede.com/blue-ember"/>
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="Caleb Thede"/>
+  <meta property="og:title" content="Blue Ember · Library · Caleb Thede"/>
+  <meta property="og:description" content="The official hub for Blue Ember, Caleb Thede's dark fantasy series. Meet the characters, explore the world, and go deeper once you've read."/>
+  <meta property="og:url" content="https://library.calebthede.com/blue-ember"/>
+  <meta property="og:image" content="https://calebthede.com/photo.jpg"/>
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="Blue Ember · Library · Caleb Thede"/>
+  <meta name="twitter:description" content="The official hub for Blue Ember, Caleb Thede's dark fantasy series. Meet the characters, explore the world, and go deeper once you've read."/>
+  <meta name="twitter:image" content="https://calebthede.com/photo.jpg"/>
+</head>
+<body data-page="library">
+<script>
+if((localStorage.getItem('ct_theme')||'light')!=='dark')document.body.classList.add('light-mode');
+const SUPABASE_URL='https://lbviiggrxzhyxrpivbbi.supabase.co';
+const SUPABASE_KEY='sb_publishable_eQRvx-J1Cp4nlq6Q6TOjIA__QYJmJq6';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let adminMode=false;
+</script>
+<div class="hub-bg"></div>
+<div class="hub-pattern"></div>
+<div class="toast" id="toast"></div>
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal" style="max-width:420px">
+    <button class="modal-close" onclick="closeModal('loginModal')">✕</button>
+    <h2 class="modal-title">Admin Login</h2>
+    <p style="font-size:.9rem;color:var(--text-dim);margin-bottom:1.5rem">Sign in to unlock editing.</p>
+    <div class="mf"><label>Email</label><input type="email" id="loginEmail" placeholder="your@email.com"/></div>
+    <div class="mf"><label>Password</label><input type="password" id="loginPw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()"/></div>
+    <p class="login-error" id="loginError">Incorrect credentials. Try again.</p>
+    <div class="modal-actions"><button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
+  </div>
+</div>
+<header class="lib-head">
+  <div class="lib-head-mark">
+    <a class="lib-head-hub" href="https://calebthede.com/">CT.</a><span class="lib-head-sep">/</span><a class="lib-head-name" href="https://library.calebthede.com/">Library</a><span class="lib-head-sep">/</span><span class="lib-head-crumb-current">Blue Ember</span>
+  </div>
+  <div class="lib-head-controls">
+    <span class="admin-badge" id="adminBadge">Admin</span>
+    <a class="hero-cta admin-link" id="adminLink" href="/compose" hidden>Scriptorium →</a>
+    <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark" aria-label="Toggle light and dark mode">
+      <svg class="icon-moon" viewBox="0 0 18 18" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 10.8A6 6 0 1 1 7.2 3.5a5 5 0 0 0 7.3 7.3Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 18 18" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="9" cy="9" r="3.2"/><path d="M9 1.8v1.6M9 14.6v1.6M16.2 9h-1.6M3.4 9H1.8M14.1 3.9l-1.1 1.1M5 12.1l-1.1 1.1M14.1 14.1l-1.1-1.1M5 5.9 3.9 4.8"/></svg>
+    </button>
+    <button class="icon-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login" aria-label="Admin login">
+      <svg class="icon-locked" viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="10" height="7.4" rx="1.3"/><path d="M6.2 8V5.6a2.8 2.8 0 0 1 5.6 0V8"/></svg>
+      <svg class="icon-unlocked" viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="10" height="7.4" rx="1.3"/><path d="M6.2 8V5.6a2.8 2.8 0 0 1 5.3-1.3"/></svg>
+    </button>
+  </div>
+</header>
+<main>
+  <div id="beRoot" class="be-root">
+
+    <header class="be-hero">
+      <p class="be-eyebrow">The world of</p>
+      <h1 class="be-hero-title">Blue Ember</h1>
+      <p class="be-hero-line">&ldquo;The first time I set something on fire, I did not feel fear. I felt warmth.&rdquo;</p>
+      <div class="be-progress-control" id="beProgressControl"></div>
+    </header>
+
+    <section class="be-book-card" id="beBookCard"></section>
+
+    <section class="be-section-block">
+      <h2 class="be-h2">Characters</h2>
+      <div class="be-grid" id="beCharacters"></div>
+    </section>
+
+    <section class="be-section-block">
+      <h2 class="be-h2">The World</h2>
+      <div class="be-grid" id="beWorld"></div>
+    </section>
+
+    <section class="be-section-block">
+      <h2 class="be-h2">Beyond the Book</h2>
+      <div class="be-grid" id="beBeyond"></div>
+      <div class="empty-state" id="beBeyondEmpty" style="display:none">
+        <p>More arrives as the series grows.</p>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- ENTRY DETAIL MODAL — reading only; adding and editing entries happens
+     in the Scriptorium (/compose), not here, so this page ships no
+     editing UI to anonymous visitors at all. -->
+<div class="modal-overlay" id="beDetailModal">
+  <div class="modal be-detail-modal">
+    <button class="modal-close" onclick="closeModal('beDetailModal')">✕</button>
+    <div id="beDetailBody"></div>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-grid">
+    <div class="footer-brand">
+      <a href="https://calebthede.com/" class="footer-logo">CT.</a>
+      <p class="footer-tagline">Stories, essays, and things I build &mdash; written and read in the open.</p>
+      <div class="footer-newsletter">
+        <span class="footer-newsletter-label">New writing &rarr;</span>
+        <form name="newsletter-footer" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="handleFooterNewsletterSubmit(event)" style="display:flex;align-items:center;gap:.5rem">
+          <input type="hidden" name="form-name" value="newsletter-footer"/>
+          <p style="display:none"><label><input name="bot-field"/></label></p>
+          <input class="footer-newsletter-input" type="email" name="email" placeholder="your@email.com" required/>
+          <button class="footer-newsletter-btn" type="submit">&rarr;</button>
+        </form>
+        <span class="footer-newsletter-success" id="footer-nl-success">&#10038; subscribed</span>
+      </div>
+    </div>
+    <div class="footer-nav">
+      <div class="footer-col">
+        <h4 class="footer-col-title">Explore</h4>
+        <a href="https://library.calebthede.com/">Library</a>
+        <a href="https://marginalia.calebthede.com/">Marginalia</a>
+        <a href="https://forge.calebthede.com/">Forge</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Site</h4>
+        <a href="https://calebthede.com/">Home</a>
+        <a href="https://calebthede.com/about">About</a>
+        <a href="https://calebthede.com/contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4 class="footer-col-title">Elsewhere</h4>
+        <a href="https://github.com/CalebJamezzz" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://instagram.com/c.aleb_jamezzz" target="_blank" rel="noopener">Instagram</a>
+        <a href="mailto:calebthede@gmail.com">Email</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-base">
+    <span>&copy; 2026 Caleb Thede</span>
+    <span class="footer-base-meta">est. 2026</span>
+  </div>
+</footer>
+<script src="js/init.js"></script>
+<script src="js/theme_nav.js"></script>
+<script src="js/easter_eggs.js"></script>
+<script src="js/library.js"></script>
+<script src="js/blue-ember.js"></script>
+<script>document.addEventListener("DOMContentLoaded",()=>{loadBlueEmberPage();});</script>
+
+</body>
+</html>
