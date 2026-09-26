@@ -1,57 +1,5 @@
 // ══ HOME DATA ══
 
-// One project, charted in full — the "Selected work" spotlight.
-async function loadFeaturedProject(){
-  const wrap = document.getElementById('featuredProject');
-  const section = document.getElementById('featuredSection');
-  if(!wrap) return;
-  const {data:projects} = await sb.from('projects').select('*').eq('highlight',true).limit(1);
-  if(!projects||!projects.length){ if(section) section.style.display='none'; return }
-  const p = projects[0];
-  const banner = p.banner_image
-    ? `<img src="${p.banner_image}" alt="${(p.title||'').replace(/"/g,'&quot;')}"/>`
-    : makeProjSVG(p.id, p.category).svg;
-  const blurb = p.subtitle
-    ? p.subtitle
-    : (p.description||'').replace(/<[^>]*>/g,'').replace(/[#*_>`]/g,'').trim().slice(0,180);
-  const tags = (p.tags||'').split(',').map(t=>t.trim()).filter(Boolean).slice(0,4);
-  wrap.innerHTML = `
-    <div class="featured-banner">${banner}</div>
-    <div class="featured-body">
-      <p class="featured-eyebrow">✦ Pinned${p.category?' · '+p.category:''}</p>
-      <h3 class="featured-title">${p.title}</h3>
-      ${blurb?`<p class="featured-desc">${blurb}</p>`:''}
-      ${tags.length?`<div class="featured-tags">${tags.map(t=>`<span class="ptag">${t}</span>`).join('')}</div>`:''}
-      <span class="featured-link">Explore Projects →</span>
-    </div>`;
-  if(section) section.style.display='block';
-}
-
-// Newest essays from the Library.
-async function loadLatestWriting(){
-  const wrap = document.getElementById('latestWriting');
-  const section = document.getElementById('latestSection');
-  if(!wrap) return;
-  const {data:articles} = await sb.from('articles').select('*').order('created_at',{ascending:false}).limit(3);
-  if(!articles||!articles.length){ if(section) section.style.display='none'; return }
-  wrap.innerHTML = articles.map(a=>{
-    const preview = (a.content||'').replace(/<[^>]*>/g,'').replace(/^###\s*/gm,'').replace(/[#*_>`]/g,'').trim().slice(0,140)+'…';
-    const words = (a.content||'').split(/\s+/).filter(Boolean).length;
-    const mins = Math.max(1, Math.ceil(words/200));
-    return `<a class="writing-card" href="/library">
-      <p class="wc-tag">${a.tag||'Essay'}</p>
-      <h3 class="wc-title">${a.title}</h3>
-      <p class="wc-preview">${preview}</p>
-      <div class="wc-meta"><span>${fmtDate(a.created_at)}</span><span>${mins} min</span></div>
-    </a>`;
-  }).join('');
-  if(section) section.style.display='block';
-}
-
-async function loadHomeData(){
-  await Promise.all([loadBookTeaser(), loadFeaturedProject(), loadLatestWriting()]);
-}
-
 async function loadStatus(){
   const wrap=document.getElementById('statusItems');
   if(!wrap) return;
@@ -63,44 +11,6 @@ async function loadStatus(){
       <span class="si-value">${s.value}${s.pill_text?`<span class="si-pill${s.pill_color==='gold'?' gold':''}">${s.pill_text}</span>`:''}</span>
     </div>`).join('');
   refreshAdmin(wrap.closest('.status-plate'));
-}
-
-async function loadBookTeaser(){
-  const{data:books}=await sb.from('books').select('id,title,description,cover_image,cover_position,color,status,series_id,series_order,retailer_links').order('created_at',{ascending:true});
-  if(!books||!books.length)return;
-
-  const display = books[0];
-  const available = (display.retailer_links||[]).length > 0;
-
-  document.getElementById('btTitle').textContent=display.title;
-  document.getElementById('btDesc').textContent=display.description||"Cade learns he's the son of Hades, marked by a blue flame tied to the Veil — but the real war is with the shadow he carries. An eight-book descent from Awakening to Integration: Greek myth as the first psychology.";
-
-  const eyebrow=document.getElementById('btEyebrow');
-  if(eyebrow) eyebrow.textContent = available ? 'Available now' : (display.status==='draft' ? 'Coming soon' : 'Now Writing');
-
-  const cta=document.getElementById('btCta');
-  if(cta) cta.textContent = available ? 'Get '+display.title+' →' : 'Explore the Library →';
-
-  const countEl=document.getElementById('btCount');
-  if(countEl){
-    if(display.series_id){
-      const{data:series}=await sb.from('series').select('total_books').eq('id',display.series_id).single();
-      const total=series?.total_books;
-      countEl.textContent = (display.series_order&&total?`Book ${display.series_order} of ${total}`:'Part of the series') + (available?' · Available now':'');
-    } else {
-      countEl.textContent = available?'Available now':'Coming soon';
-    }
-  }
-
-  // book cover — real image if uploaded, else the procedural ember constellation
-  const cover=document.getElementById('btCover');
-  if(cover){
-    if(display.cover_image){ cover.style.backgroundImage='url('+display.cover_image+')'; cover.style.backgroundPosition=display.cover_position||'50% 50%'; cover.classList.add('has-cover'); }
-    else if(display.color){ cover.style.background=display.color; }
-  }
-
-  document.getElementById('bookTeaser').href='/library#book/'+display.id;
-  document.getElementById('bookTeaser').style.display='block';
 }
 
 // ══ STATUS EDITING ══
@@ -143,19 +53,3 @@ async function saveStatusItems(){
   toast('Status updated');closeModal('statusModal');loadStatus();
 }
 
-
-// ── Easter egg: click the Pisces constellation in the hero to ignite it ──
-document.addEventListener('DOMContentLoaded', () => {
-  const pisces = document.querySelector('.pisces-art');
-  if (!pisces) return;
-  pisces.addEventListener('click', () => {
-    pisces.classList.remove('ignited');
-    if (pisces.parentElement) void pisces.parentElement.offsetWidth; // reflow → restart
-    pisces.classList.add('ignited');
-    clearTimeout(pisces._ig);
-    pisces._ig = setTimeout(() => pisces.classList.remove('ignited'), 2200);
-    if (typeof toast === 'function') {
-      toast('✦ Pisces · the twin fish — where logic and depth tie together. My sign, my map.', 'success', 6000);
-    }
-  });
-});

@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Home — Caleb Thede</title>
+  <title>Home · Caleb Thede</title>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,400&family=Lora:ital,wght@1,400&family=Playfair+Display:wght@700;800&family=PT+Serif&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="css/main.css"/>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
-  <meta name="description" content="Caleb Thede's corner of the internet — a developer and writer building software, the Blue Ember book series, games, and tools. Part workshop, part library, part atlas."/>
+  <meta name="description" content="Caleb Thede's corner of the internet: a developer and writer building software, the Blue Ember book series, games, and tools. Part workshop, part library, part atlas."/>
   <meta name="author" content="Caleb Thede"/>
   <link rel="canonical" href="https://calebthede.com/"/>
   <meta property="og:type" content="website"/>
   <meta property="og:site_name" content="Caleb Thede"/>
-  <meta property="og:title" content="Caleb Thede — Developer, Writer, Builder"/>
-  <meta property="og:description" content="Caleb Thede's corner of the internet — a developer and writer building software, the Blue Ember book series, games, and tools. Part workshop, part library, part atlas."/>
+  <meta property="og:title" content="Caleb Thede · Developer, Writer, Builder"/>
+  <meta property="og:description" content="Caleb Thede's corner of the internet: a developer and writer building software, the Blue Ember book series, games, and tools. Part workshop, part library, part atlas."/>
   <meta property="og:url" content="https://calebthede.com/"/>
   <meta property="og:image" content="https://calebthede.com/photo.jpg"/>
   <meta name="twitter:card" content="summary_large_image"/>
-  <meta name="twitter:title" content="Caleb Thede — Developer, Writer, Builder"/>
-  <meta name="twitter:description" content="Caleb Thede's corner of the internet — a developer and writer building software, the Blue Ember book series, games, and tools. Part workshop, part library, part atlas."/>
+  <meta name="twitter:title" content="Caleb Thede · Developer, Writer, Builder"/>
+  <meta name="twitter:description" content="Caleb Thede's corner of the internet: a developer and writer building software, the Blue Ember book series, games, and tools. Part workshop, part library, part atlas."/>
   <meta name="twitter:image" content="https://calebthede.com/photo.jpg"/>
 </head>
 <body data-page="home">
@@ -35,7 +35,6 @@ let adminMode=false;
 </script>
 <div class="hub-bg"></div>
 <div class="hub-pattern"></div>
-<div class="home-sky"><span class="shoot shoot1"></span><span class="shoot shoot2"></span><span class="shoot shoot3"></span></div>
 <div class="toast" id="toast"></div>
 <!-- LOGIN MODAL -->
 <div class="modal-overlay" id="loginModal">
@@ -49,311 +48,120 @@ let adminMode=false;
     <div class="modal-actions"><button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
   </div>
 </div>
-<nav>
-  <a class="nav-logo" href="/">CT.</a>
-  <ul class="nav-center">
-    <li><a href="/" class="active">Home</a></li>
-    <li><a href="/about">About</a></li>
-    <li class="nav-deck"><a href="/codex" class="deck-label">Codex<span class="deck-caret">▾</span></a>
-      <div class="nav-dropdown">
-        <a href="/library"><span class="dd-t">The Library</span><span class="dd-s">Books &amp; the Blue Ember series</span></a>
-        <a href="/marginalia"><span class="dd-t">Marginalia</span><span class="dd-s">Notes &amp; short writing</span></a>
-      </div></li>
-    <li class="nav-deck"><a href="/atlas" class="deck-label">Atlas<span class="deck-caret">▾</span></a>
-      <div class="nav-dropdown">
-        <a href="/projects"><span class="dd-t">The Forge</span><span class="dd-s">Tools &amp; things built</span></a>
-        <a href="/lab"><span class="dd-t">Orbit</span><span class="dd-s">Experiments in motion</span></a>
-      </div></li>
-    <li><a href="/contact">Contact</a></li>
-  </ul>
-  <div class="nav-right">
+<!-- The hub's own minimal header — no nav-link list, since the page itself
+     (hero + three doors) is the navigation. Every other page keeps the
+     fuller site nav until it gets its own themed redesign. -->
+<header class="site-head">
+  <a class="site-head-mark" href="https://calebthede.com/">CT.</a>
+  <div class="site-head-controls">
     <span class="admin-badge" id="adminBadge">Admin</span>
-    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
-    <button class="lock-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login">🔒</button>
-    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
-      <span></span><span></span><span></span>
+    <a class="hero-cta admin-link" id="adminLink" href="/compose" hidden>Scriptorium →</a>
+    <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark" aria-label="Toggle light and dark mode">
+      <svg class="icon-moon" viewBox="0 0 18 18" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 10.8A6 6 0 1 1 7.2 3.5a5 5 0 0 0 7.3 7.3Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 18 18" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="9" cy="9" r="3.2"/><path d="M9 1.8v1.6M9 14.6v1.6M16.2 9h-1.6M3.4 9H1.8M14.1 3.9l-1.1 1.1M5 12.1l-1.1 1.1M14.1 14.1l-1.1-1.1M5 5.9 3.9 4.8"/></svg>
+    </button>
+    <button class="icon-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login" aria-label="Admin login">
+      <svg class="icon-locked" viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="10" height="7.4" rx="1.3"/><path d="M6.2 8V5.6a2.8 2.8 0 0 1 5.6 0V8"/></svg>
+      <svg class="icon-unlocked" viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="10" height="7.4" rx="1.3"/><path d="M6.2 8V5.6a2.8 2.8 0 0 1 5.3-1.3"/></svg>
     </button>
   </div>
-</nav>
-<div class="mobile-drawer" id="mobileDrawer">
-  <a class="mobile-nav-item active" href="/">Home</a>
-  <a class="mobile-nav-item" href="/about">About</a>
-  <div class="mobile-group">
-    <span class="mobile-group-label">Codex</span>
-    <a class="mobile-nav-sub" href="/library">The Library</a>
-    <a class="mobile-nav-sub" href="/marginalia">Marginalia</a>
-  </div>
-  <div class="mobile-group">
-    <span class="mobile-group-label">Atlas</span>
-    <a class="mobile-nav-sub" href="/projects">The Forge</a>
-    <a class="mobile-nav-sub" href="/lab">Orbit</a>
-  </div>
-  <a class="mobile-nav-item" href="/contact">Contact</a>
-  <div class="mobile-drawer-footer">
-    <div class="mobile-drawer-links">
-      <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
-      <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
-    </div>
-    <button class="lock-btn" onclick="toggleAdmin();closeMobileNav()" style="font-size:.75rem">🔒 Admin</button>
-  </div>
-</div>
+</header>
 <main>
-  <!-- HERO · the frontispiece -->
-  <header class="hero">
-    <div class="hero-left">
-      <div class="plate-mark"><span class="rule"></span><span class="legend">Plate I · Frontispiece</span></div>
-      <p class="welcome">Welcome — you've found my corner of the cosmos.</p>
-      <h1 class="headline"><span class="drop">A</span> place to build, think, and <em>write.</em></h1>
-      <p class="byline">Caleb Thede · Cartographer of inner worlds</p>
-      <div class="ink-tags">
-        <span class="ink logic"><span class="dot"></span>Computer Science · the logic</span>
-        <span class="ink depth"><span class="dot"></span>Psychology · the depth</span>
-      </div>
-      <p class="bio">I build software and study the mind — and I believe myth, psychology, and the stars are three maps of the same territory. This is my workspace: the <strong>Blue Ember</strong> series I'm writing, the things I'm building, and the ideas I'm charting. It's <strong>mine</strong>, and it's always being drawn.</p>
-      <div class="cta">
-        <a class="btn solid" href="/projects">Enter the Atlas →</a>
-        <a class="btn ghost" href="/about">Who I Am</a>
-      </div>
+  <!-- HERO · three faint broken rings behind the copy, reading as a loose
+       spiral — replaces the old Pisces-constellation hero. -->
+  <section class="hero">
+    <svg class="hero-orbits" viewBox="0 0 500 500" aria-hidden="true">
+      <circle cx="250" cy="250" r="70" stroke-dasharray="329.9 110.0" transform="rotate(0 250 250)" style="opacity:var(--ring-op-1)"/>
+      <circle cx="250" cy="250" r="120" stroke-dasharray="565.5 188.5" transform="rotate(45 250 250)" style="opacity:var(--ring-op-2)"/>
+      <circle cx="250" cy="250" r="175" stroke-dasharray="824.7 274.9" transform="rotate(95 250 250)" style="opacity:var(--ring-op-3)"/>
+      <circle cx="250" cy="250" r="235" stroke-dasharray="1107.4 369.1" transform="rotate(150 250 250)" style="opacity:var(--ring-op-4)"/>
+    </svg>
+    <p class="hero-eyebrow">Caleb Thede</p>
+    <h1>A place to build, think, and write.</h1>
+    <p>Three separate parts of this site live below: a fiction series, a notebook of essays, and the software I build. Open one, or scroll down to see all three.</p>
+    <div class="hero-ctas" role="navigation">
+      <a class="hero-cta" href="/about">About →</a>
+      <a class="hero-cta" href="/contact">Say hello →</a>
     </div>
-
-    <div class="hero-right">
-      <div class="hero-plate">
-        <div class="plate-cap"><span class="t">Pisces</span><span class="coord">RA 01ʰ 00ᵐ · Dec +15°</span></div>
-        <svg class="pisces-art" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="The constellation Pisces" role="img">
-          <!-- Pisces · two cords meeting at Alrescha (the knot, lower-left): one rises
-               to the northern fish, the other reaches west to the Circlet -->
-          <g>
-            <!-- northern cord: Alrescha → up to the northern fish -->
-            <line class="strand" x1="82" y1="208" x2="106" y2="150"/>
-            <line class="strand" x1="106" y1="150" x2="124" y2="94"/>
-            <!-- western cord: Alrescha → out to the Circlet -->
-            <line class="strand" x1="82" y1="208" x2="146" y2="216"/>
-            <line class="strand" x1="146" y1="216" x2="202" y2="210"/>
-            <line class="strand" x1="202" y1="210" x2="238" y2="200"/>
-          </g>
-          <!-- the Circlet (head of the western fish) -->
-          <g>
-            <line class="circlet-line" x1="238" y1="200" x2="258" y2="189"/>
-            <line class="circlet-line" x1="258" y1="189" x2="273" y2="170"/>
-            <line class="circlet-line" x1="273" y1="170" x2="263" y2="149"/>
-            <line class="circlet-line" x1="263" y1="149" x2="243" y2="159"/>
-            <line class="circlet-line" x1="243" y1="159" x2="238" y2="200"/>
-          </g>
-          <!-- the northern fish · a small triangle (the knot) -->
-          <g>
-            <line class="circlet-line" x1="124" y1="94" x2="144" y2="76"/>
-            <line class="circlet-line" x1="144" y1="76" x2="116" y2="70"/>
-            <line class="circlet-line" x1="116" y1="70" x2="124" y2="94"/>
-          </g>
-          <!-- circlet stars -->
-          <circle class="star minor twinkle" cx="258" cy="189" r="1.9"/>
-          <circle class="star minor twinkle" cx="273" cy="170" r="2"/>
-          <circle class="star minor twinkle" cx="263" cy="149" r="1.8"/>
-          <circle class="star minor twinkle" cx="243" cy="159" r="1.8"/>
-          <!-- northern fish triangle stars -->
-          <circle class="star minor twinkle" cx="144" cy="76" r="1.9"/>
-          <circle class="star minor twinkle" cx="116" cy="70" r="1.8"/>
-          <circle class="star twinkle" cx="124" cy="94" r="2.4"/>
-          <!-- cord stars -->
-          <circle class="star twinkle" cx="106" cy="150" r="2.5"/>
-          <circle class="star twinkle" cx="146" cy="216" r="2.5"/>
-          <circle class="star twinkle" cx="202" cy="210" r="2.5"/>
-          <circle class="star twinkle" cx="238" cy="200" r="2.4"/>
-          <!-- Alrescha · the knot where the cords meet -->
-          <circle class="glow" cx="82" cy="208" r="11"/>
-          <circle class="star major twinkle" cx="82" cy="208" r="3.6"/>
-          <!-- faint star labels -->
-          <text class="star-lbl" x="82" y="230" text-anchor="middle">ALRESCHA</text>
-          <text class="star-lbl dim" x="256" y="210" text-anchor="middle">the circlet</text>
-        </svg>
-        <div class="plate-foot"><span class="legend" style="color:var(--teal)">Pisces · the twin fish · my sign</span><span class="coord">est. mmxxvi</span></div>
-      </div>
-    </div>
-  </header>
-
-  <!-- PRINCIPLES · the two inks -->
-  <section class="principles reveal">
-    <div class="principle">
-      <span class="pr-mark logic">01</span>
-      <h3 class="pr-title">Build for humans first</h3>
-      <p class="pr-body">The best software is made by people who understand how we think, what we fear, and what we hope for — before a line of code is written.</p>
-    </div>
-    <div class="principle">
-      <span class="pr-mark depth">02</span>
-      <h3 class="pr-title">Myth is the first psychology</h3>
-      <p class="pr-body">The old stories mapped the inner world long before we had the words. I read them the way I read systems — looking for the pattern underneath.</p>
-    </div>
-    <div class="principle">
-      <span class="pr-mark logic">03</span>
-      <h3 class="pr-title">Two inks, one mind</h3>
-      <p class="pr-body">Teal for logic, gold for depth. The engineer and the writer aren't separate people — they're the same hand drawing the same map.</p>
-    </div>
-  </section>
-
-  <div class="divider"><span class="legend">The Worlds</span><span class="ln"></span><span class="star">✦</span><span class="ln"></span><span class="legend">III charts</span></div>
-
-  <!-- WORLDS · three atlas plates -->
-  <section class="section">
-    <div class="sec-head reveal">
-      <div><p class="legend" style="margin-bottom:.6rem">What lives here</p><h2 class="sec-title">The <em>Worlds</em></h2></div>
-      <p class="sec-note">Not a portfolio — a living atlas. Each chart is something I actively tend to.</p>
-    </div>
-    <div class="plates">
-      <a class="plate reveal" href="/projects">
-        <svg class="plate-glyph" viewBox="0 0 84 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g><line x1="14" y1="22" x2="38" y2="34"/><line x1="38" y1="34" x2="66" y2="18"/><line x1="38" y1="34" x2="46" y2="56"/></g><g><circle cx="14" cy="22" r="2.2"/><circle cx="38" cy="34" r="2.6"/><circle cx="66" cy="18" r="2"/><circle cx="46" cy="56" r="2.2"/></g></svg>
-        <p class="plate-no">Atlas · Chart I</p>
-        <p class="plate-greek">Hephaestus · the maker</p>
-        <h3 class="plate-name">The <em>Forge</em></h3>
-        <p class="plate-desc">Full-stack applications, interfaces designed in Figma first, and a QA engineer's eye for the edge cases everyone else misses. Where building lives — shipped, underway, or filed to the archive.</p>
-        <span class="plate-link">Enter the Forge →</span>
-      </a>
-      <a class="plate reveal" href="/library">
-        <svg class="plate-glyph" viewBox="0 0 84 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g><line x1="14" y1="18" x2="42" y2="30"/><line x1="42" y1="30" x2="70" y2="14"/><line x1="42" y1="30" x2="50" y2="54"/></g><g><circle cx="14" cy="18" r="2.2"/><circle cx="42" cy="30" r="2.6"/><circle cx="70" cy="14" r="2"/><circle cx="50" cy="54" r="2.2"/></g></svg>
-        <p class="plate-no">Codex · Chart I</p>
-        <p class="plate-greek">Athena · myth &amp; mind</p>
-        <h3 class="plate-name">The <em>Library</em></h3>
-        <p class="plate-desc">Where I write. The Blue Ember series — Greek myth and psychology — plus marginalia and ideas that outgrew a notes app. Everything here is in progress.</p>
-        <span class="plate-link">Browse the Library →</span>
-      </a>
-      <a class="plate reveal" href="/lab">
-        <svg class="plate-glyph" viewBox="0 0 84 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g><line x1="18" y1="40" x2="40" y2="16"/><line x1="40" y1="16" x2="64" y2="34"/><line x1="64" y1="34" x2="44" y2="52"/><line x1="44" y1="52" x2="18" y2="40"/></g><g><circle cx="18" cy="40" r="2.2"/><circle cx="40" cy="16" r="2.6"/><circle cx="64" cy="34" r="2.2"/><circle cx="44" cy="52" r="2.2"/></g></svg>
-        <p class="plate-no">Atlas · Chart II</p>
-        <p class="plate-greek">Prometheus · the spark</p>
-        <h3 class="plate-name"><em>Orbit</em></h3>
-        <p class="plate-desc">Experiments you can actually touch — interactive toys built right here, plus the clever demos I find in the wild and want to keep. Some becomes real, some stays a sketch — all of it worth charting.</p>
-        <span class="plate-link">Enter Orbit →</span>
-      </a>
-    </div>
-  </section>
-
-  <!-- FEATURED · one project, charted in full (populated from Supabase) -->
-  <section class="featured" id="featuredSection" style="display:none">
-    <div class="divider"><span class="legend">Selected work</span><span class="ln"></span><span class="star">✶</span><span class="ln"></span><span class="legend">in focus</span></div>
-    <a class="featured-plate reveal" id="featuredProject" href="/projects"></a>
-  </section>
-
-  <div class="divider dim"><span class="legend">From the Library</span><span class="ln"></span><span class="star">✶</span><span class="ln"></span><span class="legend">The Blue Ember Series</span></div>
-
-  <!-- BOOK · the Blue Ember centerpiece -->
-  <section class="book">
-    <a class="book-wrap reveal" id="bookTeaser" href="/library" style="display:none">
-      <div class="book-plate ember">
-        <div class="book-embers" aria-hidden="true"><span class="bspark"></span><span class="bspark"></span><span class="bspark"></span><span class="bspark"></span><span class="bspark"></span><span class="bspark"></span><span class="bspark"></span></div>
-        <div>
-          <p class="book-eyebrow"><span>✦</span><span id="btEyebrow">Now Writing</span></p>
-          <h2 class="book-title" id="btTitle">Blue Ember</h2>
-          <p class="book-sub">An eight-book descent · Greek myth × psychology</p>
-          <p class="book-desc" id="btDesc"></p>
-          <div class="book-arc">
-            <span>I · Awakening</span><span>II · Loss of Control</span><span>III · Identity</span><span>IV · Fear</span><span>V · Consequence</span><span>VI · Loneliness</span><span>VII · Forgiveness</span><span>VIII · Integration</span>
-          </div>
-          <div class="book-meta"><span id="btCount">Eight books · in progress</span><span id="btCta">Explore the Library →</span></div>
-        </div>
-        <div class="book-cover" id="btCover">
-        <svg class="bt-constellation" viewBox="0 0 260 230" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <g stroke="#6fa8e0" stroke-width="1" opacity=".55">
-            <line x1="28" y1="52" x2="62" y2="84"/><line x1="62" y1="84" x2="92" y2="124"/>
-            <line x1="92" y1="124" x2="120" y2="165"/><line x1="120" y1="165" x2="150" y2="182"/>
-            <line x1="150" y1="182" x2="184" y2="150"/><line x1="184" y1="150" x2="214" y2="104"/>
-            <line x1="214" y1="104" x2="240" y2="54"/>
-          </g>
-          <g fill="#dceafb">
-            <circle cx="28" cy="52" r="2.6"/><circle cx="62" cy="84" r="2.4"/><circle cx="92" cy="124" r="2.6"/>
-            <circle cx="120" cy="165" r="2.8"/><circle cx="184" cy="150" r="2.6"/>
-            <circle cx="214" cy="104" r="2.4"/><circle cx="240" cy="54" r="3"/>
-          </g>
-          <circle cx="150" cy="182" r="13" fill="#5e95dd" opacity=".18"/>
-          <circle cx="150" cy="182" r="7" fill="#6fa8e0" opacity=".35"/>
-          <circle cx="150" cy="182" r="3.4" fill="#dceafb"/>
-          <text x="236" y="46" fill="#8fc0f4" text-anchor="end" font-family="JetBrains Mono" font-size="8" letter-spacing="1">WHOLE</text>
-          <text x="150" y="206" fill="#6fa8e0" text-anchor="middle" font-family="JetBrains Mono" font-size="7" letter-spacing="1">THE BLUE EMBER</text>
-        </svg>
-        </div>
-      </div>
+    <p class="hero-hint">· hover, or tap, to open a door ·</p>
+    <a class="hero-scroll-cue" href="#worlds" aria-label="Scroll to the three doors" onclick="document.getElementById('worlds').scrollIntoView({behavior:'smooth',block:'center'});return false;">
+      <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7l6 6 6-6"/></svg>
     </a>
   </section>
 
-  <!-- LATEST WRITING · newest essays, auto-pulled (hidden until loaded) -->
-  <section class="section latest" id="latestSection" style="display:none">
-    <div class="sec-head reveal">
-      <div><p class="legend" style="margin-bottom:.6rem">From the library</p><h2 class="sec-title">Latest <em>writing</em></h2></div>
-      <p class="sec-note">Marginalia and ideas, freshest first. The notebook stays open.</p>
-    </div>
-    <div class="writing-cards" id="latestWriting"></div>
-  </section>
+  <!-- A deliberate beat between the hero and the doors, not just a border —
+       echoes the ✦ mark already used in the hero eyebrow / footer / toasts. -->
+  <div class="hero-divider" aria-hidden="true"><span></span><i>✦</i><span></span></div>
 
-  <!-- PATH · the way so far, as a constellation timeline -->
-  <div class="divider dim"><span class="legend">The path</span><span class="ln"></span><span class="star">✶</span><span class="ln"></span><span class="legend">so far</span></div>
-  <section class="path reveal">
-    <ol class="path-line">
-      <li class="path-stop"><span class="ps-dot"></span><span class="ps-year">2021</span><span class="ps-label">Began Psychology — the study of the inner map</span></li>
-      <li class="path-stop"><span class="ps-dot"></span><span class="ps-year">2022</span><span class="ps-label">Leading a team at Ziggi's — systems and people, where the capstone was born</span></li>
-      <li class="path-stop"><span class="ps-dot"></span><span class="ps-year">2024</span><span class="ps-label">Computer Science degree, then QA at TopNotch — the logic side</span></li>
-      <li class="path-stop"><span class="ps-dot"></span><span class="ps-year">2026</span><span class="ps-label">Writing <strong>Blue Ember</strong>, Book I — the descent begins</span></li>
-    </ol>
-  </section>
+  <!-- THREE DOORS · wakes on hover (desktop) or scroll-into-view (mobile).
+       Deliberately a div, not a nav element — the site's global "night
+       anchors" rule (nav,footer,.night-panel resetting bg2/text/gold/border)
+       is scoped to the bare nav tag for the real header, and a second nav
+       element here would silently inherit those dark tokens regardless of theme.
+       .reveal is the same fade-up-on-scroll treatment used everywhere else
+       on the site (see initReveal() in js/init.js) — a small, consistent
+       cue that there's more below the hero, not a bespoke new animation. -->
+  <div class="worlds reveal" id="worlds" role="navigation" aria-label="Site sections">
+    <a class="world world-lib" href="https://library.calebthede.com/">
+      <div class="world-scrim"></div>
+      <div class="cover-art" aria-hidden="true"></div>
+      <div class="world-frame" aria-hidden="true"></div>
+      <!-- .world-dormant-label and .world-title are the SAME word, rendered
+           twice and cross-faded — both rotate/reposition in lockstep (see
+           CSS), so it reads as one label smoothly turning from vertical to
+           horizontal rather than two texts swapping. Siblings of
+           .world-dormant/.world-awake (not nested inside either) since an
+           ancestor's opacity:0 would hide a descendant regardless of its
+           own opacity — nesting would break the independent cross-fade. -->
+      <span class="world-dormant-label">Library</span>
+      <h2 class="world-title">Library</h2>
+      <div class="world-dormant">
+        <span class="world-dormant-peek">＋</span>
+      </div>
+      <div class="world-awake">
+        <p class="world-eyebrow">The Bookshelf</p>
+        <p class="world-tagline">An eight-book descent through myth, starting with Blue Ember, with room on the shelf for whatever comes next.</p>
+        <span class="world-enter">Enter the Library →</span>
+      </div>
+    </a>
 
-  <!-- NOTE · a bare quote under the stars -->
-  <section class="note reveal">
-    <span class="legend">A note from the cartographer</span>
-    <p>I believe the best technology is built by people who understand <strong>humans first</strong> — how we think, what we fear, what we hope for. Myth, psychology, and the stars are how we've always charted that. I study them the way I write code: <strong>to find the pattern underneath.</strong></p>
-    <span class="sig">— Caleb Thede · developer · designer · perpetual learner</span>
-  </section>
+    <a class="world world-mg" href="https://marginalia.calebthede.com/">
+      <div class="world-scrim"></div>
+      <span class="world-dormant-label">Marginalia</span>
+      <h2 class="world-title">Marginalia</h2>
+      <div class="world-dormant">
+        <span class="world-dormant-peek">＋</span>
+      </div>
+      <div class="world-awake">
+        <p class="world-eyebrow">Dispatches</p>
+        <p class="world-tagline">The notebook, kept in the open: essays, fragments, half-formed thoughts.</p>
+        <span class="world-enter">Read Marginalia →</span>
+      </div>
+    </a>
 
-  <!-- CONNECT -->
-  <div class="connect-strip reveal">
-    <p class="connect-text"><strong>Always building something.</strong> If any of this resonates — the writing, the work, the ideas — I'd love to hear from you.</p>
-    <div class="connect-btns">
-      <a class="btn-primary" href="/contact">Get In Touch</a>
-      <a class="btn-ghost" href="https://github.com/CalebJamezzz" target="_blank">GitHub ↗</a>
-    </div>
+    <a class="world world-fg" href="https://forge.calebthede.com/">
+      <div class="world-scrim"></div>
+      <span class="world-dormant-label">Forge</span>
+      <h2 class="world-title">Forge</h2>
+      <div class="world-dormant">
+        <span class="world-dormant-peek">＋</span>
+      </div>
+      <div class="world-awake">
+        <p class="world-eyebrow">Selected Work</p>
+        <p class="world-tagline">Tools, experiments, and the things I've shipped.</p>
+        <span class="world-enter">See the Work →</span>
+      </div>
+    </a>
   </div>
+
 </main>
-<footer>
-  <div class="footer-grid">
-    <div class="footer-brand">
-      <a href="/" class="footer-logo">CT.</a>
-      <p class="footer-tagline">Stories, essays, and things I build &mdash; written and read in the open.</p>
-      <div class="footer-newsletter">
-        <span class="footer-newsletter-label">New writing &rarr;</span>
-        <form name="newsletter-footer" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="handleFooterNewsletterSubmit(event)" style="display:flex;align-items:center;gap:.5rem">
-          <input type="hidden" name="form-name" value="newsletter-footer"/>
-          <p style="display:none"><label><input name="bot-field"/></label></p>
-          <input class="footer-newsletter-input" type="email" name="email" placeholder="your@email.com" required/>
-          <button class="footer-newsletter-btn" type="submit">&rarr;</button>
-        </form>
-        <span class="footer-newsletter-success" id="footer-nl-success">&#10038; subscribed</span>
-      </div>
-    </div>
-    <div class="footer-nav">
-      <div class="footer-col">
-        <h4 class="footer-col-title">Codex</h4>
-        <a href="/library">Library</a>
-        <a href="/marginalia">Marginalia</a>
-      </div>
-      <div class="footer-col">
-        <h4 class="footer-col-title">Atlas</h4>
-        <a href="/projects">Forge</a>
-        <a href="/lab">Orbit</a>
-      </div>
-      <div class="footer-col">
-        <h4 class="footer-col-title">Site</h4>
-        <a href="/">Home</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
-      </div>
-      <div class="footer-col">
-        <h4 class="footer-col-title">Elsewhere</h4>
-        <a href="https://github.com/CalebJamezzz" target="_blank" rel="noopener">GitHub</a>
-        <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank" rel="noopener">LinkedIn</a>
-        <a href="https://instagram.com/c.aleb_jamezzz" target="_blank" rel="noopener">Instagram</a>
-        <a href="mailto:calebthede@gmail.com">Email</a>
-      </div>
-    </div>
-  </div>
-  <div class="footer-base">
-    <span>&copy; 2026 Caleb Thede</span>
-    <span class="footer-base-meta">Celestial Codex</span>
+<footer class="site-foot">
+  <span class="site-foot-mark">CT. <span class="footer-base-meta">est. 2026</span></span>
+  <div class="site-foot-links" role="navigation">
+    <a href="https://github.com/CalebJamezzz" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://instagram.com/c.aleb_jamezzz" target="_blank" rel="noopener">Instagram</a>
+    <a href="mailto:calebthede@gmail.com">Email</a>
   </div>
 </footer>
 <!-- STATUS MODAL -->
@@ -372,21 +180,12 @@ let adminMode=false;
 <script src="js/init.js"></script>
 <script src="js/theme_nav.js"></script>
 <script src="js/easter_eggs.js"></script>
-<script src="js/tarot.js"></script>
 <script src="js/home.js"></script>
+<script src="js/hub-doors.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   initReveal();
   upgradeSpinners();
-  loadHomeData();
-  // scroll-aware nav: parchment over the bright hero, dark once the dusk arrives
-  const navEl=document.querySelector('nav');
-  if(navEl){
-    const onScroll=()=>navEl.classList.toggle('scrolled', window.scrollY > window.innerHeight*0.6);
-    onScroll();
-    window.addEventListener('scroll', onScroll, {passive:true});
-    window.addEventListener('resize', onScroll, {passive:true});
-  }
 });
 </script>
 </body>

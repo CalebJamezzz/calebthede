@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>About — Caleb Thede</title>
+  <title>About · Caleb Thede</title>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
@@ -16,12 +16,12 @@
   <link rel="canonical" href="https://calebthede.com/about"/>
   <meta property="og:type" content="website"/>
   <meta property="og:site_name" content="Caleb Thede"/>
-  <meta property="og:title" content="About — Caleb Thede"/>
+  <meta property="og:title" content="About · Caleb Thede"/>
   <meta property="og:description" content="Full-stack developer and QA engineer with a psychology background, writing the Blue Ember series and building tools where code meets the human mind."/>
   <meta property="og:url" content="https://calebthede.com/about"/>
   <meta property="og:image" content="https://calebthede.com/photo.jpg"/>
   <meta name="twitter:card" content="summary_large_image"/>
-  <meta name="twitter:title" content="About — Caleb Thede"/>
+  <meta name="twitter:title" content="About · Caleb Thede"/>
   <meta name="twitter:description" content="Full-stack developer and QA engineer with a psychology background, writing the Blue Ember series and building tools where code meets the human mind."/>
   <meta name="twitter:image" content="https://calebthede.com/photo.jpg"/>
 </head>
@@ -48,309 +48,110 @@ let adminMode=false;
     <div class="modal-actions"><button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
   </div>
 </div>
-<nav>
-  <a class="nav-logo" href="/">CT.</a>
-  <ul class="nav-center">
-    <li><a href="/">Home</a></li>
-    <li><a href="/about" class="active">About</a></li>
-    <li class="nav-deck"><a href="/codex" class="deck-label">Codex<span class="deck-caret">▾</span></a>
-      <div class="nav-dropdown">
-        <a href="/library"><span class="dd-t">The Library</span><span class="dd-s">Books &amp; the Blue Ember series</span></a>
-        <a href="/marginalia"><span class="dd-t">Marginalia</span><span class="dd-s">Notes &amp; short writing</span></a>
-      </div></li>
-    <li class="nav-deck"><a href="/atlas" class="deck-label">Atlas<span class="deck-caret">▾</span></a>
-      <div class="nav-dropdown">
-        <a href="/projects"><span class="dd-t">The Forge</span><span class="dd-s">Tools &amp; things built</span></a>
-        <a href="/lab"><span class="dd-t">Orbit</span><span class="dd-s">Experiments in motion</span></a>
-      </div></li>
-    <li><a href="/contact">Contact</a></li>
-  </ul>
-  <div class="nav-right">
+<header class="site-head">
+  <a class="site-head-mark" href="https://calebthede.com/">CT.</a>
+  <div class="site-head-controls">
     <span class="admin-badge" id="adminBadge">Admin</span>
-    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
-    <button class="lock-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login">🔒</button>
-    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
-      <span></span><span></span><span></span>
+    <a class="hero-cta admin-link" id="adminLink" href="/compose" hidden>Scriptorium →</a>
+    <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark" aria-label="Toggle light and dark mode">
+      <svg class="icon-moon" viewBox="0 0 18 18" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 10.8A6 6 0 1 1 7.2 3.5a5 5 0 0 0 7.3 7.3Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 18 18" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="9" cy="9" r="3.2"/><path d="M9 1.8v1.6M9 14.6v1.6M16.2 9h-1.6M3.4 9H1.8M14.1 3.9l-1.1 1.1M5 12.1l-1.1 1.1M14.1 14.1l-1.1-1.1M5 5.9 3.9 4.8"/></svg>
+    </button>
+    <button class="icon-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login" aria-label="Admin login">
+      <svg class="icon-locked" viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="10" height="7.4" rx="1.3"/><path d="M6.2 8V5.6a2.8 2.8 0 0 1 5.6 0V8"/></svg>
+      <svg class="icon-unlocked" viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="10" height="7.4" rx="1.3"/><path d="M6.2 8V5.6a2.8 2.8 0 0 1 5.3-1.3"/></svg>
     </button>
   </div>
-</nav>
-<div class="mobile-drawer" id="mobileDrawer">
-  <a class="mobile-nav-item" href="/">Home</a>
-  <a class="mobile-nav-item active" href="/about">About</a>
-  <div class="mobile-group">
-    <span class="mobile-group-label">Codex</span>
-    <a class="mobile-nav-sub" href="/library">The Library</a>
-    <a class="mobile-nav-sub" href="/marginalia">Marginalia</a>
-  </div>
-  <div class="mobile-group">
-    <span class="mobile-group-label">Atlas</span>
-    <a class="mobile-nav-sub" href="/projects">The Forge</a>
-    <a class="mobile-nav-sub" href="/lab">Orbit</a>
-  </div>
-  <a class="mobile-nav-item" href="/contact">Contact</a>
-  <div class="mobile-drawer-footer">
-    <div class="mobile-drawer-links">
-      <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
-      <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
-    </div>
-    <button class="lock-btn" onclick="toggleAdmin();closeMobileNav()" style="font-size:.75rem">🔒 Admin</button>
-  </div>
-</div>
+</header>
 <main>
-  <!-- CONSTELLATION STAR-CHART · each star is a section; the thread draws as you scroll -->
-  <aside class="star-chart" id="starChart" aria-label="Page chart — jump to a section">
-    <svg class="sc-svg" viewBox="0 0 90 560" preserveAspectRatio="none" aria-hidden="true">
-      <polyline class="sc-base" id="scBase" fill="none"></polyline>
-      <polyline class="sc-thread" id="scProg" fill="none" pathLength="1"></polyline>
-    </svg>
-    <button class="sc-star" data-target="sec-top" aria-label="The Portrait"><span class="sc-dot"></span><span class="sc-label">The Portrait</span></button>
-    <button class="sc-star" data-target="sec-story" aria-label="The Story"><span class="sc-dot"></span><span class="sc-label">The Story</span></button>
-    <button class="sc-star" data-target="sec-path" aria-label="The Path"><span class="sc-dot"></span><span class="sc-label">The Path</span></button>
-    <button class="sc-star" data-target="sec-headed" aria-label="Where I'm Headed"><span class="sc-dot"></span><span class="sc-label">Where I'm Headed</span></button>
-    <button class="sc-star" data-target="sec-mission" aria-label="The Mission"><span class="sc-dot"></span><span class="sc-label">The Mission</span></button>
-    <button class="sc-star" data-target="sec-instruments" aria-label="The Instruments"><span class="sc-dot"></span><span class="sc-label">The Instruments</span></button>
-    <button class="sc-star" data-target="sec-colophon" aria-label="Off the Clock"><span class="sc-dot"></span><span class="sc-label">Off the Clock</span></button>
-  </aside>
-
-  <!-- HERO · the cartographer's portrait (photo-led, distinct from home) -->
-  <header class="hero portrait" id="sec-top">
-    <div class="hero-right">
-      <div class="hero-plate">
-        <div class="plate-cap"><span class="t">The Cartographer</span><span class="coord">fig. I</span></div>
-        <div class="about-photo">
-          <img src="/photo.jpg" alt="Caleb Thede"/>
-          <span class="ph-corner tl"></span><span class="ph-corner tr"></span><span class="ph-corner bl"></span><span class="ph-corner br"></span>
-        </div>
-        <div class="plate-foot"><span class="legend" style="color:var(--teal)">QA Engineer @ TopNotch</span><span class="coord">charting the Master's</span></div>
+  <!-- HERO -->
+  <section class="about-hero">
+    <div>
+      <p class="hero-eyebrow">About</p>
+      <h1>I build software, study people, and write fiction where the two meet.</h1>
+      <p class="about-lede">Full-stack developer and QA engineer with a background in psychology. Off the clock, I'm writing an eight-book series and thinking about what mental-health support could look like if it were actually within reach.</p>
+      <div class="about-tags">
+        <span class="about-tag">Computer Science</span>
+        <span class="about-tag">Psychology</span>
+      </div>
+      <div class="hero-ctas" role="navigation">
+        <a class="hero-cta" href="https://calebthede.com/">Back to the Hub →</a>
       </div>
     </div>
-
-    <div class="hero-left">
-      <div class="plate-mark"><span class="rule"></span><span class="legend">Plate II · The Cartographer</span></div>
-      <h1 class="headline">Code, design, and deep <em>psychology.</em></h1>
-      <p class="welcome">The hand behind the atlas.</p>
-      <div class="ink-tags">
-        <span class="ink logic"><span class="dot"></span>Computer Science · the logic</span>
-        <span class="ink depth"><span class="dot"></span>Psychology · the depth</span>
-      </div>
-      <p class="bio">I started in <strong>psychology</strong> and followed a second pull into <strong>computer science</strong> — and the two never felt like separate paths. I build software, study the mind, and write about the place where they meet. This page is the portrait behind the work.</p>
-      <p class="byline">Caleb Thede · cartographer of inner worlds</p>
-      <div class="cta">
-        <a class="btn solid" href="/projects">See the Work →</a>
-        <a class="btn ghost" href="/library">Read the Book</a>
-      </div>
-    </div>
-  </header>
-
-  <div class="divider"><span class="legend">The story</span><span class="ln"></span><span class="star">✦</span><span class="ln"></span><span class="legend">two paths, one map</span></div>
-
-  <!-- THE STORY · prose plate + credential ledger -->
-  <section class="section story" id="sec-story">
-    <div class="story-grid">
-      <div class="bio-prose reveal">
-        <p>I started college studying <strong>Psychology</strong> — not because it seemed practical, but because I genuinely love understanding how the brain works and why people do the things they do. I earned my Associate of Science, then followed a second pull into <strong>Computer Science</strong>. The two never felt like separate paths.</p>
-        <p>My passion for coding is real — I build in <strong>Python, Java, C++, and Kotlin</strong>, I design in <strong>Figma</strong> before I write a single line, and I care about every layer of what I make. But psychology isn't something I left behind. It's the lens I bring to every project.</p>
-        <blockquote class="pull-quote">"I want to build things that make people's lives genuinely easier — and understand them well enough to actually do it."</blockquote>
-        <p>I'm planning to go back for my <strong>Master's in Psychology</strong> — not to leave tech, but to go deeper into the human side of it. Cognition, behavior, mental health. I want to understand these things well enough to build tools that truly help people.</p>
-        <p>I currently work as a <strong>QA Engineer</strong> at TopNotch LTD — writing test plans, running regression and integration testing, and working directly with dev teams to root-cause defects. Before that I managed a team of 16 at Ziggi's Coffee, which is also where my capstone app was born.</p>
-      </div>
-      <aside class="ledger reveal">
-        <p class="legend" style="margin-bottom:1.1rem">The ledger</p>
-        <div class="led-item"><span class="led-num">B.S.</span><span class="led-lbl">Computer Science</span><span class="led-tip">B.S. Computer Science — Colorado State University Global, graduated March 2024. GPA 3.33.</span></div>
-        <div class="led-item depth"><span class="led-num">A.S.</span><span class="led-lbl">Psychology</span><span class="led-tip">A.S. Psychology — Red Rocks Community College, graduated July 2021. GPA 3.8.</span></div>
-        <div class="led-item depth"><span class="led-num">UI</span><span class="led-lbl">Figma-first Designer</span><span class="led-tip">Every project starts in Figma before a single line of code. Wireframes, component systems, prototypes.</span></div>
-        <div class="led-item"><span class="led-num">4</span><span class="led-lbl">Languages &amp; Counting</span><span class="led-tip">Python · Java · C++ · Kotlin — and always adding more.</span></div>
-      </aside>
+    <div class="about-photo">
+      <img src="/photo.jpg" alt="Caleb Thede"/>
     </div>
   </section>
 
-  <div class="divider dim"><span class="legend">The path</span><span class="ln"></span><span class="star">✶</span><span class="ln"></span><span class="legend">how I got here</span></div>
+  <!-- BACKGROUND -->
+  <section class="prose reveal">
+    <p>I started college studying <strong>Psychology</strong>, not because it seemed practical, but because I genuinely love understanding how the brain works and why people do the things they do. I earned my Associate of Science, then followed a second pull into <strong>Computer Science</strong>. The two never felt like separate paths.</p>
+    <p>My passion for coding is real: I build in <strong>Python, Java, C++, and Kotlin</strong>, I design in <strong>Figma</strong> before I write a single line, and I care about every layer of what I make. But psychology isn't something I left behind. It's the lens I bring to every project.</p>
+    <blockquote class="pull-quote">"I want to build things that make people's lives genuinely easier, and understand them well enough to actually do it."</blockquote>
+    <p>I'm planning to go back for my <strong>Master's in Psychology</strong>, not to leave tech, but to go deeper into the human side of it. Cognition, behavior, mental health. I want to understand these things well enough to build tools that truly help people.</p>
+    <p>I currently work as a <strong>QA Engineer</strong> at TopNotch LTD: writing test plans, running regression and integration testing, and working directly with dev teams to root-cause defects. Before that I managed a team of 16 at Ziggi's Coffee, which is also where my capstone app was born.</p>
+  </section>
 
-  <!-- THE PATH · vertical timeline -->
-  <section class="section path" id="sec-path">
-    <ol class="path-rail reveal">
-      <li class="tl-item"><span class="tl-dot"></span><span class="tl-year">2021</span><h3 class="tl-title">A.S. Psychology — Red Rocks</h3><p class="tl-body">Where it began. An Associate of Science in Psychology (GPA 3.8) and a lasting question: why do people do what they do?</p></li>
-      <li class="tl-item"><span class="tl-dot"></span><span class="tl-year">2022 – 2024</span><h3 class="tl-title">Managing 16 at Ziggi's Coffee</h3><p class="tl-body">Leading a team taught me systems and people in the same breath — and it's where my capstone app was first born.</p></li>
-      <li class="tl-item"><span class="tl-dot"></span><span class="tl-year">2024</span><h3 class="tl-title">B.S. Computer Science — CSU Global</h3><p class="tl-body">The second path made formal. Full-stack development, Python / Java / C++ / Kotlin, and design-first thinking.</p></li>
-      <li class="tl-item"><span class="tl-dot"></span><span class="tl-year">2024 – Now</span><h3 class="tl-title">QA Engineer @ TopNotch LTD</h3><p class="tl-body">Test plans, regression &amp; integration testing, root-causing defects with dev teams — an eye for the edge cases everyone else misses.</p></li>
-      <li class="tl-item next"><span class="tl-dot"></span><span class="tl-year">Next</span><h3 class="tl-title">Master's in Psychology</h3><p class="tl-body">Going deeper into the human side of tech — so the tools I build are grounded in how people actually think.</p></li>
+  <!-- TIMELINE -->
+  <section class="about-section rule-top">
+    <p class="about-label">Timeline</p>
+    <ol class="timeline reveal">
+      <li class="tl-item"><span class="tl-dot"></span><span class="tl-year">2021</span><h3 class="tl-title">A.S. Psychology · Red Rocks</h3><p class="tl-body">Where it began. An Associate of Science in Psychology (GPA 3.8) and a lasting question: why do people do what they do?</p></li>
+      <li class="tl-item"><span class="tl-dot"></span><span class="tl-year">2022 – 2024</span><h3 class="tl-title">Managing 16 at Ziggi's Coffee</h3><p class="tl-body">Leading a team taught me systems and people in the same breath, and it's where my capstone app was first born.</p></li>
+      <li class="tl-item"><span class="tl-dot"></span><span class="tl-year">2024</span><h3 class="tl-title">B.S. Computer Science · CSU Global</h3><p class="tl-body">The second path made formal. Full-stack development, Python / Java / C++ / Kotlin, and design-first thinking.</p></li>
+      <li class="tl-item"><span class="tl-dot"></span><span class="tl-year">2024 – Now</span><h3 class="tl-title">QA Engineer @ TopNotch LTD</h3><p class="tl-body">Test plans, regression &amp; integration testing, root-causing defects with dev teams: an eye for the edge cases everyone else misses.</p></li>
+      <li class="tl-item"><span class="tl-dot"></span><span class="tl-year">2026</span><h3 class="tl-title">Writing Blue Ember, Book I</h3><p class="tl-body">The descent begins: an eight-book series putting Greek myth and psychology in the same room.</p></li>
+      <li class="tl-item next"><span class="tl-dot"></span><span class="tl-year">Next</span><h3 class="tl-title">Master's in Psychology</h3><p class="tl-body">Going deeper into the human side of tech, so the tools I build are grounded in how people actually think.</p></li>
     </ol>
   </section>
 
-  <!-- WHERE THE TWO INKS MEET · the Alrescha knot -->
-  <section class="inks-meet reveal">
-    <svg class="im-svg" viewBox="0 0 460 160" xmlns="http://www.w3.org/2000/svg" aria-label="The two inks converging" role="img">
-      <!-- teal cord (logic / CS) sweeping in from the left -->
-      <path class="cord teal" d="M14 40 C90 40 150 76 230 80"/>
-      <circle class="node teal" cx="14" cy="40" r="3"/><circle class="node teal" cx="84" cy="52" r="2.4"/><circle class="node teal" cx="156" cy="70" r="2.4"/>
-      <!-- gold cord (depth / psychology) sweeping in from the right -->
-      <path class="cord gold" d="M446 40 C370 40 310 76 230 80"/>
-      <circle class="node gold" cx="446" cy="40" r="3"/><circle class="node gold" cx="376" cy="52" r="2.4"/><circle class="node gold" cx="304" cy="70" r="2.4"/>
-      <!-- the knot where they tie: Alrescha -->
-      <circle class="knot-glow" cx="230" cy="80" r="16"/>
-      <circle class="knot" cx="230" cy="80" r="4.4"/>
-      <text class="im-star-lbl" x="230" y="112" text-anchor="middle">ALRESCHA</text>
-    </svg>
-    <p class="im-cap"><span class="logic">logic</span> meets <span class="depth">depth</span> — the knot where the two cords of Pisces tie together. Two inks, one map.</p>
-  </section>
-
-  <div class="divider"><span class="legend">Where I'm headed</span><span class="ln"></span><span class="star">✦</span><span class="ln"></span><span class="legend">the bigger picture</span></div>
-
-  <!-- WHERE I'M HEADED · three atlas plates -->
-  <section class="section" id="sec-headed">
-    <div class="sec-head reveal">
-      <div><p class="legend" style="margin-bottom:.6rem">The bigger picture</p><h2 class="sec-title">Where I'm <em>headed</em></h2></div>
-      <p class="sec-note">Three charts I'm steering toward — each one a reason the next step matters.</p>
-    </div>
-    <div class="plates">
-      <div class="plate reveal">
-        <svg class="plate-glyph" viewBox="0 0 84 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g><line x1="16" y1="20" x2="40" y2="32"/><line x1="40" y1="32" x2="68" y2="16"/><line x1="40" y1="32" x2="44" y2="54"/></g><g><circle cx="16" cy="20" r="2.2"/><circle cx="40" cy="32" r="2.6"/><circle cx="68" cy="16" r="2"/><circle cx="44" cy="54" r="2.2"/></g></svg>
-        <p class="plate-no">Chart I · ☽ Depth</p>
-        <p class="plate-greek">Psyche · the soul</p>
-        <h3 class="plate-name">Master's in <em>Psychology</em></h3>
-        <p class="plate-desc">Going back for my M.S. — not to leave tech, but to understand people at a deeper level. Cognition, behavior, mental health. That knowledge makes everything I build better.</p>
+  <!-- WHAT'S NEXT -->
+  <section class="about-section about-section-wide rule-top">
+    <p class="about-label">What's Next</p>
+    <div class="goals reveal">
+      <div class="goal-item">
+        <h3 class="goal-title">Master's in Psychology</h3>
+        <p class="goal-desc">Going back for my M.S., not to leave tech, but to understand people at a deeper level. Cognition, behavior, mental health. That knowledge makes everything I build better.</p>
       </div>
-      <div class="plate reveal">
-        <svg class="plate-glyph" viewBox="0 0 84 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g><line x1="14" y1="30" x2="38" y2="18"/><line x1="38" y1="18" x2="62" y2="30"/><line x1="62" y1="30" x2="48" y2="52"/><line x1="48" y1="52" x2="26" y2="50"/><line x1="26" y1="50" x2="14" y2="30"/></g><g><circle cx="14" cy="30" r="2.2"/><circle cx="38" cy="18" r="2.6"/><circle cx="62" cy="30" r="2.2"/><circle cx="48" cy="52" r="2"/><circle cx="26" cy="50" r="2"/></g></svg>
-        <p class="plate-no">Chart II · ☿ Logic</p>
-        <p class="plate-greek">Hermes · the play</p>
-        <h3 class="plate-name">Games as <em>Therapy</em></h3>
-        <p class="plate-desc">Video games are one of the most underused tools in mental health. The right game — designed with real psychological intent — can reduce anxiety, build resilience, and create genuine connection.</p>
+      <div class="goal-item">
+        <h3 class="goal-title">Games as Therapy</h3>
+        <p class="goal-desc">Video games are one of the most underused tools in mental health. The right game, designed with real psychological intent, can reduce anxiety, build resilience, and create genuine connection.</p>
       </div>
-      <div class="plate reveal">
-        <svg class="plate-glyph" viewBox="0 0 84 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g><line x1="20" y1="16" x2="42" y2="36"/><line x1="42" y1="36" x2="64" y2="20"/><line x1="42" y1="36" x2="40" y2="56"/></g><g><circle cx="20" cy="16" r="2"/><circle cx="42" cy="36" r="2.6"/><circle cx="64" cy="20" r="2.2"/><circle cx="40" cy="56" r="2"/></g></svg>
-        <p class="plate-no">Chart III · ☽ Depth</p>
-        <p class="plate-greek">Asclepius · the healer</p>
-        <h3 class="plate-name">Mental Health <em>Tech</em></h3>
-        <p class="plate-desc">There are apps for booking therapy. What I want to build goes further — tools grounded in real psychology that actively support mental wellbeing at every step.</p>
+      <div class="goal-item">
+        <h3 class="goal-title">Mental Health Tech</h3>
+        <p class="goal-desc">There are apps for booking therapy. What I want to build goes further: tools grounded in real psychology that actively support mental wellbeing at every step.</p>
       </div>
     </div>
   </section>
 
-  <div class="divider dim"><span class="legend">The mission</span><span class="ln"></span><span class="star">✶</span><span class="ln"></span><span class="legend">that started it all</span></div>
-
-  <!-- THE MISSION · gold-ember night plate (always night) -->
-  <section class="mission" id="sec-mission">
-    <div class="mission-plate reveal">
-      <p class="mission-eyebrow"><span class="ember-dot"></span>The mission that started it all</p>
-      <h3 class="mission-title">Therapy shouldn't be a <em>privilege.</em></h3>
-      <p class="mission-text">Growing up, school counselors weren't actual counselors — they scheduled classes and handled paperwork. I know I could have used someone to really talk to, and I never had that. A lot of kids don't. A lot of families can't afford to change that.</p>
-      <p class="mission-text">This is the real reason I do any of this. The code, the design, the QA work — it's all in service of one thing: I want to help people, and I want the help to reach the people who usually get left out. Accessible mental health support for kids and lower-income families who deserve it just as much as anyone else — including LGBTQ+ kids who don't always have someone safe in their corner. As a gay man, I know how much a single safe person can matter.</p>
-      <p class="mission-text">The dream I keep coming back to: one day, to build or work for a non-profit that provides real therapy — free or genuinely affordable — to the families and young people who can't reach it today. Real psychological grounding, not just an app that books appointments.</p>
-      <p class="mission-text">That's why the Master's matters. That's the thread that runs through everything here.</p>
+  <!-- THE REASON — a full-bleed tonal band, a beat of visual rest before the footer -->
+  <section class="mission reveal">
+    <div class="about-section">
+      <p class="about-label">Why</p>
+      <h2 class="mission-title">Therapy shouldn't be a privilege.</h2>
+      <p class="prose-text">Growing up, school counselors weren't actual counselors: they scheduled classes and handled paperwork. I know I could have used someone to really talk to, and I never had that. A lot of kids don't. A lot of families can't afford to change that.</p>
+      <p class="prose-text">This is the real reason I do any of this. The code, the design, the QA work, it's all in service of one thing: I want to help people, and I want the help to reach the people who usually get left out. Accessible mental health support for kids and lower-income families who deserve it just as much as anyone else, including LGBTQ+ kids who don't always have someone safe in their corner. As a gay man, I know how much a single safe person can matter.</p>
+      <p class="prose-text">The dream I keep coming back to: one day, to build or work for a non-profit that provides real therapy, free or genuinely affordable, to the families and young people who can't reach it today. Real psychological grounding, not just an app that books appointments.</p>
+      <p class="prose-text">That's why the Master's matters. That's the thread that runs through everything here.</p>
     </div>
-  </section>
-
-  <div class="divider"><span class="legend">The instruments</span><span class="ln"></span><span class="star">✦</span><span class="ln"></span><span class="legend">how I work</span></div>
-
-  <!-- THE INSTRUMENTS · two ink columns -->
-  <section class="section" id="sec-instruments">
-    <div class="sec-head reveal">
-      <div><p class="legend" style="margin-bottom:.6rem">What I work with</p><h2 class="sec-title">The <em>instruments</em></h2></div>
-      <p class="sec-note">Two columns, two inks — the engineer and the designer are the same hand.</p>
-    </div>
-    <div class="skills-cols reveal">
-      <div class="skills-col">
-        <p class="scol-lbl logic">Languages &amp; Development</p>
-        <div class="skill-row"><span class="skill-name">Python</span><div class="sbw"><div class="sb logic" data-w="90"></div></div></div>
-        <div class="skill-row"><span class="skill-name">Java</span><div class="sbw"><div class="sb logic" data-w="82"></div></div></div>
-        <div class="skill-row"><span class="skill-name">C++</span><div class="sbw"><div class="sb logic" data-w="78"></div></div></div>
-        <div class="skill-row"><span class="skill-name">Kotlin</span><div class="sbw"><div class="sb logic" data-w="75"></div></div></div>
-        <div class="skill-row"><span class="skill-name">Full-Stack Development</span><div class="sbw"><div class="sb logic" data-w="83"></div></div></div>
-        <div class="skill-row"><span class="skill-name">QA &amp; Test Engineering</span><div class="sbw"><div class="sb logic" data-w="88"></div></div></div>
-        <div class="skill-tags"><span class="stag logic">Python</span><span class="stag logic">Java</span><span class="stag logic">C++</span><span class="stag logic">Kotlin</span><span class="stag logic">SQL</span><span class="stag logic">Git</span><span class="stag logic">REST APIs</span></div>
-      </div>
-      <div class="skills-col">
-        <p class="scol-lbl depth">Design &amp; Human Thinking</p>
-        <div class="skill-row"><span class="skill-name">Figma / UI Design</span><div class="sbw"><div class="sb depth" data-w="85"></div></div></div>
-        <div class="skill-row"><span class="skill-name">UX Thinking</span><div class="sbw"><div class="sb depth" data-w="80"></div></div></div>
-        <div class="skill-row"><span class="skill-name">Prototyping</span><div class="sbw"><div class="sb depth" data-w="78"></div></div></div>
-        <div class="skill-row"><span class="skill-name">Psychology &amp; Behavior</span><div class="sbw"><div class="sb depth" data-w="75"></div></div></div>
-        <div class="skill-row"><span class="skill-name">Problem Decomposition</span><div class="sbw"><div class="sb depth" data-w="92"></div></div></div>
-        <div class="skill-row"><span class="skill-name">Technical Communication</span><div class="sbw"><div class="sb depth" data-w="85"></div></div></div>
-        <div class="skill-tags"><span class="stag depth">Figma</span><span class="stag depth">Prototyping</span><span class="stag depth">User Research</span><span class="stag depth">Systems Thinking</span></div>
-      </div>
-    </div>
-  </section>
-
-  <div class="divider dim"><span class="legend">Off the clock</span><span class="ln"></span><span class="star">✶</span><span class="ln"></span><span class="legend">marginalia</span></div>
-
-  <!-- OFF THE CLOCK · colophon marginalia -->
-  <section class="section colophon" id="sec-colophon">
-    <div class="colo-grid reveal">
-      <div class="colo-item"><span class="colo-lbl">Star sign</span><span class="colo-val">Pisces ♓ · the twin fish</span></div>
-      <div class="colo-item"><span class="colo-lbl">Pride</span><span class="colo-val">Gay &amp; proud · he/him <span class="pride-star">✦</span></span></div>
-      <div class="colo-item"><span class="colo-lbl">Currently playing</span><span class="colo-val">Story-driven RPGs · studying them like systems</span></div>
-      <div class="colo-item"><span class="colo-lbl">Currently reading</span><span class="colo-val">Myth, psychology, and the space between</span></div>
-      <div class="colo-item"><span class="colo-lbl">Writing</span><span class="colo-val">The Blue Ember series · eight books, one descent</span></div>
-      <div class="colo-item"><span class="colo-lbl">Designs in</span><span class="colo-val">Figma first — always</span></div>
-    </div>
-  </section>
-
-  <!-- CLOSING EPIGRAPH · pulled from the manuscript -->
-  <section class="epigraph" id="epigraphSection" style="display:none" data-sec="sec-epigraph">
-    <span class="legend">From the manuscript</span>
-    <blockquote class="epigraph-text" id="epigraphText"></blockquote>
-    <a class="epigraph-cite" id="epigraphCite" href="/library"></a>
   </section>
 </main>
-<footer>
-  <div class="footer-grid">
-    <div class="footer-brand">
-      <a href="/" class="footer-logo">CT.</a>
-      <p class="footer-tagline">Stories, essays, and things I build &mdash; written and read in the open.</p>
-      <div class="footer-newsletter">
-        <span class="footer-newsletter-label">New writing &rarr;</span>
-        <form name="newsletter-footer" data-netlify="true" data-netlify-honeypot="bot-field" onsubmit="handleFooterNewsletterSubmit(event)" style="display:flex;align-items:center;gap:.5rem">
-          <input type="hidden" name="form-name" value="newsletter-footer"/>
-          <p style="display:none"><label><input name="bot-field"/></label></p>
-          <input class="footer-newsletter-input" type="email" name="email" placeholder="your@email.com" required/>
-          <button class="footer-newsletter-btn" type="submit">&rarr;</button>
-        </form>
-        <span class="footer-newsletter-success" id="footer-nl-success">&#10038; subscribed</span>
-      </div>
-    </div>
-    <div class="footer-nav">
-      <div class="footer-col">
-        <h4 class="footer-col-title">Codex</h4>
-        <a href="/library">Library</a>
-        <a href="/marginalia">Marginalia</a>
-      </div>
-      <div class="footer-col">
-        <h4 class="footer-col-title">Atlas</h4>
-        <a href="/projects">Forge</a>
-        <a href="/lab">Orbit</a>
-      </div>
-      <div class="footer-col">
-        <h4 class="footer-col-title">Site</h4>
-        <a href="/">Home</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
-      </div>
-      <div class="footer-col">
-        <h4 class="footer-col-title">Elsewhere</h4>
-        <a href="https://github.com/CalebJamezzz" target="_blank" rel="noopener">GitHub</a>
-        <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank" rel="noopener">LinkedIn</a>
-        <a href="https://instagram.com/c.aleb_jamezzz" target="_blank" rel="noopener">Instagram</a>
-        <a href="mailto:calebthede@gmail.com">Email</a>
-      </div>
-    </div>
-  </div>
-  <div class="footer-base">
-    <span>&copy; 2026 Caleb Thede</span>
-    <span class="footer-base-meta">Celestial Codex</span>
+<footer class="site-foot">
+  <span class="site-foot-mark">CT. <span class="footer-base-meta">est. 2026</span></span>
+  <div class="site-foot-links" role="navigation">
+    <a href="https://github.com/CalebJamezzz" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://instagram.com/c.aleb_jamezzz" target="_blank" rel="noopener">Instagram</a>
+    <a href="mailto:calebthede@gmail.com">Email</a>
   </div>
 </footer>
 <script src="js/init.js"></script>
 <script src="js/theme_nav.js"></script>
 <script src="js/easter_eggs.js"></script>
-<script src="js/about.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
   initReveal();
   upgradeSpinners();
-  loadEpigraph();
-  initStarChart();
 });
 </script>
 </body>

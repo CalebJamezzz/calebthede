@@ -53,17 +53,6 @@
   to = "/contact.html"
   status = 200
 
-# -- Section landing pages --
-[[redirects]]
-  from = "/atlas"
-  to = "/atlas.html"
-  status = 200
-
-[[redirects]]
-  from = "/codex"
-  to = "/codex.html"
-  status = 200
-
 # -- Admin (Scriptorium) --
 [[redirects]]
   from = "/compose"
@@ -81,6 +70,59 @@
 [[redirects]]
   from = "/tools/doc-to-html"
   to = "/tools/doc-to-html.html"
+  status = 200
+
+# -- Real subdomains: library / marginalia / forge --
+# Each subdomain is a domain alias on this same Netlify site (added in the
+# dashboard, DNS pointed there separately) — these rules serve the right
+# page at that subdomain's root. The exact-root rule is forced because
+# index.html existing at "/" in the shared file tree would otherwise shadow
+# it; the wildcard rule is deliberately NOT forced so real asset requests
+# (css/js/images) keep resolving to the actual files instead of being
+# rewritten to the page HTML too.
+[[redirects]]
+  from = "https://library.calebthede.com/"
+  to = "/library.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://library.calebthede.com/shelf"
+  to = "/library-shelf.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://library.calebthede.com/blue-ember"
+  to = "/library-blue-ember.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://library.calebthede.com/*"
+  to = "/library.html"
+  status = 200
+
+[[redirects]]
+  from = "https://marginalia.calebthede.com/"
+  to = "/marginalia.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://marginalia.calebthede.com/*"
+  to = "/marginalia.html"
+  status = 200
+
+[[redirects]]
+  from = "https://forge.calebthede.com/"
+  to = "/projects.html"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "https://forge.calebthede.com/*"
+  to = "/projects.html"
   status = 200
 
 

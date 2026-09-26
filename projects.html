@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>The Forge — Caleb Thede</title>
+  <title>The Forge · Caleb Thede</title>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="css/main.css"/>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
-  <meta name="description" content="The Forge — software, tools, and experiments built by Caleb Thede: shipped applications, works in progress, and the projects worth keeping."/>
+  <meta name="description" content="The Forge · software, tools, and experiments built by Caleb Thede: shipped applications, works in progress, and the projects worth keeping."/>
   <meta name="author" content="Caleb Thede"/>
-  <link rel="canonical" href="https://calebthede.com/projects"/>
+  <link rel="canonical" href="https://forge.calebthede.com/"/>
   <meta property="og:type" content="website"/>
   <meta property="og:site_name" content="Caleb Thede"/>
-  <meta property="og:title" content="The Forge — Caleb Thede"/>
-  <meta property="og:description" content="The Forge — software, tools, and experiments built by Caleb Thede: shipped applications, works in progress, and the projects worth keeping."/>
-  <meta property="og:url" content="https://calebthede.com/projects"/>
+  <meta property="og:title" content="The Forge · Caleb Thede"/>
+  <meta property="og:description" content="The Forge · software, tools, and experiments built by Caleb Thede: shipped applications, works in progress, and the projects worth keeping."/>
+  <meta property="og:url" content="https://forge.calebthede.com/"/>
   <meta property="og:image" content="https://calebthede.com/photo.jpg"/>
   <meta name="twitter:card" content="summary_large_image"/>
-  <meta name="twitter:title" content="The Forge — Caleb Thede"/>
-  <meta name="twitter:description" content="The Forge — software, tools, and experiments built by Caleb Thede: shipped applications, works in progress, and the projects worth keeping."/>
+  <meta name="twitter:title" content="The Forge · Caleb Thede"/>
+  <meta name="twitter:description" content="The Forge · software, tools, and experiments built by Caleb Thede: shipped applications, works in progress, and the projects worth keeping."/>
   <meta name="twitter:image" content="https://calebthede.com/photo.jpg"/>
 </head>
 <body data-page="projects">
@@ -48,61 +48,29 @@ let adminMode=false;
     <div class="modal-actions"><button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
   </div>
 </div>
-<nav>
-  <a class="nav-logo" href="/">CT.</a>
-  <ul class="nav-center">
-    <li><a href="/">Home</a></li>
-    <li><a href="/about">About</a></li>
-    <li class="nav-deck"><a href="/codex" class="deck-label">Codex<span class="deck-caret">▾</span></a>
-      <div class="nav-dropdown">
-        <a href="/library"><span class="dd-t">The Library</span><span class="dd-s">Books &amp; the Blue Ember series</span></a>
-        <a href="/marginalia"><span class="dd-t">Marginalia</span><span class="dd-s">Notes &amp; short writing</span></a>
-      </div></li>
-    <li class="nav-deck"><a href="/atlas" class="deck-label active">Atlas<span class="deck-caret">▾</span></a>
-      <div class="nav-dropdown">
-        <a href="/projects"><span class="dd-t">The Forge</span><span class="dd-s">Tools &amp; things built</span></a>
-        <a href="/lab"><span class="dd-t">Orbit</span><span class="dd-s">Experiments in motion</span></a>
-      </div></li>
-    <li><a href="/contact">Contact</a></li>
-  </ul>
-  <div class="nav-right">
+<header class="lib-head">
+  <div class="lib-head-mark">
+    <a class="lib-head-hub" href="https://calebthede.com/">CT.</a><span class="lib-head-sep">/</span><span class="lib-head-crumb-current">Forge</span>
+  </div>
+  <div class="lib-head-controls">
+    <a class="hero-cta admin-link" id="adminLink" href="/compose" hidden>Scriptorium →</a>
     <span class="admin-badge" id="adminBadge">Admin</span>
-    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
-    <button class="lock-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login">🔒</button>
-    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
-      <span></span><span></span><span></span>
+    <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark" aria-label="Toggle light and dark mode">
+      <svg class="icon-moon" viewBox="0 0 18 18" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 10.8A6 6 0 1 1 7.2 3.5a5 5 0 0 0 7.3 7.3Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 18 18" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="9" cy="9" r="3.2"/><path d="M9 1.8v1.6M9 14.6v1.6M16.2 9h-1.6M3.4 9H1.8M14.1 3.9l-1.1 1.1M5 12.1l-1.1 1.1M14.1 14.1l-1.1-1.1M5 5.9 3.9 4.8"/></svg>
+    </button>
+    <button class="icon-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login" aria-label="Admin login">
+      <svg class="icon-locked" viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="10" height="7.4" rx="1.3"/><path d="M6.2 8V5.6a2.8 2.8 0 0 1 5.6 0V8"/></svg>
+      <svg class="icon-unlocked" viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="10" height="7.4" rx="1.3"/><path d="M6.2 8V5.6a2.8 2.8 0 0 1 5.3-1.3"/></svg>
     </button>
   </div>
-</nav>
-<div class="mobile-drawer" id="mobileDrawer">
-  <a class="mobile-nav-item" href="/">Home</a>
-  <a class="mobile-nav-item" href="/about">About</a>
-  <div class="mobile-group">
-    <span class="mobile-group-label">Codex</span>
-    <a class="mobile-nav-sub" href="/library">The Library</a>
-    <a class="mobile-nav-sub" href="/marginalia">Marginalia</a>
-  </div>
-  <div class="mobile-group">
-    <span class="mobile-group-label">Atlas</span>
-    <a class="mobile-nav-sub active" href="/projects">The Forge</a>
-    <a class="mobile-nav-sub" href="/lab">Orbit</a>
-  </div>
-  <a class="mobile-nav-item" href="/contact">Contact</a>
-  <div class="mobile-drawer-footer">
-    <div class="mobile-drawer-links">
-      <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
-      <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
-    </div>
-    <button class="lock-btn" onclick="toggleAdmin();closeMobileNav()" style="font-size:.75rem">🔒 Admin</button>
-  </div>
-</div>
+</header>
 <main>
   <header class="atlas-hero reveal">
     <div class="atlas-hero-text">
-      <div class="plate-mark"><span class="rule"></span><span class="legend">Atlas · Chart I — The Forge</span></div>
       <h1 class="atlas-headline">Made to be <em>used.</em></h1>
-      <p class="atlas-lead">The instruments — shipped software, tools still on the anvil, and the smaller builds worth keeping. Drawn from the same two inks as the rest of this site.</p>
-      <p class="atlas-body">The <strong>Forge</strong> is where building lives: finished applications, things still under construction, and the experiments that earned a place on the map. Each plate below records what a thing is, why it exists, and where it stands today — <strong>underway</strong>, <strong>shipped</strong>, or filed to <strong>the archive</strong>.</p>
+      <p class="atlas-lead">The instruments: shipped software, tools still on the anvil, and the smaller builds worth keeping. Drawn from the same two inks as the rest of this site.</p>
+      <p class="atlas-body">The <strong>Forge</strong> is where building lives: finished applications, things still under construction, and the experiments that earned a place on the map. Each plate below records what a thing is, why it exists, and where it stands today: <strong>underway</strong>, <strong>shipped</strong>, or filed to <strong>the archive</strong>.</p>
       <div class="ink-tags">
         <span class="ink logic"><span class="dot"></span>Built with intent</span>
         <span class="ink depth"><span class="dot"></span>Grounded in why</span>
@@ -116,13 +84,55 @@ let adminMode=false;
       <div class="alc-row arch"><span class="k">Archived</span><span class="v" id="atlasCountArch">·</span></div>
     </aside>
   </header>
-  <div class="atlas-admin-bar"><a class="btn-primary admin-only" href="/compose">✦ Manage in the Scriptorium →</a></div>
+  <div class="atlas-admin-bar"><a class="btn-primary admin-only" href="/compose">Manage in the Scriptorium →</a></div>
   <div id="atlasRoot"></div>
+
+  <!-- CREDENTIALS · relocated here from About -->
+  <section class="section">
+    <aside class="ledger reveal">
+      <p class="legend" style="margin-bottom:1.1rem">The ledger</p>
+      <div class="led-item"><span class="led-num">B.S.</span><span class="led-lbl">Computer Science</span><span class="led-tip">B.S. Computer Science, Colorado State University Global, graduated March 2024. GPA 3.33.</span></div>
+      <div class="led-item depth"><span class="led-num">A.S.</span><span class="led-lbl">Psychology</span><span class="led-tip">A.S. Psychology, Red Rocks Community College, graduated July 2021. GPA 3.8.</span></div>
+      <div class="led-item depth"><span class="led-num">UI</span><span class="led-lbl">Figma-first Designer</span><span class="led-tip">Every project starts in Figma before a single line of code. Wireframes, component systems, prototypes.</span></div>
+      <div class="led-item"><span class="led-num">4</span><span class="led-lbl">Languages &amp; Counting</span><span class="led-tip">Python · Java · C++ · Kotlin, and always adding more.</span></div>
+    </aside>
+  </section>
+
+  <!-- THE INSTRUMENTS · relocated here from About -->
+  <section class="section" id="sec-instruments">
+    <div class="sec-head reveal">
+      <div><p class="legend" style="margin-bottom:.6rem">What I work with</p><h2 class="sec-title">The <em>instruments</em></h2></div>
+      <p class="sec-note">Two columns, two inks: the engineer and the designer are the same hand.</p>
+    </div>
+    <div class="skills-cols reveal">
+      <div class="skills-col">
+        <p class="scol-lbl logic">Languages &amp; Development</p>
+        <div class="skill-row"><span class="skill-name">Python</span><div class="sbw"><div class="sb logic" data-w="90"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Java</span><div class="sbw"><div class="sb logic" data-w="82"></div></div></div>
+        <div class="skill-row"><span class="skill-name">C++</span><div class="sbw"><div class="sb logic" data-w="78"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Kotlin</span><div class="sbw"><div class="sb logic" data-w="75"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Full-Stack Development</span><div class="sbw"><div class="sb logic" data-w="83"></div></div></div>
+        <div class="skill-row"><span class="skill-name">QA &amp; Test Engineering</span><div class="sbw"><div class="sb logic" data-w="88"></div></div></div>
+        <div class="skill-tags"><span class="stag logic">Python</span><span class="stag logic">Java</span><span class="stag logic">C++</span><span class="stag logic">Kotlin</span><span class="stag logic">SQL</span><span class="stag logic">Git</span><span class="stag logic">REST APIs</span></div>
+      </div>
+      <div class="skills-col">
+        <p class="scol-lbl depth">Design &amp; Human Thinking</p>
+        <div class="skill-row"><span class="skill-name">Figma / UI Design</span><div class="sbw"><div class="sb depth" data-w="85"></div></div></div>
+        <div class="skill-row"><span class="skill-name">UX Thinking</span><div class="sbw"><div class="sb depth" data-w="80"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Prototyping</span><div class="sbw"><div class="sb depth" data-w="78"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Psychology &amp; Behavior</span><div class="sbw"><div class="sb depth" data-w="75"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Problem Decomposition</span><div class="sbw"><div class="sb depth" data-w="92"></div></div></div>
+        <div class="skill-row"><span class="skill-name">Technical Communication</span><div class="sbw"><div class="sb depth" data-w="85"></div></div></div>
+        <div class="skill-tags"><span class="stag depth">Figma</span><span class="stag depth">Prototyping</span><span class="stag depth">User Research</span><span class="stag depth">Systems Thinking</span></div>
+      </div>
+    </div>
+  </section>
+
 </main>
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <a href="/" class="footer-logo">CT.</a>
+      <a href="https://calebthede.com/" class="footer-logo">CT.</a>
       <p class="footer-tagline">Stories, essays, and things I build &mdash; written and read in the open.</p>
       <div class="footer-newsletter">
         <span class="footer-newsletter-label">New writing &rarr;</span>
@@ -137,20 +147,16 @@ let adminMode=false;
     </div>
     <div class="footer-nav">
       <div class="footer-col">
-        <h4 class="footer-col-title">Codex</h4>
-        <a href="/library">Library</a>
-        <a href="/marginalia">Marginalia</a>
-      </div>
-      <div class="footer-col">
-        <h4 class="footer-col-title">Atlas</h4>
-        <a href="/projects">Forge</a>
-        <a href="/lab">Orbit</a>
+        <h4 class="footer-col-title">Explore</h4>
+        <a href="https://library.calebthede.com/">Library</a>
+        <a href="https://marginalia.calebthede.com/">Marginalia</a>
+        <a href="https://forge.calebthede.com/">Forge</a>
       </div>
       <div class="footer-col">
         <h4 class="footer-col-title">Site</h4>
-        <a href="/">Home</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
+        <a href="https://calebthede.com/">Home</a>
+        <a href="https://calebthede.com/about">About</a>
+        <a href="https://calebthede.com/contact">Contact</a>
       </div>
       <div class="footer-col">
         <h4 class="footer-col-title">Elsewhere</h4>
@@ -163,7 +169,7 @@ let adminMode=false;
   </div>
   <div class="footer-base">
     <span>&copy; 2026 Caleb Thede</span>
-    <span class="footer-base-meta">Celestial Codex</span>
+    <span class="footer-base-meta">est. 2026</span>
   </div>
 </footer>
 <script src="js/init.js"></script>

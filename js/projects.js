@@ -9,9 +9,9 @@ const ATLAS_STATUS = {
 };
 const ATLAS_ORDER = ['in_progress','shipped','archived'];
 const ATLAS_GROUP_LEGEND = {
-  in_progress: ['Underway',  'currently charting'],
-  shipped:     ['Shipped',   'charted & live'],
-  archived:    ['The Archive','past expeditions'],
+  in_progress: ['Underway',  'in active development'],
+  shipped:     ['Shipped',   'live and available'],
+  archived:    ['Archived',  'no longer maintained'],
 };
 
 // ── small charted asterism for text-led plates (no banner) ──
@@ -30,17 +30,17 @@ function atlasGlyph(seed){
 
 function atlasLinks(p){
   let h = '';
-  if(p.link_github)    h += `<a class="apl-link github" href="${p.link_github}" target="_blank" rel="noopener" onclick="event.stopPropagation()">⌥ GitHub</a>`;
-  if(p.link_demo)      h += `<a class="apl-link demo" href="${p.link_demo}" target="_blank" rel="noopener" onclick="event.stopPropagation()">↗ Live</a>`;
-  if(p.link_other_url) h += `<a class="apl-link other" href="${p.link_other_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">◈ ${p.link_other_label || 'Link'}</a>`;
+  if(p.link_github)    h += `<a class="apl-link github" href="${p.link_github}" target="_blank" rel="noopener" onclick="event.stopPropagation()">GitHub</a>`;
+  if(p.link_demo)      h += `<a class="apl-link demo" href="${p.link_demo}" target="_blank" rel="noopener" onclick="event.stopPropagation()">Live →</a>`;
+  if(p.link_other_url) h += `<a class="apl-link other" href="${p.link_other_url}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${p.link_other_label || 'Link'} →</a>`;
   return h;
 }
 
 function atlasStats(p){
   const hs = [
-    p.highlight1_label && { l:p.highlight1_label, v:p.highlight1_value || '—' },
-    p.highlight2_label && { l:p.highlight2_label, v:p.highlight2_value || '—' },
-    p.highlight3_label && { l:p.highlight3_label, v:p.highlight3_value || '—' },
+    p.highlight1_label && { l:p.highlight1_label, v:p.highlight1_value || 'n/a' },
+    p.highlight2_label && { l:p.highlight2_label, v:p.highlight2_value || 'n/a' },
+    p.highlight3_label && { l:p.highlight3_label, v:p.highlight3_value || 'n/a' },
   ].filter(Boolean);
   if(!hs.length) return '';
   return `<div class="apl-stats">${hs.map(h=>
@@ -48,11 +48,9 @@ function atlasStats(p){
   ).join('')}</div>`;
 }
 
-const ATLAS_ROMAN = ['','I','II','III','IV','V','VI','VII','VIII','IX','X','XI','XII','XIII','XIV','XV','XVI','XVII','XVIII','XIX','XX'];
-function atlasRoman(n){ return ATLAS_ROMAN[n] || String(n); }
 
 function atlasAdmin(p){
-  return `<span class="apl-admin admin-only"><a class="apl-link edit" href="/compose" onclick="event.stopPropagation()">✎ Edit in Scriptorium</a></span>`;
+  return `<span class="apl-admin admin-only"><a class="apl-link edit" href="/compose" onclick="event.stopPropagation()">Edit in Scriptorium →</a></span>`;
 }
 
 // overlaid status pill (banner cards)
@@ -73,22 +71,31 @@ function atlasFig(p, s){
     </div>`;
 }
 
+// A spec-sheet row, not a card — a build manifest reads faster than a
+// grid of boxes once there's more than a few entries, and it's a layout
+// no other subdomain uses (Library's a shelf grid, Marginalia's index
+// cards). The featured project below keeps the card treatment as the one
+// deliberate exception, so it still stands apart as the flagship.
 function atlasCard(p, status, idx){
   const s = ATLAS_STATUS[status] || ATLAS_STATUS.shipped;
   const tags = (p.tags||'').split(',').map(t=>t.trim()).filter(Boolean);
-  const hasBanner = !!p.banner_image;
   const links = atlasLinks(p);
-  return `<article class="apl reveal ${s.cls} ${hasBanner ? 'has-banner' : 'no-banner'}" data-proj="${p.id}">
-    ${hasBanner ? atlasFig(p, s) : atlasGlyph(p.id)}
-    <div class="apl-body">
-      ${hasBanner ? '' : atlasChip(s)}
-      <p class="apl-no">Forge · ${atlasRoman(idx+1)}</p>
-      ${p.category ? `<p class="apl-greek">${p.category}</p>` : ''}
-      <h3 class="apl-title">${p.title || 'Untitled'}</h3>
-      ${p.subtitle ? `<p class="apl-sub">${p.subtitle}</p>` : ''}
-      <div class="apl-desc">${p.description || '<em style="opacity:.4">No description yet.</em>'}</div>
-      ${atlasStats(p)}
+  const thumb = p.banner_image
+    ? `<div class="apl-row-thumb" style="background-image:url(${p.banner_image})"></div>`
+    : `<div class="apl-row-thumb apl-row-thumb-no">${String(idx+1).padStart(2,'0')}</div>`;
+  return `<article class="apl-row reveal ${s.cls}" data-proj="${p.id}">
+    ${thumb}
+    <div class="apl-row-main">
+      <div class="apl-row-head">
+        <h3 class="apl-row-title">${p.title || 'Untitled'}</h3>
+        ${atlasChip(s)}
+      </div>
+      ${p.category || p.subtitle ? `<p class="apl-row-sub">${[p.category,p.subtitle].filter(Boolean).join(' · ')}</p>` : ''}
+      <div class="apl-row-desc">${p.description || '<em style="opacity:.4">No description yet.</em>'}</div>
       ${tags.length ? `<div class="apl-tags">${tags.map(t=>`<span class="ptag">${t}</span>`).join('')}</div>` : ''}
+    </div>
+    <div class="apl-row-side">
+      ${atlasStats(p)}
       <div class="apl-foot">${links}${atlasAdmin(p)}</div>
     </div>
   </article>`;
@@ -104,7 +111,7 @@ function atlasFeatured(p){
     ${hasBanner ? atlasFig(p, s) : atlasGlyph(p.id)}
     <div class="apl-body">
       ${hasBanner ? '' : atlasChip(s)}
-      <p class="apl-no feat-no">✦ Featured · the flagship</p>
+      <p class="apl-no feat-no">Featured</p>
       ${p.category ? `<p class="apl-greek">${p.category}</p>` : ''}
       <h3 class="apl-title">${p.title || 'Untitled'}</h3>
       ${p.subtitle ? `<p class="apl-sub">${p.subtitle}</p>` : ''}
@@ -118,9 +125,9 @@ function atlasFeatured(p){
 
 function atlasEmpty(root){
   root.innerHTML = `<div class="atlas-group"><div class="empty-state">
-    <span class="empty-icon">◈</span><h3>No projects charted yet</h3>
+    <h3>No projects yet</h3>
     <p>Add your first entry in the Scriptorium.</p>
-    <a class="btn-primary admin-only" style="margin-top:1rem" href="/compose">✦ Open the Scriptorium →</a>
+    <a class="btn-primary admin-only" style="margin-top:1rem" href="/compose">Open the Scriptorium →</a>
   </div></div>`;
   refreshAdmin(root);
 }
@@ -166,7 +173,7 @@ async function loadProjects(){
     const noun = items.length === 1 ? 'entry' : 'entries';
     html += `<div class="divider reveal">
       <span class="legend">${lead}</span><span class="ln"></span>
-      <span class="star">✦</span><span class="count">${items.length} ${noun}</span><span class="ln"></span>
+      <span class="count">${items.length} ${noun}</span><span class="ln"></span>
       <span class="legend">${trail}</span>
     </div>`;
     html += `<div class="atlas-group"><div class="atlas-grid">`;
