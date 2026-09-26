@@ -177,7 +177,8 @@ async function seedBlueEmberContent(){
   const fresh = BE_SEED_DATA.filter(e=>!have.has(e.kind+':'+e.slug));
   if(!fresh.length){ toast('Every starter entry is already there','error'); return; }
   if(!confirm('Import '+fresh.length+' starter entries as drafts?'+(have.size?' ('+(BE_SEED_DATA.length-fresh.length)+' already exist and will be skipped.)':''))) return;
-  const {error} = await sb.from('be_entries').insert(fresh);
+  const rows = fresh.map(e=>({...e, relationships:e.relationships||[], quotes:e.quotes||[], sections:e.sections||[]}));
+  const {error} = await sb.from('be_entries').insert(rows);
   if(error){ toast('Import failed: '+error.message,'error'); return; }
   toast('Imported '+fresh.length+'. Review and approve each entry.');
   if(typeof loadBlueEmberPage==='function' && document.getElementById('beRoot')) await loadBlueEmberPage();
