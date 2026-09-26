@@ -32,7 +32,7 @@
       </div>
       <div class="ask-messages" id="askMessages">
         <div class="ask-welcome">
-          <p>Hey — I'm JuztCleb. Ask me anything about Caleb's writing, projects, or ideas.</p>
+          <p>Hey, I'm JuztCleb. Ask me anything about Caleb's writing, projects, or ideas.</p>
         </div>
       </div>
       <div class="ask-input-row">
@@ -146,8 +146,8 @@ async function doLogin(){
   else{closeModal('loginModal');document.getElementById('loginPw').value='';document.getElementById('loginError').classList.remove('visible')}
 }
 
-function grantAdmin(){adminMode=true;document.body.classList.add('is-admin');document.getElementById('adminBadge').classList.add('visible');document.getElementById('lockBtn').textContent='🔓';document.getElementById('lockBtn').title='Sign out';ensureScriptoriumLink();toast('Admin mode on')}
-function revokeAdmin(){adminMode=false;document.body.classList.remove('is-admin');document.getElementById('adminBadge').classList.remove('visible');document.getElementById('lockBtn').textContent='🔒';document.getElementById('lockBtn').title='Admin login'}
+function grantAdmin(){adminMode=true;document.body.classList.add('is-admin');document.getElementById('adminBadge')?.classList.add('visible');document.getElementById('adminLink')?.removeAttribute('hidden');const lb=document.getElementById('lockBtn');if(lb){lb.classList.add('is-unlocked');lb.title='Sign out'}ensureScriptoriumLink();if(typeof renderBlueEmberPage==='function')renderBlueEmberPage();toast('Admin mode on')}
+function revokeAdmin(){adminMode=false;document.body.classList.remove('is-admin');document.getElementById('adminBadge')?.classList.remove('visible');document.getElementById('adminLink')?.setAttribute('hidden','');const lb=document.getElementById('lockBtn');if(lb){lb.classList.remove('is-unlocked');lb.title='Admin login'}if(typeof renderBlueEmberPage==='function')renderBlueEmberPage();}
 
 // Inject an admin-only "Scriptorium" link into the nav (desktop + mobile) once.
 // Hidden by default; CSS reveals it under body.is-admin. Safe to call repeatedly.
@@ -181,13 +181,13 @@ function showPage(name,skipHistory){
     window.scrollTo({top:0,behavior:'smooth'});
     return;
   }
-  const urls={home:'/',about:'/about',projects:'/projects',library:'/library',lab:'/lab',contact:'/contact'};
+  const urls={home:'https://calebthede.com/',about:'https://calebthede.com/about',projects:'https://forge.calebthede.com/',library:'https://library.calebthede.com/',lab:'/lab',contact:'https://calebthede.com/contact'};
   window.location.href=urls[name];
 }
 
 // Library deep-link handler (for book/article opens from other pages)
-function navigateToBook(bookId){window.location.href='/library#book/'+bookId;}
-function navigateToArticle(articleId){window.location.href='/marginalia#article/'+articleId;}
+function navigateToBook(bookId){window.location.href='https://library.calebthede.com/#book/'+bookId;}
+function navigateToArticle(articleId){window.location.href='https://marginalia.calebthede.com/#article/'+articleId;}
 
 // Handle library hash routing (called on library page load)
 function handleLibraryHash(){
@@ -391,7 +391,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
 function clearAskMessages(){
   document.getElementById('askMessages').innerHTML = `
     <div class="ask-welcome">
-      <p>Hey — I'm JuztCleb. Ask me anything about Caleb's writing, projects, or ideas.</p>
+      <p>Hey, I'm JuztCleb. Ask me anything about Caleb's writing, projects, or ideas.</p>
     </div>`;
   askHistory = [];
 }
@@ -440,21 +440,21 @@ async function runAsk(query){
 
   // Also build search results links
   let links = '';
-  if(arts.length) links += arts.map(a=>`<a class="ask-result-link" href="/marginalia#article/${a.id}" onclick="closeAsk()">${a.tag?`<span class="ask-result-tag">${a.tag}</span>`:''}${a.title}</a>`).join('');
-  if(chs.length) links += chs.map(c=>`<a class="ask-result-link" href="/library" onclick="closeAsk()"><span class="ask-result-tag">Ch.${c.num||'?'}</span>${c.title}</a>`).join('');
+  if(arts.length) links += arts.map(a=>`<a class="ask-result-link" href="https://marginalia.calebthede.com/#article/${a.id}" onclick="closeAsk()">${a.tag?`<span class="ask-result-tag">${a.tag}</span>`:''}${a.title}</a>`).join('');
+  if(chs.length) links += chs.map(c=>`<a class="ask-result-link" href="https://library.calebthede.com/" onclick="closeAsk()"><span class="ask-result-tag">Ch.${c.num||'?'}</span>${c.title}</a>`).join('');
 
   const context = chunks.length ? `Relevant site content:\n\n${chunks.join('\n\n')}` : '';
 
-  const systemPrompt = `You are JuztCleb — the AI voice of Caleb Thede's personal site at calebthede.com. You are a conversational assistant, not a search engine.
+  const systemPrompt = `You are JuztCleb, the AI voice of Caleb Thede's personal site at calebthede.com. You are a conversational assistant, not a search engine. Never use em dashes in your replies; use commas, colons, or periods instead.
 
 About Caleb:
 - Full-stack developer and QA Engineer at TopNotch LTD
 - B.S. Computer Science (CSU Global, 3.33 GPA), A.S. Psychology (Red Rocks CC, 3.8 GPA)
 - Based in Colorado. Gaming tag: JuztCleb
-- Writing the Blue Ember series — mythology and psychology as a lens for modern human behavior (8 books planned)
+- Writing the Blue Ember series: mythology and psychology as a lens for modern human behavior (8 books planned)
 - Deeply interested in the intersection of CS and psychology: technology built to understand people
 - Pursuing a Master's in Psychology
-- Previously managed a team of 16 at Ziggi's Coffee — his capstone app was born there
+- Previously managed a team of 16 at Ziggi's Coffee, where his capstone app was born
 - Driven by using psychology and technology to help people, especially making mental-health support accessible to lower-income families
 
 Personality: Conversational, warm, direct. Not robotic. Think of yourself as a knowledgeable friend who knows Caleb's work well.
@@ -479,7 +479,7 @@ ${context ? `\n${context}` : ''}`;
     });
 
     const data = await res.json();
-    const text = data.content?.[0]?.text || "I'm not sure about that one — try asking differently.";
+    const text = data.content?.[0]?.text || "I'm not sure about that one. Try asking differently.";
 
     // Add assistant reply to history
     askHistory.push({ role: 'assistant', content: text });
@@ -494,7 +494,7 @@ ${context ? `\n${context}` : ''}`;
   } catch(e){
     const typingEl = document.getElementById(typingId);
     if(typingEl && e.name !== 'AbortError'){
-      typingEl.innerHTML = 'Something went wrong — try again.';
+      typingEl.innerHTML = 'Something went wrong. Try again.';
     }
   }
   messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -659,6 +659,6 @@ document.addEventListener('DOMContentLoaded', () => {
   meta.style.cursor = 'pointer';
   meta.title = 'A small secret';
   meta.addEventListener('click', () => {
-    toast('✦ Made with pride — by a gay man charting his own corner of the cosmos. However you found your way here, you belong under these stars.', 'success', 7000);
+    toast('✦ Made with pride, by a gay man charting his own corner of the cosmos. However you found your way here, you belong under these stars.', 'success', 7000);
   });
 })();

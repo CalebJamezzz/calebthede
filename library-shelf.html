@@ -1,31 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Orbit — Caleb Thede</title>
+  <title>The Bookshelf · Library · Caleb Thede</title>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Lora:ital,wght@0,400;0,600;1,400&family=Courier+Prime:wght@400;700&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="css/main.css"/>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
-  <meta name="description" content="Orbit — interactive experiments and toys you can play with, built and collected by Caleb Thede."/>
+  <meta name="description" content="The Bookshelf: every book in Caleb Thede's Library, led by the Blue Ember series."/>
   <meta name="author" content="Caleb Thede"/>
-  <link rel="canonical" href="https://calebthede.com/lab"/>
+  <link rel="canonical" href="https://library.calebthede.com/shelf"/>
   <meta property="og:type" content="website"/>
   <meta property="og:site_name" content="Caleb Thede"/>
-  <meta property="og:title" content="Orbit — Caleb Thede"/>
-  <meta property="og:description" content="Orbit — interactive experiments and toys you can play with, built and collected by Caleb Thede."/>
-  <meta property="og:url" content="https://calebthede.com/lab"/>
+  <meta property="og:title" content="The Bookshelf · Library · Caleb Thede"/>
+  <meta property="og:description" content="The Bookshelf: every book in Caleb Thede's Library, led by the Blue Ember series."/>
+  <meta property="og:url" content="https://library.calebthede.com/shelf"/>
   <meta property="og:image" content="https://calebthede.com/photo.jpg"/>
   <meta name="twitter:card" content="summary_large_image"/>
-  <meta name="twitter:title" content="Orbit — Caleb Thede"/>
-  <meta name="twitter:description" content="Orbit — interactive experiments and toys you can play with, built and collected by Caleb Thede."/>
+  <meta name="twitter:title" content="The Bookshelf · Library · Caleb Thede"/>
+  <meta name="twitter:description" content="The Bookshelf: every book in Caleb Thede's Library, led by the Blue Ember series."/>
   <meta name="twitter:image" content="https://calebthede.com/photo.jpg"/>
 </head>
-<body data-page="lab">
+<body data-page="library">
 <script>
 if((localStorage.getItem('ct_theme')||'light')!=='dark')document.body.classList.add('light-mode');
 const SUPABASE_URL='https://lbviiggrxzhyxrpivbbi.supabase.co';
@@ -48,18 +48,13 @@ let adminMode=false;
     <div class="modal-actions"><button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
   </div>
 </div>
-<nav>
-  <a class="nav-logo" href="https://calebthede.com/">CT.</a>
-  <ul class="nav-center">
-    <li><a href="https://calebthede.com/">Home</a></li>
-    <li><a href="https://library.calebthede.com/">Library</a></li>
-    <li><a href="https://marginalia.calebthede.com/">Marginalia</a></li>
-    <li><a href="https://forge.calebthede.com/">Forge</a></li>
-    <li><a href="https://calebthede.com/about">About</a></li>
-    <li><a href="https://calebthede.com/contact">Contact</a></li>
-  </ul>
-  <div class="nav-right">
+<header class="lib-head">
+  <div class="lib-head-mark">
+    <a class="lib-head-hub" href="https://calebthede.com/">CT.</a><span class="lib-head-sep">/</span><a class="lib-head-name" href="https://library.calebthede.com/">Library</a><span class="lib-head-sep">/</span><span class="lib-head-crumb-current">Bookshelf</span>
+  </div>
+  <div class="lib-head-controls">
     <span class="admin-badge" id="adminBadge">Admin</span>
+    <a class="hero-cta admin-link" id="adminLink" href="/compose" hidden>Scriptorium →</a>
     <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark" aria-label="Toggle light and dark mode">
       <svg class="icon-moon" viewBox="0 0 18 18" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 10.8A6 6 0 1 1 7.2 3.5a5 5 0 0 0 7.3 7.3Z"/></svg>
       <svg class="icon-sun" viewBox="0 0 18 18" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="9" cy="9" r="3.2"/><path d="M9 1.8v1.6M9 14.6v1.6M16.2 9h-1.6M3.4 9H1.8M14.1 3.9l-1.1 1.1M5 12.1l-1.1 1.1M14.1 14.1l-1.1-1.1M5 5.9 3.9 4.8"/></svg>
@@ -68,47 +63,73 @@ let adminMode=false;
       <svg class="icon-locked" viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="10" height="7.4" rx="1.3"/><path d="M6.2 8V5.6a2.8 2.8 0 0 1 5.6 0V8"/></svg>
       <svg class="icon-unlocked" viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="10" height="7.4" rx="1.3"/><path d="M6.2 8V5.6a2.8 2.8 0 0 1 5.3-1.3"/></svg>
     </button>
-    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
   </div>
-</nav>
-<div class="mobile-drawer" id="mobileDrawer">
-  <a class="mobile-nav-item" href="https://calebthede.com/">Home</a>
-  <a class="mobile-nav-item" href="https://library.calebthede.com/">Library</a>
-  <a class="mobile-nav-item" href="https://marginalia.calebthede.com/">Marginalia</a>
-  <a class="mobile-nav-item" href="https://forge.calebthede.com/">Forge</a>
-  <a class="mobile-nav-item" href="https://calebthede.com/about">About</a>
-  <a class="mobile-nav-item" href="https://calebthede.com/contact">Contact</a>
-  <div class="mobile-drawer-footer">
-    <div class="mobile-drawer-links">
-      <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
-      <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
-    </div>
-    <button class="lock-btn" onclick="toggleAdmin();closeMobileNav()" style="font-size:.75rem">🔒 Admin</button>
-  </div>
-</div>
+</header>
 <main>
-  <header class="orbit-hero reveal">
-    <div class="orbit-hero-text">
-      <div class="plate-mark"><span class="rule"></span><span class="legend">Atlas · Chart II — Orbit</span></div>
-      <h1 class="orbit-headline">Half-formed, <em>in motion.</em></h1>
-      <p class="orbit-lead">Experiments you can actually touch — interactive toys I've built, and the clever tests I find out in the wild and want to keep.</p>
-      <p class="orbit-body">Orbit is the looser half of the Atlas: things that aren't finished products but are worth charting anyway. Some are <strong>built here</strong> — small interactive pieces you can launch right on the page. Others are <strong>found</strong> — experiments and demos from elsewhere that earned a place on the map. Topics overlap freely: a thing can be <strong>psychology</strong> and a <strong>game</strong> at once.</p>
-      <div class="ink-tags">
-        <span class="ink logic"><span class="dot"></span>Touch it, break it</span>
-        <span class="ink depth"><span class="dot"></span>Think it through</span>
+  <div id="libBrowse">
+    <div class="lib-outer lib-outer-shelf">
+      <div class="lib-section-header">
+        <h2>Bookshelf</h2>
+        <div style="display:flex;align-items:center;gap:.6rem">
+          <div class="inline-search-wrap">
+            <input class="inline-search" id="bookSearch" type="text" placeholder="Search books…" oninput="filterBooksInline(this.value)"/>
+            <span class="inline-search-icon">⌕</span>
+          </div>
+          <a class="btn-primary admin-only" href="/compose">Manage in Scriptorium →</a>
+        </div>
+      </div>
+      <div id="booksContainer"></div>
+      <div class="empty-state" id="booksEmpty" style="display:none;flex-direction:column;align-items:center"><span class="empty-icon">📖</span><h3>No books yet</h3><p>Books appear here once they are added.</p><a class="btn-primary admin-only" style="margin-top:1rem" href="/compose">Add one in the Scriptorium →</a></div>
+    </div>
+  </div>
+  <div id="libBookDetail" style="display:none">
+    <div class="book-detail-header">
+      <button class="back-btn" onclick="closeBookDetail()">← Back to the Bookshelf</button>
+      <div class="book-detail-hero">
+        <div class="book-detail-side">
+          <div class="book-spine book-detail-cover" id="bookDetailCover"></div>
+          <div id="bookBuyBox" class="book-buy-box" style="display:none">
+            <p class="book-buy-box-label">Available now</p>
+            <div id="bookBuyRow" class="book-buy-row"></div>
+          </div>
+        </div>
+        <div class="book-detail-info">
+          <h1 class="book-detail-title" id="bookDetailTitle"></h1>
+          <p class="book-detail-desc" id="bookDetailDesc"></p>
+          <p class="lib-world-cta lib-world-cta-book" id="bookCompanionWrap" style="display:none"><a class="book-world-link" id="bookCompanionLink" href="#"></a></p>
+          <div class="book-detail-actions">
+            <a class="btn-sm admin-only" href="/compose">Manage in Scriptorium →</a>
+            <button class="btn-sm danger admin-only" onclick="deleteCurrentBook()">Delete Book</button>
+          </div>
+        </div>
       </div>
     </div>
-    <aside class="orbit-legend">
-      <div class="olc-cap"><span class="t">orbit</span><span class="coord">/ˈôr-bət/ · n.</span></div>
-      <p class="olc-def"><span class="pos">noun.</span>a recurring path around a center of gravity; here, the ideas that keep circling — sketches, toys, and tests still finding their shape.</p>
-      <div class="olc-row built"><span class="k">Built here</span><span class="v" id="orbCountBuilt">·</span></div>
-      <div class="olc-row finds"><span class="k">Found</span><span class="v" id="orbCountFinds">·</span></div>
-    </aside>
-  </header>
-  <div class="orbit-admin-bar"><a class="btn-primary admin-only" href="/compose">✦ Manage in the Scriptorium →</a></div>
-  <div id="orbitRoot"></div>
+
+    <!-- Promo view: excerpt, reviews, launch note -->
+    <div id="libBookPromo" class="book-promo">
+
+      <div id="bookExcerptSection" class="book-promo-section" style="display:none">
+        <p class="book-promo-eyebrow">Read an excerpt</p>
+        <div id="bookExcerptBody" class="book-prose"></div>
+      </div>
+
+      <div id="bookReviewsSection" class="book-promo-section" style="display:none">
+        <p class="book-promo-eyebrow">Praise</p>
+        <div id="bookReviewsBody" class="book-reviews"></div>
+      </div>
+
+      <div id="bookLaunchSection" class="book-promo-section" style="display:none">
+        <p class="book-promo-eyebrow">Behind the book</p>
+        <div id="bookLaunchBody" class="book-prose"></div>
+      </div>
+
+      <div id="bookPromoEmpty" class="empty-state" style="display:none">
+        <p class="non-admin-only" style="font-family:'JetBrains Mono',monospace;font-size:.75rem;letter-spacing:.1em;opacity:.6">Coming soon.</p>
+        <p class="admin-only" style="opacity:.6">Add an excerpt, reviews, or a launch note in the Scriptorium.</p>
+      </div>
+    </div>
+
+  </div>
 </main>
 <footer>
   <div class="footer-grid">
@@ -156,7 +177,8 @@ let adminMode=false;
 <script src="js/init.js"></script>
 <script src="js/theme_nav.js"></script>
 <script src="js/easter_eggs.js"></script>
-<script src="js/lab.js"></script>
-<script>document.addEventListener("DOMContentLoaded",()=>{ initReveal(); upgradeSpinners(); handleLabHash(); loadLab(); });</script>
+<script src="js/library.js"></script>
+<script>document.addEventListener("DOMContentLoaded",()=>{loadBooks();handleLibraryHash();});</script>
+
 </body>
 </html>

@@ -1,28 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Marginalia — Caleb Thede</title>
+  <title>Marginalia · Caleb Thede</title>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <link rel="preconnect" href="https://fonts.googleapis.com"/>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Playfair+Display:ital,wght@0,500;0,700;1,500&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&family=JetBrains+Mono:wght@300;400;500&family=Lato:wght@300;400;700&display=swap" rel="stylesheet"/>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.snow.css" rel="stylesheet"/>
   <link rel="stylesheet" href="css/main.css"/>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
   <meta name="description" content="Short essays and notes by Caleb Thede on myth, psychology, code, and the space between them."/>
   <meta name="author" content="Caleb Thede"/>
-  <link rel="canonical" href="https://calebthede.com/marginalia"/>
+  <link rel="canonical" href="https://marginalia.calebthede.com/"/>
   <meta property="og:type" content="website"/>
   <meta property="og:site_name" content="Caleb Thede"/>
-  <meta property="og:title" content="Marginalia — Caleb Thede"/>
+  <meta property="og:title" content="Marginalia · Caleb Thede"/>
   <meta property="og:description" content="Short essays and notes by Caleb Thede on myth, psychology, code, and the space between them."/>
-  <meta property="og:url" content="https://calebthede.com/marginalia"/>
+  <meta property="og:url" content="https://marginalia.calebthede.com/"/>
   <meta property="og:image" content="https://calebthede.com/photo.jpg"/>
   <meta name="twitter:card" content="summary_large_image"/>
-  <meta name="twitter:title" content="Marginalia — Caleb Thede"/>
+  <meta name="twitter:title" content="Marginalia · Caleb Thede"/>
   <meta name="twitter:description" content="Short essays and notes by Caleb Thede on myth, psychology, code, and the space between them."/>
   <meta name="twitter:image" content="https://calebthede.com/photo.jpg"/>
 </head>
@@ -49,66 +48,42 @@ let adminMode=false;
     <div class="modal-actions"><button class="btn-primary" id="loginBtn" onclick="doLogin()">Sign In</button><button class="btn-ghost" onclick="closeModal('loginModal')">Cancel</button></div>
   </div>
 </div>
-<nav>
-  <a class="nav-logo" href="/">CT.</a>
-  <ul class="nav-center">
-    <li><a href="/">Home</a></li>
-    <li><a href="/about">About</a></li>
-    <li class="nav-deck"><a href="/codex" class="deck-label active">Codex<span class="deck-caret">▾</span></a>
-      <div class="nav-dropdown">
-        <a href="/library"><span class="dd-t">The Library</span><span class="dd-s">Books &amp; the Blue Ember series</span></a>
-        <a href="/marginalia"><span class="dd-t">Marginalia</span><span class="dd-s">Notes &amp; short writing</span></a>
-      </div></li>
-    <li class="nav-deck"><a href="/atlas" class="deck-label">Atlas<span class="deck-caret">▾</span></a>
-      <div class="nav-dropdown">
-        <a href="/projects"><span class="dd-t">The Forge</span><span class="dd-s">Tools &amp; things built</span></a>
-        <a href="/lab"><span class="dd-t">Orbit</span><span class="dd-s">Experiments in motion</span></a>
-      </div></li>
-    <li><a href="/contact">Contact</a></li>
-  </ul>
-  <div class="nav-right">
+<header class="lib-head">
+  <div class="lib-head-mark">
+    <a class="lib-head-hub" href="https://calebthede.com/">CT.</a><span class="lib-head-sep">/</span><span class="lib-head-crumb-current">Marginalia</span>
+  </div>
+  <div class="lib-head-controls">
     <span class="admin-badge" id="adminBadge">Admin</span>
-    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark">🌙</button>
-    <button class="lock-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login">🔒</button>
-    <button class="hamburger" id="hamburger" onclick="toggleMobileNav()" aria-label="Menu">
-      <span></span><span></span><span></span>
+    <a class="hero-cta admin-link" id="adminLink" href="/compose" hidden>Scriptorium →</a>
+    <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle light/dark" aria-label="Toggle light and dark mode">
+      <svg class="icon-moon" viewBox="0 0 18 18" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 10.8A6 6 0 1 1 7.2 3.5a5 5 0 0 0 7.3 7.3Z"/></svg>
+      <svg class="icon-sun" viewBox="0 0 18 18" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><circle cx="9" cy="9" r="3.2"/><path d="M9 1.8v1.6M9 14.6v1.6M16.2 9h-1.6M3.4 9H1.8M14.1 3.9l-1.1 1.1M5 12.1l-1.1 1.1M14.1 14.1l-1.1-1.1M5 5.9 3.9 4.8"/></svg>
+    </button>
+    <button class="icon-btn" id="lockBtn" onclick="toggleAdmin()" title="Admin login" aria-label="Admin login">
+      <svg class="icon-locked" viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="8" width="10" height="7.4" rx="1.3"/><path d="M6.2 8V5.6a2.8 2.8 0 0 1 5.6 0V8"/></svg>
+      <svg class="icon-unlocked" viewBox="0 0 18 18" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><rect x="4" y="8" width="10" height="7.4" rx="1.3"/><path d="M6.2 8V5.6a2.8 2.8 0 0 1 5.3-1.3"/></svg>
     </button>
   </div>
-</nav>
-<div class="mobile-drawer" id="mobileDrawer">
-  <a class="mobile-nav-item" href="/">Home</a>
-  <a class="mobile-nav-item" href="/about">About</a>
-  <div class="mobile-group">
-    <span class="mobile-group-label">Codex</span>
-    <a class="mobile-nav-sub" href="/library">The Library</a>
-    <a class="mobile-nav-sub active" href="/marginalia">Marginalia</a>
-  </div>
-  <div class="mobile-group">
-    <span class="mobile-group-label">Atlas</span>
-    <a class="mobile-nav-sub" href="/projects">The Forge</a>
-    <a class="mobile-nav-sub" href="/lab">Orbit</a>
-  </div>
-  <a class="mobile-nav-item" href="/contact">Contact</a>
-  <div class="mobile-drawer-footer">
-    <div class="mobile-drawer-links">
-      <a href="https://github.com/CalebJamezzz" target="_blank">GitHub</a>
-      <a href="https://www.linkedin.com/in/caleb-thede-8a6a8221b/" target="_blank">LinkedIn</a>
-    </div>
-    <button class="lock-btn" onclick="toggleAdmin();closeMobileNav()" style="font-size:.75rem">🔒 Admin</button>
-  </div>
-</div>
+</header>
 <main>
   <div id="libBrowse">
     <header class="lib-hero-book reveal">
-      <div class="plate-mark"><span class="rule"></span><span class="legend">Codex · Chart II — Marginalia</span></div>
       <h1 class="lib-headline">Notes in <em>the margins.</em></h1>
-      <p class="lib-lead">The shorter pieces — arguments, observations, and ideas meant to be read in one sitting. The writing that didn't fit between two covers.</p>
+      <p class="lib-lead">The shorter pieces: arguments, observations, and ideas meant to be read in one sitting. The writing that didn't fit between two covers.</p>
       <div class="lib-hero-stats">
         <span class="lhs"><span class="lhs-v" id="libCountMarg">·</span><span class="lhs-k">entries</span></span>
-        <span class="lhs-sep"></span>
-        <a class="lhs lhs-link" href="/library"><span class="lhs-v">→</span><span class="lhs-k">The Library · long-form work</span></a>
       </div>
     </header>
+
+    <!-- LATEST WRITING · relocated here from the old homepage -->
+    <section class="section latest" id="latestSection" style="display:none">
+      <div class="sec-head reveal">
+        <div><p class="legend" style="margin-bottom:.6rem">Freshest first</p><h2 class="sec-title">Latest <em>writing</em></h2></div>
+        <p class="sec-note">The notebook stays open.</p>
+      </div>
+      <div class="writing-cards" id="latestWriting"></div>
+    </section>
+
     <div class="lib-outer">
       <div class="lib-section-header">
         <h2>Marginalia</h2>
@@ -117,12 +92,12 @@ let adminMode=false;
             <input class="inline-search" id="articleSearch" type="text" placeholder="Search marginalia…" oninput="filterArticlesInline(this.value)"/>
             <span class="inline-search-icon">⌕</span>
           </div>
-          <button class="btn-primary admin-only" onclick="openArticleModal()">+ New Entry</button>
+          <a class="btn-primary admin-only" href="/compose">Write in the Scriptorium →</a>
         </div>
       </div>
       <div id="articleTagFilters" style="display:none;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem"></div>
       <div class="articles-grid" id="articlesGrid"></div>
-      <div class="empty-state" id="articlesEmpty" style="display:none"><span class="empty-icon">✍️</span><h3>Nothing in the margins yet</h3><p>Short pieces, notes, and ideas will collect here.</p><button class="btn-primary admin-only" style="margin-top:1rem" onclick="openArticleModal()">+ New Entry</button></div>
+      <div class="empty-state" id="articlesEmpty" style="display:none"><span class="empty-icon">✍️</span><h3>Nothing in the margins yet</h3><p>Short pieces, notes, and ideas will collect here.</p><a class="btn-primary admin-only" style="margin-top:1rem" href="/compose">Write in the Scriptorium →</a></div>
     </div>
   </div>
   <div id="libArticleReader" style="display:none">
@@ -133,7 +108,7 @@ let adminMode=false;
         <div style="display:flex;align-items:center;gap:.6rem;flex-shrink:0">
           <button style="background:none;border:1px solid var(--border);border-radius:20px;cursor:pointer;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);padding:.32rem 1rem;transition:all .2s;white-space:nowrap" onclick="shareArticle()" onmouseover="this.style.borderColor='var(--teal)';this.style.color='var(--teal)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-dim)'">↗ share</button>
           <button class="rfb-btn" style="border:1px solid rgba(200,164,90,.3);border-radius:20px;padding:.32rem 1rem;color:var(--gold)" onclick="enterReaderMode()">⊙ focus</button>
-          <button class="btn-sm admin-only" id="readerEditBtn">Edit</button>
+          <a class="btn-sm admin-only" href="/compose">Edit in Scriptorium</a>
           <button class="btn-sm danger admin-only" id="readerDeleteBtn">Delete</button>
         </div>
       </div>
@@ -148,7 +123,7 @@ let adminMode=false;
 <footer>
   <div class="footer-grid">
     <div class="footer-brand">
-      <a href="/" class="footer-logo">CT.</a>
+      <a href="https://calebthede.com/" class="footer-logo">CT.</a>
       <p class="footer-tagline">Stories, essays, and things I build &mdash; written and read in the open.</p>
       <div class="footer-newsletter">
         <span class="footer-newsletter-label">New writing &rarr;</span>
@@ -163,20 +138,16 @@ let adminMode=false;
     </div>
     <div class="footer-nav">
       <div class="footer-col">
-        <h4 class="footer-col-title">Codex</h4>
-        <a href="/library">Library</a>
-        <a href="/marginalia">Marginalia</a>
-      </div>
-      <div class="footer-col">
-        <h4 class="footer-col-title">Atlas</h4>
-        <a href="/projects">Forge</a>
-        <a href="/lab">Orbit</a>
+        <h4 class="footer-col-title">Explore</h4>
+        <a href="https://library.calebthede.com/">Library</a>
+        <a href="https://marginalia.calebthede.com/">Marginalia</a>
+        <a href="https://forge.calebthede.com/">Forge</a>
       </div>
       <div class="footer-col">
         <h4 class="footer-col-title">Site</h4>
-        <a href="/">Home</a>
-        <a href="/about">About</a>
-        <a href="/contact">Contact</a>
+        <a href="https://calebthede.com/">Home</a>
+        <a href="https://calebthede.com/about">About</a>
+        <a href="https://calebthede.com/contact">Contact</a>
       </div>
       <div class="footer-col">
         <h4 class="footer-col-title">Elsewhere</h4>
@@ -189,51 +160,9 @@ let adminMode=false;
   </div>
   <div class="footer-base">
     <span>&copy; 2026 Caleb Thede</span>
-    <span class="footer-base-meta">Celestial Codex</span>
+    <span class="footer-base-meta">est. 2026</span>
   </div>
 </footer>
-<!-- ARTICLE MODAL -->
-<div class="modal-overlay" id="articleModal">
-  <div class="modal ch-modal-wide">
-    <button class="modal-close" onclick="closeModal('articleModal')">✕</button>
-    <h2 class="modal-title" id="articleModalTitle">New Article</h2>
-    <input type="hidden" id="editArticleId"/>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1rem">
-      <div class="mf" style="margin:0"><label>Title</label><input type="text" id="articleTitle" placeholder="Article title"/></div>
-      <div class="mf" style="margin:0"><label>Tag / Category</label><input type="text" id="articleTag" placeholder="e.g. Psychology, Mythology, Essay"/></div>
-    </div>
-    <div class="mf"><label>Banner Image URL</label><input type="text" id="articleBanner" placeholder="https://example.com/image.jpg"/></div>
-    <div class="ch-editor-wrap">
-      <div class="ch-editor-pane">
-        <div class="ch-editor-toolbar">
-          <span class="ch-toolbar-label">Editor</span>
-          <div style="display:flex;gap:.4rem;align-items:center">
-            <button class="ch-tb-btn" onclick="insertArticleFmt('###')" title="Subheading">H</button>
-            <button class="ch-tb-btn" onclick="insertArticleFmt('> ')" title="Blockquote">"</button>
-            <button class="ch-paste ch-tb-btn" onclick="triggerArticlePasteClean()">⊕ Paste from Docs</button>
-            <button class="ch-tb-btn" onclick="toggleArticleHtmlImport()" title="Import raw HTML" id="htmlImportToggle" style="border-color:rgba(200,164,90,.4);color:var(--gold)">&lt;/&gt; Import HTML</button>
-          </div>
-        </div>
-        <div id="articleHtmlImport" style="display:none;padding:.8rem 0">
-          <textarea id="articleHtmlRaw" placeholder="Paste raw HTML here, then click Import…" style="width:100%;height:140px;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:6px;padding:.8rem;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.78rem;resize:vertical"></textarea>
-          <div style="display:flex;gap:.6rem;margin-top:.5rem">
-            <button class="btn-primary" style="padding:.4rem 1.2rem;font-size:.78rem" onclick="importArticleHtml()">Import</button>
-            <button class="btn-ghost" style="padding:.4rem 1.2rem;font-size:.78rem" onclick="toggleArticleHtmlImport()">Cancel</button>
-          </div>
-        </div>
-        <div id="articleContentEditor" class="quill-editor-wrap"></div><input type="hidden" id="articleContent"/>
-        <div class="ch-editor-footer"><span id="articleWordCount">0 words</span><span id="articleReadTime">~0 min read</span></div>
-      </div>
-      <div class="ch-preview-pane">
-        <div class="ch-editor-toolbar"><span class="ch-toolbar-label">Preview</span></div>
-        <div class="ch-preview-body reader-body" id="articlePreviewBody" style="padding:1.5rem;margin:0;max-width:100%;min-height:200px"></div>
-      </div>
-    </div>
-    <div class="modal-actions"><button class="btn-primary" id="articleSaveBtn" onclick="saveArticle()">Save Article</button><button class="btn-ghost" onclick="closeModal('articleModal')">Cancel</button></div>
-  </div>
-</div>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/quill/1.3.7/quill.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
 <script src="js/init.js"></script>
 <script src="js/theme_nav.js"></script>
 <script src="js/easter_eggs.js"></script>

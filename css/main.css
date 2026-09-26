@@ -50,9 +50,20 @@ body .night-panel::after{content:'';position:absolute;inset:0;pointer-events:non
 .status-card,.world-card,.book-teaser-inner,.note-inner,.recent-inner,.pc,.vc,.stat,.mission-card{box-shadow:var(--card-shadow)}
 .world-card,.book-teaser-inner,.pc,.vc,.stat{transition:border-color .35s,transform .35s,box-shadow .35s}
 .world-card:hover,.book-teaser-inner:hover,.pc:hover,.vc:hover,.stat:hover{box-shadow:var(--card-shadow-hover)}
-/* THEME TOGGLE */
-.theme-btn{background:none;border:1px solid var(--border);border-radius:4px;color:var(--text-dim);font-size:.85rem;cursor:pointer;padding:.35rem .55rem;transition:all .2s;line-height:1}
-.theme-btn:hover{border-color:var(--gold);color:var(--gold)}
+/* ICON BUTTONS — theme toggle + admin lock. Hand-drawn inline SVGs, not
+   emoji, so they pick up the theme tokens via currentColor. */
+.icon-btn{width:2.1rem;height:2.1rem;display:flex;align-items:center;justify-content:center;background:none;border:1px solid var(--border);border-radius:50%;color:var(--text-dim);font-size:.85rem;cursor:pointer;transition:border-color .2s,color .2s}
+.icon-btn:hover,.icon-btn:focus-visible{border-color:var(--gold);color:var(--gold)}
+.icon-btn svg{display:block}
+.icon-btn .icon-sun,.icon-btn .icon-unlocked{display:none}
+.icon-btn.is-dark .icon-moon{display:none}
+.icon-btn.is-dark .icon-sun{display:block}
+.icon-btn.is-unlocked .icon-locked{display:none}
+.icon-btn.is-unlocked .icon-unlocked{display:block}
+/* text+emoji admin button in the mobile drawer footer — a different usage
+   than the circular icon-only .icon-btn in the header */
+.lock-btn{background:none;border:1px solid var(--border);border-radius:4px;color:var(--text-dim);font-size:.85rem;cursor:pointer;padding:.35rem .6rem;transition:all .2s}
+.lock-btn:hover{border-color:var(--gold);color:var(--gold)}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:'Lato',sans-serif;font-weight:300;line-height:1.7;overflow-x:hidden}
 ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--gold-dim);border-radius:2px}
@@ -81,26 +92,10 @@ body.light-mode nav .nav-center a.active{color:var(--gold)}
 body.is-admin .nav-scriptorium{display:block}
 .nav-center .nav-scriptorium a{color:var(--gold)}
 .nav-center .nav-scriptorium a::after{background:var(--gold)}
-/* ── deck dropdowns (Codex / Atlas) ── */
-.nav-deck{position:relative}
-.deck-label{display:inline-flex;align-items:center;gap:.3rem}
-.deck-caret{font-size:.5rem;opacity:.6;transition:transform .25s,opacity .25s}
-.nav-deck:hover .deck-caret{opacity:1;transform:translateY(1px)}
-.nav-dropdown{position:absolute;top:100%;left:50%;transform:translateX(-50%) translateY(10px);min-width:248px;background:var(--bg2,#15121f);border:1px solid var(--border);border-radius:8px;padding:.45rem;display:flex;flex-direction:column;gap:.1rem;opacity:0;visibility:hidden;transition:opacity .25s ease,transform .25s ease;box-shadow:0 22px 54px -26px rgba(0,0,0,.55);z-index:101;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}
-.nav-dropdown::before{content:'';position:absolute;top:-12px;left:0;right:0;height:12px}
-.nav-deck:hover .nav-dropdown,.nav-deck:focus-within .nav-dropdown{opacity:1;visibility:visible;transform:translateX(-50%) translateY(8px)}
-.nav-dropdown a{display:flex;flex-direction:column;gap:.2rem;padding:.6rem .8rem;border-radius:5px;text-decoration:none;text-transform:none;letter-spacing:0;transition:background .2s}
-.nav-dropdown a::after{display:none}
-.nav-dropdown a:hover{background:rgba(var(--gold-rgb),.08)}
-.nav-dropdown .dd-t{font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:400;color:var(--text);line-height:1}
-.nav-dropdown a:hover .dd-t{color:var(--gold)}
-.nav-dropdown .dd-s{font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.12em;text-transform:uppercase;color:var(--text-dim);opacity:.8}
-body.light-mode .nav-dropdown{background:rgba(247,242,230,.99);border-color:rgba(120,90,50,.22)}
-body.light-mode .nav-dropdown .dd-t{color:#3a3027}
-body.light-mode .nav-dropdown .dd-s{color:#7a6a52}
-body.light-mode .nav-dropdown a:hover .dd-t{color:#8f6230}
-.lock-btn{background:none;border:1px solid var(--border);border-radius:4px;color:var(--text-dim);font-size:.85rem;cursor:pointer;padding:.35rem .6rem;transition:all .2s}
-.lock-btn:hover{border-color:var(--gold);color:var(--gold)}
+/* .mobile-nav-item{display:block} (below) beats the hide rule above at
+   equal specificity by source order — pin it back down here. */
+.mobile-drawer .nav-scriptorium{display:none}
+body.is-admin .mobile-drawer .nav-scriptorium{display:block}
 /* HAMBURGER */
 .hamburger{display:none;flex-direction:column;justify-content:center;gap:5px;width:36px;height:36px;padding:6px;background:none;border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:border-color .2s;flex-shrink:0}
 .hamburger:hover{border-color:var(--gold)}
@@ -114,12 +109,6 @@ body.light-mode .nav-dropdown a:hover .dd-t{color:#8f6230}
 .mobile-nav-item:hover,.mobile-nav-item.active{color:var(--gold)}
 .mobile-nav-item::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:1px;background:var(--gold);transition:width .3s}
 .mobile-nav-item:hover::after{width:60%}
-/* mobile deck groups */
-.mobile-group{display:flex;flex-direction:column;align-items:center;gap:.1rem;margin:.5rem 0}
-.mobile-group-label{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.26em;text-transform:uppercase;color:var(--teal);opacity:.85;margin-bottom:.2rem}
-.mobile-nav-sub{font-family:'Cormorant Garamond',serif;font-size:clamp(1.3rem,5vw,1.9rem);font-weight:300;color:var(--text-dim);text-decoration:none;padding:.15rem 2rem;transition:color .2s;text-align:center}
-.mobile-nav-sub:hover,.mobile-nav-sub.active{color:var(--gold)}
-body.light-mode .mobile-nav-sub{color:var(--text-dim)}
 .mobile-drawer-footer{margin-top:auto;padding-top:2rem;display:flex;flex-direction:column;align-items:center;gap:.8rem;width:100%}
 .mobile-drawer-links{display:flex;gap:2rem}
 .mobile-drawer-links a{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);text-decoration:none;transition:color .2s}
@@ -461,7 +450,7 @@ footer{
 .about-photo-corner.br{bottom:0;right:0;border-width:0 2px 2px 0;border-radius:0 0 3px 0}
 
 .contact-pills{display:flex;flex-direction:column;gap:.6rem;margin-top:2rem}
-.cpill{display:flex;align-items:center;gap:.8rem;padding:.65rem 1rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;text-decoration:none;transition:border-color .25s,transform .25s}
+.cpill{display:flex;align-items:center;gap:.8rem;padding:.65rem 1rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;text-decoration:none;transition:border-color .25s,transform .25s;min-width:0}
 .cpill:hover{border-color:var(--gold);transform:translateX(3px)}
 .cpill-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .cpill-icon.li{background:rgba(10,102,194,.15);border:1px solid rgba(10,102,194,.3);color:#4A9FD5}
@@ -470,12 +459,20 @@ footer{
 .cpill-icon.dc{background:rgba(88,101,242,.12);border:1px solid rgba(88,101,242,.3);color:#7289DA}
 .cpill-icon.em{background:rgba(var(--gold-rgb),.1);border:1px solid rgba(var(--gold-rgb),.25);color:var(--gold)}
 .cpill-label{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);width:64px;flex-shrink:0}
-.cpill-val{font-size:.85rem;color:var(--text)}
+.cpill-val{font-size:.85rem;color:var(--text);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
 .contact-socials{margin-top:2.5rem;display:flex;flex-direction:column;gap:.75rem;border-top:1px solid var(--border);padding-top:2rem}
-.csocial-row{display:flex;gap:.75rem;justify-content:center}
-.csocial-row-2 .cpill{flex:0 1 calc(50% - .375rem)}
-.csocial-row-3 .cpill{flex:0 1 calc(33.333% - .5rem)}
+.csocial-row{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.csocial-row-2 .cpill{flex:1 1 calc(50% - .375rem)}
+.csocial-row-3 .cpill{flex:1 1 calc(33.333% - .5rem)}
+/* .contact-center caps at 680px, so even a tablet viewport only ever gives
+   the 3-pill row ~550px to share — not enough room for icon+label+value at
+   a third width each. Stack every pill full-width below desktop instead of
+   letting the value text truncate into illegibility. */
+@media(max-width:900px){
+  .csocial-row-2 .cpill,
+  .csocial-row-3 .cpill{flex:1 1 100%}
+}
 
 @keyframes rainbowCycle{
   0%  {--teal:#ff6b6b;--gold:#ff6b6b;--teal-dim:#cc4444;--gold-dim:#cc4444}
@@ -599,9 +596,7 @@ footer{
 .articles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1.8rem}
 .article-card{background:var(--bg2);border-radius:8px;cursor:pointer;position:relative;overflow:hidden;transition:transform .3s,box-shadow .3s;display:flex;flex-direction:column;box-shadow:0 2px 12px rgba(0,0,0,.25)}
 .article-card:hover{transform:translateY(-5px);box-shadow:0 12px 32px rgba(0,0,0,.4)}
-.article-card-banner{position:relative;height:110px;overflow:hidden;flex-shrink:0}
-.article-card-banner svg{position:absolute;inset:0;width:100%;height:100%}
-.article-card-tag{position:absolute;bottom:.7rem;left:1.1rem;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;padding:.2rem .55rem;border-radius:2px;border:1px solid;z-index:2}
+.article-card-banner{height:130px;flex-shrink:0;background-size:cover;background-position:center;border-bottom:1px solid var(--border)}
 .article-card-body{padding:1.3rem 1.4rem 1.4rem;flex:1;display:flex;flex-direction:column;border-top:none}
 .article-card-body::before{content:'';display:block;width:32px;height:1px;background:var(--gold);opacity:.5;margin-bottom:1rem}
 .article-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:400;color:var(--text);margin-bottom:.7rem;line-height:1.2}
@@ -1066,6 +1061,14 @@ body.reader-locked{overflow:hidden}
 .book-prose p{margin:0 0 1.2em}
 .book-prose p:first-of-type::first-letter{font-size:2.6em;line-height:.75;float:left;padding:.03em .1em 0 0;color:var(--gold);font-weight:500}
 .book-prose blockquote{border-left:2px solid var(--gold);padding:.2rem 0 .2rem 1.2rem;margin:1.4rem 0;color:var(--text-dim);font-style:italic}
+/* Excerpts get pasted in from Word/Google Docs and often carry a baked-in
+   literal color:#000 (and sometimes background-color) on every span —
+   invisible in light mode, black-on-black in dark mode. The container's
+   own color never overrides that, since inline styles win over inherited
+   ones. Force it here so pasted content can't break legibility regardless
+   of what color it arrived with. */
+.book-prose *,
+.book-review-quote *{color:inherit !important;background-color:transparent !important}
 .book-reviews{display:flex;flex-direction:column;gap:1.4rem;max-width:760px;margin-left:auto;margin-right:auto}
 .book-review-quote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.2rem;line-height:1.6;color:var(--text);border-left:2px solid rgba(var(--gold-rgb),.4);padding-left:1.2rem}
 .book-review-source{display:block;margin-top:.5rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-dim);font-style:normal}
@@ -1549,325 +1552,459 @@ body.ask-open{overflow:hidden}
 }
 
 /* ══════════════════════════════════════════════════════════
-   CELESTIAL CODEX — HOMEPAGE
-   A faithful port of the codex prototype, fully scoped to the
-   home page so the shared stylesheet can't leak into other pages.
-   Light mode = the dusk scroll (parchment day → deep night).
-   Dark mode  = full night (the toggle still works).
+   HUB HOMEPAGE — the prototype's exact palette (aged-paper light,
+   near-black dark), not the site's generic teal/gold tokens. Flat
+   background, no ambient glow or texture — those belonged to the
+   old, much longer celestial page.
    ══════════════════════════════════════════════════════════ */
-body[data-page="home"]{position:relative}
-body[data-page="home"] main{position:relative;z-index:1}
-
-/* ── the dusk: parchment day spans the document, easing to night ── */
-body[data-page="home"].light-mode{
-  background:linear-gradient(180deg,
-    #f4ead3 0%, #f1e6cc 12%, #ebdcbb 20%, #e0c499 28%,
-    #cf9c78 36%, #b07c74 43%, #835f73 49%, #574c6c 55%,
-    #342c52 62%, #1d1730 70%, #110d1b 78%, #110d1b 100%);
+body[data-page="home"],
+body[data-page="about"],
+body[data-page="contact"]{
+  position:relative;
+  --hub-paper:#f2ead9; --hub-paper-2:#e8dec2; --hub-paper-3:#d9cead;
+  --hub-ink:#2b2620; --hub-ink-dim:#5a5140; --hub-rule:#c3b795; --hub-gold:#7d5f34;
+  background:var(--hub-paper) !important;
 }
-body[data-page="home"]:not(.light-mode){background:#110d1b}
-/* damp the day-time radial wash; the grid pattern has no place on the scroll */
-body[data-page="home"].light-mode .hub-bg{opacity:.4}
-body[data-page="home"]:not(.light-mode) .hub-bg{opacity:.5}
-body[data-page="home"] .hub-pattern{display:none !important}
-
-/* ── nav: a title bar that melts into the page, then settles into night ── */
-body[data-page="home"] nav{
-  border-bottom:1px solid transparent;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
-  transition:background-color .5s ease,border-color .5s ease,box-shadow .5s ease;
+body[data-page="home"]:not(.light-mode),
+body[data-page="about"]:not(.light-mode),
+body[data-page="contact"]:not(.light-mode){
+  --hub-paper:#17140f; --hub-paper-2:#221e19; --hub-paper-3:#2d2822;
+  --hub-ink:#ece3d0; --hub-ink-dim:#b7ab90; --hub-rule:#453f37; --hub-gold:#c8a45a;
 }
-body[data-page="home"] nav .nav-logo,
-body[data-page="home"] nav .nav-center a{transition:color .45s ease}
-body[data-page="home"].light-mode nav{
-  --text:#3a3027;--text-dim:#7a6a52;
-  --gold:#8f6230;--gold-rgb:143,98,48;--gold-dim:#bb9468;
-  --teal:#256a4e;--teal-rgb:37,106,78;--teal-dim:#5f9d83;
-  --border:rgba(120,90,50,.22);
-  background-color:rgba(244,234,211,.98);
+body[data-page="home"] main,
+body[data-page="about"] main,
+body[data-page="contact"] main{
+  /* the global main{padding-top:80px} exists to clear the OLD nav{position:
+     fixed} header other pages still use; these three switched to a
+     position:sticky .site-head instead, which already occupies its own
+     space in normal flow — the extra clearance just pushed content down
+     by 80px on top of that, throwing off 100svh-based full-height math
+     (e.g. the home hero's bottom-anchored scroll cue landing off-screen). */
+  position:relative; z-index:1; padding-top:0;
 }
-body[data-page="home"].light-mode nav .nav-center a{color:#7a6a52}
-body[data-page="home"].light-mode nav .nav-center a:hover,
-body[data-page="home"].light-mode nav .nav-center a.active{color:var(--gold)}
-body[data-page="home"]:not(.light-mode) nav{
-  background-color:rgba(20,16,28,.85);
-}
-
-/* ── document-relative starfield (blooms only over the night band) ── */
+body[data-page="home"] .hub-bg, body[data-page="home"] .hub-pattern,
+body[data-page="about"] .hub-bg, body[data-page="about"] .hub-pattern,
+body[data-page="contact"] .hub-bg, body[data-page="contact"] .hub-pattern{display:none !important}
 .home-sky{display:none}
-body[data-page="home"] .home-sky,
-body[data-page="contact"] .home-sky{
-  display:block;position:absolute;inset:0;z-index:0;pointer-events:none;
-  background-repeat:repeat;
-  background-image:
-    /* tile A — small dense field (160px) */
-    radial-gradient(1.5px 1.5px at 22px 26px,rgba(255,250,235,.95),transparent 50%),
-    radial-gradient(1.2px 1.2px at 104px 58px,rgba(255,250,235,.7),transparent 50%),
-    radial-gradient(1.4px 1.4px at 64px 122px,rgba(255,250,235,.85),transparent 50%),
-    radial-gradient(1.1px 1.1px at 142px 146px,rgba(232,200,130,.8),transparent 50%),
-    /* tile B — medium scatter (240px) */
-    radial-gradient(1.8px 1.8px at 188px 40px,rgba(255,250,235,.9),transparent 50%),
-    radial-gradient(1.3px 1.3px at 36px 168px,rgba(176,192,236,.85),transparent 50%),
-    radial-gradient(1.5px 1.5px at 150px 210px,rgba(255,250,235,.7),transparent 50%),
-    /* tile C — sparse bright accents (340px) */
-    radial-gradient(2.2px 2.2px at 70px 92px,rgba(232,200,130,.95),transparent 50%),
-    radial-gradient(1.9px 1.9px at 290px 196px,rgba(255,250,235,.9),transparent 50%),
-    radial-gradient(2px 2px at 180px 300px,rgba(176,192,236,.85),transparent 50%);
-  background-size:160px 160px,160px 160px,160px 160px,160px 160px,
-                  240px 240px,240px 240px,240px 240px,
-                  340px 340px,340px 340px,340px 340px;
-  -webkit-mask-image:linear-gradient(180deg,transparent 0%,transparent 22%,rgba(0,0,0,.45) 34%,#000 46%,#000 100%);
-          mask-image:linear-gradient(180deg,transparent 0%,transparent 22%,rgba(0,0,0,.45) 34%,#000 46%,#000 100%);
-  animation:twinkleHome 6s ease-in-out infinite;
-}
-body[data-page="home"]:not(.light-mode) .home-sky,
-body[data-page="contact"]:not(.light-mode) .home-sky{
-  -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.5) 0%,#000 30%,#000 100%);
-          mask-image:linear-gradient(180deg,rgba(0,0,0,.5) 0%,#000 30%,#000 100%);
-}
-@keyframes twinkleHome{0%,100%{opacity:.8}50%{opacity:1}}
 
 /* ══════════════════════════════════════════════════════════
-   CONTACT · the same dusk, scaled to a single page
-   Parchment day at the form, easing into night at the footer.
+   CONTACT — same flat paper as the rest of the hub, no dusk
+   gradient or starfield. Existing form/socials/newsletter
+   markup, just recolored onto --hub-* tokens.
    ══════════════════════════════════════════════════════════ */
-body[data-page="contact"]{position:relative}
-body[data-page="contact"] main{position:relative;z-index:1}
+body[data-page="contact"] .section-label{color:var(--hub-gold)}
+body[data-page="contact"] .section-label::after{background:var(--hub-rule)}
+body[data-page="contact"] .section-title{color:var(--hub-ink)}
+body[data-page="contact"] .section-title em{color:var(--hub-gold)}
+body[data-page="contact"] .contact-sub{color:var(--hub-ink-dim)}
+body[data-page="contact"] .fg label{color:var(--hub-ink-dim)}
+body[data-page="contact"] .fg input,
+body[data-page="contact"] .fg textarea,
+body[data-page="contact"] .fg select{background:var(--hub-paper-2); border-color:var(--hub-rule); color:var(--hub-ink)}
+body[data-page="contact"] .fg input:focus,
+body[data-page="contact"] .fg textarea:focus{border-color:var(--hub-gold)}
+body[data-page="contact"] .fg select option{background:var(--hub-paper-2)}
+body[data-page="contact"] .form-submit{background:var(--hub-gold); color:var(--hub-paper)}
+body[data-page="contact"] .form-success{border-color:var(--hub-rule); background:var(--hub-paper-2)}
+body[data-page="contact"] .form-success-title{color:var(--hub-ink)}
+body[data-page="contact"] .form-success-sub{color:var(--hub-gold)}
+body[data-page="contact"] .form-success-note{color:var(--hub-ink-dim)}
+body[data-page="contact"] .contact-socials{border-top-color:var(--hub-rule)}
+body[data-page="contact"] .cpill{background:var(--hub-paper-2); border-color:var(--hub-rule)}
+body[data-page="contact"] .cpill:hover{border-color:var(--hub-gold)}
+body[data-page="contact"] .cpill-label{color:var(--hub-ink-dim)}
+body[data-page="contact"] .cpill-val{color:var(--hub-ink)}
+body[data-page="contact"] .newsletter-section{border-top-color:var(--hub-rule)}
+body[data-page="contact"] .newsletter-label{color:var(--hub-gold)}
+body[data-page="contact"] .newsletter-title{color:var(--hub-ink)}
+body[data-page="contact"] .newsletter-sub{color:var(--hub-ink-dim)}
+body[data-page="contact"] .newsletter-input{background:var(--hub-paper-2); border-color:var(--hub-rule); color:var(--hub-ink)}
+body[data-page="contact"] .newsletter-input::placeholder{color:var(--hub-ink-dim); opacity:.6}
+body[data-page="contact"] .newsletter-submit{color:var(--hub-gold); border-color:var(--hub-rule)}
+body[data-page="contact"] .newsletter-submit:hover{background:rgba(0,0,0,.03); border-color:var(--hub-gold)}
+body[data-page="contact"] .newsletter-success{color:var(--hub-gold)}
 
-body[data-page="contact"].light-mode{
-  background:linear-gradient(180deg,
-    #f4ead3 0%, #f1e6cc 16%, #ebdcbb 27%, #e0c499 37%,
-    #cf9c78 47%, #b07c74 56%, #835f73 65%, #574c6c 74%,
-    #342c52 83%, #1d1730 91%, #110d1b 100%);
+/* ══════════════════════════════════════════════════════════
+   HUB HERO + THREE DOORS — the minimal hub homepage
+   ══════════════════════════════════════════════════════════ */
+body[data-page="home"]{
+  --ring-op-1:.22; --ring-op-2:.17; --ring-op-3:.13; --ring-op-4:.09;
+  --be-bg:#121212; --be-bg-2:#1c1c1c; --be-flame:#5c8fc0; --be-text:#ccd6e3; --be-text-dim:#8896ab;
+  --mg-bg:#e6e2d5; --mg-bg-2:#dbd7c8; --mg-ink:#201e1a; --mg-ink-dim:#63594c; --mg-accent:#8c2b26;
+  --fg-bg:#e7ece7; --fg-bg-2:#d7e0d8; --fg-ink:#1c2321; --fg-ink-dim:#57645f; --fg-accent:#3d6b5f;
 }
-body[data-page="contact"]:not(.light-mode){background:#110d1b}
-body[data-page="contact"].light-mode .hub-bg{opacity:.4}
-body[data-page="contact"]:not(.light-mode) .hub-bg{opacity:.5}
-body[data-page="contact"] .hub-pattern{display:none !important}
-
-/* clear the fixed nav with a little sky above the title */
-body[data-page="contact"] main>.contact-center:first-child{padding-top:7rem}
-
-/* ── nav: parchment title bar over the form, night once you scroll ── */
-body[data-page="contact"] nav{
-  border-bottom:1px solid transparent;backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);
-  transition:background-color .5s ease,border-color .5s ease,box-shadow .5s ease;
+body[data-page="home"].light-mode{
+  --ring-op-1:.13; --ring-op-2:.10; --ring-op-3:.08; --ring-op-4:.055;
 }
-body[data-page="contact"] nav .nav-logo,
-body[data-page="contact"] nav .nav-center a{transition:color .45s ease}
-body[data-page="contact"].light-mode nav{
-  --text:#3a3027;--text-dim:#7a6a52;
-  --gold:#8f6230;--gold-rgb:143,98,48;--gold-dim:#bb9468;
-  --teal:#256a4e;--teal-rgb:37,106,78;--teal-dim:#5f9d83;
-  --border:rgba(120,90,50,.22);
-  background-color:rgba(244,234,211,.98);
+
+/* ── hub's own minimal header/footer, shared by every hub page (home,
+   about, contact) — no nav-link list; Home's logo is the only way back
+   to the doors, deliberately keeping these pages quiet satellites of it ── */
+.site-head{
+  position:sticky; top:0; z-index:10; display:flex; align-items:center; justify-content:space-between;
+  padding:1.1rem 1.8rem; backdrop-filter:blur(6px); border-bottom:1px solid var(--hub-rule);
 }
-body[data-page="contact"].light-mode nav .nav-center a{color:#7a6a52}
-body[data-page="contact"].light-mode nav .nav-center a:hover,
-body[data-page="contact"].light-mode nav .nav-center a.active{color:var(--gold)}
-body[data-page="contact"].light-mode nav.scrolled{
-  --text:#e8e2f0;--text-dim:#b8b2c2;--gold:#d8b56a;--gold-rgb:216,181,106;
-  --teal:#5fcaa9;--teal-rgb:95,202,169;--border:rgba(216,181,106,.2);
-  background-color:rgba(20,16,28,.85);
+body.light-mode .site-head{background:rgba(251,245,232,.9)}
+body:not(.light-mode) .site-head{background:rgba(22,27,36,.85)}
+.site-head-mark{font-family:'Cormorant Garamond',serif; font-size:1.3rem; font-weight:600; text-decoration:none; color:var(--hub-ink); letter-spacing:.02em}
+.site-head-controls{display:flex; align-items:center; gap:.6rem}
+.admin-link{display:inline-flex}
+.admin-link[hidden]{display:none}
+.site-foot{
+  position:relative; z-index:1; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap;
+  gap:1rem; max-width:960px; margin:0 auto; padding:2.4rem 2rem 2.8rem;
+  /* !important: the generic `body.light-mode footer{background:#e8dcbf}` rule
+     (further down the file) outranks a plain .site-foot on specificity alone */
+  background:var(--hub-paper) !important; border-top:1px solid var(--hub-rule); overflow:hidden;
 }
-body[data-page="contact"].light-mode nav.scrolled .nav-center a{color:#b8b2c2}
-body[data-page="contact"].light-mode nav.scrolled .nav-center a:hover,
-body[data-page="contact"].light-mode nav.scrolled .nav-center a.active{color:var(--gold)}
-body[data-page="contact"]:not(.light-mode) nav{background-color:rgba(20,16,28,.85)}
-
-/* ── the newsletter sits in the dusk — light it like the homepage note ── */
-body[data-page="contact"] .newsletter-section{border-top-color:rgba(216,181,106,.28)}
-body[data-page="contact"] .newsletter-label{color:#5fcaa9}
-body[data-page="contact"] .newsletter-title{color:#f1ead9}
-body[data-page="contact"] .newsletter-sub{color:#cdc5d6}
-body[data-page="contact"] .newsletter-input{
-  background:rgba(30,26,46,.6);border-color:rgba(216,181,106,.25);color:#f1ead9;
+.site-foot-mark{font-family:'Cormorant Garamond',serif; font-size:1.1rem; color:var(--hub-ink-dim)}
+.site-foot-links{display:flex; align-items:center; gap:1.6rem; flex-wrap:wrap}
+.site-foot-links a{
+  font-family:'JetBrains Mono',monospace; font-size:.66rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--hub-ink-dim); text-decoration:none; transition:color .2s;
 }
-body[data-page="contact"] .newsletter-input::placeholder{color:#9aa8d6;opacity:.6}
-body[data-page="contact"] .newsletter-submit{color:#d8b56a;border-color:rgba(216,181,106,.45)}
-body[data-page="contact"] .newsletter-submit:hover{background:rgba(216,181,106,.1);border-color:#d8b56a}
-body[data-page="contact"] .newsletter-success{color:#5fcaa9}
-
-/* ── map-legend helpers (the astronomer's hand) ── */
-body[data-page="home"] .legend{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--iron,#46506e)}
-body[data-page="home"] .coord{font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.12em;color:var(--text-dim);opacity:.85}
-body[data-page="home"]:not(.light-mode) .legend{color:#9aa8d6}
-
-/* ══ HERO — the frontispiece ══ */
-body[data-page="home"] .hero{min-height:100vh;max-width:1280px;margin:0 auto;padding:8.5rem 4rem 4rem;display:grid;grid-template-columns:1.1fr .9fr;gap:4rem;align-items:center}
-body[data-page="home"] .plate-mark{display:flex;align-items:center;gap:1rem;margin-bottom:1.6rem}
-body[data-page="home"] .plate-mark .rule{height:1px;width:46px;background:var(--gold)}
-body[data-page="home"] .welcome{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.2rem;color:var(--text-dim);letter-spacing:.04em;margin-bottom:1rem}
-body[data-page="home"] .headline{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(3rem,6vw,5.4rem);line-height:1.03;letter-spacing:-.01em;color:var(--text)}
-body[data-page="home"] .headline .drop{float:left;font-size:5.4rem;line-height:.78;padding:.35rem .55rem .2rem 0;color:var(--gold);font-weight:500}
-body[data-page="home"] .headline em{font-style:italic;color:var(--gold)}
-body[data-page="home"] .byline{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.26em;text-transform:uppercase;color:var(--teal);font-weight:500;margin:1.8rem 0 1.6rem;display:flex;align-items:center;gap:.8rem}
-body[data-page="home"] .byline::before{content:'';width:30px;height:1px;background:var(--teal)}
-body[data-page="home"] .dual{display:grid;grid-template-columns:1fr 1fr;gap:1px;max-width:480px;margin-bottom:2rem;border:1px solid var(--border);border-radius:4px;overflow:hidden}
-body[data-page="home"] .dual div{padding:.7rem 1rem;font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.14em;text-transform:uppercase;display:flex;align-items:center;gap:.5rem}
-body[data-page="home"] .dual .logic{background:rgba(var(--teal-rgb),.1);color:var(--teal)}
-body[data-page="home"] .dual .depth{background:rgba(var(--gold-rgb),.1);color:var(--gold)}
-body[data-page="home"] .dual .dot{width:5px;height:5px;border-radius:50%}
-body[data-page="home"] .dual .logic .dot{background:var(--teal)}
-body[data-page="home"] .dual .depth .dot{background:var(--gold)}
-/* two inks, one mind — clean chips (replaces the tall dual bar) */
-body[data-page="home"] .ink-tags{display:flex;flex-wrap:wrap;gap:.7rem;margin-bottom:2rem}
-body[data-page="home"] .ink{display:inline-flex;align-items:center;gap:.5rem;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;padding:.5rem .9rem;border-radius:3px;border:1px solid transparent}
-body[data-page="home"] .ink .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-body[data-page="home"] .ink.logic{background:rgba(var(--teal-rgb),.1);border-color:rgba(var(--teal-rgb),.3);color:var(--teal)}
-body[data-page="home"] .ink.logic .dot{background:var(--teal)}
-body[data-page="home"] .ink.depth{background:rgba(var(--gold-rgb),.1);border-color:rgba(var(--gold-rgb),.3);color:var(--gold)}
-body[data-page="home"] .ink.depth .dot{background:var(--gold)}
-
-/* scroll-aware nav: parchment over the bright hero, dark once the dusk arrives */
-body[data-page="home"].light-mode nav.scrolled{
-  --text:#ece6da;--text-dim:#b8b2c2;
-  --gold:#cba65b;--gold-rgb:203,166,91;--gold-dim:#8a6e37;
-  --teal:#54cdb4;--teal-rgb:84,205,180;
-  --border:rgba(203,166,91,.2);
-  background-color:rgba(20,16,28,.92);
-  border-bottom-color:rgba(203,166,91,.14);
-  box-shadow:0 10px 30px -20px rgba(0,0,0,.7);
+.site-foot-links a:hover,
+.site-foot-links a:focus-visible{color:var(--hub-gold)}
+.footer-base-meta{
+  font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--hub-ink-dim); opacity:.65;
 }
-body[data-page="home"].light-mode nav.scrolled .nav-center a{color:#b8b2c2}
-body[data-page="home"].light-mode nav.scrolled .nav-center a:hover,
-body[data-page="home"].light-mode nav.scrolled .nav-center a.active{color:var(--gold)}
-body[data-page="home"] .bio{font-family:'Lato',sans-serif;font-size:1.05rem;color:var(--text-dim);max-width:460px;line-height:1.85;margin-bottom:2rem}
-body[data-page="home"] .bio strong{color:var(--text);font-weight:700}
-body[data-page="home"] .cta{display:flex;gap:1rem;flex-wrap:wrap}
-body[data-page="home"] .btn{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;padding:.85rem 1.7rem;border-radius:3px;text-decoration:none;transition:all .25s;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem}
-body[data-page="home"] .btn.solid{background:var(--gold);color:#fbf3df;border:1px solid var(--gold)}
-body[data-page="home"] .btn.solid:hover{filter:brightness(.9)}
-body[data-page="home"] .btn.ghost{border:1px solid var(--border);color:var(--gold);background:none}
-body[data-page="home"] .btn.ghost:hover{border-color:var(--gold);background:rgba(var(--gold-rgb),.08)}
 
-/* ── hero right column: constellation plate + status instrument ── */
-body[data-page="home"] .hero-right{display:flex;flex-direction:column;gap:1.4rem}
-body[data-page="home"] .hero-plate{position:relative;border:1px solid var(--border);border-radius:6px;padding:1.4rem;background:rgba(255,250,238,.45);box-shadow:0 18px 50px -28px rgba(80,55,20,.55)}
-body[data-page="home"]:not(.light-mode) .hero-plate{background:rgba(34,28,46,.5);border-color:rgba(216,181,106,.22);box-shadow:0 18px 50px -28px rgba(0,0,0,.7)}
-body[data-page="home"] .hero-plate::before{content:'';position:absolute;inset:7px;border:1px solid rgba(var(--gold-rgb),.18);border-radius:4px;pointer-events:none}
-body[data-page="home"] .plate-cap{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.4rem}
-body[data-page="home"] .plate-cap .t{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.2rem;color:var(--gold)}
-body[data-page="home"] .hero-plate svg.cnav{display:block;width:100%;height:auto}
-body[data-page="home"] .plate-hint{text-align:center;font-family:'JetBrains Mono',monospace;font-size:.54rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim);opacity:.75;margin:.2rem 0 .5rem}
-body[data-page="home"] .plate-foot{margin-top:.4rem;display:flex;justify-content:space-between;align-items:center}
+/* ── hero: faint broken rings (each a circle with one gap via
+   stroke-dasharray, rotated further than the last) read as a loose
+   spiral rather than plain concentric circles ── */
+/* Full-viewport hero so it's unmistakably the page's focal point on load,
+   on every device — the doors sit below the fold until you scroll (or on
+   mobile/tablet, until you get a hint that there's more). */
+body[data-page="home"] .hero{
+  position:relative; z-index:1; max-width:760px; margin:0 auto; padding:2rem;
+  text-align:center; min-height:calc(100svh - 4.5rem);
+  display:flex; flex-direction:column; justify-content:center; align-items:center;
+}
+body[data-page="home"] .hero-orbits{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-52%);
+  width:min(640px,84vw); height:min(640px,84vw); z-index:0; pointer-events:none; overflow:visible;
+}
+/* A flat 760px cap (and rings tuned to match) reads fine up to ordinary
+   laptop widths, but on an actual large desktop monitor it stops growing
+   altogether while the viewport keeps getting wider — the hero reads as a
+   small, fixed-size island adrift in a sea of margin instead of using the
+   screen. min-width, not a vw-based fluid formula: below this threshold
+   the fixed 760px/640px above already fits comfortably, so there's no
+   need (or safe way, for an absolutely-sized element like the rings) to
+   shrink it — vw-scaling the rings down would just make them tiny on
+   narrow/mobile screens instead. */
+@media(min-width:1440px){
+  body[data-page="home"] .hero{max-width:min(1200px,66vw)}
+  body[data-page="home"] .hero-orbits{width:min(1040px,52vw); height:min(1040px,52vw)}
+  body[data-page="home"] .hero-divider{max-width:min(600px,34vw)}
+}
+body[data-page="home"] .hero-orbits circle{fill:none; stroke:var(--hub-gold); stroke-width:1; transition:opacity .4s ease}
+/* click-to-ignite easter egg — briefly flare the rings, then settle back */
+body[data-page="home"] .hero-orbits.ignited circle{animation:hubRingIgnite 2.2s ease-out}
+@keyframes hubRingIgnite{
+  0%{opacity:1; stroke-width:1}
+  15%{opacity:1; stroke-width:1.8; filter:drop-shadow(0 0 6px var(--hub-gold))}
+  100%{opacity:1; stroke-width:1; filter:none}
+}
+/* the rings pass directly behind the copy — rather than punch a hole in
+   them (which just deletes them there), give the text a tight
+   background-colored halo so glyphs stay crisp wherever a line crosses */
+body[data-page="home"] .hero-eyebrow,
+body[data-page="home"] .hero h1,
+body[data-page="home"] .hero p,
+body[data-page="home"] .hero-cta{
+  position:relative; text-shadow:0 0 4px var(--hub-paper), 0 0 4px var(--hub-paper), 0 0 10px var(--hub-paper);
+}
+body[data-page="home"] .hero-eyebrow{
+  font-family:'JetBrains Mono',monospace; font-size:clamp(.68rem,.5vw,.85rem); letter-spacing:.32em; text-transform:uppercase;
+  color:var(--hub-gold); margin:0 0 1.6rem;
+}
+body[data-page="home"] .hero-eyebrow::before,
+body[data-page="home"] .hero-eyebrow::after{content:'✦'; margin:0 .8rem; opacity:.6}
+body[data-page="home"] .hero h1{
+  font-family:'Cormorant Garamond',serif; font-weight:500; font-size:clamp(2.2rem,4.6vw,5.4rem);
+  line-height:1.15; margin:0 0 1.3rem; text-wrap:balance; color:var(--hub-ink);
+}
+body[data-page="home"] .hero p{font-size:clamp(1.08rem,1.15vw,1.45rem); line-height:1.75; color:var(--hub-ink); max-width:680px; margin:0 auto 2.2rem}
+body[data-page="home"] .hero-ctas{display:flex; justify-content:center; gap:2.4rem; flex-wrap:wrap}
+body[data-page="home"] .hero-cta{
+  font-family:'JetBrains Mono',monospace; font-size:.72rem; letter-spacing:.14em; text-transform:uppercase;
+  text-decoration:none; color:var(--hub-ink); padding-bottom:.3rem; border-bottom:1px solid var(--hub-rule);
+  transition:color .2s,border-color .2s;
+}
+body[data-page="home"] .hero-cta:hover,
+body[data-page="home"] .hero-cta:focus-visible{color:var(--hub-gold); border-color:var(--hub-gold)}
+body[data-page="home"] p.hero-hint{
+  text-align:center; font-family:'JetBrains Mono',monospace; font-size:.62rem; letter-spacing:.2em;
+  text-transform:uppercase; color:var(--hub-ink-dim); margin:4.5rem 0 0; position:relative; z-index:1;
+}
+/* ── scroll cue · a slow, deliberate bob (not a twitchy bounce), inviting
+   a click/tap down to the doors rather than demanding a full scroll.
+   Fixed to the hero panel's own bottom-center (absolute, not a flex item
+   in the copy stack) so it stays put regardless of how tall the copy
+   above it happens to be, instead of drifting with it. */
+body[data-page="home"] .hero-scroll-cue{
+  position:absolute; left:50%; bottom:3rem; z-index:1;
+  width:2.1rem; height:2.1rem; border-radius:50%;
+  display:flex; align-items:center; justify-content:center; color:var(--hub-ink-dim);
+  border:1px solid var(--hub-rule); text-decoration:none;
+  animation:heroScrollCueBob 2.6s ease-in-out infinite;
+  transition:color .2s, border-color .2s;
+}
+body[data-page="home"] .hero-scroll-cue:hover,
+body[data-page="home"] .hero-scroll-cue:focus-visible{color:var(--hub-gold); border-color:var(--hub-gold)}
+@keyframes heroScrollCueBob{
+  0%,100%{transform:translateX(-50%) translateY(0)}
+  50%{transform:translateX(-50%) translateY(5px)}
+}
+@media(prefers-reduced-motion:reduce){
+  body[data-page="home"] .hero-scroll-cue{animation:none}
+}
+/* ── the beat between hero and doors ── */
+body[data-page="home"] .hero-divider{
+  position:relative; z-index:1; max-width:min(460px,30vw); margin:0 auto; padding:0 2rem;
+  display:flex; align-items:center; gap:1.2rem; color:var(--hub-gold);
+  height:4.5rem;
+}
+body[data-page="home"] .hero-divider span{flex:1; height:1px; background:var(--hub-rule)}
+body[data-page="home"] .hero-divider i{font-style:normal; font-size:1rem; opacity:.75}
 
-/* interactive constellation */
-body[data-page="home"] .cnav .strand{stroke:var(--gold-dim);stroke-width:1;opacity:.55;transition:opacity .3s}
-body[data-page="home"] .cnav:hover .strand{opacity:.85}
-body[data-page="home"] .cnav a{cursor:pointer}
-body.has-custom-cursor[data-page="home"] .cnav a{cursor:none}
-body[data-page="home"] .cnav .hit{fill:transparent}
-body[data-page="home"] .cnav .dot{fill:var(--gold);transition:r .25s ease,fill .25s ease}
-body[data-page="home"] .cnav .dot.home{fill:var(--teal)}
-body[data-page="home"] .cnav .ring{fill:none;stroke:var(--gold);stroke-width:1;opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(.6);transition:opacity .3s ease,transform .3s ease}
-body[data-page="home"] .cnav .lbl{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:1.5px;fill:var(--gold);opacity:0;transition:opacity .25s ease}
-body[data-page="home"] .cnav a:hover .dot{fill:var(--gold);r:4.6}
-body[data-page="home"] .cnav a:hover .ring{opacity:.85;transform:scale(1)}
-body[data-page="home"] .cnav a:hover .lbl{opacity:1}
-/* the Circlet of Pisces — faint decorative ring at the western tip */
-body[data-page="home"] .cnav .circlet .strand{opacity:.32;stroke-dasharray:2 3}
-body[data-page="home"] .cnav .cstar{fill:var(--gold-dim);opacity:.6}
+/* ── three doors ── */
+body[data-page="home"] .worlds{
+  position:relative; z-index:1; display:flex;
+  height:78vh; min-height:480px; max-height:720px;
+  scroll-margin-top:4.5rem; border-bottom:1px solid var(--hub-rule);
+}
+body[data-page="home"] .world{
+  position:relative; flex:1; overflow:hidden; background:var(--hub-paper-2); border-right:1px solid var(--hub-rule);
+  cursor:pointer; text-decoration:none; display:block; transition:flex 650ms cubic-bezier(.19,.84,.32,1);
+}
+body[data-page="home"] .world:last-child{border-right:none}
+/* .is-active is set by JS with a short hover-intent delay (see hub-doors.js)
+   — a quick pass across all three panels no longer triggers a resize on
+   each one, only a deliberate pause does. :focus-within stays on raw CSS
+   for keyboard users. */
+body[data-page="home"] .world.is-active,
+body[data-page="home"] .world:focus-within,
+body[data-page="home"] .world.is-awake{flex:2.5}
+body[data-page="home"] .worlds:has(.world.is-active) .world:not(.is-active),
+body[data-page="home"] .worlds:has(.world:focus-within) .world:not(:focus-within){flex:.72}
+body[data-page="home"] .world-scrim{position:absolute; inset:0; opacity:0; transition:opacity 650ms ease}
+body[data-page="home"] .world.is-active .world-scrim,
+body[data-page="home"] .world:focus-within .world-scrim,
+body[data-page="home"] .world.is-awake .world-scrim{opacity:1}
+body[data-page="home"] .world-dormant{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  transition:opacity 450ms ease;
+}
+body[data-page="home"] .world.is-active .world-dormant,
+body[data-page="home"] .world:focus-within .world-dormant,
+body[data-page="home"] .world.is-awake .world-dormant{opacity:0; pointer-events:none}
+/* sits below the (independently-centered) vertical label — "Marginalia"
+   set vertically at .72rem/.32em tracking runs close to 9.5rem tall, so
+   this needs real clearance below center, not the 1rem gap a flex layout
+   would give two stacked siblings */
+body[data-page="home"] .world-dormant-peek{
+  position:absolute; top:calc(50% + 5.5rem); left:50%; transform:translateX(-50%);
+  font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.1em; color:var(--hub-ink-dim);
+}
 
-/* decorative Pisces — the hero's star-chart (art, not navigation) */
-body[data-page="home"] .pisces-art{display:block;width:100%;height:auto;margin:.4rem 0}
-body[data-page="home"] .pisces-art .strand{stroke:var(--gold-dim);stroke-width:1;opacity:.5}
-body[data-page="home"] .pisces-art .circlet-line{stroke:var(--gold-dim);stroke-width:1;opacity:.32;stroke-dasharray:2 3}
-body[data-page="home"] .pisces-art .star{fill:var(--gold)}
-body[data-page="home"] .pisces-art .star.minor{fill:var(--gold-dim)}
-body[data-page="home"] .pisces-art .star.major{fill:var(--teal)}
-body[data-page="home"] .pisces-art .glow{fill:var(--teal);opacity:.16}
-body[data-page="home"] .pisces-art .star-lbl{font-family:'JetBrains Mono',monospace;font-size:7.5px;letter-spacing:1.6px;text-transform:uppercase;fill:var(--text-dim);opacity:.8}
-body[data-page="home"] .pisces-art .star-lbl.dim{font-size:6.5px;letter-spacing:.8px;text-transform:none;font-style:italic;opacity:.6}
-body[data-page="home"] .pisces-art .twinkle{animation:piscesTwinkle 5s ease-in-out infinite}
-body[data-page="home"] .pisces-art .star:nth-of-type(even).twinkle{animation-delay:1.4s}
-@keyframes piscesTwinkle{0%,100%{opacity:1}50%{opacity:.55}}
-body[data-page="home"]:not(.light-mode) .pisces-art .star-lbl{fill:#9aa8d6}
+/* ── the label ──
+   .world-dormant-label (mono, small) and .world-title (per-door display
+   font) are the same word, stacked in the same spot and cross-faded — both
+   share one rotate+move animation (dormant: centered, vertical; awake:
+   top-left, horizontal, larger) so it reads as a single label turning
+   rather than two independent texts. Kept as top-level siblings, not
+   descendants of .world-dormant/.world-awake — a parent's opacity:0 hides
+   a child outright regardless of the child's own opacity, which would
+   silently break the cross-fade if either lived inside those wrappers. */
+body[data-page="home"] .world-dormant-label,
+body[data-page="home"] .world-title{
+  position:absolute; top:50%; left:50%; z-index:2; margin:0; white-space:nowrap; pointer-events:none;
+  transform:translate(-50%,-50%) rotate(-90deg);
+  transition:transform 650ms cubic-bezier(.19,.84,.32,1), top 650ms cubic-bezier(.19,.84,.32,1),
+             left 650ms cubic-bezier(.19,.84,.32,1), font-size 650ms cubic-bezier(.19,.84,.32,1),
+             opacity 400ms ease;
+}
+body[data-page="home"] .world-dormant-label{
+  font-family:'JetBrains Mono',monospace; font-weight:500; font-size:.72rem; letter-spacing:.32em;
+  color:var(--hub-ink); opacity:1;
+}
+body[data-page="home"] .world-title{font-size:.72rem; line-height:1.05; opacity:0; text-wrap:balance}
+body[data-page="home"] .world.is-active .world-dormant-label,
+body[data-page="home"] .world:focus-within .world-dormant-label,
+body[data-page="home"] .world.is-awake .world-dormant-label,
+body[data-page="home"] .world.is-active .world-title,
+body[data-page="home"] .world:focus-within .world-title,
+body[data-page="home"] .world.is-awake .world-title{
+  top:2.3rem; left:2.2rem; transform:translate(0,0) rotate(0deg);
+}
+body[data-page="home"] .world.is-active .world-dormant-label,
+body[data-page="home"] .world:focus-within .world-dormant-label,
+body[data-page="home"] .world.is-awake .world-dormant-label{opacity:0}
+body[data-page="home"] .world.is-active .world-title,
+body[data-page="home"] .world:focus-within .world-title,
+body[data-page="home"] .world.is-awake .world-title{opacity:1}
 
-/* status instrument (Supabase-driven) — a small codex plate */
-body[data-page="home"] .status-plate{position:relative;border:1px solid var(--border);border-radius:6px;padding:1.2rem 1.4rem;background:rgba(255,250,238,.4);box-shadow:0 14px 40px -28px rgba(80,55,20,.5)}
-body[data-page="home"]:not(.light-mode) .status-plate{background:rgba(34,28,46,.5);border-color:rgba(216,181,106,.22)}
-body[data-page="home"] .sp-head{display:flex;align-items:center;gap:.5rem;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--teal);margin-bottom:.8rem}
-body[data-page="home"] .sp-head .sp-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);box-shadow:0 0 8px var(--teal)}
-body[data-page="home"] .sp-head .coord{margin-left:auto}
-body[data-page="home"] .status-admin-bar{margin-top:.8rem;padding-top:.8rem;border-top:1px solid var(--border)}
+body[data-page="home"] .world-awake{
+  position:absolute; inset:0; z-index:1; display:flex; flex-direction:column; justify-content:flex-end;
+  padding:2.4rem 2.2rem; opacity:0; transform:translateY(10px);
+  transition:opacity 450ms ease 80ms, transform 450ms ease 80ms;
+}
+body[data-page="home"] .world.is-active .world-awake,
+body[data-page="home"] .world:focus-within .world-awake,
+body[data-page="home"] .world.is-awake .world-awake{opacity:1; transform:translateY(0)}
+body[data-page="home"] .world-eyebrow{font-family:'JetBrains Mono',monospace; font-size:.62rem; letter-spacing:.24em; text-transform:uppercase; margin:0 0 .9rem}
+body[data-page="home"] .world-tagline{margin:0 0 1.6rem; line-height:1.6; max-width:32ch}
+body[data-page="home"] .world-enter{
+  font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.12em; text-transform:uppercase;
+  display:inline-flex; align-items:center; gap:.5rem; padding-bottom:.25rem; border-bottom:1px solid currentColor; width:fit-content;
+}
 
-/* ══ DIVIDER — a constellation rule between sections ══ */
-body[data-page="home"] .divider{max-width:1280px;margin:0 auto;padding:2.5rem 4rem;display:flex;align-items:center;gap:1.4rem;color:var(--text-dim)}
-body[data-page="home"] .divider .ln{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
-body[data-page="home"] .divider .star{color:var(--gold);font-size:.8rem}
-body[data-page="home"] .divider.dim{color:#9aa8d6}
-body[data-page="home"] .divider.dim .ln{background:linear-gradient(90deg,transparent,rgba(216,181,106,.4),transparent)}
-body[data-page="home"] .divider.dim .star{color:#d8b56a}
-body[data-page="home"] .divider.dim .legend{color:#9aa8d6}
+/* Library — the flame + Hades door art (not the book cover photo itself,
+   which already lives on the book's own page), plus a corner-bracket frame. */
+body[data-page="home"] .world-lib .world-scrim{background-color:var(--be-bg); background-image:linear-gradient(180deg,var(--be-bg) 0%,var(--be-bg-2) 100%)}
+body[data-page="home"] .cover-art{
+  position:absolute; left:50%; bottom:0; width:auto; height:86%; aspect-ratio:565/850; transform:translateX(-50%);
+  background-image:url('/images/library-door-art.png');
+  background-size:contain; background-repeat:no-repeat; background-position:bottom center;
+  opacity:0; transition:opacity 600ms ease;
+}
+body[data-page="home"] .world.is-active .cover-art,
+body[data-page="home"] .world:focus-within .cover-art,
+body[data-page="home"] .world.is-awake .cover-art{opacity:1}
+body[data-page="home"] .world-lib .world-frame{position:absolute; inset:1rem; z-index:1; pointer-events:none; opacity:0; transition:opacity 500ms ease 150ms}
+body[data-page="home"] .world.is-active.world-lib .world-frame,
+body[data-page="home"] .world.world-lib:focus-within .world-frame,
+body[data-page="home"] .world.is-awake.world-lib .world-frame{opacity:.55}
+body[data-page="home"] .world-lib .world-frame::before,
+body[data-page="home"] .world-lib .world-frame::after{content:''; position:absolute; width:1.6rem; height:1.6rem; border-color:var(--be-flame); border-style:solid; border-width:0}
+body[data-page="home"] .world-lib .world-frame::before{top:0; left:0; border-top-width:1.5px; border-left-width:1.5px}
+body[data-page="home"] .world-lib .world-frame::after{bottom:0; right:0; border-bottom-width:1.5px; border-right-width:1.5px}
+body[data-page="home"] .world-lib .world-eyebrow{color:var(--be-text)}
+body[data-page="home"] .world-lib .world-title{font-family:'Fraunces',serif; font-weight:600; color:var(--be-text); text-shadow:0 2px 10px rgba(0,0,0,.6)}
+body[data-page="home"] .world.is-active.world-lib .world-title,
+body[data-page="home"] .world.world-lib:focus-within .world-title,
+body[data-page="home"] .world.is-awake.world-lib .world-title{font-size:clamp(1.5rem,3vw,2.1rem)}
+body[data-page="home"] .world-lib .world-tagline{font-family:'Lora',serif; font-style:italic; font-size:1.05rem; color:var(--be-text-dim); text-shadow:0 1px 8px rgba(0,0,0,.5)}
+body[data-page="home"] .world-lib .world-enter{color:var(--be-text)}
 
-/* ══ WORLDS — three atlas plates ══ */
-body[data-page="home"] .section{max-width:1280px;margin:0 auto;padding:3rem 4rem}
-body[data-page="home"] .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;margin-bottom:2.6rem;flex-wrap:wrap}
-body[data-page="home"] .sec-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(2rem,3.4vw,3rem);line-height:1.1;color:var(--text)}
-body[data-page="home"] .sec-title em{font-style:italic;color:var(--gold)}
-body[data-page="home"] .sec-note{font-family:'Lato',sans-serif;font-size:.92rem;color:var(--text-dim);max-width:320px;text-align:right;line-height:1.7}
-body[data-page="home"] .plates{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;align-items:stretch}
-body[data-page="home"] .plate{position:relative;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:6px;padding:2.4rem 2rem 1.9rem;background:rgba(252,247,235,.84);backdrop-filter:blur(2px);text-decoration:none;color:inherit;overflow:hidden;transition:transform .35s,box-shadow .35s,border-color .35s;box-shadow:0 14px 40px -26px rgba(80,55,20,.5);min-height:300px}
-body[data-page="home"] .plate:hover{transform:translateY(-5px);border-color:var(--gold);box-shadow:0 26px 56px -28px rgba(80,55,20,.6)}
-body[data-page="home"] .plate .plate-link{margin-top:auto}
-body[data-page="home"] .plate-glyph{position:absolute;top:1.4rem;right:1.5rem;width:64px;height:50px;opacity:.8;pointer-events:none}
-body[data-page="home"] .plate-glyph line{stroke:var(--gold-dim);stroke-width:1;opacity:.7}
-body[data-page="home"] .plate-glyph circle{fill:#fbf3df}
-body[data-page="home"] .plate-no{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.24em;text-transform:uppercase;color:var(--iron,#46506e);margin-bottom:.9rem}
-body[data-page="home"] .plate-greek{font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem}
-body[data-page="home"] .plate-name{font-family:'Cormorant Garamond',serif;font-size:1.9rem;font-weight:300;line-height:1.1;margin-bottom:.8rem;color:var(--text)}
-body[data-page="home"] .plate-name em{font-style:italic;color:var(--gold)}
-body[data-page="home"] .plate-desc{font-family:'Lato',sans-serif;font-size:.92rem;color:var(--text-dim);line-height:1.7;max-width:460px;margin-bottom:1.3rem}
-body[data-page="home"] .plate-link{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);display:inline-flex;gap:.4rem;align-items:center}
+/* Marginalia */
+body[data-page="home"] .world-mg .world-scrim{
+  background:repeating-linear-gradient(180deg,rgba(32,30,26,.05) 0 1px,transparent 1px 34px), linear-gradient(180deg,var(--mg-bg) 0%,var(--mg-bg-2) 100%);
+}
+body[data-page="home"] .world-mg .world-eyebrow{color:var(--mg-accent)}
+body[data-page="home"] .world-mg .world-title{font-family:'Playfair Display',serif; font-weight:800; color:var(--mg-ink)}
+body[data-page="home"] .world.is-active.world-mg .world-title,
+body[data-page="home"] .world.world-mg:focus-within .world-title,
+body[data-page="home"] .world.is-awake.world-mg .world-title{font-size:clamp(1.6rem,3.2vw,2.3rem)}
+body[data-page="home"] .world-mg .world-tagline{font-family:'PT Serif',serif; font-size:1.02rem; color:var(--mg-ink-dim)}
+body[data-page="home"] .world-mg .world-enter{color:var(--mg-ink)}
 
-/* Worlds plates: bright illuminated vellum floating on the dusk (light mode) */
-body[data-page="home"].light-mode .plate{background:rgba(252,247,235,.93);border-color:rgba(120,90,50,.32)}
-body[data-page="home"].light-mode .plate-glyph circle{fill:var(--gold)}
-body[data-page="home"].light-mode .plate-glyph line{stroke:var(--gold-dim)}
-/* dark mode worlds: solid night plates */
-body[data-page="home"]:not(.light-mode) .plate{background:rgba(34,28,46,.9);border-color:rgba(216,181,106,.22)}
-body[data-page="home"]:not(.light-mode) .plate-no{color:#9aa8d6}
-body[data-page="home"]:not(.light-mode) .plate-greek{color:#5fcaa9}
-body[data-page="home"]:not(.light-mode) .plate-name em,
-body[data-page="home"]:not(.light-mode) .plate-link,
-body[data-page="home"]:not(.light-mode) .sec-title em{color:#d8b56a}
-body[data-page="home"]:not(.light-mode) .plate-glyph circle{fill:#fbf3df}
+/* Forge */
+body[data-page="home"] .world-fg .world-scrim{
+  background:
+    linear-gradient(135deg,rgba(61,107,95,.12) 0%,transparent 45%),
+    repeating-linear-gradient(0deg,rgba(61,107,95,.07) 0 1px,transparent 1px 28px),
+    repeating-linear-gradient(90deg,rgba(61,107,95,.07) 0 1px,transparent 1px 28px),
+    linear-gradient(180deg,var(--fg-bg) 0%,var(--fg-bg-2) 100%);
+}
+body[data-page="home"] .world-fg .world-eyebrow{color:var(--fg-accent)}
+body[data-page="home"] .world-fg .world-title{font-family:'IBM Plex Sans',sans-serif; font-weight:600; color:var(--fg-ink)}
+body[data-page="home"] .world.is-active.world-fg .world-title,
+body[data-page="home"] .world.world-fg:focus-within .world-title,
+body[data-page="home"] .world.is-awake.world-fg .world-title{font-size:clamp(1.5rem,3vw,2.1rem)}
+body[data-page="home"] .world-fg .world-tagline{font-family:'IBM Plex Sans',sans-serif; font-size:1rem; color:var(--fg-ink-dim)}
+body[data-page="home"] .world-fg .world-enter{color:var(--fg-ink)}
 
-/* builder pinned-project (Supabase) inside the wide plate */
-body[data-page="home"] .builder-highlight{margin-top:1.4rem;border-top:1px solid var(--border);padding-top:1.2rem}
+/* Stacked/scroll-driven layout for phones AND tablets — matched by width
+   for narrow windows, and by (hover:none) so touch tablets get it
+   regardless of width, since they can't hover to wake a panel. Dormant
+   strips stay compact (tall enough for the rotated vertical label); the
+   awake panel grows to a real majority of the viewport instead of holding
+   the same fixed height as dormant, so it reads as the same kind of
+   "arrival" moment hover gives on desktop, just scroll-triggered.
+   Height is a hard SNAP, not a transition — animating it fights the
+   user's own scroll gesture: as a panel collapses out from under them
+   mid-scroll, the ~450px it gives back yanks the rest of the page up
+   underneath the pointer, which can skip right past the next panel's
+   trigger line before the wheel gesture even finishes. Content (rotation/
+   opacity/fonts) still animates smoothly; only this dimension doesn't. */
+@media(max-width:1024px), (hover:none){
+  body[data-page="home"] .worlds{flex-direction:column; height:auto; max-height:none}
+  body[data-page="home"] .world{
+    border-right:none; border-bottom:1px solid var(--hub-rule);
+    height:170px; flex:none !important;
+  }
+  body[data-page="home"] .world.is-active,
+  body[data-page="home"] .world:focus-within,
+  body[data-page="home"] .world.is-awake{height:min(72vh,620px)}
+  body[data-page="home"] .world:last-child{border-bottom:none}
+  /* tighter tracking so "Marginalia" (the longest label) clears a 170px
+     strip when rotated vertical — the desktop letter-spacing (.32em) needs
+     a much taller panel to run without clipping */
+  body[data-page="home"] .world-dormant-label{letter-spacing:.16em; font-size:.68rem}
+  body[data-page="home"] .world-dormant-peek{position:absolute; bottom:.9rem; right:1.1rem}
+  body[data-page="home"] .world-awake{padding:1.8rem}
+}
+@media(prefers-reduced-motion:reduce){
+  body[data-page="home"] .world,
+  body[data-page="home"] .world-scrim,
+  body[data-page="home"] .world-dormant,
+  body[data-page="home"] .world-dormant-label,
+  body[data-page="home"] .world-title,
+  body[data-page="home"] .world-awake,
+  body[data-page="home"] .world-frame,
+  body[data-page="home"] .cover-art{transition:none; animation:none}
+}
 
-/* ══ BOOK — the Blue Ember centerpiece (always night) ══ */
-body[data-page="home"] .book{max-width:1280px;margin:0 auto;padding:3rem 4rem 4rem}
-body[data-page="home"] .book-wrap{display:block;text-decoration:none}
-body[data-page="home"] .book-plate{position:relative;border:1px solid rgba(111,168,224,.32);border-radius:8px;overflow:hidden;background:linear-gradient(135deg,rgba(20,24,40,.72),rgba(10,12,22,.78));padding:3rem 3.4rem;display:grid;grid-template-columns:1.3fr 1fr;gap:3rem;align-items:center;box-shadow:0 30px 70px -34px rgba(0,0,0,.7);transition:border-color .35s,transform .35s}
-body[data-page="home"] .book-wrap:hover .book-plate{border-color:rgba(111,168,224,.55);transform:translateY(-4px)}
-body[data-page="home"] .book-plate::before{content:'';position:absolute;inset:9px;border:1px solid rgba(111,168,224,.18);border-radius:5px;pointer-events:none}
-body[data-page="home"] .book-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:#8fc0f4;margin-bottom:.9rem;display:flex;align-items:center;gap:.6rem}
-body[data-page="home"] .book-title{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(2.2rem,3.6vw,3.4rem);color:#f1ead9;line-height:1.1;letter-spacing:.02em;margin-bottom:.35rem}
-body[data-page="home"] .book-sub{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:#5e95dd;margin-bottom:1.1rem}
-body[data-page="home"] .book-desc{font-family:'Lato',sans-serif;color:#c4bcd0;font-size:1rem;line-height:1.8;max-width:520px;margin-bottom:1.4rem}
-body[data-page="home"] .book-desc strong{color:#e9e2d4;font-weight:700}
-body[data-page="home"] .book-desc em{font-style:italic;color:#8fc0f4}
-body[data-page="home"] .book-arc{display:flex;flex-wrap:wrap;gap:.4rem .55rem;margin-bottom:1.5rem;max-width:540px}
-body[data-page="home"] .book-arc span{font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.08em;text-transform:uppercase;color:#9aa8d6;border:1px solid rgba(111,168,224,.2);border-radius:20px;padding:.25rem .6rem;transition:all .25s}
-body[data-page="home"] .book-wrap:hover .book-arc span{border-color:rgba(111,168,224,.4)}
-body[data-page="home"] .book-meta{display:flex;gap:1.4rem;flex-wrap:wrap}
-body[data-page="home"] .book-meta span{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.14em;text-transform:uppercase;color:#8fc0f4}
-body[data-page="home"] .book-plate svg.bt-constellation{display:block;width:100%;height:auto;max-width:300px;margin:0 auto}
+/* ══ Shared .section/.sec-* layout — Marginalia's Latest Writing and
+   Forge's relocated ledger/instruments/colophon sections ══ */
+body[data-page="marginalia"] .section,
+body[data-page="projects"] .section{max-width:1280px;margin:0 auto;padding:3rem 4rem}
+body[data-page="marginalia"] .sec-head,
+body[data-page="projects"] .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;margin-bottom:2.6rem;flex-wrap:wrap}
+body[data-page="marginalia"] .sec-title,
+body[data-page="projects"] .sec-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(2rem,3.4vw,3rem);line-height:1.1;color:var(--text)}
+body[data-page="marginalia"] .sec-title em,
+body[data-page="projects"] .sec-title em{font-style:italic;color:var(--gold)}
+body[data-page="marginalia"] .sec-note,
+body[data-page="projects"] .sec-note{font-family:'Lato',sans-serif;font-size:.92rem;color:var(--text-dim);max-width:320px;text-align:right;line-height:1.7}
+
+/* ══ BOOK — the Blue Ember centerpiece: cover-forward, not a small cover
+   thumbnail beside a wall of text. Deliberately always night (looks better
+   as a permanent dark plate than following the page theme, same call as
+   the shelf-band and door art). Two doors out: buy/read the book itself
+   (the shelf's product page) and go deeper into the series world. ══ */
+body[data-page="library"] .book-wrap{display:block;max-width:1100px;margin:0 auto;padding:0 2rem}
+body[data-page="library"] .book-plate{position:relative;border:1px solid rgba(111,168,224,.32);border-radius:8px;overflow:hidden;background:linear-gradient(135deg,rgba(20,24,40,.72),rgba(10,12,22,.78));padding:3rem;display:grid;grid-template-columns:.85fr 1.15fr;gap:3rem;align-items:center;box-shadow:0 30px 70px -34px rgba(0,0,0,.7);transition:border-color .35s}
+body[data-page="library"] .book-plate:hover{border-color:rgba(111,168,224,.5)}
+body[data-page="library"] .book-plate::before{content:'';position:absolute;inset:9px;border:1px solid rgba(111,168,224,.18);border-radius:5px;pointer-events:none}
+body[data-page="library"] .book-eyebrow{font-family:var(--font-label);font-weight:700;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:#8fc0f4;margin-bottom:.9rem;display:flex;align-items:center;gap:.6rem}
+body[data-page="library"] .book-title{font-family:var(--font-display);font-weight:600;font-size:clamp(2.2rem,3.6vw,3.4rem);color:#f1ead9;line-height:1.05;letter-spacing:0;margin-bottom:.5rem}
+body[data-page="library"] .book-sub{font-family:var(--font-label);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:#5e95dd;margin-bottom:1.2rem}
+body[data-page="library"] .book-desc{font-family:var(--font-body);color:#c4bcd0;font-size:1.05rem;line-height:1.75;max-width:520px;margin-bottom:1.3rem}
+body[data-page="library"] .book-desc strong{color:#e9e2d4;font-weight:700}
+body[data-page="library"] .book-desc em{font-style:italic;color:#8fc0f4}
+body[data-page="library"] .book-count{font-family:var(--font-label);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:#8fc0f4;margin-bottom:1.4rem}
+body[data-page="library"] .book-cta-row{display:flex;flex-wrap:wrap;align-items:center;gap:1.4rem}
+body[data-page="library"] .book-cta-primary{display:inline-block;text-decoration:none;font-family:var(--font-label);font-weight:700;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:#0c0f18;background:#8fc0f4;border-radius:4px;padding:.85rem 1.5rem;transition:background .25s,transform .25s}
+body[data-page="library"] .book-cta-primary:hover{background:#b7d8fb;transform:translateY(-2px)}
 
 /* ══ EMBERS — soft blue motes rising behind the Blue Ember teaser ══ */
-body[data-page="home"] .book-plate.ember{position:relative;overflow:hidden}
-body[data-page="home"] .book-plate.ember>*:not(.book-embers){position:relative;z-index:1}
-body[data-page="home"] .book-embers{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
-body[data-page="home"] .book-embers::after{content:'';position:absolute;left:0;right:0;bottom:0;height:55%;background:radial-gradient(120% 90% at 50% 120%,rgba(111,168,224,.22),rgba(111,168,224,.06) 45%,transparent 70%)}
-body[data-page="home"] .bspark{position:absolute;bottom:-6%;width:5px;height:5px;border-radius:50%;background:radial-gradient(circle,rgba(180,214,255,.95),rgba(111,168,224,.55) 55%,transparent 75%);box-shadow:0 0 8px rgba(143,192,244,.7);opacity:0;animation:bookEmberRise 9s linear infinite}
-body[data-page="home"] .bspark:nth-child(1){left:12%;animation-duration:8.5s;animation-delay:0s}
-body[data-page="home"] .bspark:nth-child(2){left:24%;animation-duration:11s;animation-delay:1.6s;width:3px;height:3px}
-body[data-page="home"] .bspark:nth-child(3){left:38%;animation-duration:9.8s;animation-delay:3.2s}
-body[data-page="home"] .bspark:nth-child(4){left:52%;animation-duration:12.5s;animation-delay:.8s;width:4px;height:4px}
-body[data-page="home"] .bspark:nth-child(5){left:66%;animation-duration:8.8s;animation-delay:4.4s;width:3px;height:3px}
-body[data-page="home"] .bspark:nth-child(6){left:78%;animation-duration:10.6s;animation-delay:2.4s}
-body[data-page="home"] .bspark:nth-child(7){left:88%;animation-duration:13s;animation-delay:5.5s;width:4px;height:4px}
+body[data-page="library"] .book-plate.ember{position:relative;overflow:hidden}
+body[data-page="library"] .book-plate.ember>*:not(.book-embers){position:relative;z-index:1}
+body[data-page="library"] .book-embers{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+body[data-page="library"] .book-embers::after{content:'';position:absolute;left:0;right:0;bottom:0;height:55%;background:radial-gradient(120% 90% at 50% 120%,rgba(111,168,224,.22),rgba(111,168,224,.06) 45%,transparent 70%)}
+body[data-page="library"] .bspark{position:absolute;bottom:-6%;width:5px;height:5px;border-radius:50%;background:radial-gradient(circle,rgba(180,214,255,.95),rgba(111,168,224,.55) 55%,transparent 75%);box-shadow:0 0 8px rgba(143,192,244,.7);opacity:0;animation:bookEmberRise 9s linear infinite}
+body[data-page="library"] .bspark:nth-child(1){left:12%;animation-duration:8.5s;animation-delay:0s}
+body[data-page="library"] .bspark:nth-child(2){left:24%;animation-duration:11s;animation-delay:1.6s;width:3px;height:3px}
+body[data-page="library"] .bspark:nth-child(3){left:38%;animation-duration:9.8s;animation-delay:3.2s}
+body[data-page="library"] .bspark:nth-child(4){left:52%;animation-duration:12.5s;animation-delay:.8s;width:4px;height:4px}
+body[data-page="library"] .bspark:nth-child(5){left:66%;animation-duration:8.8s;animation-delay:4.4s;width:3px;height:3px}
+body[data-page="library"] .bspark:nth-child(6){left:78%;animation-duration:10.6s;animation-delay:2.4s}
+body[data-page="library"] .bspark:nth-child(7){left:88%;animation-duration:13s;animation-delay:5.5s;width:4px;height:4px}
 @keyframes bookEmberRise{
   0%{transform:translateY(0) translateX(0);opacity:0}
   12%{opacity:.9}
@@ -1875,122 +2012,54 @@ body[data-page="home"] .bspark:nth-child(7){left:88%;animation-duration:13s;anim
   100%{transform:translateY(-340px) translateX(14px);opacity:0}
 }
 
-/* ══ SHOOTING STARS — subtle ambient streaks in the night band ══ */
-body[data-page="home"] .home-sky .shoot{position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;opacity:0;box-shadow:0 0 6px 1px rgba(255,255,255,.8)}
-body[data-page="home"] .home-sky .shoot::after{content:'';position:absolute;top:50%;right:2px;width:90px;height:1px;transform:translateY(-50%);background:linear-gradient(270deg,rgba(255,255,255,.7),transparent)}
-body[data-page="home"] .home-sky .shoot1{top:58%;left:78%;animation:shootStreak 9s ease-in 3s infinite}
-body[data-page="home"] .home-sky .shoot2{top:66%;left:90%;animation:shootStreak 13s ease-in 7s infinite}
-body[data-page="home"] .home-sky .shoot3{top:74%;left:84%;animation:shootStreak 17s ease-in 12s infinite}
-@keyframes shootStreak{
-  0%{transform:translate(0,0) rotate(18deg);opacity:0}
-  2%{opacity:1}
-  9%{opacity:1}
-  14%{transform:translate(-260px,90px) rotate(18deg);opacity:0}
-  100%{transform:translate(-260px,90px) rotate(18deg);opacity:0}
-}
+body[data-page="library"] .be-book-card>*:not(.book-embers){position:relative;z-index:1}
+body[data-page="library"] .lib-shelf-band .book-embers{z-index:1}
+body[data-page="library"] .lib-shelf-band .lib-shelf-hint{z-index:2}
+body[data-page="library"] .lib-shelf-band .bspark{width:8px!important;height:8px!important}
+body[data-page="library"] .lib-shelf-band .bspark:nth-child(even){width:5px!important;height:5px!important}
+body[data-page="library"] .lib-shelf-band .book-embers::after{height:80%}
+body[data-page="library"].light-mode .lib-shelf-band .book-embers::after{background:radial-gradient(120% 90% at 50% 120%,rgba(30,90,170,.32),rgba(30,90,170,.1) 45%,transparent 70%)}
+body[data-page="library"].light-mode .lib-shelf-band .bspark{background:radial-gradient(circle,rgba(70,140,230,1),rgba(30,90,180,.75) 55%,transparent 75%);box-shadow:0 0 10px rgba(30,100,200,.75)}
 @media (prefers-reduced-motion: reduce){
-  body[data-page="home"] .bspark,
-  body[data-page="home"] .home-sky .shoot{animation:none;opacity:0}
+  body[data-page="library"] .bspark{animation:none;opacity:0}
 }
-
-/* ══ NOTE — written under the stars (bare quote, no box) ══ */
-body[data-page="home"] .note{max-width:980px;margin:0 auto;padding:3rem 4rem 5rem;text-align:center}
-body[data-page="home"] .note .legend{color:#d8b56a;margin-bottom:1.4rem;display:block}
-body[data-page="home"] .note p{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(1.3rem,2.2vw,1.7rem);line-height:1.7;color:#d8d0e0}
-body[data-page="home"] .note p strong{color:#f1ead9;font-style:normal;font-weight:500}
-body[data-page="home"] .note .sig{font-family:'JetBrains Mono',monospace;font-style:normal;font-size:.64rem;letter-spacing:.2em;text-transform:uppercase;color:#9aa8d6;margin-top:1.8rem;display:block}
-
-/* ══ CONNECT — closing CTA on the deep-night band ══ */
-body[data-page="home"] .connect-strip{max-width:980px;margin:0 auto;padding:0 4rem 4rem;display:flex;justify-content:space-between;align-items:center;gap:1.5rem;flex-wrap:wrap;border:none}
-body[data-page="home"] .connect-text{font-family:'Lato',sans-serif;color:#cdc5d6;font-size:.95rem;max-width:420px}
-body[data-page="home"] .connect-text strong{color:#f1ead9;font-weight:700}
-body[data-page="home"] .connect-btns{display:flex;gap:1rem;flex-wrap:wrap}
-body[data-page="home"] .connect-strip .btn-primary,
-body[data-page="home"] .connect-strip .btn-ghost{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;padding:.85rem 1.7rem;border-radius:3px;text-decoration:none}
-body[data-page="home"] .connect-strip .btn-primary{background:#d8b56a;color:#141019;border:1px solid #d8b56a}
-body[data-page="home"] .connect-strip .btn-ghost{border:1px solid rgba(216,181,106,.4);color:#d8b56a;background:none}
-
-/* ══ PRINCIPLES — the two inks ══ */
-body[data-page="home"] .principles{max-width:1280px;margin:0 auto;padding:2.5rem 4rem;display:grid;grid-template-columns:repeat(3,1fr);gap:2.4rem}
-body[data-page="home"] .principle{position:relative;padding-left:1.4rem;border-left:1px solid var(--border)}
-body[data-page="home"] .pr-mark{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.2em;display:inline-block;margin-bottom:.9rem;padding:.2rem .5rem;border-radius:3px}
-body[data-page="home"] .pr-mark.logic{color:var(--teal);background:rgba(var(--teal-rgb),.1);border:1px solid rgba(var(--teal-rgb),.3)}
-body[data-page="home"] .pr-mark.depth{color:var(--gold);background:rgba(var(--gold-rgb),.1);border:1px solid rgba(var(--gold-rgb),.3)}
-body[data-page="home"] .pr-title{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.5rem;line-height:1.2;color:var(--text);margin-bottom:.6rem}
-body[data-page="home"] .pr-body{font-family:'Lato',sans-serif;font-size:.92rem;line-height:1.75;color:var(--text-dim)}
-
-/* ══ FEATURED — one project spotlight ══ */
-body[data-page="home"] .featured{max-width:1280px;margin:0 auto;padding:0 4rem}
-body[data-page="home"] .featured .divider{padding-left:0;padding-right:0;max-width:none}
-body[data-page="home"] .featured-plate{position:relative;display:grid;grid-template-columns:300px 1fr;gap:2.4rem;align-items:center;border:1px solid var(--border);border-radius:8px;padding:2rem;background:rgba(252,247,235,.9);text-decoration:none;color:inherit;overflow:hidden;box-shadow:0 18px 50px -28px rgba(80,55,20,.5);transition:transform .35s,border-color .35s,box-shadow .35s}
-body[data-page="home"] .featured-plate:hover{transform:translateY(-4px);border-color:var(--gold);box-shadow:0 26px 60px -30px rgba(80,55,20,.6)}
-body[data-page="home"]:not(.light-mode) .featured-plate{background:rgba(34,28,46,.9);border-color:rgba(216,181,106,.22)}
-body[data-page="home"] .featured-banner{border-radius:6px;overflow:hidden;aspect-ratio:3/2;display:flex;align-items:center;justify-content:center;background:var(--bg3)}
-body[data-page="home"] .featured-banner svg,body[data-page="home"] .featured-banner img{width:100%;height:100%;object-fit:cover;display:block}
-body[data-page="home"] .featured-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.22em;text-transform:uppercase;color:var(--teal);margin-bottom:.7rem}
-body[data-page="home"] .featured-title{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(1.8rem,2.6vw,2.4rem);line-height:1.1;color:var(--text);margin-bottom:.7rem}
-body[data-page="home"] .featured-title em{font-style:italic;color:var(--gold)}
-body[data-page="home"] .featured-desc{font-family:'Lato',sans-serif;font-size:.95rem;line-height:1.7;color:var(--text-dim);margin-bottom:1.1rem;max-width:520px}
-body[data-page="home"] .featured-tags{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1.2rem}
-body[data-page="home"] .featured-tags .ptag{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.08em;text-transform:uppercase;color:var(--text-dim);border:1px solid var(--border);border-radius:20px;padding:.22rem .6rem}
-body[data-page="home"] .featured-link{font-family:'JetBrains Mono',monospace;font-size:.64rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);display:inline-flex;gap:.4rem;align-items:center}
 
 /* ══ LATEST WRITING — newest essays (always night: it lives in the dusk band) ══ */
 body[data-page="home"] .latest .legend{color:#9aa8d6}
 body[data-page="home"] .latest .sec-title{color:#f1ead9}
 body[data-page="home"] .latest .sec-title em{color:#d8b56a}
 body[data-page="home"] .latest .sec-note{color:#cdc5d6}
-body[data-page="home"] .writing-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem}
-body[data-page="home"] .writing-card{display:flex;flex-direction:column;border:1px solid rgba(216,181,106,.2);border-radius:6px;padding:1.6rem 1.6rem 1.4rem;background:linear-gradient(135deg,rgba(30,26,46,.72),rgba(18,15,28,.78));backdrop-filter:blur(3px);text-decoration:none;color:inherit;transition:transform .3s,border-color .3s,box-shadow .3s;box-shadow:0 22px 50px -30px rgba(0,0,0,.7)}
-body[data-page="home"] .writing-card:hover{transform:translateY(-4px);border-color:rgba(216,181,106,.5);box-shadow:0 30px 60px -30px rgba(0,0,0,.8)}
-body[data-page="home"] .wc-tag{font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:#5fcaa9;margin-bottom:.7rem}
-body[data-page="home"] .wc-title{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.5rem;line-height:1.2;color:#f1ead9;margin-bottom:.6rem}
-body[data-page="home"] .wc-preview{font-family:'Lato',sans-serif;font-size:.88rem;line-height:1.7;color:#cdc5d6;margin-bottom:1.1rem}
-body[data-page="home"] .wc-meta{margin-top:auto;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;color:#9aa8d6;opacity:.85}
+body[data-page="marginalia"] .writing-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem}
+body[data-page="marginalia"] .writing-card{display:flex;flex-direction:column;border:1px solid rgba(216,181,106,.2);border-radius:6px;padding:1.6rem 1.6rem 1.4rem;background:linear-gradient(135deg,rgba(30,26,46,.72),rgba(18,15,28,.78));backdrop-filter:blur(3px);text-decoration:none;color:inherit;transition:transform .3s,border-color .3s,box-shadow .3s;box-shadow:0 22px 50px -30px rgba(0,0,0,.7)}
+body[data-page="marginalia"] .writing-card:hover{transform:translateY(-4px);border-color:rgba(216,181,106,.5);box-shadow:0 30px 60px -30px rgba(0,0,0,.8)}
+body[data-page="marginalia"] .wc-tag{font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.16em;text-transform:uppercase;color:#5fcaa9;margin-bottom:.7rem}
+body[data-page="marginalia"] .wc-title{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.5rem;line-height:1.2;color:#f1ead9;margin-bottom:.6rem}
+body[data-page="marginalia"] .wc-preview{font-family:'Lato',sans-serif;font-size:.88rem;line-height:1.7;color:#cdc5d6;margin-bottom:1.1rem}
+body[data-page="marginalia"] .wc-meta{margin-top:auto;display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;color:#9aa8d6;opacity:.85}
 
-/* ══ BOOK COVER — the Blue Ember cover beside the plate ══ */
-body[data-page="home"] .book-cover{position:relative;border-radius:6px;overflow:hidden;aspect-ratio:2/3;max-width:300px;margin:0 auto;width:100%;background:linear-gradient(135deg,#0D1226,#1A2456);box-shadow:0 24px 60px -28px rgba(0,0,0,.7);background-size:cover;background-position:center}
-body[data-page="home"] .book-cover svg.bt-constellation{position:absolute;inset:0;width:100%;height:100%;max-width:none;margin:0;opacity:.9}
-body[data-page="home"] .book-cover.has-cover svg.bt-constellation{display:none}
-
-/* ══ PATH — the way so far, a constellation timeline ══ */
-body[data-page="home"] .path{max-width:1280px;margin:0 auto;padding:1rem 4rem 2rem}
-body[data-page="home"] .path-line{list-style:none;display:grid;grid-template-columns:repeat(4,1fr);gap:1.6rem;position:relative;margin:0;padding:0}
-body[data-page="home"] .path-line::before{content:'';position:absolute;top:5px;left:6%;right:6%;height:1px;background:linear-gradient(90deg,transparent,rgba(216,181,106,.45),transparent)}
-body[data-page="home"] .path-stop{position:relative;display:flex;flex-direction:column;gap:.5rem;padding-top:1.6rem}
-body[data-page="home"] .path-stop .ps-dot{position:absolute;top:0;left:0;width:11px;height:11px;border-radius:50%;background:#d8b56a;box-shadow:0 0 10px rgba(216,181,106,.7)}
-body[data-page="home"] .path-stop .ps-year{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.18em;color:#d8b56a}
-body[data-page="home"] .path-stop .ps-label{font-family:'Lato',sans-serif;font-size:.9rem;line-height:1.6;color:#cdc5d6}
-body[data-page="home"] .path-stop .ps-label strong{color:#f1ead9;font-weight:700}
+/* ══ BOOK COVER — large, cover-forward; a plain gradient + the title
+   stands in until a cover is supplied (js/library.js clears the text once
+   a real cover_image loads) ══ */
+body[data-page="library"] .book-cover{
+  position:relative;border-radius:6px;overflow:hidden;aspect-ratio:2/3;width:100%;
+  background:linear-gradient(135deg,#0D1226,#1A2456);box-shadow:0 24px 60px -28px rgba(0,0,0,.7);
+  background-size:cover;background-position:center;
+  display:flex;align-items:center;justify-content:center;text-align:center;padding:1.5rem;
+  font-family:var(--font-display);font-weight:600;font-size:1.3rem;color:#dceafb;
+}
 
 /* ── responsive ── */
 @media(max-width:1040px){
-  body[data-page="home"] .principles{grid-template-columns:1fr;gap:1.6rem}
-  body[data-page="home"] .writing-cards{grid-template-columns:1fr}
-  body[data-page="home"] .featured-plate{grid-template-columns:1fr}
-  body[data-page="home"] .featured-banner{max-width:360px}
-  body[data-page="home"] .path-line{grid-template-columns:1fr 1fr;gap:1.4rem}
-  body[data-page="home"] .path-line::before{display:none}
-  body[data-page="home"] .plates{grid-template-columns:1fr}
-  body[data-page="home"] .plate{min-height:0}
+  body[data-page="marginalia"] .writing-cards{grid-template-columns:1fr}
 }
 @media(max-width:900px){
-  body[data-page="home"] .hero{grid-template-columns:1fr;gap:2.5rem;padding-top:7rem}
-  body[data-page="home"] .book-plate{grid-template-columns:1fr;gap:2rem}
-  body[data-page="home"] .sec-note{text-align:left}
+  body[data-page="library"] .book-plate{grid-template-columns:1fr;gap:2rem}
+  body[data-page="library"] .book-cover{max-width:280px;margin:0 auto}
 }
 @media(max-width:768px){
   body[data-page="home"] .hero,
   body[data-page="home"] .section,
-  body[data-page="home"] .principles,
-  body[data-page="home"] .featured,
-  body[data-page="home"] .path,
-  body[data-page="home"] .book,
-  body[data-page="home"] .divider,
-  body[data-page="home"] .note,
-  body[data-page="home"] .connect-strip{padding-left:1.5rem;padding-right:1.5rem}
-  body[data-page="home"] .path-line{grid-template-columns:1fr}
-  body[data-page="home"] .book-plate svg.bt-constellation{max-width:240px}
+  body[data-page="home"] .divider{padding-left:1.5rem;padding-right:1.5rem}
 }
 
 /* ══════════════════════════════════════════════════════════════════
@@ -2020,378 +2089,237 @@ body[data-page="about"]:not(.light-mode) .hub-bg{
     linear-gradient(180deg, rgba(40,48,92,.55) 0%, rgba(20,22,40,.30) 46%, rgba(var(--gold-rgb),.10) 100%);
 }
 
-/* nav matches the homepage: parchment-translucent in light, deep night in dark */
-body[data-page="about"] nav{backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);transition:background-color .4s ease,border-color .4s ease}
-body[data-page="about"].light-mode nav{
-  --text:#3a3027;--text-dim:#7a6a52;
-  --gold:#8f6230;--gold-rgb:143,98,48;--gold-dim:#bb9468;
-  --teal:#256a4e;--teal-rgb:37,106,78;--teal-dim:#5f9d83;
-  --border:rgba(120,90,50,.22);
-  background:rgba(244,234,211,.97);border-bottom-color:rgba(120,90,50,.18);
+/* ══════════════════════════════════════════════════════════
+   ABOUT — same paper/ink palette and type pairing as the hub
+   homepage (Cormorant Garamond + JetBrains Mono over --hub-*
+   tokens), no invented metaphor system: plain section labels,
+   a photo, prose, a timeline, and the real goals behind it.
+   ══════════════════════════════════════════════════════════ */
+body[data-page="about"] .about-hero{
+  max-width:1040px; margin:0 auto; padding:5rem 2rem 3.5rem;
+  display:grid; grid-template-columns:1.3fr .9fr; gap:3.5rem; align-items:center;
 }
-body[data-page="about"].light-mode nav .nav-center a{color:#7a6a52}
-body[data-page="about"].light-mode nav .nav-center a:hover,
-body[data-page="about"].light-mode nav .nav-center a.active{color:var(--gold)}
-body[data-page="about"]:not(.light-mode) nav{background:rgba(20,16,28,.9)}
+body[data-page="about"] .hero-eyebrow{
+  font-family:'JetBrains Mono',monospace; font-size:.68rem; letter-spacing:.32em; text-transform:uppercase;
+  color:var(--hub-gold); margin:0 0 1.2rem;
+}
+body[data-page="about"] .about-hero h1{
+  font-family:'Cormorant Garamond',serif; font-weight:500; font-size:clamp(1.9rem,3.6vw,2.7rem);
+  line-height:1.2; margin:0 0 1.2rem; text-wrap:balance; color:var(--hub-ink);
+}
+body[data-page="about"] .about-lede{font-size:1.02rem; line-height:1.75; color:var(--hub-ink-dim); margin:0 0 1.6rem}
+body[data-page="about"] .about-tags{display:flex; flex-wrap:wrap; gap:.6rem; margin-bottom:1.8rem}
+body[data-page="about"] .about-tag{
+  font-family:'JetBrains Mono',monospace; font-size:.6rem; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--hub-ink-dim); border:1px solid var(--hub-rule); border-radius:3px; padding:.4rem .8rem;
+}
+body[data-page="about"] .hero-ctas{display:flex; gap:2rem; flex-wrap:wrap}
+body[data-page="about"] .hero-cta{
+  font-family:'JetBrains Mono',monospace; font-size:.72rem; letter-spacing:.14em; text-transform:uppercase;
+  text-decoration:none; color:var(--hub-ink); padding-bottom:.3rem; border-bottom:1px solid var(--hub-rule);
+  transition:color .2s,border-color .2s;
+}
+body[data-page="about"] .hero-cta:hover,
+body[data-page="about"] .hero-cta:focus-visible{color:var(--hub-gold); border-color:var(--hub-gold)}
+/* photo.jpg is a square (512x512) source — match that aspect exactly so
+   nothing gets cropped; forcing a taller 4:5 box cut off the top of his
+   head on mobile once the hero collapsed to one column. */
+body[data-page="about"] .about-photo{
+  position:relative; border-radius:6px; overflow:hidden; border:1px solid var(--hub-rule);
+  /* a generic .about-photo{width:500px;height:500px} rule elsewhere on the
+     site otherwise wins the cascade on both properties and defeats
+     aspect-ratio entirely (it only applies when a dimension is auto) */
+  width:100%; height:auto; aspect-ratio:1/1;
+  max-width:340px; margin:0 auto;
+}
+body[data-page="about"] .about-photo img{width:100%; height:100%; object-fit:cover; display:block; filter:saturate(.95) contrast(1.02)}
+@media(min-width:901px){
+  body[data-page="about"] .about-photo{max-width:none; margin:0}
+}
 
-/* ── HERO · the cartographer's portrait (photo-led — mirror of home) ── */
-body[data-page="about"] .hero{max-width:1280px;margin:0 auto;padding:8.5rem 4rem 3rem;display:grid;grid-template-columns:.82fr 1.18fr;gap:4rem;align-items:center}
-body[data-page="about"] .plate-mark{display:flex;align-items:center;gap:1rem;margin-bottom:1.4rem}
-body[data-page="about"] .plate-mark .rule{height:1px;width:46px;background:var(--gold)}
-body[data-page="about"] .headline{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(2.4rem,4.4vw,3.9rem);line-height:1.08;letter-spacing:-.01em;color:var(--text)}
-body[data-page="about"] .headline em{font-style:italic;color:var(--gold)}
-body[data-page="about"] .welcome{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.25rem;color:var(--text-dim);letter-spacing:.04em;margin:1rem 0 1.6rem}
-body[data-page="about"] .byline{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.26em;text-transform:uppercase;color:var(--teal);font-weight:500;margin:0 0 1.6rem;display:flex;align-items:center;gap:.8rem}
-body[data-page="about"] .byline::before{content:'';width:30px;height:1px;background:var(--teal)}
-body[data-page="about"] .ink-tags{display:flex;flex-wrap:wrap;gap:.7rem;margin-bottom:1.8rem}
-body[data-page="about"] .ink{display:inline-flex;align-items:center;gap:.5rem;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.16em;text-transform:uppercase;padding:.5rem .9rem;border-radius:3px;border:1px solid transparent}
-body[data-page="about"] .ink .dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
-body[data-page="about"] .ink.logic{background:rgba(var(--teal-rgb),.1);border-color:rgba(var(--teal-rgb),.3);color:var(--teal)}
-body[data-page="about"] .ink.logic .dot{background:var(--teal)}
-body[data-page="about"] .ink.depth{background:rgba(var(--gold-rgb),.1);border-color:rgba(var(--gold-rgb),.3);color:var(--gold)}
-body[data-page="about"] .ink.depth .dot{background:var(--gold)}
-body[data-page="about"] .bio{font-family:'Lato',sans-serif;font-size:1.05rem;color:var(--text-dim);max-width:480px;line-height:1.85;margin-bottom:2rem}
-body[data-page="about"] .bio strong{color:var(--text);font-weight:700}
-body[data-page="about"] .cta{display:flex;gap:1rem;flex-wrap:wrap}
-body[data-page="about"] .btn{font-family:'JetBrains Mono',monospace;font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;padding:.85rem 1.7rem;border-radius:3px;text-decoration:none;transition:all .25s;cursor:pointer;display:inline-flex;align-items:center;gap:.5rem}
-body[data-page="about"] .btn.solid{background:var(--gold);color:#fbf3df;border:1px solid var(--gold)}
-body[data-page="about"] .btn.solid:hover{filter:brightness(.92)}
-body[data-page="about"] .btn.ghost{border:1px solid var(--border);color:var(--gold);background:none}
-body[data-page="about"] .btn.ghost:hover{border-color:var(--gold);background:rgba(var(--gold-rgb),.08)}
+/* ── section label — the one recurring structural device, plain and small ── */
+body[data-page="about"] .about-section{max-width:720px; margin:0 auto; padding:4rem 2rem}
+body[data-page="about"] .about-section-wide{max-width:900px}
+body[data-page="about"] .rule-top{border-top:1px solid var(--hub-rule)}
+body[data-page="about"] .about-label{
+  font-family:'JetBrains Mono',monospace; font-size:.62rem; letter-spacing:.24em; text-transform:uppercase;
+  color:var(--hub-gold); margin:0 0 2rem;
+}
 
-/* hero-right · photo in a codex vellum plate */
-body[data-page="about"] .hero-right{display:flex;flex-direction:column;gap:1.4rem}
-body[data-page="about"] .hero-plate{position:relative;border:1px solid var(--border);border-radius:6px;padding:1.4rem;background:rgba(255,250,238,.55);box-shadow:0 18px 50px -28px rgba(80,55,20,.55)}
-body[data-page="about"]:not(.light-mode) .hero-plate{background:rgba(34,28,46,.5);border-color:rgba(216,181,106,.22);box-shadow:0 18px 50px -28px rgba(0,0,0,.7)}
-body[data-page="about"] .hero-plate::before{content:'';position:absolute;inset:7px;border:1px solid rgba(var(--gold-rgb),.18);border-radius:4px;pointer-events:none;z-index:2}
-body[data-page="about"] .plate-cap{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.7rem}
-body[data-page="about"] .plate-cap .t{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.2rem;color:var(--gold)}
-body[data-page="about"] .plate-foot{margin-top:.7rem;display:flex;justify-content:space-between;align-items:center;gap:.8rem}
-body[data-page="about"] .about-photo{position:relative;border-radius:4px;overflow:hidden;aspect-ratio:4/5;background:var(--bg3)}
-body[data-page="about"] .about-photo img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.95) contrast(1.02)}
-body[data-page="about"] .ph-corner{position:absolute;width:16px;height:16px;border:1.5px solid var(--gold);opacity:.7;z-index:3}
-body[data-page="about"] .ph-corner.tl{top:8px;left:8px;border-right:none;border-bottom:none}
-body[data-page="about"] .ph-corner.tr{top:8px;right:8px;border-left:none;border-bottom:none}
-body[data-page="about"] .ph-corner.bl{bottom:8px;left:8px;border-right:none;border-top:none}
-body[data-page="about"] .ph-corner.br{bottom:8px;right:8px;border-left:none;border-top:none}
+/* ── background prose ── */
+body[data-page="about"] .prose{max-width:720px; margin:0 auto; padding:0 2rem 3.5rem}
+body[data-page="about"] .prose p{font-size:1.02rem; line-height:1.85; color:var(--hub-ink-dim); margin-bottom:1.3rem}
+body[data-page="about"] .prose p:last-child{margin-bottom:0}
+body[data-page="about"] .prose strong{color:var(--hub-ink); font-weight:600}
+body[data-page="about"] .pull-quote{
+  font-family:'Cormorant Garamond',serif; font-style:italic; font-weight:400; font-size:1.4rem; line-height:1.5;
+  color:var(--hub-gold); border-left:2px solid var(--hub-gold); padding:.3rem 0 .3rem 1.4rem; margin:1.8rem 0;
+}
+body[data-page="projects"] .ledger{position:relative;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:6px;padding:1.8rem 1.8rem;background:rgba(255,250,238,.5)}
+body[data-page="projects"]:not(.light-mode) .ledger{background:rgba(34,28,46,.5);border-color:rgba(216,181,106,.18)}
+body[data-page="projects"] .led-item{position:relative;flex:1;display:flex;align-items:center;padding:.6rem 0;border-top:1px solid var(--border);cursor:default}
+body[data-page="projects"] .led-item:first-of-type{border-top:none}
+body[data-page="projects"] .led-num{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:400;color:var(--teal);line-height:1;margin-right:.7rem}
+body[data-page="projects"] .led-item.depth .led-num{color:var(--gold)}
+body[data-page="projects"] .led-lbl{font-family:'Lato',sans-serif;font-size:.92rem;color:var(--text)}
+body[data-page="projects"] .led-tip{position:absolute;left:0;right:0;bottom:calc(100% + 6px);background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:.7rem .85rem;font-family:'Lato',sans-serif;font-size:.78rem;line-height:1.55;color:var(--text-dim);box-shadow:0 12px 30px -16px rgba(0,0,0,.5);opacity:0;visibility:hidden;transform:translateY(4px);transition:opacity .22s,transform .22s,visibility .22s;z-index:5;pointer-events:none}
+body[data-page="projects"] .led-item:hover .led-tip{opacity:1;visibility:visible;transform:translateY(0)}
 
-/* ── DIVIDER ── */
-body[data-page="about"] .divider{max-width:1280px;margin:0 auto;padding:2.5rem 4rem;display:flex;align-items:center;gap:1.4rem;color:var(--text-dim)}
-body[data-page="about"] .divider .ln{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
-body[data-page="about"] .divider .star{color:var(--gold);font-size:.8rem}
-body[data-page="about"] .divider.dim .star{color:var(--gold);opacity:.8}
-
-/* ── SECTION + heads ── */
-body[data-page="about"] .section{max-width:1280px;margin:0 auto;padding:1.5rem 4rem 2.5rem}
-body[data-page="about"] .sec-head{display:flex;justify-content:space-between;align-items:flex-end;gap:1rem;margin-bottom:2.6rem;flex-wrap:wrap}
-body[data-page="about"] .sec-title{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(2rem,3.4vw,3rem);line-height:1.1;color:var(--text)}
-body[data-page="about"] .sec-title em{font-style:italic;color:var(--gold)}
-body[data-page="about"] .sec-note{font-family:'Lato',sans-serif;font-size:.92rem;color:var(--text-dim);max-width:320px;text-align:right;line-height:1.7}
-
-/* ── THE STORY · prose plate + ledger ── */
-body[data-page="about"] .story-grid{display:grid;grid-template-columns:1.45fr 1fr;gap:2.2rem;align-items:stretch}
-body[data-page="about"] .bio-prose{position:relative;border:1px solid var(--border);border-radius:6px;padding:2.4rem 2.6rem;background:rgba(252,247,235,.7);box-shadow:0 14px 40px -28px rgba(80,55,20,.45)}
-body[data-page="about"]:not(.light-mode) .bio-prose{background:rgba(34,28,46,.55);border-color:rgba(216,181,106,.18)}
-body[data-page="about"] .bio-prose p{font-family:'Lato',sans-serif;font-size:1rem;line-height:1.9;color:var(--text-dim);margin-bottom:1.3rem}
-body[data-page="about"] .bio-prose p:last-child{margin-bottom:0}
-body[data-page="about"] .bio-prose strong{color:var(--text);font-weight:700}
-body[data-page="about"] .pull-quote{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:1.5rem;line-height:1.5;color:var(--gold);border-left:2px solid var(--gold);padding:.3rem 0 .3rem 1.4rem;margin:1.6rem 0;max-width:none}
-body[data-page="about"] .ledger{position:relative;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:6px;padding:1.8rem 1.8rem;background:rgba(255,250,238,.5)}
-body[data-page="about"]:not(.light-mode) .ledger{background:rgba(34,28,46,.5);border-color:rgba(216,181,106,.18)}
-body[data-page="about"] .led-item{position:relative;flex:1;display:flex;align-items:center;padding:.6rem 0;border-top:1px solid var(--border);cursor:default}
-body[data-page="about"] .led-item:first-of-type{border-top:none}
-body[data-page="about"] .led-num{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:400;color:var(--teal);line-height:1;margin-right:.7rem}
-body[data-page="about"] .led-item.depth .led-num{color:var(--gold)}
-body[data-page="about"] .led-lbl{font-family:'Lato',sans-serif;font-size:.92rem;color:var(--text)}
-body[data-page="about"] .led-tip{position:absolute;left:0;right:0;bottom:calc(100% + 6px);background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:.7rem .85rem;font-family:'Lato',sans-serif;font-size:.78rem;line-height:1.55;color:var(--text-dim);box-shadow:0 12px 30px -16px rgba(0,0,0,.5);opacity:0;visibility:hidden;transform:translateY(4px);transition:opacity .22s,transform .22s,visibility .22s;z-index:5;pointer-events:none}
-body[data-page="about"] .led-item:hover .led-tip{opacity:1;visibility:visible;transform:translateY(0)}
-
-/* ── THE PATH · vertical timeline ── */
-body[data-page="about"] .path-rail{list-style:none;margin:0;padding:0 0 0 1.5rem;position:relative;max-width:760px}
-body[data-page="about"] .path-rail::before{content:'';position:absolute;left:4px;top:6px;bottom:6px;width:1px;background:linear-gradient(180deg,transparent,rgba(var(--gold-rgb),.5) 12%,rgba(var(--gold-rgb),.5) 88%,transparent)}
-body[data-page="about"] .tl-item{position:relative;padding:0 0 1.9rem 1.8rem}
+/* ── timeline ──
+   Dot is centered on the rail line: line sits at left:4px (1px wide, so its
+   center is at 4.5px from the list's own left edge); the list's own
+   padding-left (1.5rem = 24px) is where each .tl-item's box starts, so the
+   dot's `left` (measured from THAT edge) has to be -25px, not the -24px +
+   translateX(-4.5px) combo this had before — that stacked to -28.5px and
+   put the dot noticeably left of the line instead of on it. */
+body[data-page="about"] .timeline{list-style:none;margin:0;padding:0 0 0 1.5rem;position:relative}
+body[data-page="about"] .timeline::before{content:'';position:absolute;left:4px;top:6px;bottom:6px;width:1px;background:linear-gradient(180deg,transparent,var(--hub-rule) 12%,var(--hub-rule) 88%,transparent)}
+body[data-page="about"] .tl-item{position:relative;padding:0 0 2.2rem 1.8rem}
 body[data-page="about"] .tl-item:last-child{padding-bottom:0}
-body[data-page="about"] .tl-dot{position:absolute;left:-1.5rem;top:3px;width:11px;height:11px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px rgba(var(--gold-rgb),.6);transform:translateX(-4.5px)}
-body[data-page="about"] .tl-item.next .tl-dot{background:none;border:1.5px solid var(--gold);box-shadow:none}
-body[data-page="about"] .tl-year{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:.35rem}
-body[data-page="about"] .tl-title{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:1.45rem;line-height:1.2;color:var(--text);margin-bottom:.35rem}
-body[data-page="about"] .tl-body{font-family:'Lato',sans-serif;font-size:.92rem;line-height:1.7;color:var(--text-dim);max-width:560px}
+body[data-page="about"] .tl-dot{position:absolute;left:-25px;top:3px;width:11px;height:11px;border-radius:50%;background:var(--hub-gold)}
+body[data-page="about"] .tl-item.next .tl-dot{background:none;border:1.5px solid var(--hub-gold)}
+body[data-page="about"] .tl-year{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--hub-gold);display:block;margin-bottom:.35rem}
+body[data-page="about"] .tl-title{font-family:'Cormorant Garamond',serif;font-weight:500;font-size:1.35rem;line-height:1.2;color:var(--hub-ink);margin-bottom:.35rem}
+body[data-page="about"] .tl-body{font-size:.92rem;line-height:1.7;color:var(--hub-ink-dim)}
 
-/* ── WHERE THE TWO INKS MEET · the Alrescha knot ── */
-body[data-page="about"] .inks-meet{max-width:1280px;margin:0 auto;padding:1rem 4rem 2.5rem;text-align:center}
-body[data-page="about"] .im-svg{display:block;width:100%;max-width:560px;height:auto;margin:0 auto}
-body[data-page="about"] .im-svg .cord{fill:none;stroke-width:1.4;opacity:.6}
-body[data-page="about"] .im-svg .cord.teal{stroke:var(--teal)}
-body[data-page="about"] .im-svg .cord.gold{stroke:var(--gold)}
-body[data-page="about"] .im-svg .node{opacity:.85}
-body[data-page="about"] .im-svg .node.teal{fill:var(--teal)}
-body[data-page="about"] .im-svg .node.gold{fill:var(--gold)}
-body[data-page="about"] .im-svg .knot-glow{fill:var(--gold);opacity:.16}
-body[data-page="about"] .im-svg .knot{fill:var(--gold)}
-body[data-page="about"] .im-svg .im-star-lbl{font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;fill:var(--text-dim);opacity:.85}
-body[data-page="about"] .im-cap{font-family:'Lato',sans-serif;font-size:.95rem;color:var(--text-dim);margin-top:1rem;font-style:italic}
-body[data-page="about"] .im-cap .logic{color:var(--teal);font-style:normal;font-family:'JetBrains Mono',monospace;font-size:.85rem;letter-spacing:.06em}
-body[data-page="about"] .im-cap .depth{color:var(--gold);font-style:normal;font-family:'JetBrains Mono',monospace;font-size:.85rem;letter-spacing:.06em}
+/* ── what's next — three quiet columns, not cards, for rhythm against the
+   single-column prose/timeline above and below it ── */
+body[data-page="about"] .goals{display:grid;grid-template-columns:repeat(3,1fr);gap:2.4rem}
+body[data-page="about"] .goal-item{padding-top:1.4rem;border-top:1px solid var(--hub-rule)}
+body[data-page="about"] .goal-title{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:500;line-height:1.15;margin-bottom:.6rem;color:var(--hub-ink)}
+body[data-page="about"] .goal-desc{font-size:.9rem;color:var(--hub-ink-dim);line-height:1.7}
+@media(max-width:768px){
+  body[data-page="about"] .goals{grid-template-columns:1fr;gap:1.8rem}
+}
 
-/* ── WHERE I'M HEADED · atlas plates ── */
-body[data-page="about"] .plates{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;align-items:stretch}
-body[data-page="about"] .plate{position:relative;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:6px;padding:2.4rem 2rem 1.9rem;background:rgba(252,247,235,.84);text-decoration:none;color:inherit;overflow:hidden;transition:transform .35s,box-shadow .35s,border-color .35s;box-shadow:0 14px 40px -26px rgba(80,55,20,.45);min-height:280px}
-body[data-page="about"] .plate:hover{transform:translateY(-5px);border-color:var(--gold);box-shadow:0 26px 56px -28px rgba(80,55,20,.55)}
-body[data-page="about"]:not(.light-mode) .plate{background:rgba(34,28,46,.9);border-color:rgba(216,181,106,.22)}
-body[data-page="about"] .plate-glyph{position:absolute;top:1.4rem;right:1.5rem;width:64px;height:50px;opacity:.8;pointer-events:none}
-body[data-page="about"] .plate-glyph line{stroke:var(--gold-dim);stroke-width:1;opacity:.7}
-body[data-page="about"] .plate-glyph circle{fill:var(--gold)}
-body[data-page="about"] .plate-no{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.24em;text-transform:uppercase;color:var(--iron,#46506e);margin-bottom:.9rem}
-body[data-page="about"]:not(.light-mode) .plate-no{color:#9aa8d6}
-body[data-page="about"] .plate-greek{font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin-bottom:.5rem}
-body[data-page="about"] .plate-name{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:300;line-height:1.1;margin-bottom:.8rem;color:var(--text)}
-body[data-page="about"] .plate-name em{font-style:italic;color:var(--gold)}
-body[data-page="about"] .plate-desc{font-family:'Lato',sans-serif;font-size:.9rem;color:var(--text-dim);line-height:1.7}
-
-/* ── THE MISSION · gold-ember night plate (always night) ── */
-body[data-page="about"] .mission{max-width:1280px;margin:0 auto;padding:1rem 4rem 2.5rem}
-body[data-page="about"] .mission-plate{position:relative;border:1px solid rgba(216,181,106,.32);border-radius:8px;overflow:hidden;background:linear-gradient(135deg,rgba(38,28,20,.92),rgba(22,16,12,.95));padding:3rem 3.4rem;box-shadow:0 30px 70px -34px rgba(0,0,0,.7)}
-body[data-page="about"] .mission-plate::before{content:'';position:absolute;inset:9px;border:1px solid rgba(216,181,106,.18);border-radius:5px;pointer-events:none}
-body[data-page="about"] .mission-plate::after{content:'';position:absolute;top:-40%;right:-10%;width:60%;height:160%;background:radial-gradient(ellipse at center,rgba(216,181,106,.1),transparent 60%);pointer-events:none}
-body[data-page="about"] .mission-eyebrow{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.24em;text-transform:uppercase;color:#e0bd72;margin-bottom:1rem;display:flex;align-items:center;gap:.6rem;position:relative}
-body[data-page="about"] .ember-dot{width:7px;height:7px;border-radius:50%;background:#e0bd72;box-shadow:0 0 10px rgba(216,181,106,.9)}
-body[data-page="about"] .mission-title{font-family:'Cormorant Garamond',serif;font-weight:400;font-size:clamp(2rem,3.4vw,3.1rem);line-height:1.1;color:#f3ecdc;margin-bottom:1.4rem;position:relative}
-body[data-page="about"] .mission-title em{font-style:italic;color:#e0bd72}
-body[data-page="about"] .mission-text{font-family:'Lato',sans-serif;color:#cfc6b6;font-size:1rem;line-height:1.85;max-width:none;margin-bottom:1.1rem;position:relative}
-body[data-page="about"] .mission-text:last-child{margin-bottom:0}
+/* ── the reason — a full-bleed tonal band (like the doors row), not a
+   bordered card, so the page gets one deliberate beat of visual rest
+   instead of reading as one continuous column of paragraphs ── */
+body[data-page="about"] .mission{background:var(--hub-paper-2); border-top:1px solid var(--hub-rule); border-bottom:1px solid var(--hub-rule)}
+body[data-page="about"] .mission .about-section{padding-top:4rem; padding-bottom:4rem}
+body[data-page="about"] .mission-title{
+  font-family:'Cormorant Garamond',serif;font-weight:500;font-size:clamp(1.5rem,2.6vw,1.9rem);line-height:1.25;
+  color:var(--hub-ink);margin-bottom:1.2rem;text-wrap:balance;
+}
+body[data-page="about"] .prose-text{font-size:1.02rem;color:var(--hub-ink-dim);line-height:1.85;margin-bottom:1.3rem}
+body[data-page="about"] .prose-text:last-child{margin-bottom:0}
 
 /* ── THE INSTRUMENTS · two ink columns ── */
-body[data-page="about"] .skills-cols{display:grid;grid-template-columns:1fr 1fr;gap:3rem}
-body[data-page="about"] .scol-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:1.4rem;padding-bottom:.7rem;border-bottom:1px solid var(--border)}
-body[data-page="about"] .scol-lbl.logic{color:var(--teal)}
-body[data-page="about"] .scol-lbl.logic::before{content:'// ';opacity:.6}
-body[data-page="about"] .scol-lbl.depth{color:var(--gold)}
-body[data-page="about"] .scol-lbl.depth::before{content:'✦ ';opacity:.7}
-body[data-page="about"] .skill-row{display:flex;align-items:center;gap:1rem;margin-bottom:.9rem}
-body[data-page="about"] .skill-name{font-family:'Lato',sans-serif;font-size:.88rem;color:var(--text);width:170px;flex-shrink:0}
-body[data-page="about"] .sbw{flex:1;height:5px;border-radius:3px;background:rgba(var(--gold-rgb),.12);overflow:hidden}
-body[data-page="about"] .sb{height:100%;width:0;border-radius:3px;transition:width 1.1s cubic-bezier(.2,.7,.3,1)}
-body[data-page="about"] .sb.logic{background:linear-gradient(90deg,var(--teal-dim),var(--teal))}
-body[data-page="about"] .sb.depth{background:linear-gradient(90deg,var(--gold-dim),var(--gold))}
-body[data-page="about"] .skill-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.4rem}
-body[data-page="about"] .stag{font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;border-radius:20px;padding:.3rem .7rem;border:1px solid transparent}
-body[data-page="about"] .stag.logic{color:var(--teal);border-color:rgba(var(--teal-rgb),.3);background:rgba(var(--teal-rgb),.08)}
-body[data-page="about"] .stag.depth{color:var(--gold);border-color:rgba(var(--gold-rgb),.3);background:rgba(var(--gold-rgb),.08)}
+body[data-page="projects"] .skills-cols{display:grid;grid-template-columns:1fr 1fr;gap:3rem}
+body[data-page="projects"] .scol-lbl{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;margin-bottom:1.4rem;padding-bottom:.7rem;border-bottom:1px solid var(--border)}
+body[data-page="projects"] .scol-lbl.logic{color:var(--teal)}
+body[data-page="projects"] .scol-lbl.logic::before{content:'// ';opacity:.6}
+body[data-page="projects"] .scol-lbl.depth{color:var(--gold)}
+body[data-page="projects"] .scol-lbl.depth::before{content:'✦ ';opacity:.7}
+body[data-page="projects"] .skill-row{display:flex;align-items:center;gap:1rem;margin-bottom:.9rem}
+body[data-page="projects"] .skill-name{font-family:'Lato',sans-serif;font-size:.88rem;color:var(--text);width:170px;flex-shrink:0}
+body[data-page="projects"] .sbw{flex:1;height:5px;border-radius:3px;background:rgba(var(--gold-rgb),.12);overflow:hidden}
+body[data-page="projects"] .sb{height:100%;width:0;border-radius:3px;transition:width 1.1s cubic-bezier(.2,.7,.3,1)}
+body[data-page="projects"] .sb.logic{background:linear-gradient(90deg,var(--teal-dim),var(--teal))}
+body[data-page="projects"] .sb.depth{background:linear-gradient(90deg,var(--gold-dim),var(--gold))}
+body[data-page="projects"] .skill-tags{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:1.4rem}
+body[data-page="projects"] .stag{font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.08em;text-transform:uppercase;border-radius:20px;padding:.3rem .7rem;border:1px solid transparent}
+body[data-page="projects"] .stag.logic{color:var(--teal);border-color:rgba(var(--teal-rgb),.3);background:rgba(var(--teal-rgb),.08)}
+body[data-page="projects"] .stag.depth{color:var(--gold);border-color:rgba(var(--gold-rgb),.3);background:rgba(var(--gold-rgb),.08)}
 
 /* ── OFF THE CLOCK · colophon marginalia ── */
-body[data-page="about"] .colo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;border:1px solid var(--border);border-radius:6px;overflow:hidden;background:var(--border)}
-body[data-page="about"] .colo-item{display:flex;flex-direction:column;gap:.45rem;padding:1.4rem 1.5rem;background:rgba(252,247,235,.7)}
-body[data-page="about"]:not(.light-mode) .colo-item{background:rgba(34,28,46,.7)}
-body[data-page="about"] .colo-lbl{font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal)}
-body[data-page="about"] .colo-val{font-family:'Cormorant Garamond',serif;font-size:1.15rem;color:var(--text);line-height:1.35}
-
-/* ── CLOSING EPIGRAPH ── */
-body[data-page="about"] .epigraph{max-width:880px;margin:0 auto;padding:2.5rem 4rem 5rem;text-align:center}
-body[data-page="about"] .epigraph .legend{color:var(--gold);margin-bottom:1.4rem;display:block}
-body[data-page="about"]:not(.light-mode) .epigraph .legend{color:#d8b56a}
-body[data-page="about"] .epigraph-text{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:clamp(1.3rem,2.2vw,1.7rem);line-height:1.7;color:var(--text);margin:0;text-wrap:balance}
-body[data-page="about"] .epigraph-cite{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--teal);margin-top:1.8rem;display:inline-block;text-decoration:none}
-body[data-page="about"] .epigraph-cite:hover{color:var(--gold)}
 
 /* ── responsive ── */
-@media(max-width:1040px){
-  body[data-page="about"] .story-grid{grid-template-columns:1fr;gap:1.8rem}
-  body[data-page="about"] .plates{grid-template-columns:1fr}
-  body[data-page="about"] .plate{min-height:0}
-  body[data-page="about"] .colo-grid{grid-template-columns:1fr 1fr}
-}
 @media(max-width:900px){
-  body[data-page="about"] .hero{grid-template-columns:1fr;gap:2.5rem;padding-top:7rem}
-  body[data-page="about"] .hero-right{max-width:360px}
-  body[data-page="about"] .skills-cols{grid-template-columns:1fr;gap:2.2rem}
-  body[data-page="about"] .sec-note{text-align:left}
-}
-@media(max-width:768px){
-  body[data-page="about"] .hero,
-  body[data-page="about"] .section,
-  body[data-page="about"] .divider,
-  body[data-page="about"] .inks-meet,
-  body[data-page="about"] .mission,
-  body[data-page="about"] .epigraph{padding-left:1.5rem;padding-right:1.5rem}
-  body[data-page="about"] .bio-prose,
-  body[data-page="about"] .mission-plate{padding-left:1.6rem;padding-right:1.6rem}
-  body[data-page="about"] .colo-grid{grid-template-columns:1fr}
-  body[data-page="about"] .skill-name{width:130px}
+  body[data-page="about"] .about-hero{grid-template-columns:1fr;gap:2rem;padding-top:3.5rem}
 }
 
-/* ── CONSTELLATION STAR-CHART · the page's charted spine ── */
-body[data-page="about"] .star-chart{
-  position:fixed; left:.6rem; top:50%; transform:translateY(-50%);
-  height:min(64vh,560px); width:90px; z-index:40; pointer-events:none;
+/* ═══ FORGE · forge.calebthede.com ═══
+   Matches the identity the hub's own "Three Doors" homepage already
+   committed to for this world (--fg-* tokens, body[data-page="home"]) —
+   muted forest/pine green (--fg-accent:#3d6b5f) with IBM Plex Sans
+   throughout, rather than inventing a separate palette (the mistake made
+   on the first Marginalia pass). Secondary accent is a warm copper/rust —
+   an actual forge's own second material, iron warmed by fire, pairing
+   against the cool green. Light mode reuses the hub's exact values; dark
+   mode is my own extension, same hue brightened for a near-black ground.
+   Clean-cut and technical: a faint blueprint grid instead of a soft
+   painterly wash, sharp corner-bracket registration marks on every card
+   (extending the .ph-corner mark already used on banner images to the
+   cards themselves), no invented "Atlas/Chart" plate language. */
+body[data-page="projects"]{
+  --bg:#0f1412; --bg2:#1a211d; --bg3:#252e28;
+  --text:#e2e8e3; --text-dim:#8fa096;
+  --teal:#5cad8f; --teal-rgb:92,173,143; --teal-dim:#3d6b5f;
+  --gold:#d98a5c; --gold-rgb:217,138,92; --gold-dim:#a8623a;
+  --border:rgba(92,173,143,.26);
+  --nav-bg:rgba(15,20,18,.92); --modal-bg:#1a211d; --input-bg:#252e28; --skills-bg:#1a211d;
+  --font-display:'IBM Plex Sans',sans-serif; --font-body:'IBM Plex Sans',sans-serif; --font-label:'IBM Plex Mono',monospace;
+  position:relative; background:var(--bg) !important;
 }
-/* connecting lines of the asterism */
-body[data-page="about"] .sc-svg{
-  position:absolute; inset:0; width:100%; height:100%; overflow:visible;
+body[data-page="projects"].light-mode{
+  --bg:#e7ece7; --bg2:#d7e0d8; --bg3:#c7d3c8;
+  --text:#1c2321; --text-dim:#57645f;
+  --teal:#3d6b5f; --teal-rgb:61,107,95; --teal-dim:#6b998a;
+  --gold:#a8623a; --gold-rgb:168,98,58; --gold-dim:#c98f68;
+  --border:rgba(61,107,95,.22);
+  --nav-bg:rgba(231,236,231,.96); --modal-bg:#d7e0d8; --input-bg:#c7d3c8; --skills-bg:#d7e0d8;
+  background:var(--bg) !important;
 }
-body[data-page="about"] .sc-base{
-  stroke:rgba(var(--gold-rgb),.30); stroke-width:1; vector-effect:non-scaling-stroke;
-  stroke-linejoin:round; stroke-linecap:round;
+body[data-page="projects"] main{position:relative; z-index:1; background-color:var(--bg);
+  background-image:
+    repeating-linear-gradient(0deg, transparent, transparent 31px, rgba(var(--teal-rgb),.08) 31px, rgba(var(--teal-rgb),.08) 32px),
+    repeating-linear-gradient(90deg, transparent, transparent 31px, rgba(var(--teal-rgb),.08) 31px, rgba(var(--teal-rgb),.08) 32px);
 }
-body[data-page="about"] .sc-thread{
-  stroke:var(--gold); stroke-width:1.6; vector-effect:non-scaling-stroke;
-  stroke-linejoin:round; stroke-linecap:round;
-  stroke-dasharray:1; stroke-dashoffset:1;
-  filter:drop-shadow(0 0 2px rgba(var(--gold-rgb),.6));
-  transition:stroke-dashoffset .3s cubic-bezier(.3,.7,.3,1);
+body[data-page="projects"] .legend{font-family:var(--font-label); font-size:.6rem; letter-spacing:.28em; text-transform:uppercase; color:var(--text-dim)}
+body[data-page="projects"] .hub-pattern,
+body[data-page="projects"] .hub-bg{display:none !important}
+body[data-page="projects"] footer{
+  --bg2:#1a211d; --text:#e2e8e3; --text-dim:#8fa096;
+  --gold:#d98a5c; --gold-rgb:217,138,92; --teal:#5cad8f; --teal-rgb:92,173,143;
+  --border:rgba(92,173,143,.18);
+  background:var(--bg2) !important; border-top:1px solid var(--border); margin-top:0;
 }
-/* each star — centered on its charted point */
-body[data-page="about"] .sc-star{
-  position:absolute; transform:translate(-50%,-50%);
-  pointer-events:auto; cursor:pointer; background:none; border:0; padding:0;
-}
-body[data-page="about"] .sc-dot{
-  display:block; position:relative; width:9px; height:9px; border-radius:50%;
-  background:rgba(var(--gold-rgb),.55);
-  border:1px solid var(--gold);
-  box-shadow:0 0 0 3px rgba(var(--gold-rgb),0);
-  transition:background .3s ease, border-color .3s ease,
-    box-shadow .4s ease, transform .35s cubic-bezier(.3,.7,.3,1);
-}
-/* four-point glint, revealed on the active star */
-body[data-page="about"] .sc-dot::before{
-  content:''; position:absolute; left:50%; top:50%;
-  width:26px; height:26px; transform:translate(-50%,-50%) scale(.4);
-  background:
-    linear-gradient(transparent 46%, currentColor 49%, currentColor 51%, transparent 54%),
-    linear-gradient(90deg, transparent 46%, currentColor 49%, currentColor 51%, transparent 54%);
-  color:var(--teal); opacity:0;
-  transition:opacity .35s ease, transform .35s cubic-bezier(.3,.7,.3,1);
-  pointer-events:none;
-}
-/* passed stars — filled gold */
-body[data-page="about"] .sc-star.passed .sc-dot{
-  background:var(--gold); border-color:var(--gold);
-  box-shadow:0 0 7px rgba(var(--gold-rgb),.55);
-}
-/* active star — ignited teal, enlarged, with glint */
-body[data-page="about"] .sc-star.active .sc-dot{
-  background:var(--teal); border-color:var(--teal); transform:scale(1.4);
-  box-shadow:0 0 0 4px rgba(var(--teal-rgb),.18), 0 0 14px rgba(var(--teal-rgb),.8);
-}
-body[data-page="about"] .sc-star.active .sc-dot::before{
-  opacity:.85; transform:translate(-50%,-50%) scale(1);
-}
-/* label — hidden until hover/active */
-body[data-page="about"] .sc-label{
-  position:absolute; left:16px; top:50%; transform:translateY(-50%) translateX(4px);
-  white-space:nowrap; font-family:'JetBrains Mono',monospace;
-  font-size:.56rem; letter-spacing:.16em; text-transform:uppercase;
-  color:var(--text); background:var(--bg2);
-  border:1px solid var(--border); border-radius:4px;
-  padding:.32rem .58rem; opacity:0; pointer-events:none;
-  box-shadow:0 4px 14px rgba(40,28,12,.14);
-  transition:opacity .25s ease, transform .25s ease;
-}
-body[data-page="about"] .sc-star:hover .sc-label{
-  opacity:1; transform:translateY(-50%) translateX(8px);
-}
-body[data-page="about"] .sc-star.active:hover .sc-label{ color:var(--teal); border-color:rgba(var(--teal-rgb),.4); }
-body[data-page="about"] .sc-star:hover .sc-dot{ border-color:var(--gold); transform:scale(1.3); }
-@media(prefers-reduced-motion: reduce){
-  body[data-page="about"] .sc-thread,
-  body[data-page="about"] .sc-dot,
-  body[data-page="about"] .sc-dot::before,
-  body[data-page="about"] .sc-label{ transition:none; }
-}
-/* hide the chart where there isn't room for it */
-@media(max-width:1300px){
-  body[data-page="about"] .star-chart{ display:none; }
+body[data-page="projects"].light-mode footer{
+  --bg2:#d7e0d8; --text:#1c2321; --text-dim:#57645f;
+  --gold:#a8623a; --gold-rgb:168,98,58; --teal:#3d6b5f; --teal-rgb:61,107,95;
+  --border:rgba(61,107,95,.16);
+  background:var(--bg2) !important; border-top:1px solid var(--border);
 }
 
-/* ═══ CODEX MATERIAL / CRAFT PASS (About) ═══ */
+/* ── shared site chrome — same fix as Library/Marginalia ── */
+body[data-page="projects"] .modal-title{font-family:var(--font-display); font-weight:700}
+body[data-page="projects"] .mf label{font-family:var(--font-label)}
+body[data-page="projects"] .mf input,
+body[data-page="projects"] .mf textarea,
+body[data-page="projects"] .mf select{font-family:var(--font-body)}
+body[data-page="projects"] .btn-primary,
+body[data-page="projects"] .btn-ghost,
+body[data-page="projects"] .btn-sm,
+body[data-page="projects"] .admin-badge,
+body[data-page="projects"] .toast{font-family:var(--font-label)}
 
+/* ── bespoke header (same pattern as Library/Marginalia) ── */
+body[data-page="projects"] .lib-head{
+  position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between;
+  padding:1.1rem 2rem; background:var(--nav-bg); backdrop-filter:blur(7px);
+  border-bottom:1px solid var(--border);
+}
+body[data-page="projects"] .lib-head-mark{display:flex; align-items:baseline; gap:.7rem; flex-wrap:wrap; min-width:0}
+body[data-page="projects"] .lib-head-hub{font-family:var(--font-display); font-weight:600; font-size:1.2rem; color:var(--text-dim); text-decoration:none; transition:color .2s; white-space:nowrap}
+body[data-page="projects"] .lib-head-hub:hover{color:var(--teal)}
+body[data-page="projects"] .lib-head-sep{color:var(--border); font-size:1rem}
+body[data-page="projects"] .lib-head-crumb-current{font-family:var(--font-display); font-weight:700; font-size:1.1rem; color:var(--teal); white-space:nowrap}
+body[data-page="projects"] .lib-head-controls{display:flex; align-items:center; gap:.6rem}
+body[data-page="projects"] .admin-link{
+  font-family:var(--font-label); font-size:.65rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--teal); text-decoration:none; border:1px solid var(--border); border-radius:3px; padding:.4rem .7rem;
+  transition:border-color .2s;
+}
+body[data-page="projects"] .admin-link:hover{border-color:var(--teal)}
+@media(max-width:480px){
+  body[data-page="projects"] .lib-head{padding:1rem 1.2rem; gap:.6rem}
+  body[data-page="projects"] .lib-head-hub{font-size:1.05rem}
+  body[data-page="projects"] .lib-head-crumb-current{font-size:.95rem}
+}
 
-/* — illuminated initial: gilded drop-cap opening the story — */
-body[data-page="about"] .bio-prose > p:first-of-type::first-letter{
-  float:left; font-family:'Cormorant Garamond',serif; font-weight:600;
-  font-size:3.5rem; line-height:.82; margin:.18rem .55rem .05rem 0;
-  padding:.14rem .34rem; color:var(--gold);
-  background:linear-gradient(160deg,rgba(var(--gold-rgb),.18),rgba(var(--gold-rgb),.04));
-  border:1px solid rgba(var(--gold-rgb),.36); border-radius:3px;
-  text-shadow:0 1px 0 rgba(255,250,235,.6);
-}
-body[data-page="about"]:not(.light-mode) .bio-prose > p:first-of-type::first-letter{
-  text-shadow:0 0 12px rgba(var(--gold-rgb),.35);
-}
-/* engraved double-rule inside the prose plate */
-body[data-page="about"] .bio-prose::before{
-  content:''; position:absolute; inset:7px; pointer-events:none;
-  border:1px solid rgba(var(--gold-rgb),.14); border-radius:4px;
-}
-
-/* — engraved double-rule + foot catalog numbers on the atlas plates — */
-body[data-page="about"] .plate::before{
-  content:''; position:absolute; inset:7px; z-index:1; pointer-events:none;
-  border:1px solid rgba(var(--gold-rgb),.15); border-radius:4px;
-}
-body[data-page="about"] .plate::after{
-  position:absolute; bottom:.5rem; left:50%; transform:translateX(-50%); z-index:2;
-  font-family:'JetBrains Mono',monospace; font-size:.5rem; letter-spacing:.24em;
-  text-transform:uppercase; color:var(--gold); opacity:.55; white-space:nowrap;
-  pointer-events:none;
-}
-body[data-page="about"] .plates .plate:nth-child(1)::after{ content:'№ II · i'; }
-body[data-page="about"] .plates .plate:nth-child(2)::after{ content:'№ II · ii'; }
-body[data-page="about"] .plates .plate:nth-child(3)::after{ content:'№ II · iii'; }
-
-/* — gold-leaf flourish dividers: star flanked by small diamonds — */
-body[data-page="about"] .divider .ln{
-  background:linear-gradient(90deg,transparent,rgba(var(--gold-rgb),.5),transparent);
-}
-body[data-page="about"] .divider.dim .ln{
-  background:linear-gradient(90deg,transparent,rgba(var(--gold-rgb),.32),transparent);
-}
-body[data-page="about"] .divider .star{ position:relative; }
-body[data-page="about"] .divider .star::before,
-body[data-page="about"] .divider .star::after{
-  content:'◆'; position:absolute; top:50%; transform:translateY(-50%);
-  font-size:.34rem; color:var(--gold); opacity:.55;
-}
-body[data-page="about"] .divider .star::before{ right:calc(100% + .55rem); }
-body[data-page="about"] .divider .star::after{ left:calc(100% + .55rem); }
-
-/* ═══ ATLAS · public projects, charted (Celestial Codex) ═══ */
-body[data-page="projects"]{position:relative}
-body[data-page="projects"] main{position:relative;z-index:1}
-body[data-page="projects"] .legend{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--iron,#46506e)}
-body[data-page="projects"]:not(.light-mode) .legend{color:#9aa8d6}
-
-/* celestial wash + nav — same language as the About page */
-body[data-page="projects"] .hub-pattern{display:none !important}
-body[data-page="projects"] .hub-bg{z-index:-1;opacity:1}
-body[data-page="projects"].light-mode .hub-bg{
-  background:
-    radial-gradient(ellipse 120% 70% at 50% -10%, rgba(var(--gold-rgb),.20), transparent 55%),
-    linear-gradient(180deg, rgba(var(--gold-rgb),.10) 0%, transparent 34%, rgba(var(--teal-rgb),.07) 100%);
-}
-body[data-page="projects"]:not(.light-mode) .hub-bg{
-  background:
-    radial-gradient(ellipse 120% 70% at 50% -10%, rgba(86,98,168,.42), transparent 58%),
-    linear-gradient(180deg, rgba(40,48,92,.55) 0%, rgba(20,22,40,.30) 46%, rgba(var(--gold-rgb),.10) 100%);
-}
-body[data-page="projects"] nav{backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);transition:background-color .4s ease,border-color .4s ease}
-body[data-page="projects"].light-mode nav{
-  --text:#3a3027;--text-dim:#7a6a52;
-  --gold:#8f6230;--gold-rgb:143,98,48;--gold-dim:#bb9468;
-  --teal:#256a4e;--teal-rgb:37,106,78;--teal-dim:#5f9d83;
-  --border:rgba(120,90,50,.22);
-  background:rgba(244,234,211,.97);border-bottom-color:rgba(120,90,50,.18);
-}
-body[data-page="projects"].light-mode nav .nav-center a{color:#7a6a52}
-body[data-page="projects"].light-mode nav .nav-center a:hover,
-body[data-page="projects"].light-mode nav .nav-center a.active{color:var(--gold)}
-body[data-page="projects"]:not(.light-mode) nav{background:rgba(20,16,28,.9)}
-
-/* ── hero · editorial text block + codex legend card ── */
-body[data-page="projects"] .atlas-hero{max-width:1180px;margin:0 auto;padding:8.5rem 4rem 1rem;display:grid;grid-template-columns:1.32fr .68fr;gap:3.4rem;align-items:center}
-body[data-page="projects"] .plate-mark{display:flex;align-items:center;gap:1rem;margin-bottom:1.3rem}
-body[data-page="projects"] .plate-mark .rule{height:1px;width:46px;background:var(--teal)}
-body[data-page="projects"] .plate-mark .legend{color:var(--teal)}
+/* ── hero · editorial text block + dictionary legend card ── */
+body[data-page="projects"] .atlas-hero{max-width:1180px;margin:0 auto;padding:5rem 4rem 1rem;display:grid;grid-template-columns:1.32fr .68fr;gap:3.4rem;align-items:center}
 body[data-page="projects"] .atlas-headline{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(2.2rem,3.8vw,3.2rem);line-height:1.1;letter-spacing:-.01em;color:var(--text);margin:0 0 1.1rem}
 body[data-page="projects"] .atlas-headline em{font-style:italic;color:var(--teal)}
 body[data-page="projects"] .atlas-lead{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:1.4rem;line-height:1.55;color:var(--text-dim);margin:0 0 1.1rem;max-width:560px}
@@ -2427,16 +2355,51 @@ body[data-page="projects"] .divider{max-width:1180px;margin:0 auto;padding:2.4re
 body[data-page="projects"] .divider .legend{white-space:nowrap}
 body[data-page="projects"] .divider .ln{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(var(--gold-rgb),.5),transparent)}
 body[data-page="projects"] .divider .count{font-family:'JetBrains Mono',monospace;font-size:.54rem;letter-spacing:.12em;color:var(--text-dim);opacity:.7;white-space:nowrap}
-body[data-page="projects"] .divider .star{color:var(--gold);font-size:.8rem;position:relative}
-body[data-page="projects"] .divider .star::before,
-body[data-page="projects"] .divider .star::after{content:'◆';position:absolute;top:50%;transform:translateY(-50%);font-size:.34rem;color:var(--gold);opacity:.55}
-body[data-page="projects"] .divider .star::before{right:calc(100% + .55rem)}
-body[data-page="projects"] .divider .star::after{left:calc(100% + .55rem)}
 
 /* ── group + grid ── */
 body[data-page="projects"] .atlas-group{max-width:1180px;margin:0 auto;padding:.4rem 4rem}
 body[data-page="projects"] .atlas-featured{max-width:1180px;margin:0 auto;padding:.4rem 4rem}
-body[data-page="projects"] .atlas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:1.6rem}
+/* the regular list is a spec-sheet manifest — stacked rows, not a card
+   grid — so it reads like a build log and scans faster once there's more
+   than a handful of entries. The featured project below is the one
+   deliberate exception, kept as a card so it still stands apart. */
+body[data-page="projects"] .atlas-grid{display:flex; flex-direction:column}
+body[data-page="projects"] .apl-row{
+  display:grid; grid-template-columns:60px 1fr 200px; gap:1.6rem; align-items:start;
+  padding:1.5rem 0; border-top:1px solid var(--border); position:relative;
+}
+body[data-page="projects"] .atlas-group .apl-row:last-child{border-bottom:1px solid var(--border)}
+body[data-page="projects"] .apl-row:hover{background:rgba(var(--teal-rgb),.05)}
+body[data-page="projects"] .apl-row-thumb{
+  width:56px; height:56px; border-radius:4px; background-color:var(--bg3); background-size:cover; background-position:center;
+  display:flex; align-items:center; justify-content:center; flex-shrink:0; border:1px solid var(--border);
+  font-family:var(--font-label); font-size:.85rem; font-weight:500; color:var(--teal);
+}
+body[data-page="projects"] .apl-row-main{min-width:0}
+body[data-page="projects"] .apl-row-head{display:flex; align-items:center; gap:.8rem; flex-wrap:wrap; margin-bottom:.25rem}
+body[data-page="projects"] .apl-row-title{font-family:var(--font-display); font-weight:600; font-size:1.15rem; color:var(--text); margin:0}
+body[data-page="projects"] .apl-row-sub{font-family:var(--font-label); font-size:.62rem; letter-spacing:.08em; text-transform:uppercase; color:var(--text-dim); margin:0 0 .6rem}
+body[data-page="projects"] .apl-row-desc{font-family:var(--font-body); font-size:.9rem; line-height:1.65; color:var(--text-dim); margin-bottom:.7rem; max-width:640px}
+body[data-page="projects"] .apl-row-desc p{margin-bottom:.5rem}
+body[data-page="projects"] .apl-row-desc p:last-child{margin-bottom:0}
+body[data-page="projects"] .apl-row-side{display:flex; flex-direction:column; align-items:flex-end; gap:.8rem; text-align:right}
+body[data-page="projects"] .apl-row-side .apl-stats{border-top:none; padding:0; margin:0; justify-content:flex-end}
+body[data-page="projects"] .apl-row-side .apl-stat{align-items:flex-end}
+body[data-page="projects"] .apl-row-side .apl-foot{justify-content:flex-end}
+/* the fixed 200px side column crowds the description and wraps the stats
+   badly well before phone width — a 768px tablet was already cramped.
+   Same stacked treatment as mobile, just triggered much earlier. */
+@media(max-width:1080px){
+  body[data-page="projects"] .apl-row{grid-template-columns:52px 1fr; row-gap:.9rem}
+  body[data-page="projects"] .apl-row-side{grid-column:1 / -1; align-items:flex-start; text-align:left; flex-direction:row; flex-wrap:wrap; gap:1.6rem}
+  body[data-page="projects"] .apl-row-side .apl-stats,
+  body[data-page="projects"] .apl-row-side .apl-foot{justify-content:flex-start}
+}
+@media(max-width:760px){
+  body[data-page="projects"] .apl-row{grid-template-columns:44px 1fr}
+  body[data-page="projects"] .apl-row-thumb{width:40px; height:40px; font-size:.68rem}
+  body[data-page="projects"] .apl-row-side{flex-direction:column}
+}
 
 /* ── project plate (card) — an atlas plate, like the About page ── */
 body[data-page="projects"] .apl{position:relative;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:6px;background:rgba(252,247,235,.84);overflow:hidden;transition:transform .35s,box-shadow .35s,border-color .35s;box-shadow:0 14px 40px -26px rgba(80,55,20,.45);min-height:248px}
@@ -2547,8 +2510,72 @@ body[data-page="projects"] .apl.feat .apl-desc{font-size:.96rem;line-height:1.8}
   body[data-page="projects"] .divider,
   body[data-page="projects"] .atlas-group,
   body[data-page="projects"] .atlas-featured{padding-left:1.5rem;padding-right:1.5rem}
-  body[data-page="projects"] .atlas-hero{padding-top:7rem}
-  body[data-page="projects"] .atlas-grid{grid-template-columns:1fr}
+  body[data-page="projects"] .atlas-hero{padding-top:4.5rem}
+}
+
+/* ── font sweep: everything below was still hardcoded to the hub's
+   Cormorant/Lato/JetBrains system (this whole section was borrowing
+   About's leftover celestial-codex styling) — repointed to Forge's own
+   IBM Plex tokens. Declared after the rules above so it wins the cascade
+   without needing !important anywhere. ── */
+body[data-page="projects"] .sec-title,
+body[data-page="projects"] .atlas-headline,
+body[data-page="projects"] .apl-title,
+body[data-page="projects"] .apl-stat .v,
+body[data-page="projects"] .led-num,
+body[data-page="projects"] .alc-cap .t,
+body[data-page="projects"] .alc-def .pos,
+body[data-page="projects"] .alc-row .v{font-family:var(--font-display); font-style:normal}
+body[data-page="projects"] .sec-note,
+body[data-page="projects"] .led-lbl,
+body[data-page="projects"] .led-tip,
+body[data-page="projects"] .skill-name,
+body[data-page="projects"] .atlas-body,
+body[data-page="projects"] .atlas-lead,
+body[data-page="projects"] .apl-desc,
+body[data-page="projects"] .alc-def{font-family:var(--font-body); font-style:normal}
+body[data-page="projects"] .scol-lbl,
+body[data-page="projects"] .stag,
+body[data-page="projects"] .ink,
+body[data-page="projects"] .alc-cap .coord,
+body[data-page="projects"] .alc-row .k,
+body[data-page="projects"] .divider .count,
+body[data-page="projects"] .apl-status,
+body[data-page="projects"] .apl-chip,
+body[data-page="projects"] .apl-no,
+body[data-page="projects"] .apl-greek,
+body[data-page="projects"] .apl-sub,
+body[data-page="projects"] .apl-stat .l,
+body[data-page="projects"] .apl-link{font-family:var(--font-label)}
+body[data-page="projects"] .ptag{font-family:var(--font-label); background:rgba(var(--teal-rgb),.08); border-color:rgba(var(--teal-rgb),.25); color:var(--text-dim)}
+body[data-page="projects"] .atlas-headline{font-weight:700}
+body[data-page="projects"] .apl-title{font-weight:600}
+
+/* several card/panel backgrounds were hardcoded warm-parchment or
+   celestial-purple rgba values, inherited from About/the old sitewide
+   theme, instead of the page's own tokens — they'd have kept showing
+   cream/purple tints against Forge's new green-tinted ground regardless
+   of theme. */
+body[data-page="projects"] .apl,
+body[data-page="projects"] .atlas-legend,
+body[data-page="projects"] .ledger,
+body[data-page="projects"]:not(.light-mode) .apl,
+body[data-page="projects"]:not(.light-mode) .atlas-legend,
+body[data-page="projects"]:not(.light-mode) .ledger,
+body[data-page="projects"] .apl-desc::after,
+body[data-page="projects"]:not(.light-mode) .apl-desc::after{background:linear-gradient(transparent,var(--bg2))}
+
+/* clean-cut corner-bracket registration marks (extending the .ph-corner
+   mark already used on banner images) to every card, not just ones with a
+   photo — the "technical drawing" signature carried through consistently.
+   Two opposite corners only, like a real blueprint's registration marks. */
+body[data-page="projects"] .apl::before{
+  content:''; position:absolute; top:8px; left:8px; width:13px; height:13px;
+  border:1.5px solid var(--teal); border-right:none; border-bottom:none; opacity:.75; z-index:5; pointer-events:none;
+}
+body[data-page="projects"] .apl::after{
+  content:''; position:absolute; bottom:8px; right:8px; width:13px; height:13px;
+  border:1.5px solid var(--teal); border-left:none; border-top:none; opacity:.75; z-index:5; pointer-events:none;
 }
 
 /* ═══ ORBIT · public lab, charted (read-only) ═══ */
@@ -2704,139 +2731,556 @@ body[data-page="marginalia"] main{position:relative;z-index:1}
 body[data-page="marginalia"] .hub-pattern{display:none !important}
 body[data-page="marginalia"] .hub-bg{z-index:-1;opacity:1}
 
-/* ═══ LIBRARY · /library — Codex Chart I ═══ */
-/* nav parity with other content pages (parchment in light mode) */
-body[data-page="library"] nav,
-body[data-page="marginalia"] nav{backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);transition:background-color .4s ease,border-color .4s ease}
-body[data-page="library"].light-mode nav,
-body[data-page="marginalia"].light-mode nav{
-  --text:#3a3027;--text-dim:#7a6a52;
-  --gold:#8f6230;--gold-rgb:143,98,48;--gold-dim:#bb9468;
-  --teal:#256a4e;--teal-rgb:37,106,78;--teal-dim:#5f9d83;
-  --border:rgba(120,90,50,.22);
-  background:rgba(244,234,211,.97);border-bottom-color:rgba(120,90,50,.18);
+/* ═══ LIBRARY · library.calebthede.com ═══
+   Its own identity, not a recolored hub page: a "descent through myth"
+   archive built around the same flame-blue the home door already teases —
+   dark at night, an aged-paper-with-blue-flame-ink read in light mode
+   (real light/dark support, not forced to one).
+   Reuses --gold/--gold-rgb/--teal/--teal-rgb as the actual variable names
+   (existing shared rules — .book-card, .book-promo, .legend, etc. — already
+   read colors from them) rather than renaming every rule to bespoke
+   --lib-* tokens; it's the same trick the old per-page nav overrides
+   already used, just applied to the whole page instead of one element. */
+body[data-page="library"]{
+  --bg:#121212; --bg2:#1c1c1c; --bg3:#242424;
+  --text:#ccd6e3; --text-dim:#8896ab;
+  --gold:#6fa8e0; --gold-rgb:111,168,224; --gold-dim:#3d6488;
+  --teal:#c9a562; --teal-rgb:201,165,98; --teal-dim:#8a7548;
+  --border:rgba(111,168,224,.22);
+  --nav-bg:rgba(9,9,9,.92); --modal-bg:#1c1c1c; --input-bg:#242424; --skills-bg:#1c1c1c;
+  /* an old reading room, not the hub's Cormorant/Lato/JetBrains system:
+     Fraunces for headlines (real old-book character), Lora for long-form
+     body text, Courier Prime for labels — a card-catalog typewriter feel
+     instead of the site-wide mono. Loaded per-page (see library*.html
+     <head>), not shared with the hub. */
+  --font-display:'Fraunces',serif; --font-body:'Lora',serif; --font-label:'Courier Prime',monospace;
+  background:var(--bg) !important;
 }
-body[data-page="library"].light-mode nav .nav-center a,
-body[data-page="marginalia"].light-mode nav .nav-center a{color:#7a6a52}
-body[data-page="library"].light-mode nav .nav-center a:hover,
-body[data-page="library"].light-mode nav .nav-center a.active,
-body[data-page="marginalia"].light-mode nav .nav-center a:hover,
-body[data-page="marginalia"].light-mode nav .nav-center a.active{color:var(--gold)}
-body[data-page="library"]:not(.light-mode) nav,
-body[data-page="marginalia"]:not(.light-mode) nav{background:rgba(20,16,28,.9)}
-body[data-page="library"] .legend{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--iron,#46506e)}
-body[data-page="library"]:not(.light-mode) .legend{color:#9aa8d6}
-body[data-page="marginalia"] .legend{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--iron,#46506e)}
-body[data-page="marginalia"]:not(.light-mode) .legend{color:#9aa8d6}
+/* Light mode borrows Hades' own gray stone, not a warm parchment wash —
+   the dramatic "dark figure glowing out of black" reading is a dark-mode
+   thing specifically; in daylight it's a quieter gray archive, same blue
+   flame accent carried through (darkened here for contrast on a light
+   ground; the glowing pastel version only works against near-black). */
+body[data-page="library"].light-mode{
+  --bg:#e6e4df; --bg2:#dad7d0; --bg3:#cac6bc;
+  --text:#26251f; --text-dim:#615d53;
+  --gold:#2f5a82; --gold-rgb:47,90,130; --gold-dim:#7597b3;
+  --teal:#8a5a2e; --teal-rgb:138,90,46; --teal-dim:#b3814f;
+  --border:rgba(47,90,130,.2);
+  --nav-bg:rgba(230,228,223,.92); --modal-bg:#dad7d0; --input-bg:#cac6bc; --skills-bg:#dad7d0;
+  background:var(--bg) !important;
+}
+body[data-page="library"] main{background:var(--bg)}
+body[data-page="library"] footer{
+  --bg2:#1c1c1c; --text:#ccd6e3; --text-dim:#8896ab;
+  --gold:#6fa8e0; --gold-rgb:111,168,224; --teal:#c9a562; --teal-rgb:201,165,98;
+  --border:rgba(111,168,224,.18);
+  background:var(--bg2) !important; border-top:1px solid var(--border);
+  /* the global footer{margin-top:5rem} assumes it's clearing generic page
+     content — on the home page here it stacked on top of the shelf-band's
+     own margin, leaving a much bigger dead gap than intended. */
+  margin-top:0;
+}
+body[data-page="library"].light-mode footer{
+  --bg2:#dad7d0; --text:#26251f; --text-dim:#615d53;
+  --gold:#2f5a82; --gold-rgb:47,90,130; --teal:#8a5a2e; --teal-rgb:138,90,46;
+  --border:rgba(47,90,130,.16);
+  background:var(--bg2) !important; border-top:1px solid var(--border);
+}
+body[data-page="library"] .legend{font-family:var(--font-label);font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--text-dim)}
+/* the site-wide grid-line texture (.hub-pattern) and glow blobs (.hub-bg)
+   are keyed off the literal .light-mode class, independent of the color
+   tokens above — without this override they can still show through
+   (wrong pattern colors) regardless of which Library palette is active. */
+body[data-page="library"] .hub-bg,
+body[data-page="library"] .hub-pattern{display:none !important}
 
-/* ── book-led hero · single column, shelf-forward ── */
-body[data-page="library"] .lib-hero-book,
-body[data-page="marginalia"] .lib-hero-book{max-width:1180px;margin:0 auto;padding:8.5rem 4rem 1.2rem}
-body[data-page="library"] .plate-mark,
-body[data-page="marginalia"] .plate-mark{display:flex;align-items:center;gap:1rem;margin-bottom:1.3rem}
-body[data-page="library"] .plate-mark .rule{height:1px;width:46px;background:var(--gold)}
-body[data-page="library"] .plate-mark .legend{color:var(--gold)}
-body[data-page="marginalia"] .plate-mark .rule{height:1px;width:46px;background:var(--teal)}
-body[data-page="marginalia"] .plate-mark .legend{color:var(--teal)}
-body[data-page="library"] .lib-headline,
-body[data-page="marginalia"] .lib-headline{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(2.4rem,4.6vw,3.7rem);line-height:1.08;letter-spacing:-.01em;color:var(--text);margin:0 0 1.1rem;max-width:760px;text-wrap:balance}
+/* ── shared site chrome (login modal, buttons, badges, toasts) still used
+   its own hardcoded fonts (JetBrains Mono / Cormorant Garamond) here —
+   invisible until one popped up next to the new Fraunces/Courier Prime
+   type and read as a different site. Repointed to the same tokens. ── */
+body[data-page="library"] .modal-title{font-family:var(--font-display)}
+body[data-page="library"] .mf label{font-family:var(--font-label)}
+body[data-page="library"] .mf input,
+body[data-page="library"] .mf textarea,
+body[data-page="library"] .mf select{font-family:var(--font-body)}
+body[data-page="library"] .btn-primary,
+body[data-page="library"] .btn-ghost,
+body[data-page="library"] .btn-sm,
+body[data-page="library"] .admin-badge,
+body[data-page="library"] .toast{font-family:var(--font-label)}
+
+/* The shelf's book grid and the book detail view are older, unscoped
+   shared classes from before Library had its own type system — same gap
+   as above, just missed on the first pass since these live on the shelf
+   page rather than the homepage. Without this, the shelf (one of the most
+   visited Library pages) still looked like the old site. */
+body[data-page="library"] .book-foot-title,
+body[data-page="library"] .book-spine-title,
+body[data-page="library"] .book-detail-title,
+body[data-page="library"] .lib-section-header h2,
+body[data-page="library"] .series-title{font-family:var(--font-display)}
+body[data-page="library"] .book-foot-meta,
+body[data-page="library"] .book-foot-status,
+body[data-page="library"] .book-status-badge,
+body[data-page="library"] .book-ch-count,
+body[data-page="library"] .back-btn,
+body[data-page="library"] .book-buy-box-label,
+body[data-page="library"] .series-eyebrow,
+body[data-page="library"] .series-meta,
+body[data-page="library"] .book-series-num,
+body[data-page="library"] .inline-search{font-family:var(--font-label)}
+body[data-page="library"] .book-foot-desc,
+body[data-page="library"] .book-detail-desc{font-family:var(--font-body)}
+body[data-page="library"] .book-buy-box-label{font-size:.68rem; letter-spacing:.14em}
+
+/* the book-detail page follows the page theme (unlike the always-dark
+   teaser/book-card), so this uses tokens rather than hardcoded colors */
+body[data-page="library"] .book-world-link{
+  display:inline-block; margin:0 0 1.4rem; font-family:var(--font-label); font-weight:700; font-size:.72rem;
+  letter-spacing:.06em; text-transform:uppercase; color:var(--gold); text-decoration:none;
+  border-bottom:1px solid var(--border); padding-bottom:2px; transition:color .2s, border-color .2s;
+}
+body[data-page="library"] .book-world-link:hover{color:var(--text); border-color:var(--gold)}
+body[data-page="library"] .lib-world-cta{text-align:center; margin:2.5rem 0}
+
+/* ── bespoke header — a wordmark + one way back to the hub, not the
+   generic multi-link nav the other legacy pages still share. Each crumb
+   is its own link (hub vs. Library's own home are different places),
+   with room for a plain trailing crumb (e.g. "Shelf") on pages beneath it. */
+body[data-page="library"] .lib-head{
+  position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between;
+  padding:1.1rem 2rem; background:var(--nav-bg); backdrop-filter:blur(7px);
+  border-bottom:1px solid var(--border);
+}
+body[data-page="library"] .lib-head-mark{display:flex; align-items:baseline; gap:.7rem; flex-wrap:wrap; min-width:0}
+body[data-page="library"] .lib-head-hub,
+body[data-page="library"] .lib-head-name,
+body[data-page="library"] .lib-head-crumb-current{white-space:nowrap}
+body[data-page="library"] .lib-head-hub{font-family:var(--font-display); font-size:1.2rem; font-weight:600; color:var(--text-dim); text-decoration:none; transition:color .2s}
+body[data-page="library"] .lib-head-hub:hover{color:var(--gold)}
+body[data-page="library"] .lib-head-sep{color:var(--border); font-size:1rem}
+body[data-page="library"] .lib-head-name{font-family:var(--font-display); font-weight:600; font-size:1.1rem; letter-spacing:.02em; color:var(--gold); text-decoration:none; transition:opacity .2s}
+a.lib-head-name:hover{opacity:.75}
+body[data-page="library"] .lib-head-crumb-current{font-family:var(--font-display); font-weight:600; font-size:1.1rem; letter-spacing:.02em; color:var(--text-dim)}
+body[data-page="library"] .lib-head-controls{display:flex; align-items:center; gap:.6rem}
+body[data-page="library"] .admin-link{
+  font-family:var(--font-label); font-size:.65rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--gold); text-decoration:none; border:1px solid var(--border); border-radius:3px; padding:.4rem .7rem;
+  transition:border-color .2s;
+}
+body[data-page="library"] .admin-link:hover{border-color:var(--gold)}
+
+/* ── hero · the flame/Cerberus art, large, not a small teaser ── */
+body[data-page="library"] .lib-hero-book{
+  position:relative; max-width:1280px; margin:0 auto; padding:5rem 4rem 3rem;
+  display:grid; grid-template-columns:1.15fr .85fr; gap:3rem; align-items:center; overflow:hidden;
+}
+body[data-page="library"] .lib-hero-art{
+  /* width:100% not justify-self:center — the <img> inside is
+     position:absolute (needed so object-fit can crop it to the aspect
+     box), which takes it out of normal flow entirely; with nothing left
+     contributing intrinsic size, a shrink-to-fit box (justify-self:center)
+     collapses to 0×0 instead of sizing from its grid column. */
+  position:relative; width:100%; max-width:380px; aspect-ratio:565/850; margin:0 auto;
+}
+body[data-page="library"] .lib-hero-art img{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:contain; object-position:bottom center;
+  filter:drop-shadow(0 30px 50px rgba(0,0,0,.6));
+}
+body[data-page="library"] .lib-hero-art::before{
+  content:''; position:absolute; left:50%; bottom:6%; width:140%; height:60%; transform:translateX(-50%);
+  background:radial-gradient(ellipse at center, rgba(111,168,224,.22), transparent 70%); pointer-events:none;
+}
+body[data-page="library"] .lib-headline{font-family:var(--font-display);font-weight:400;font-size:clamp(2.4rem,4vw,3.6rem);line-height:1.08;letter-spacing:-.01em;color:var(--text);margin:0 0 1.1rem;text-wrap:balance}
 body[data-page="library"] .lib-headline em{font-style:italic;color:var(--gold)}
-body[data-page="marginalia"] .lib-headline em{font-style:italic;color:var(--teal)}
-body[data-page="library"] .lib-lead,
-body[data-page="marginalia"] .lib-lead{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:1.45rem;line-height:1.55;color:var(--text-dim);margin:0 0 1.7rem;max-width:620px;text-wrap:pretty}
-body[data-page="library"] .lib-lead em,
-body[data-page="marginalia"] .lib-lead em{font-style:italic}
-body[data-page="library"] .lib-lead em{color:var(--gold)}
-body[data-page="marginalia"] .lib-lead em{color:var(--teal)}
+body[data-page="library"] .lib-lead{font-family:var(--font-body);font-style:italic;font-weight:400;font-size:1.25rem;line-height:1.6;color:var(--text-dim);margin:0 0 1.7rem;max-width:520px;text-wrap:pretty}
+body[data-page="library"] .lib-lead em{font-style:italic;color:var(--gold)}
 /* hero footer stats / cross-link */
-body[data-page="library"] .lib-hero-stats,
-body[data-page="marginalia"] .lib-hero-stats{display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap}
-body[data-page="library"] .lhs,
-body[data-page="marginalia"] .lhs{display:inline-flex;align-items:baseline;gap:.55rem;text-decoration:none}
-body[data-page="library"] .lhs-v,
-body[data-page="marginalia"] .lhs-v{font-family:'Cormorant Garamond',serif;font-size:1.7rem;line-height:1;color:var(--gold)}
-body[data-page="marginalia"] .lhs-v{color:var(--teal)}
-body[data-page="library"] .lhs-k,
-body[data-page="marginalia"] .lhs-k{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim)}
-body[data-page="library"] .lhs-sep,
-body[data-page="marginalia"] .lhs-sep{width:1px;height:24px;background:var(--border)}
-body[data-page="library"] .lhs-link,
-body[data-page="marginalia"] .lhs-link{transition:opacity .2s}
-body[data-page="library"] .lhs-link:hover,
-body[data-page="marginalia"] .lhs-link:hover{opacity:.7}
-body[data-page="library"] .lib-outer,
-body[data-page="marginalia"] .lib-outer{padding-top:1.5rem}
+body[data-page="library"] .lib-hero-stats{display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap}
+body[data-page="library"] .lhs{display:inline-flex;align-items:baseline;gap:.55rem;text-decoration:none}
+body[data-page="library"] .lhs-v{font-family:var(--font-display);font-size:1.7rem;line-height:1;color:var(--gold)}
+body[data-page="library"] .lhs-k{font-family:var(--font-label);font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--text-dim)}
+body[data-page="library"] .lhs-sep{width:1px;height:24px;background:var(--border)}
+body[data-page="library"] .lhs-link{transition:opacity .2s}
+body[data-page="library"] .lhs-link:hover{opacity:.7}
+body[data-page="library"] .lib-outer{padding-top:1.5rem; max-width:1280px; margin:0 auto; padding-left:4rem; padding-right:4rem}
+/* the shelf page has no hero above it, just the sticky header */
+body[data-page="library"] .lib-outer-shelf{padding-top:4.5rem}
+
+/* ── the shelf band · a wide silhouette bridging the teaser and the real
+   shelf page — a real link, not an in-page scroll. Individual spines
+   brighten under the cursor like you're pulling one partway off the
+   shelf; one stays a touch brighter at rest as a quiet hint it's
+   interactive, not just decoration. Dark by default (spine colors were
+   tuned to sit on a near-black ground); light mode keeps the same stone
+   tone as the rest of the page chrome and darkens the spines to match,
+   rather than trying to lighten art that was never drawn for it. ── */
+body[data-page="library"] .lib-shelf-band{
+  position:relative; display:block; width:100%; height:260px; margin:2.5rem 0; overflow:hidden;
+  border-top:1px solid var(--border); border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,#0c0c0c,#161616);
+  cursor:pointer;
+}
+body[data-page="library"].light-mode .lib-shelf-band{
+  background:linear-gradient(180deg,#e6e4df,#d2cec3);
+}
+/* direct-child selector only — the hint's own arrow icon lives inside
+   .lib-shelf-hint and must not inherit this absolute full-bleed sizing */
+body[data-page="library"] .lib-shelf-band > svg{position:absolute; bottom:0; left:0; width:100%; height:100%}
+body[data-page="library"] .lib-shelf-band > svg > g{transition:filter .2s ease}
+body[data-page="library"].light-mode .lib-shelf-band > svg > g{filter:brightness(.5) saturate(1.15)}
+body[data-page="library"] .lib-shelf-band > svg > g > rect{
+  transition:filter .2s ease, transform .2s ease;
+  transform-box:fill-box; transform-origin:bottom center;
+}
+body[data-page="library"] .lib-shelf-band > svg > g > rect.featured{filter:brightness(1.35)}
+body[data-page="library"] .lib-shelf-band:hover > svg > g > rect{filter:brightness(.55)}
+body[data-page="library"] .lib-shelf-band:hover > svg > g > rect.featured{filter:brightness(.75)}
+body[data-page="library"] .lib-shelf-band > svg > g > rect:hover{filter:brightness(1.7) !important; transform:scaleY(1.09)}
+@media(prefers-reduced-motion:reduce){
+  body[data-page="library"] .lib-shelf-band > svg > g > rect{transition:none}
+}
+/* ── the hint reads as a label ON the band, not a caption floating near
+   it — same idea as a button's own text, sized and weighted to match. ── */
+body[data-page="library"] .lib-shelf-hint{
+  position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); z-index:1;
+  display:flex; align-items:center; gap:.6rem; pointer-events:none;
+  font-family:var(--font-label); font-weight:700; font-size:.8rem; letter-spacing:.1em;
+  text-transform:uppercase; color:#f1ead9; text-shadow:0 2px 12px rgba(0,0,0,.6);
+  padding:.9rem 1.6rem; border:1px solid rgba(241,234,217,.4); border-radius:30px;
+  background:rgba(0,0,0,.28); backdrop-filter:blur(2px);
+  transition:border-color .25s, background .25s;
+}
+body[data-page="library"] .lib-shelf-band:hover .lib-shelf-hint{border-color:#f1ead9; background:rgba(0,0,0,.4)}
+body[data-page="library"] .lib-shelf-hint svg{width:14px; height:14px; flex-shrink:0}
+body[data-page="library"].light-mode .lib-shelf-hint{
+  color:#26251f; text-shadow:0 1px 4px rgba(255,255,255,.5);
+  border-color:rgba(38,37,31,.3); background:rgba(255,255,255,.42);
+}
+body[data-page="library"].light-mode .lib-shelf-band:hover .lib-shelf-hint{border-color:#26251f; background:rgba(255,255,255,.6)}
+
+/* Books grid/card intentionally left at the shared base styling (spine
+   with its info beside it, always visible) — an earlier pass here tried a
+   spine-only shelf with the info hidden until hover, which didn't fit;
+   "the shelf" now lives in the clickable band above instead. */
 
 /* ── COMING SOON placeholder · legible on the midnight band ── */
 body[data-page="library"] .book-card-placeholder{opacity:1;cursor:default;pointer-events:none}
 body[data-page="library"] .book-spine-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;background:var(--bg3);border:1px dashed var(--border)}
 body[data-page="library"] .book-spine-placeholder .ph-glyph{font-size:1.1rem;color:var(--text-dim);opacity:.6}
-body[data-page="library"] .book-spine-placeholder .ph-num{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);opacity:.7}
-body[data-page="library"] .book-card-placeholder .ph-soon{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);border:1px solid var(--border);border-radius:20px;padding:.22rem .7rem;margin-top:.15rem}
+body[data-page="library"] .book-spine-placeholder .ph-num{font-family:var(--font-label);font-size:.55rem;letter-spacing:.14em;text-transform:uppercase;color:var(--text-dim);opacity:.7}
+body[data-page="library"] .book-card-placeholder .ph-soon{display:inline-block;font-family:var(--font-label);font-size:.52rem;letter-spacing:.16em;text-transform:uppercase;color:var(--text-dim);border:1px solid var(--border);border-radius:20px;padding:.22rem .7rem;margin-top:.15rem}
 
-@media(max-width:980px){
-  body[data-page="library"] .lib-hero-book,
-  body[data-page="marginalia"] .lib-hero-book{padding-left:2rem;padding-right:2rem}
+@media(max-width:900px){
+  body[data-page="library"] .lib-hero-book{grid-template-columns:1fr; padding-top:6.5rem; text-align:center}
+  body[data-page="library"] .lib-hero-art{order:-1; max-width:260px}
+  body[data-page="library"] .lib-lead{margin-left:auto; margin-right:auto}
+  body[data-page="library"] .lib-hero-stats{justify-content:center}
 }
 @media(max-width:768px){
-  body[data-page="library"] .lib-hero-book,
-  body[data-page="marginalia"] .lib-hero-book{padding:7rem 1.5rem 1rem}
+  body[data-page="library"] .lib-outer{padding-left:1.5rem; padding-right:1.5rem}
+}
+@media(max-width:480px){
+  body[data-page="library"] .lib-shelf-hint{font-size:.62rem; letter-spacing:.06em; padding:.65rem 1rem; gap:.4rem; white-space:nowrap}
+  body[data-page="library"] .lib-head{padding:1rem 1.2rem; gap:.6rem}
+  body[data-page="library"] .lib-head-hub{font-size:1.05rem}
+  body[data-page="library"] .lib-head-name,
+  body[data-page="library"] .lib-head-crumb-current{font-size:.95rem}
 }
 
-/* ═══ DECK LANDING · /codex and /atlas selection pages ═══ */
-body[data-page="deck"]{position:relative}
-body[data-page="deck"] main{position:relative;z-index:1}
-body[data-page="deck"] .legend{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--iron,#46506e)}
-body[data-page="deck"]:not(.light-mode) .legend{color:#9aa8d6}
-body[data-page="deck"] .hub-pattern{display:none !important}
-body[data-page="deck"] .hub-bg{z-index:-1;opacity:1}
-body[data-page="deck"].light-mode .hub-bg{
-  background:
-    radial-gradient(ellipse 120% 70% at 50% -10%, rgba(var(--gold-rgb),.18), transparent 55%),
-    linear-gradient(180deg, rgba(var(--gold-rgb),.09) 0%, transparent 40%, rgba(var(--teal-rgb),.06) 100%);
-}
-body[data-page="deck"]:not(.light-mode) .hub-bg{
-  background:
-    radial-gradient(ellipse 120% 70% at 50% -10%, rgba(86,98,168,.40), transparent 58%),
-    linear-gradient(180deg, rgba(40,48,92,.52) 0%, rgba(20,22,40,.28) 46%, rgba(var(--gold-rgb),.09) 100%);
-}
-body[data-page="deck"] nav{backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
-body[data-page="deck"].light-mode nav{--text:#3a3027;--text-dim:#7a6a52;--border:rgba(120,90,50,.22);background:rgba(244,234,211,.97);border-bottom-color:rgba(120,90,50,.18)}
-body[data-page="deck"].light-mode nav .nav-center a{color:#7a6a52}
-body[data-page="deck"].light-mode nav .nav-center a:hover,
-body[data-page="deck"].light-mode nav .nav-center a.active{color:var(--gold)}
-body[data-page="deck"]:not(.light-mode) nav{background:rgba(20,16,28,.9)}
+/* ── BLUE EMBER · library.calebthede.com/blue-ember ──
+   The series' own room off the Library: sells Book 1 to a stranger,
+   rewards a finished reader with the world and the characters. Every
+   fact here comes from the content package Caleb supplied — nothing on
+   this page is invented copy. Spoiler tiers (js/blue-ember.js) hide
+   entries and sections above the reader's self-declared progress; a
+   hidden thing never gets a name, a teaser, or a locked-card silhouette,
+   it's just absent. ── */
+body[data-page="library"] .be-root{max-width:1100px; margin:0 auto; padding:3rem 2rem 5rem}
 
-body[data-page="deck"] .deck-hero{max-width:920px;margin:0 auto;padding:9rem 4rem 1rem;text-align:center}
-body[data-page="deck"] .plate-mark{display:inline-flex;align-items:center;gap:1rem;margin-bottom:1.4rem}
-body[data-page="deck"] .plate-mark .rule{height:1px;width:46px;background:var(--teal)}
-body[data-page="deck"] .plate-mark .legend{color:var(--teal)}
-body[data-page="deck"] .deck-headline{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:clamp(2.4rem,5vw,3.6rem);line-height:1.08;color:var(--text);margin:0 0 1.1rem}
-body[data-page="deck"] .deck-headline em{font-style:italic;color:var(--teal)}
-body[data-page="deck"] .deck-sub{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:300;font-size:1.35rem;line-height:1.6;color:var(--text-dim);max-width:600px;margin:0 auto}
+body[data-page="library"] .be-hero{text-align:center; max-width:640px; margin:0 auto 3.5rem}
+body[data-page="library"] .be-eyebrow{font-family:var(--font-label); font-weight:700; font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--teal); margin-bottom:.6rem}
+body[data-page="library"] .be-hero-title{font-family:var(--font-display); font-weight:600; font-size:clamp(2.4rem,5vw,3.6rem); color:var(--text); margin-bottom:1.3rem}
+body[data-page="library"] .be-hero-line{font-family:var(--font-body); font-style:italic; font-size:1.2rem; line-height:1.6; color:var(--text-dim); margin-bottom:2rem; text-wrap:pretty}
+/* bespoke segmented control — not a native <select>, so the "how much do
+   you want to see" choice reads as part of the page's own design rather
+   than the browser's default form chrome. */
+body[data-page="library"] .be-progress-control{display:flex; flex-direction:column; align-items:center; gap:.6rem}
+body[data-page="library"] .be-progress-label{font-family:var(--font-label); font-size:.7rem; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim)}
+body[data-page="library"] .be-progress-pills{display:inline-flex; gap:.4rem; flex-wrap:wrap; justify-content:center}
+body[data-page="library"] .be-progress-pill{font-family:var(--font-label); font-weight:700; font-size:.68rem; letter-spacing:.04em; padding:.55rem 1.1rem; border-radius:20px; border:1px solid var(--border); background:var(--bg2); color:var(--text-dim); cursor:pointer; transition:all .2s}
+body[data-page="library"] .be-progress-pill:hover{border-color:var(--gold); color:var(--text)}
+/* color:var(--bg), not a hardcoded dark value — --gold flips from a light
+   blue (dark mode) to a dark navy (light mode), so the active pill's text
+   needs to flip with it. var(--bg) is already the opposite-extreme token
+   in both themes, so it stays legible without a second set of overrides. */
+body[data-page="library"] .be-progress-pill.active{background:var(--gold); border-color:var(--gold); color:var(--bg)}
 
-body[data-page="deck"] .deck-doors{max-width:1000px;margin:0 auto;padding:2.6rem 4rem 5rem;display:grid;grid-template-columns:1fr 1fr;gap:1.8rem}
-body[data-page="deck"] .deck-door{position:relative;display:flex;flex-direction:column;border:1px solid var(--border);border-radius:8px;padding:2.6rem 2.4rem 2.2rem;background:rgba(252,247,235,.84);text-decoration:none;color:inherit;overflow:hidden;transition:transform .35s,box-shadow .35s,border-color .35s;box-shadow:0 16px 44px -26px rgba(80,55,20,.45);min-height:300px}
-body[data-page="deck"] .deck-door:hover{transform:translateY(-6px);border-color:var(--gold);box-shadow:0 30px 64px -30px rgba(80,55,20,.55)}
-body[data-page="deck"]:not(.light-mode) .deck-door{background:rgba(34,28,46,.9);border-color:rgba(216,181,106,.22)}
-body[data-page="deck"] .deck-door::before{content:'';position:absolute;inset:8px;border:1px solid rgba(var(--gold-rgb),.14);border-radius:5px;pointer-events:none}
-body[data-page="deck"] .deck-glyph{position:absolute;top:1.5rem;right:1.6rem;width:64px;height:50px;opacity:.8;pointer-events:none}
-body[data-page="deck"] .deck-glyph line{stroke:var(--gold-dim);stroke-width:1;opacity:.7}
-body[data-page="deck"] .deck-glyph circle{fill:var(--gold)}
-body[data-page="deck"] .deck-door.teal .deck-glyph line{stroke:var(--teal-dim)}
-body[data-page="deck"] .deck-door.teal .deck-glyph circle{fill:var(--teal)}
-body[data-page="deck"] .deck-no{font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.24em;text-transform:uppercase;color:var(--iron,#46506e);margin:0 0 .8rem}
-body[data-page="deck"]:not(.light-mode) .deck-no{color:#9aa8d6}
-body[data-page="deck"] .deck-greek{font-family:'JetBrains Mono',monospace;font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--teal);margin:0 0 .5rem}
-body[data-page="deck"] .deck-name{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;line-height:1.1;color:var(--text);margin:0 0 .8rem}
-body[data-page="deck"] .deck-name em{font-style:italic;color:var(--gold)}
-body[data-page="deck"] .deck-door.teal .deck-name em{color:var(--teal)}
-body[data-page="deck"] .deck-desc{font-family:'Lato',sans-serif;font-size:.95rem;color:var(--text-dim);line-height:1.75;margin:0 0 1.4rem}
-body[data-page="deck"] .deck-link{margin-top:auto;font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);display:inline-flex;gap:.4rem;align-items:center}
-body[data-page="deck"] .deck-door.teal .deck-link{color:var(--teal)}
-@media(max-width:760px){
-  body[data-page="deck"] .deck-hero{padding:7rem 1.5rem 1rem}
-  body[data-page="deck"] .deck-doors{grid-template-columns:1fr;padding:2rem 1.5rem 4rem}
+/* ── the book card: same always-dark treatment as the homepage teaser ──
+   Every color in here is a hardcoded light value, not a theme token — the
+   card ignores light/dark mode by design, so pulling var(--teal)/var(--gold)
+   in here would go dark-on-dark the moment light mode darkens those tokens.
+   (.be-eyebrow up above is the theme-following version for the hero;
+   .be-book-eyebrow below is this card's own, deliberately separate, copy.) */
+body[data-page="library"] .be-book-card{position:relative; border:1px solid rgba(111,168,224,.32); border-radius:8px; overflow:hidden; background:linear-gradient(135deg,rgba(20,24,40,.72),rgba(10,12,22,.78)); padding:2.6rem; display:grid; grid-template-columns:.7fr 1.3fr; gap:2.4rem; align-items:center; box-shadow:0 30px 70px -34px rgba(0,0,0,.7); margin-bottom:4rem}
+body[data-page="library"] .be-book-cover{border-radius:6px; aspect-ratio:2/3; width:100%; max-width:220px; background-size:cover; background-position:center; box-shadow:0 20px 45px -22px rgba(0,0,0,.7)}
+body[data-page="library"] .be-book-eyebrow{font-family:var(--font-label); font-weight:700; font-size:.66rem; letter-spacing:.16em; text-transform:uppercase; color:#8fc0f4; margin-bottom:.7rem}
+body[data-page="library"] .be-book-title{font-family:var(--font-display); font-weight:600; font-size:clamp(1.8rem,3vw,2.4rem); color:#f1ead9; line-height:1.1; margin-bottom:.7rem}
+body[data-page="library"] .be-book-desc{font-family:var(--font-body); color:#c4bcd0; font-size:1rem; line-height:1.7; margin-bottom:1.3rem; max-width:480px}
+body[data-page="library"] .be-buy-row{display:flex; flex-wrap:wrap; gap:.8rem; align-items:center}
+body[data-page="library"] .be-buy-btn{display:inline-block; text-decoration:none; font-family:var(--font-label); font-weight:700; font-size:.7rem; letter-spacing:.08em; text-transform:uppercase; color:#0c0f18; background:#8fc0f4; border-radius:4px; padding:.75rem 1.3rem; transition:background .25s}
+body[data-page="library"] .be-buy-btn:hover{background:#b7d8fb}
+body[data-page="library"] .be-buy-soon{font-family:var(--font-label); font-size:.65rem; letter-spacing:.08em; text-transform:uppercase; color:#8896ab}
+
+body[data-page="library"] .be-section-block{margin-bottom:3.5rem}
+body[data-page="library"] .be-section-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:1.4rem; gap:1rem}
+body[data-page="library"] .be-h2{font-family:var(--font-display); font-weight:600; font-size:1.6rem; color:var(--text); margin:0 0 1.4rem}
+body[data-page="library"] .be-section-head .be-h2{margin-bottom:0}
+body[data-page="library"] .be-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(230px,1fr)); gap:1.1rem}
+
+body[data-page="library"] .be-card{
+  display:block; width:100%; position:relative; text-align:left; cursor:pointer; font:inherit; color:inherit;
+  background:var(--bg2); border:1px solid var(--border); border-radius:6px; padding:1.3rem 1.4rem;
+  transition:border-color .25s, transform .25s;
+}
+body[data-page="library"] .be-card:hover{border-color:var(--gold); transform:translateY(-3px)}
+body[data-page="library"] .be-card-name{font-family:var(--font-display); font-weight:600; font-size:1.15rem; color:var(--text); margin:0 0 .2rem}
+body[data-page="library"] .be-card-role{font-family:var(--font-label); font-weight:700; font-size:.7rem; letter-spacing:.04em; text-transform:uppercase; color:var(--gold); margin:0 0 .6rem}
+body[data-page="library"] .be-card-summary{font-family:var(--font-body); font-size:.88rem; line-height:1.55; color:var(--text-dim); margin:0}
+body[data-page="library"] .be-badge{display:inline-block; font-family:var(--font-label); font-weight:700; font-size:.64rem; letter-spacing:.04em; text-transform:uppercase; border-radius:20px; padding:.22rem .65rem; margin:0 .35rem .5rem 0}
+body[data-page="library"] .be-badge-draft{color:var(--teal); border:1px solid rgba(var(--teal-rgb),.4)}
+body[data-page="library"] .be-badge-approved{color:#7fbf8f; border:1px solid rgba(127,191,143,.4)}
+body[data-page="library"] .be-badge-tier{color:var(--gold); border:1px solid var(--border)}
+body[data-page="library"] .be-badge-book{color:var(--text-dim); border:1px solid var(--border)}
+
+/* ── entry detail modal ── */
+body[data-page="library"] .be-detail-modal{max-width:640px; max-height:82vh; overflow-y:auto}
+body[data-page="library"] .be-admin-bar{display:flex; align-items:center; gap:.6rem; flex-wrap:wrap; margin-bottom:1.2rem; padding-bottom:1rem; border-bottom:1px solid var(--border)}
+body[data-page="library"] .be-detail-kind{font-family:var(--font-label); font-weight:700; font-size:.7rem; letter-spacing:.16em; text-transform:uppercase; color:var(--teal); margin:0 0 .4rem}
+body[data-page="library"] .be-detail-name{font-family:var(--font-display); font-weight:600; font-size:2rem; color:var(--text); margin:0 0 .3rem}
+body[data-page="library"] .be-detail-role{font-family:var(--font-body); font-style:italic; color:var(--text-dim); margin:0 0 1.2rem}
+body[data-page="library"] .be-quote{margin:0 0 1rem; padding:.2rem 0 .2rem 1.1rem; border-left:2px solid var(--gold); font-family:var(--font-body); font-style:italic; font-size:1.05rem; line-height:1.6; color:var(--text)}
+body[data-page="library"] .be-quote cite{display:block; margin-top:.4rem; font-family:var(--font-label); font-style:normal; font-size:.7rem; letter-spacing:.06em; text-transform:uppercase; color:var(--text-dim)}
+body[data-page="library"] .be-rels{display:flex; flex-direction:column; gap:.5rem; margin-bottom:1.4rem}
+body[data-page="library"] .be-rel{display:flex; flex-wrap:wrap; align-items:baseline; gap:.5rem; font-family:var(--font-body); font-size:.9rem}
+body[data-page="library"] .be-rel-label{font-family:var(--font-label); font-weight:700; font-size:.72rem; letter-spacing:.02em; text-transform:uppercase; color:var(--teal)}
+body[data-page="library"] .be-rel-link{background:none; border:none; padding:0; font:inherit; font-weight:700; color:var(--gold); cursor:pointer; text-decoration:underline}
+body[data-page="library"] .be-rel-note{color:var(--text-dim); font-size:.85rem}
+body[data-page="library"] .be-section{margin-bottom:1.6rem}
+body[data-page="library"] .be-section-heading{font-family:var(--font-display); font-weight:600; font-size:1.25rem; color:var(--gold); margin:0 0 .7rem}
+body[data-page="library"] .be-section-body{font-family:var(--font-body); font-size:.98rem; line-height:1.75; color:var(--text)}
+body[data-page="library"] .be-section-body h3{font-family:var(--font-display); font-weight:600; font-size:1.1rem; color:var(--text); margin:1.2rem 0 .6rem}
+body[data-page="library"] .be-section-body h3:first-child{margin-top:0}
+body[data-page="library"] .be-section-body h4{font-family:var(--font-label); font-weight:700; font-size:.85rem; letter-spacing:.02em; text-transform:uppercase; color:var(--teal); margin:1.2rem 0 .6rem}
+body[data-page="library"] .be-section-body p{margin:0 0 .9rem}
+body[data-page="library"] .be-section-body ul{margin:0 0 .9rem; padding-left:1.2rem}
+body[data-page="library"] .be-section-body li{margin-bottom:.4rem}
+body[data-page="library"] .be-hidden-notice{font-family:var(--font-label); font-size:.8rem; letter-spacing:.02em; color:var(--text-dim); border-top:1px dashed var(--border); padding-top:1rem; margin-top:1rem}
+
+/* entry creation/editing lives in the Scriptorium now (compose.html), not
+   on the public page — so there's no editor-modal CSS here to maintain. */
+@media(max-width:640px){
+  body[data-page="library"] .be-book-card{grid-template-columns:1fr}
+  body[data-page="library"] .be-book-cover{max-width:180px; margin:0 auto}
+}
+
+/* ═══ MARGINALIA · marginalia.calebthede.com ═══
+   Matches the identity the hub's own "Three Doors" homepage already
+   committed to for this world (--mg-* tokens, body[data-page="home"]) —
+   oxblood/brick-red ink (--mg-accent:#8c2b26) on warm parchment, Playfair
+   Display + PT Serif — rather than inventing a separate palette. Light
+   mode reuses those exact values; dark mode is my own extension in the
+   same spirit (the same red, brightened, on a near-black ground — same
+   "accent glows at night, sits dark by day" logic as Library's blue
+   flame). Bespoke header (same classes as Library — a shared naming
+   convention, not a Library-specific thing), no invented "Codex/Chart"
+   plate language, no cross-link back to Library (the hub's three-doors
+   nav covers that now). */
+body[data-page="marginalia"]{
+  --bg:#120f0d; --bg2:#221c19; --bg3:#352c26;
+  --text:#efe6d9; --text-dim:#b3a292;
+  --teal:#e2756c; --teal-rgb:226,117,108; --teal-dim:#8c2b26;
+  --gold:#dfb875; --gold-rgb:223,184,117; --gold-dim:#a67f3d;
+  --border:rgba(226,117,108,.3);
+  --nav-bg:rgba(18,15,13,.92); --modal-bg:#221c19; --input-bg:#352c26; --skills-bg:#221c19;
+  /* Playfair Display + PT Serif — the same pairing the hub's own
+     Marginalia door already uses — plus a monospace for labels. */
+  --font-display:'Playfair Display',serif; --font-body:'PT Serif',serif; --font-label:'IBM Plex Mono',monospace;
+  background:var(--bg) !important;
+}
+body[data-page="marginalia"].light-mode{
+  --bg:#ece3cc; --bg2:#e0d3af; --bg3:#cfbd8e;
+  --text:#211d16; --text-dim:#5c5040;
+  --teal:#8c2b26; --teal-rgb:140,43,38; --teal-dim:#b5615c;
+  --gold:#8a6423; --gold-rgb:138,100,35; --gold-dim:#c9a562;
+  --border:rgba(140,43,38,.28);
+  --nav-bg:rgba(236,227,204,.96); --modal-bg:#e0d3af; --input-bg:#cfbd8e; --skills-bg:#e0d3af;
+  background:var(--bg) !important;
+}
+/* the page reads as an actual sheet of paper, not a flat digital color:
+   faint ruled lines (real notebook spacing) plus a fine noise grain
+   (SVG feTurbulence, no image asset) under everything, and the same
+   continuous red margin rule a real notebook has down the left. */
+body[data-page="marginalia"] main{
+  background-color:var(--bg);
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(to bottom, transparent, transparent 31px, rgba(var(--teal-rgb),.09) 31px, rgba(var(--teal-rgb),.09) 32px);
+  position:relative;
+}
+body[data-page="marginalia"] main::before{
+  content:''; position:absolute; top:0; bottom:0; left:2.5rem; width:1px;
+  background:rgba(var(--teal-rgb),.4); pointer-events:none; z-index:0;
+}
+@media(max-width:640px){
+  body[data-page="marginalia"] main::before{left:1.2rem}
+}
+body[data-page="marginalia"] footer{
+  --bg2:#221c19; --text:#efe6d9; --text-dim:#b3a292;
+  --gold:#dfb875; --gold-rgb:223,184,117; --teal:#e2756c; --teal-rgb:226,117,108;
+  --border:rgba(226,117,108,.18);
+  background:var(--bg2) !important; border-top:1px solid var(--border);
+  /* overrides the global footer{margin-top:5rem} — it left a dead,
+     untextured gap between main's ruled-paper background and the footer
+     (same issue Library had with its shelf-band). */
+  margin-top:0;
+}
+body[data-page="marginalia"].light-mode footer{
+  --bg2:#e0d3af; --text:#211d16; --text-dim:#5c5040;
+  --gold:#8a6423; --gold-rgb:138,100,35; --teal:#8c2b26; --teal-rgb:140,43,38;
+  --border:rgba(140,43,38,.16);
+  background:var(--bg2) !important; border-top:1px solid var(--border);
+}
+body[data-page="marginalia"] .hub-bg,
+body[data-page="marginalia"] .hub-pattern{display:none !important}
+body[data-page="marginalia"] .legend{font-family:var(--font-label);font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--text-dim)}
+
+/* ── shared site chrome — same gap Library had: the login modal, buttons,
+   badges and toasts default to the hub's fonts unless repointed here. ── */
+body[data-page="marginalia"] .modal-title{font-family:var(--font-display)}
+body[data-page="marginalia"] .mf label{font-family:var(--font-label)}
+body[data-page="marginalia"] .mf input,
+body[data-page="marginalia"] .mf textarea,
+body[data-page="marginalia"] .mf select{font-family:var(--font-body)}
+body[data-page="marginalia"] .btn-primary,
+body[data-page="marginalia"] .btn-ghost,
+body[data-page="marginalia"] .btn-sm,
+body[data-page="marginalia"] .admin-badge,
+body[data-page="marginalia"] .toast{font-family:var(--font-label)}
+
+/* ── bespoke header (same pattern/classes as Library) ── */
+body[data-page="marginalia"] .lib-head{
+  position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between;
+  padding:1.1rem 2rem; background:var(--nav-bg); backdrop-filter:blur(7px);
+  border-bottom:1px solid var(--border);
+}
+body[data-page="marginalia"] .lib-head-mark{display:flex; align-items:baseline; gap:.7rem; flex-wrap:wrap; min-width:0}
+body[data-page="marginalia"] .lib-head-hub{font-family:var(--font-display); font-size:1.2rem; font-weight:600; color:var(--text-dim); text-decoration:none; transition:color .2s; white-space:nowrap}
+body[data-page="marginalia"] .lib-head-hub:hover{color:var(--teal)}
+body[data-page="marginalia"] .lib-head-sep{color:var(--border); font-size:1rem}
+body[data-page="marginalia"] .lib-head-crumb-current{font-family:var(--font-display); font-weight:600; font-size:1.1rem; letter-spacing:.02em; color:var(--teal); white-space:nowrap}
+body[data-page="marginalia"] .lib-head-controls{display:flex; align-items:center; gap:.6rem}
+body[data-page="marginalia"] .admin-link{
+  font-family:var(--font-label); font-size:.65rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--teal); text-decoration:none; border:1px solid var(--border); border-radius:3px; padding:.4rem .7rem;
+  transition:border-color .2s;
+}
+body[data-page="marginalia"] .admin-link:hover{border-color:var(--teal)}
+
+/* ── hero: single column, no art asset here (unlike Library's Hades
+   illustration) — text carries it, sized generously instead ── */
+body[data-page="marginalia"] .lib-hero-book{max-width:940px; margin:0 auto; padding:5rem 4rem 2rem}
+body[data-page="marginalia"] .lib-headline{font-family:var(--font-display); font-weight:600; font-size:clamp(2.6rem,5vw,4rem); line-height:1.06; letter-spacing:-.01em; color:var(--text); margin:0 0 1.2rem; text-wrap:balance}
+body[data-page="marginalia"] .lib-headline em{font-style:italic; color:var(--teal)}
+body[data-page="marginalia"] .lib-lead{font-family:var(--font-body); font-weight:400; font-size:1.15rem; line-height:1.65; color:var(--text-dim); margin:0 0 1.7rem; max-width:560px; text-wrap:pretty}
+body[data-page="marginalia"] .lib-lead em{font-style:italic; color:var(--teal)}
+body[data-page="marginalia"] .lib-hero-stats{display:flex; align-items:center; gap:1.4rem; flex-wrap:wrap}
+body[data-page="marginalia"] .lhs{display:inline-flex; align-items:baseline; gap:.55rem; text-decoration:none}
+body[data-page="marginalia"] .lhs-v{font-family:var(--font-display); font-size:1.7rem; line-height:1; color:var(--teal)}
+body[data-page="marginalia"] .lhs-k{font-family:var(--font-label); font-size:.6rem; letter-spacing:.18em; text-transform:uppercase; color:var(--text-dim)}
+body[data-page="marginalia"] .lib-outer{padding-top:1.5rem}
+
+/* ── article grid + cards: index cards, not the celestial/constellation
+   banner art the rest of the (pre-redesign) site still generates for
+   these — wrong universe entirely for a notebook. A colored tab reads as
+   the card's own label; the dog-eared corner and the thin margin rule
+   repeat the two notebook signifiers from the page itself, at a smaller
+   scale, so every card feels like a page torn out of the same notebook. ── */
+body[data-page="marginalia"] .lib-section-header h2{font-family:var(--font-display); font-weight:600}
+body[data-page="marginalia"] .inline-search{font-family:var(--font-label)}
+body[data-page="marginalia"] .tag-filter-pill{font-family:var(--font-label)}
+body[data-page="marginalia"] .article-card{
+  background:var(--bg2); border:1px solid var(--border); border-radius:3px;
+  box-shadow:0 3px 12px rgba(0,0,0,.14); position:relative;
+}
+body[data-page="marginalia"] .article-card:hover{box-shadow:0 8px 22px rgba(0,0,0,.2)}
+body[data-page="marginalia"] .article-card::before{
+  content:''; position:absolute; top:0; right:0; width:0; height:0;
+  border-style:solid; border-width:0 18px 18px 0;
+  border-color:transparent var(--bg3) transparent transparent;
+  filter:drop-shadow(-1px 1px 1px rgba(0,0,0,.18));
+}
+body[data-page="marginalia"] .article-card::after{
+  content:''; position:absolute; top:0; bottom:0; left:2.1rem; width:1px;
+  background:rgba(var(--teal-rgb),.3);
+}
+body[data-page="marginalia"] .article-card-tab{
+  display:inline-block; margin:1.1rem 0 0 1.5rem; position:relative; z-index:1;
+  font-family:var(--font-label); font-size:.58rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--bg); background:var(--teal); padding:.28rem .65rem; border-radius:2px;
+}
+body[data-page="marginalia"] .article-card-body{padding:.8rem 1.5rem 1.4rem 2.7rem}
+body[data-page="marginalia"] .article-title{font-family:var(--font-display); font-weight:600; color:var(--text)}
+body[data-page="marginalia"] .article-preview{font-family:var(--font-body)}
+body[data-page="marginalia"] .article-footer{font-family:var(--font-label)}
+
+/* the "Latest writing" strip above the grid is a leftover from the old
+   homepage (see loadLatestWriting) — never re-themed since, and it had
+   its own dark-purple hardcoded colors. Given the same tab/margin-line/
+   dog-ear treatment as the main grid below so it reads as the same
+   notebook, not a different, older component sitting on top of it. */
+body[data-page="marginalia"] .writing-card{
+  background:var(--bg2); border:1px solid var(--border); border-radius:4px;
+  box-shadow:0 3px 12px rgba(0,0,0,.14); backdrop-filter:none;
+  position:relative; padding:0; overflow:visible;
+}
+body[data-page="marginalia"] .writing-card:hover{border-color:var(--teal); box-shadow:0 8px 22px rgba(0,0,0,.2); transform:translateY(-4px)}
+body[data-page="marginalia"] .writing-card::before{
+  content:''; position:absolute; top:0; right:0; width:0; height:0;
+  border-style:solid; border-width:0 18px 18px 0;
+  border-color:transparent var(--bg3) transparent transparent;
+  filter:drop-shadow(-1px 1px 1px rgba(0,0,0,.18));
+}
+body[data-page="marginalia"] .writing-card::after{
+  content:''; position:absolute; top:0; bottom:0; left:2.1rem; width:1px;
+  background:rgba(var(--teal-rgb),.3);
+}
+body[data-page="marginalia"] .wc-tag{
+  margin:0 0 1rem; font-family:var(--font-label); font-weight:500; font-size:.58rem; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--bg); background:var(--teal); padding:.85rem 1.5rem .5rem 2.7rem; border-radius:3px 3px 0 0;
+}
+body[data-page="marginalia"] .wc-title{font-family:var(--font-display); font-weight:600; color:var(--text); padding:0 1.5rem 0 2.7rem}
+body[data-page="marginalia"] .wc-preview{font-family:var(--font-body); color:var(--text-dim); padding:0 1.5rem 0 2.7rem; flex:1}
+body[data-page="marginalia"] .wc-meta{font-family:var(--font-label); color:var(--text-dim); padding:0 1.5rem 1.3rem 2.7rem; margin-top:auto}
+
+/* ── reader (focus) view ── */
+body[data-page="marginalia"] .back-btn{font-family:var(--font-label)}
+body[data-page="marginalia"] .reader-title{font-family:var(--font-display); font-weight:600}
+body[data-page="marginalia"] .reader-meta{font-family:var(--font-label)}
+body[data-page="marginalia"] .reader-body{font-family:var(--font-body); font-weight:400}
+body[data-page="marginalia"] .reader-body h3,
+body[data-page="marginalia"] .reader-body h4{font-family:var(--font-display); color:var(--teal)}
+body[data-page="marginalia"] .reader-body blockquote{font-family:var(--font-display); color:var(--text-dim)}
+
+@media(max-width:768px){
+  body[data-page="marginalia"] .lib-outer{padding-left:1.5rem; padding-right:1.5rem}
+  body[data-page="marginalia"] .lib-hero-book{padding:4rem 1.5rem 1.5rem}
+}
+@media(max-width:480px){
+  body[data-page="marginalia"] .lib-head{padding:1rem 1.2rem; gap:.6rem}
+  body[data-page="marginalia"] .lib-head-hub{font-size:1.05rem}
+  body[data-page="marginalia"] .lib-head-crumb-current{font-size:.95rem}
 }
 
 /* ═══ THE SCRIPTORIUM · unified compose page (admin) ═══ */
@@ -3181,16 +3625,9 @@ body.light-mode{
   background-attachment:fixed;
 }
 
-/* Footer in light mode: parchment on normal pages (readable dark text), but a dark
-   "night" footer on home & contact, whose lower sections already fade to dusk. */
+/* Footer in light mode: parchment on normal pages (readable dark text). */
 body.light-mode footer{background:#e8dcbf;border-top:1px solid var(--border);
   --text:#3a3027;--text-dim:#5c4d34;--gold:#7e5526;--gold-rgb:126,85,38;}
-body.light-mode[data-page="home"] footer,
-body.light-mode[data-page="contact"] footer{
-  --text:#E8E4DC;--text-dim:#A8A49C;--gold:#C8A45A;--gold-rgb:200,164,90;
-  --teal:#4EC9B0;--teal-rgb:78,201,176;--border:rgba(200,164,90,.2);
-  background:#13111a;border-top:none;
-}
 /* a quiet rainbow pride star by the colophon */
 footer{overflow:hidden}
 .footer-base-meta::before{
@@ -3260,7 +3697,7 @@ body:not(.light-mode) .hub-bg::after{
    Anchored to the document (not the viewport) so it SCROLLS WITH THE PAGE — the chart
    unrolls top-to-bottom as you scroll. Multiply-blended so it reads as aged ink on the
    parchment, behind all content. */
-body.light-mode:not([data-page="library"]) main::before{
+body.light-mode:not([data-page="library"]):not([data-page="about"]):not([data-page="contact"]):not([data-page="marginalia"]):not([data-page="projects"]) main::before{
   content:'';position:absolute;inset:0;z-index:-1;pointer-events:none;
   background-image:url(/media/star-chart-hades.jpg);
   background-size:cover;background-position:top center;background-repeat:no-repeat;
@@ -3272,6 +3709,8 @@ body[data-page="home"].light-mode main::before{
   -webkit-mask-image:linear-gradient(to bottom, #000 0%, #000 22%, transparent 50%);
           mask-image:linear-gradient(to bottom, #000 0%, #000 22%, transparent 50%);
 }
+/* About/Contact are flat paper, no watermark — that celestial texture belongs
+   to home and the older full-nav pages, not these quieter satellite pages. */
 body.light-mode:not([data-page="home"]) .hub-bg{opacity:1}
 
 /* ── Easter egg: ignite the Pisces constellation (homepage hero) ──
@@ -3290,3 +3729,70 @@ body.light-mode:not([data-page="home"]) .hub-bg{opacity:1}
 @keyframes piscesGlow{0%,100%{opacity:.4;transform:scale(1)}45%{opacity:.95;transform:scale(1.4)}}
 .pisces-art.ignited .glow{animation:piscesGlow 1.5s ease;transform-box:fill-box;transform-origin:center}
 @media(prefers-reduced-motion:reduce){.pisces-art.ignited .strand,.pisces-art.ignited .circlet-line,.pisces-art.ignited .star,.pisces-art.ignited .glow{animation:none}}
+
+/* ══ LIBRARY EMBER FIELD — sparks drifting up the whole viewport on every
+   Library page. Fixed, click-through, and kept sparse so it reads as
+   atmosphere rather than a screensaver. Injected by js/library.js. ══ */
+body[data-page="library"] .lib-ember-field{position:fixed;inset:0;z-index:2;pointer-events:none;overflow:hidden}
+body[data-page="library"] .lib-ember-field i{position:absolute;bottom:-2vh;width:4px;height:4px;border-radius:50%;opacity:0;
+  background:radial-gradient(circle,rgba(190,220,255,.95),rgba(111,168,224,.6) 55%,transparent 75%);box-shadow:0 0 9px rgba(143,192,244,.75);
+  animation:libEmberDrift linear infinite}
+body[data-page="library"].light-mode .lib-ember-field i{
+  background:radial-gradient(circle,rgba(70,140,230,1),rgba(30,90,180,.75) 55%,transparent 75%);box-shadow:0 0 10px rgba(30,100,200,.7)}
+body[data-page="library"] .lib-ember-field i:nth-child(3n){width:6px;height:6px}
+body[data-page="library"] .lib-ember-field i:nth-child(4n){width:3px;height:3px}
+@keyframes libEmberDrift{
+  0%{transform:translate(0,0);opacity:0}
+  10%{opacity:.85}
+  75%{opacity:.5}
+  100%{transform:translate(var(--dx,20px),-108vh);opacity:0}
+}
+@media (prefers-reduced-motion: reduce){
+  body[data-page="library"] .lib-ember-field{display:none}
+}
+
+/* Shelf: bigger covers so a long blurb doesn't dwarf them, and the blurb
+   keeps the line breaks it was written with (they were being collapsed). */
+body[data-page="library"] .book-card .book-spine{width:clamp(200px,35vw,420px)}
+body[data-page="library"] .book-foot-desc,
+body[data-page="library"] .book-detail-desc{white-space:pre-line}
+body[data-page="library"] .book-foot-desc{max-width:780px}
+@media(max-width:640px){
+  body[data-page="library"] .book-card .book-spine{width:100%;max-width:260px}
+}
+
+/* Shelf type scale: sized to sit beside the larger covers. */
+body[data-page="library"] .book-foot-title{font-size:clamp(1.9rem,3.6vw,2.7rem);line-height:1.15;font-weight:600}
+body[data-page="library"] .book-foot-meta{font-size:.8rem;letter-spacing:.12em;gap:1rem}
+body[data-page="library"] .book-foot-status{font-size:.7rem;padding:.25rem .65rem}
+body[data-page="library"] .book-foot-desc{font-size:.92rem;line-height:1.58}
+body[data-page="library"] .series-eyebrow{font-size:.76rem;letter-spacing:.2em}
+body[data-page="library"] .series-title{font-size:clamp(1.7rem,3vw,2.2rem);font-weight:600}
+body[data-page="library"] .series-meta{font-size:.76rem}
+body[data-page="library"] .book-series-num{font-size:.8rem;letter-spacing:.12em}
+
+/* Book detail: companion link sits left-aligned under the blurb */
+body[data-page="library"] .lib-world-cta-book{text-align:left;margin:0 0 1.6rem}
+
+/* Shelf plank: each book on the list rests on a thin shelf line. */
+body[data-page="library"] .books-grid{gap:0}
+body[data-page="library"] .book-card{position:relative;padding-bottom:2.2rem;margin-bottom:2.2rem}
+body[data-page="library"] .book-card::after{content:'';position:absolute;left:-1rem;right:-1rem;bottom:0;height:9px;border-radius:2px;
+  background:linear-gradient(180deg,var(--border),color-mix(in srgb,var(--border) 55%,transparent));
+  box-shadow:0 8px 14px -6px rgba(0,0,0,.45)}
+body[data-page="library"] .book-card:last-child{margin-bottom:0}
+
+/* Bookshelf page heading: bigger, and closer to the header */
+body[data-page="library"] .lib-outer-shelf{padding-top:2.5rem}
+body[data-page="library"] .lib-outer-shelf .lib-section-header h2{font-size:clamp(2.2rem,4.5vw,3.2rem);font-weight:600;line-height:1.1}
+body[data-page="library"] .lib-outer-shelf .lib-section-header{margin-bottom:2.2rem}
+
+/* Consistent breathing room under the sticky header on Library, Marginalia
+   and Forge: the hero starts 2.5rem into main instead of 5rem. */
+body[data-page="library"] .lib-hero-book{padding-top:2.5rem}
+body[data-page="marginalia"] .lib-hero-book{padding-top:2.5rem}
+body[data-page="projects"] .atlas-hero{padding-top:2.5rem}
+@media(max-width:1080px){
+  body[data-page="library"] .lib-hero-book{padding-top:2.5rem}
+  body[data-page="projects"] .atlas-hero{padding-top:2.5rem}
+}

@@ -2,14 +2,14 @@
 function toggleTheme(){
   const light=document.body.classList.toggle('light-mode');
   const btn=document.getElementById('themeBtn');
-  if(btn)btn.textContent=light?'🌑':'🌙';
+  if(btn)btn.classList.toggle('is-dark',!light);
   localStorage.setItem('ct_theme',light?'light':'dark');
 }
 (function initTheme(){
   const dark=localStorage.getItem('ct_theme')==='dark';
   document.body.classList.toggle('light-mode',!dark);
   const btn=document.getElementById('themeBtn');
-  if(btn)btn.textContent=dark?'🌙':'🌑';
+  if(btn)btn.classList.toggle('is-dark',dark);
 })();
 
 // ══ CHAPTER EDITOR ══
@@ -58,7 +58,7 @@ function triggerPasteClean(){
   }).catch(()=>{
     // Fallback: focus textarea and let browser paste natively, then clean
     const ta=document.getElementById('chContent');ta.focus();
-    toast('Paste with Ctrl+V — auto-clean will run','success');
+    toast('Paste with Ctrl+V, auto-clean will run','success');
   });
 }
 
@@ -81,7 +81,7 @@ function updateChPublishedLbl(){
   const checked=document.getElementById('chPublished').checked;
   const lbl=document.getElementById('chPublishedLbl');
   const track=document.getElementById('chToggleTrack');
-  lbl.textContent=checked?'Published — visible':'Draft — hidden';
+  lbl.textContent=checked?'Published: visible':'Draft: hidden';
   lbl.classList.toggle('on',checked);
   if(track)track.classList.toggle('on',checked);
 }

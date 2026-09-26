@@ -94,48 +94,81 @@ function libSetCount(id,n){const el=document.getElementById(id);if(el)el.textCon
 
 // Page-aware: Library (/library) renders books; Marginalia (/marginalia)
 // renders articles. Each loader no-ops if its container isn't on the page.
-async function loadLibrary(){showLibBrowse();await Promise.all([loadBooks(),loadArticles()])}
+async function loadLibrary(){showLibBrowse();await Promise.all([loadBooks(),loadArticles(),loadBookTeaser(),loadLatestWriting()])}
 
-
-function makeArticleSVG(articleId, tag){
-  const seed=articleId.split('').reduce((a,ch)=>a+ch.charCodeAt(0),0);
-  const r=seedRand(seed);
-  // Pick palette from tag
-  const palettes={
-    psychology:['#4EC9B0','#1A6B5A'],
-    mythology:['#C8A45A','#7A5420'],
-    essay:['#6B8FBF','#1A2456'],
-    design:['#B07FBF','#4A1A6B'],
-  };
-  const tagKey=Object.keys(palettes).find(k=>(tag||'').toLowerCase().includes(k));
-  const [c1,c2]=palettes[tagKey]||['#C8A45A','#3B2A0D'];
-  const w=400,h=110;
-  let svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice">`;
-  // Background gradient
-  svg+=`<defs><linearGradient id="ag${seed}" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="${c2}" stop-opacity="1"/><stop offset="100%" stop-color="${c2}" stop-opacity=".4"/></linearGradient></defs>`;
-  svg+=`<rect width="${w}" height="${h}" fill="url(#ag${seed})"/>`;
-  // Flowing bezier curves — ink/manuscript feel
-  for(let i=0;i<4;i++){
-    const y1=r()*h, y2=r()*h, y3=r()*h;
-    const cp1x=r()*w, cp2x=r()*w;
-    svg+=`<path d="M 0 ${y1} C ${cp1x} ${y2}, ${cp2x} ${y3}, ${w} ${r()*h}" fill="none" stroke="${c1}" stroke-width="${.4+r()*.8}" opacity="${.15+r()*.2}"/>`;
-  }
-  // Scattered particles
-  for(let i=0;i<22;i++){
-    const px=r()*w,py=r()*h,pr=.6+r()*2;
-    svg+=`<circle cx="${px}" cy="${py}" r="${pr}" fill="${c1}" opacity="${.15+r()*.35}"/>`;
-  }
-  // Central glyph — ornate circle with cross hairs
-  const gx=w*(.35+r()*.3),gy=h*(.3+r()*.4),gr=12+r()*8;
-  svg+=`<circle cx="${gx}" cy="${gy}" r="${gr}" fill="none" stroke="${c1}" stroke-width=".7" opacity=".35"/>`;
-  svg+=`<circle cx="${gx}" cy="${gy}" r="${gr*.55}" fill="none" stroke="${c1}" stroke-width=".4" opacity=".25"/>`;
-  svg+=`<line x1="${gx-gr*1.4}" y1="${gy}" x2="${gx+gr*1.4}" y2="${gy}" stroke="${c1}" stroke-width=".4" opacity=".2"/>`;
-  svg+=`<line x1="${gx}" y1="${gy-gr*1.4}" x2="${gx}" y2="${gy+gr*1.4}" stroke="${c1}" stroke-width=".4" opacity=".2"/>`;
-  // Overlay vignette
-  svg+=`<rect width="${w}" height="${h}" fill="url(#ag${seed})" opacity=".3"/>`;
-  svg+='</svg>';
-  return {svg, tagColor:c1};
+// Newest essays — relocated from the old homepage. Absolute URL: a root-
+// relative "/" only resolves to marginalia.html when the click happens on
+// marginalia.calebthede.com's own root — anywhere else (this local server,
+// or the apex domain) "/" resolves to the hub homepage instead, so the
+// link would silently land on the wrong page. Same rule as every other
+// cross-page link on this site.
+async function loadLatestWriting(){
+  const wrap = document.getElementById('latestWriting');
+  const section = document.getElementById('latestSection');
+  if(!wrap) return;
+  const {data:articles} = await sb.from('articles').select('*').order('created_at',{ascending:false}).limit(3);
+  if(!articles||!articles.length){ if(section) section.style.display='none'; return }
+  wrap.innerHTML = articles.map(a=>{
+    const preview = (a.content||'').replace(/<[^>]*>/g,'').replace(/^###\s*/gm,'').replace(/[#*_>`]/g,'').trim().slice(0,140)+'…';
+    const words = (a.content||'').split(/\s+/).filter(Boolean).length;
+    const mins = Math.max(1, Math.ceil(words/200));
+    return `<a class="writing-card" href="https://marginalia.calebthede.com/#article/${a.id}">
+      <p class="wc-tag">${a.tag||'Essay'}</p>
+      <h3 class="wc-title">${a.title}</h3>
+      <p class="wc-preview">${preview}</p>
+      <div class="wc-meta"><span>${fmtDate(a.created_at)}</span><span>${mins} min</span></div>
+    </a>`;
+  }).join('');
+  if(section) section.style.display='block';
 }
+
+// Teaser for the primary (oldest-created) book — relocated from the old
+// homepage. Same-origin hash link since this now lives on library.html.
+async function loadBookTeaser(){
+  const teaser=document.getElementById('bookTeaser');
+  if(!teaser)return;
+  const{data:books}=await sb.from('books').select('id,title,description,cover_image,cover_position,color,status,series_id,series_order,retailer_links').order('created_at',{ascending:true});
+  if(!books||!books.length)return;
+
+  const display = books[0];
+  const available = (display.retailer_links||[]).length > 0;
+
+  document.getElementById('btTitle').textContent=display.title;
+  document.getElementById('btDesc').textContent=(display.description||'').split('\n\n')[0];
+
+  const eyebrow=document.getElementById('btEyebrow');
+  if(eyebrow) eyebrow.textContent = available ? 'Available now' : (display.status==='draft' ? 'Coming soon' : 'Now Writing');
+
+  const cta=document.getElementById('btCta');
+  if(cta) cta.textContent = available ? 'Get '+display.title+' →' : 'Explore the Library →';
+
+  const countEl=document.getElementById('btCount');
+  const subEl=document.getElementById('btSub');
+  let series=null;
+  if(display.series_id){
+    ({data:series}=await sb.from('series').select('name,total_books').eq('id',display.series_id).single());
+  }
+  if(countEl){
+    if(series){
+      const total=series.total_books;
+      countEl.textContent = (display.series_order&&total?`Book ${display.series_order} of ${total}`:'Part of the series') + (available?' · Available now':'');
+    } else {
+      countEl.textContent = available?'Available now':'Coming soon';
+    }
+  }
+  if(subEl) subEl.textContent = series ? series.name+' series' : 'Standalone';
+
+  const cover=document.getElementById('btCover');
+  if(cover){
+    if(display.cover_image){ cover.style.backgroundImage='url('+display.cover_image+')'; cover.style.backgroundPosition=display.cover_position||'50% 50%'; cover.classList.add('has-cover'); cover.textContent=''; }
+    else { cover.style.background=display.color||''; cover.textContent=display.title; }
+  }
+
+  document.getElementById('btPrimaryCta').href='/shelf#book/'+display.id;
+  teaser.style.display='block';
+}
+
+
 async function loadBooks(){
   const container=document.getElementById('booksContainer'),empty=document.getElementById('booksEmpty');
   if(!container)return; // not on the Library page
@@ -163,7 +196,7 @@ async function loadBooks(){
     const spineInner=bookSpineInner(b);
 
     // On cover cards the status moves to the caption (it isn't painted on the art).
-    const footStatus=hasCover
+    const footStatus=(hasCover&&b.status!=='complete')
       ? `<span class="book-foot-status ${statusClass}${b.status==='draft'?' admin-only blk':''}">${statusLabel}</span>`
       : '';
 
@@ -176,9 +209,6 @@ async function loadBooks(){
           ${footStatus}
         </div>
         ${blurbFull?`<p class="book-foot-desc">${blurbFull}</p>`:''}
-        <div class="admin-only book-foot-admin">
-          <button class="btn-sm" onclick="event.stopPropagation();openBookModal('${b.id}')">Edit</button>
-        </div>
       </div>`;
     card.onclick=()=>openBook(b.id,b.title,b.description);
     refreshAdmin(card);
@@ -259,127 +289,6 @@ async function loadBooks(){
   }
 }
 
-function openBookModal(id=null){
-  document.getElementById('bookModalTitle').textContent=id?'Edit Book':'New Book';
-  document.getElementById('editBookId').value=id||'';
-  // Load series options
-  sb.from('series').select('*').order('name',{ascending:true}).then(({data:seriesList})=>{
-    const sel=document.getElementById('bookSeriesId');
-    sel.innerHTML='<option value="">Standalone (no series)</option>';
-    (seriesList||[]).forEach(s=>{
-      const opt=document.createElement('option');opt.value=s.id;opt.textContent=s.name;
-      sel.appendChild(opt);
-    });
-    if(id){
-      sb.from('books').select('*').eq('id',id).single().then(({data:b})=>{
-        document.getElementById('bookTitle').value=b?.title||'';
-        document.getElementById('bookDesc').value=b?.description||'';
-        document.getElementById('bookCoverImage').value=b?.cover_image||'';
-        document.getElementById('bookCoverPosition').value=b?.cover_position||'50% 50%';
-        document.getElementById('bookStatus').value=b?.status||'draft';
-        sel.value=b?.series_id||'';
-        document.getElementById('bookSeriesOrder').value=b?.series_order||'';
-        document.getElementById('seriesOrderWrap').style.display=b?.series_id?'block':'none';
-        selectedCover=b?.color||COVERS[0];buildSwatches(selectedCover);
-        refreshCoverPreview();
-      });
-    } else {
-      document.getElementById('bookTitle').value='';
-      document.getElementById('bookDesc').value='';
-      document.getElementById('bookCoverImage').value='';
-      document.getElementById('bookCoverPosition').value='50% 50%';
-      document.getElementById('bookStatus').value='in_progress';
-      sel.value='';
-      document.getElementById('bookSeriesOrder').value='';
-      document.getElementById('seriesOrderWrap').style.display='none';
-      selectedCover=COVERS[0];buildSwatches();
-      const fileEl=document.getElementById('bookCoverFile');if(fileEl)fileEl.value='';
-      refreshCoverPreview();
-    }
-  });
-  openModal('bookModal');
-}
-
-// ── Cover image: upload / preview / clear ───────────────
-function refreshCoverPreview(){
-  const url=(document.getElementById('bookCoverImage')?.value||'').trim();
-  const prev=document.getElementById('coverPreview');
-  const box=document.getElementById('coverPreviewBox');
-  const img=document.getElementById('coverPreviewImg');
-  const clr=document.getElementById('coverClearBtn');
-  const posInput=document.getElementById('bookCoverPosition');
-  if(url){
-    if(img){ img.src=url; img.style.objectPosition=posInput?.value||'50% 50%'; }
-    if(prev)prev.style.display='block';
-    if(clr)clr.style.display='inline-block';
-    if(box){
-      initFocalPicker(box, (x,y)=>{
-        const pos=x+'% '+y+'%';
-        if(posInput)posInput.value=pos;
-        if(img)img.style.objectPosition=pos;
-      });
-      const [fx,fy]=(posInput?.value||'50% 50%').split(' ').map(v=>parseFloat(v)||50);
-      setFocalMarker(box,fx,fy);
-    }
-  }
-  else{ if(prev)prev.style.display='none'; if(clr)clr.style.display='none'; }
-}
-
-function onCoverUrlInput(){
-  const status=document.getElementById('coverUploadStatus');if(status)status.textContent='';
-  const posInput=document.getElementById('bookCoverPosition');if(posInput)posInput.value='50% 50%';
-  refreshCoverPreview();
-}
-
-function clearCoverImage(){
-  document.getElementById('bookCoverImage').value='';
-  document.getElementById('bookCoverPosition').value='50% 50%';
-  const fileEl=document.getElementById('bookCoverFile');if(fileEl)fileEl.value='';
-  const status=document.getElementById('coverUploadStatus');if(status)status.textContent='';
-  refreshCoverPreview();
-}
-
-async function uploadCoverFile(e){
-  const file=e.target.files&&e.target.files[0];
-  if(!file)return;
-  const status=document.getElementById('coverUploadStatus');
-  if(!file.type.startsWith('image/')){ if(status){status.style.color='var(--danger,#e06c75)';status.textContent='That file is not an image.';} return; }
-  if(file.size>5*1024*1024){ if(status){status.style.color='var(--danger,#e06c75)';status.textContent='Image is over 5MB — please use a smaller file.';} return; }
-  if(status){status.style.color='var(--teal)';status.textContent='Uploading…';}
-  const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'')||'jpg';
-  const path='covers/'+Date.now()+'-'+Math.random().toString(36).slice(2,8)+'.'+ext;
-  const{error}=await sb.storage.from('library').upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
-  if(error){
-    if(status){status.style.color='var(--danger,#e06c75)';status.textContent='Upload failed: '+(error.message||'check that the "library" bucket exists');}
-    return;
-  }
-  const{data}=sb.storage.from('library').getPublicUrl(path);
-  document.getElementById('bookCoverImage').value=data?.publicUrl||'';
-  document.getElementById('bookCoverPosition').value='50% 50%';
-  if(status){status.style.color='var(--teal)';status.textContent='✓ Uploaded';}
-  refreshCoverPreview();
-}
-
-async function saveBook(){
-  const title=document.getElementById('bookTitle').value.trim();if(!title){alert('Please add a title.');return}
-  const editId=document.getElementById('editBookId').value;
-  const description=document.getElementById('bookDesc').value.trim();
-  const status=document.getElementById('bookStatus').value||'draft';
-  const color=document.getElementById('bookColor').value||selectedCover;
-  const cover_image=document.getElementById('bookCoverImage').value.trim()||null;
-  const cover_position=document.getElementById('bookCoverPosition').value||'50% 50%';
-  const series_id=document.getElementById('bookSeriesId').value||null;
-  const series_order=document.getElementById('bookSeriesOrder').value?parseInt(document.getElementById('bookSeriesOrder').value):null;
-
-  setLoading('bookSaveBtn',true);
-  const{error}=editId
-    ?await sb.from('books').update({title,description,color,cover_image,cover_position,status,series_id,series_order}).eq('id',editId)
-    :await sb.from('books').insert({title,description,color,cover_image,cover_position,status,series_id,series_order});
-  setLoading('bookSaveBtn',false,'Save Book');
-  if(error){toast('Error saving book','error');return}
-  toast(editId?'Book updated':'Book created');closeModal('bookModal');loadBooks();
-}
-
 async function openBook(id,title,desc,skipHistory){
   currentBookId=id;
   document.getElementById('bookDetailTitle').textContent=title;
@@ -409,6 +318,12 @@ async function renderBookPromo(){
   const{data:b}=await sb.from('books').select('*').eq('id',currentBookId).single();
   const coverEl=document.getElementById('bookDetailCover');
   if(coverEl&&b){ coverEl.className='book-spine book-detail-cover'+(b.cover_image?' has-cover':' no-cover'); coverEl.innerHTML=bookSpineInner(b); }
+  const compWrap=document.getElementById('bookCompanionWrap'),compLink=document.getElementById('bookCompanionLink');
+  if(compWrap&&compLink){
+    const cu=(b&&b.companion_url||'').trim();
+    if(cu){compLink.href=cu;compLink.textContent=((b.companion_label||'').trim()||'Explore more')+' →';compWrap.style.display='block';}
+    else compWrap.style.display='none';
+  }
   const buyBox=document.getElementById('bookBuyBox');
   const buyRow=document.getElementById('bookBuyRow');
   const links=(b&&b.retailer_links)||[];
@@ -480,12 +395,9 @@ function renderArticleCards(articles){
     const words=(a.content||'').split(/\s+/).filter(Boolean).length;
     const mins=Math.max(1,Math.ceil(words/200));
     const card=document.createElement('div');card.className='article-card';
-    const{svg:artSvg,tagColor}=makeArticleSVG(a.id,a.tag);
     card.innerHTML=`
-      <div class="article-card-banner">
-        ${artSvg}
-        <span class="article-card-tag" style="color:${tagColor};border-color:${tagColor}33;background:rgba(0,0,0,.35)">${a.tag||'Article'}</span>
-      </div>
+      <span class="article-card-tab">${a.tag||'Note'}</span>
+      ${a.banner_image?`<div class="article-card-banner" style="background-image:url('${a.banner_image}')" role="img" aria-label=""></div>`:''}
       <div class="article-card-body">
         <h3 class="article-title">${a.title}</h3>
         <p class="article-preview">${preview}</p>
@@ -494,7 +406,6 @@ function renderArticleCards(articles){
           <span>${mins} min read</span>
         </div>
         <div class="article-card-actions">
-          <button class="btn-sm admin-only" onclick="event.stopPropagation();openArticleModal('${a.id}')">Edit</button>
           <button class="btn-sm danger admin-only" onclick="event.stopPropagation();deleteArticle('${a.id}')">Delete</button>
         </div>
       </div>`;
@@ -503,93 +414,7 @@ function renderArticleCards(articles){
 }
 
 
-// ── SHARE ──────────────────────────────────────────────
-function updateArticlePreview(){
-  const content=(typeof quillGet!=='undefined'?quillGet('articleContentEditor'):null)||document.getElementById('articleContent')?.value||'';
-  const preview=document.getElementById('articlePreviewBody');
-  if(preview) preview.innerHTML=renderBody(content);
-  const stripped=content.replace(/<[^>]*>/g,'');
-  const words=stripped.split(/\s+/).filter(Boolean).length;
-  const mins=Math.max(1,Math.ceil(words/200));
-  const wc=document.getElementById('articleWordCount');if(wc) wc.textContent=words.toLocaleString()+' words';
-  const rt=document.getElementById('articleReadTime');if(rt) rt.textContent=mins+' min read';
-}
-function triggerArticlePasteClean(){
-  navigator.clipboard.read().then(async items=>{
-    for(const item of items){
-      if(item.types.includes('text/html')){
-        const blob=await item.getType('text/html');
-        const cleaned=cleanGoogleDocs(await blob.text());
-        if(typeof quillSet!=='undefined') quillSet('articleContentEditor',cleaned);
-        else document.getElementById('articleContent').value=cleaned;
-        toast('Cleaned and pasted from clipboard','success');return;
-      }
-      if(item.types.includes('text/plain')){
-        const blob=await item.getType('text/plain');
-        const text=await blob.text();
-        if(typeof quillSet!=='undefined') quillSet('articleContentEditor',text);
-        else document.getElementById('articleContent').value=text;
-        toast('Pasted as plain text','success');return;
-      }
-    }
-  }).catch(()=>{
-    const q=typeof _quillInstances!=='undefined'?_quillInstances['articleContentEditor']:null;
-    if(q) q.focus();
-    toast('Paste with Ctrl+V — auto-clean will run','success');
-  });
-}
-function insertArticleFmt(prefix){
-  const ta=document.getElementById('articleContent');
-  const start=ta.selectionStart,end=ta.selectionEnd;
-  ta.value=ta.value.substring(0,start)+'\n\n'+prefix+(ta.value.substring(start,end)||'…')+'\n\n'+ta.value.substring(end);
-  updateArticlePreview();ta.focus();
-}
-// Auto-clean paste into article editor
-document.addEventListener('paste',e=>{
-  // Let Quill handle its own paste via clipboard module
-  const active=document.activeElement;
-  if(active&&active.closest&&active.closest('.ql-editor')) return;
-  if(active.id!=='articleContent') return;
-  const html=e.clipboardData.getData('text/html');
-  if(html&&(html.includes('google')||html.includes('docs-'))){
-    e.preventDefault();
-    if(typeof quillSet!=='undefined') quillSet('articleContentEditor',cleanGoogleDocs(html));
-    else document.getElementById('articleContent').value=cleanGoogleDocs(html);
-    toast('Google Docs formatting cleaned','success');
-  }
-  setTimeout(updateArticlePreview,50);
-});
-function openArticleModal(id=null){
-  document.getElementById('articleModalTitle').textContent=id?'Edit Article':'New Article';
-  document.getElementById('editArticleId').value=id||'';
-  if(id){
-    sb.from('articles').select('*').eq('id',id).single().then(({data:a})=>{
-      document.getElementById('articleTitle').value=a?.title||'';
-      document.getElementById('articleTag').value=a?.tag||'';
-      document.getElementById('articleBanner').value=a?.banner_image||'';
-      quillSet('articleContentEditor',a?.content||'');
-      setTimeout(()=>{ if(typeof updateArticlePreview==='function') updateArticlePreview(); },50);
-    });
-  } else {
-    document.getElementById('articleTitle').value='';
-    document.getElementById('articleTag').value='';
-    document.getElementById('articleBanner').value='';
-    quillSet('articleContentEditor','');
-  }
-  openModal('articleModal');
-}
-
-async function saveArticle(){
-  const title=document.getElementById('articleTitle').value.trim(),tag=document.getElementById('articleTag').value.trim(),content=(typeof _articleRawHtml!=='undefined'&&_articleRawHtml)||(typeof quillGet!=='undefined'?quillGet('articleContentEditor'):null)||document.getElementById('articleContent').value.trim(),banner_image=document.getElementById('articleBanner').value.trim()||null;
-  if(!title||!content){alert('Please add a title and content.');return}
-  const editId=document.getElementById('editArticleId').value;
-  setLoading('articleSaveBtn',true);
-  const{error}=editId?await sb.from('articles').update({title,tag,content,banner_image}).eq('id',editId):await sb.from('articles').insert({title,tag,content,banner_image});
-  setLoading('articleSaveBtn',false,'Save');
-  if(error){toast('Error saving','error');return}
-  _articleRawHtml=null;if(typeof clearArticleRawHtml==='function')clearArticleRawHtml();toast(editId?'Article updated':'Article created');closeModal('articleModal');loadArticles();
-}
-
+// ── READER ──────────────────────────────────────────────
 function openArticle(a,skipHistory){
   currentArticleId=a.id;
   const artWords=(a.content||'').split(/\s+/).filter(Boolean).length;
@@ -603,7 +428,6 @@ function openArticle(a,skipHistory){
   document.getElementById('readerMeta').textContent=fmtDate(a.created_at);
   document.getElementById('readerReadTime').textContent=artWords.toLocaleString()+' words · '+artMins+' min read';
   document.getElementById('readerBody').innerHTML=renderBody(a.content);
-  document.getElementById('readerEditBtn').onclick=()=>openArticleModal(a.id);
   document.getElementById('readerDeleteBtn').onclick=()=>deleteArticle(a.id,true);
   showLibArticleReader();
   if(!skipHistory)safePush({sub:'article',id:a.id},'','#article/'+a.id);
@@ -617,77 +441,11 @@ async function deleteArticle(id,fromReader=false){
   toast('Article deleted');if(fromReader)closeArticleReader();else loadArticles();
 }
 
-function toggleArticleHtmlImport(){
-  const panel = document.getElementById('articleHtmlImport');
-  const btn = document.getElementById('htmlImportToggle');
-  const open = panel.style.display === 'none';
-  panel.style.display = open ? 'block' : 'none';
-  if(btn) btn.style.background = open ? 'rgba(200,164,90,.15)' : '';
-  if(open) document.getElementById('articleHtmlRaw').focus();
-}
-
-// Stores raw HTML when bypassing Quill (for tables/code/complex markup)
-let _articleRawHtml = null;
-
-function importArticleHtml(){
-  const raw = document.getElementById('articleHtmlRaw').value.trim();
-  if(!raw){ toast('No HTML to import','error'); return; }
-
-  // Store raw HTML directly — don't push through Quill which strips tables/code
-  _articleRawHtml = raw;
-
-  // Show a read-only indicator in the Quill editor area
-  const editorEl = document.getElementById('articleContentEditor');
-  if(editorEl){
-    const q = _quillInstances['articleContentEditor'];
-    if(q) q.enable(false); // disable Quill editing
-    editorEl.style.opacity = '0.5';
-    editorEl.title = 'Rich HTML imported — editing disabled. Clear to use editor.';
-  }
-
-  // Show a notice badge
-  let badge = document.getElementById('articleHtmlBadge');
-  if(!badge){
-    badge = document.createElement('div');
-    badge.id = 'articleHtmlBadge';
-    badge.style.cssText = 'background:rgba(200,164,90,.12);border:1px solid rgba(200,164,90,.3);border-radius:4px;padding:.4rem .8rem;font-family:JetBrains Mono,monospace;font-size:.62rem;color:var(--gold);display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-top:.5rem';
-    badge.innerHTML = '<span>✦ Rich HTML imported — tables & code preserved</span><button onclick="clearArticleRawHtml()" style="background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:.9rem" title="Clear and re-enable editor">✕</button>';
-    editorEl?.parentNode?.insertBefore(badge, editorEl.nextSibling);
-  }
-  badge.style.display = 'flex';
-
-  document.getElementById('articleHtmlRaw').value = '';
-  toggleArticleHtmlImport();
-
-  // Update preview directly from raw HTML
-  const preview = document.getElementById('articlePreviewBody');
-  if(preview) preview.innerHTML = raw;
-  const stripped = raw.replace(/<[^>]*>/g,'');
-  const words = stripped.split(/\s+/).filter(Boolean).length;
-  const mins = Math.max(1,Math.ceil(words/200));
-  const wc = document.getElementById('articleWordCount'); if(wc) wc.textContent = words.toLocaleString()+' words';
-  const rt = document.getElementById('articleReadTime'); if(rt) rt.textContent = mins+' min read';
-
-  toast('HTML imported — tables & code preserved','success');
-}
-
-function clearArticleRawHtml(){
-  _articleRawHtml = null;
-  const editorEl = document.getElementById('articleContentEditor');
-  const q = _quillInstances?.['articleContentEditor'];
-  if(q){ q.enable(true); q.setText(''); }
-  if(editorEl){ editorEl.style.opacity='1'; editorEl.title=''; }
-  const badge = document.getElementById('articleHtmlBadge');
-  if(badge) badge.style.display = 'none';
-  if(typeof updateArticlePreview==='function') updateArticlePreview();
-  toast('Editor cleared','success');
-}
-
 
 function shareArticle(){
   const artId = typeof currentArticleId !== 'undefined' ? currentArticleId : null;
   const url   = artId
-    ? window.location.origin + '/marginalia#article/' + artId
+    ? 'https://marginalia.calebthede.com/#article/' + artId
     : window.location.href;
   copyShareLink(url, 'Article link copied!');
 }
@@ -810,3 +568,20 @@ function roSetTheme(theme, silent){
     btn.classList.toggle('active', btn.dataset.th===theme);
   });
 }
+
+// Ember field: sparse blue sparks drifting up every Library page.
+(function(){
+  if(document.body.dataset.page!=='library') return;
+  const field=document.createElement('div');
+  field.className='lib-ember-field';field.setAttribute('aria-hidden','true');
+  const N=16;
+  for(let i=0;i<N;i++){
+    const s=document.createElement('i');
+    s.style.left=(3+Math.random()*94)+'%';
+    s.style.animationDuration=(14+Math.random()*14)+'s';
+    s.style.animationDelay=(-Math.random()*26)+'s';
+    s.style.setProperty('--dx',((Math.random()*80)-40)+'px');
+    field.appendChild(s);
+  }
+  document.body.appendChild(field);
+})();
